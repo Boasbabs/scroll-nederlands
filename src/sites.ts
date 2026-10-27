@@ -7,3 +7,8 @@ export const SITES = [
 export type SiteId = (typeof SITES)[number]['id'];
 
 export const ALL_SITE_ORIGINS: Array<string> = SITES.flatMap((site) => [...site.origins]);
+
+/** The site a page belongs to, from its hostname (twitter.com counts as X). */
+export function siteForHost(hostname: string): SiteId | undefined {
+  return SITES.find((site) => site.origins.some((origin) => new URL(origin.replace('/*', '/')).hostname === hostname))?.id;
+}

@@ -4,3 +4,4 @@ dist
 .wxt
 stats.html
 .DS_Store
+.env.local

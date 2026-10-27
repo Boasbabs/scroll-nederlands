@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { MINUTE_MS } from '../../src/engine/schedule';
+import { createLearningActions } from '../../src/learning/actions';
+import { DAY_MS, MINUTE_MS } from '../../src/engine/schedule';
 import { createLearningStore, DEFAULT_PREFERENCES, parsePreferences, parseProgress } from '../../src/storage/store';
 import {
   accrueActiveTime,
@@ -10,13 +11,48 @@ import {
   SESSION_GAP_MS,
   shouldOfferPrompt,
 } from '../../src/trigger/browsing';
+import { fixtureCurriculum, fixtureLesson, fixtureLessons } from '../fixtures/curriculum';
 import { createMemoryArea } from '../fixtures/memory-storage';
 
 const T0 = Date.UTC(2026, 0, 5, 9, 0, 0);
 
+function actionsFor(area = createMemoryArea()) {
+  const store = createLearningStore(area);
+  return { area, store, actions: createLearningActions(store, fixtureCurriculum, fixtureLessons) };
+}
+
 describe('persistence', () => {
+  it('progress survives closing and reopening the extension', async () => {
+    const area = createMemoryArea();
+    const first = actionsFor(area);
+    const lesson = fixtureLesson('a1');
+    await first.actions.answer({ lesson, exercise: lesson.exercises[0]!, response: 'a', mode: 'focused', now: T0 });
+    await first.actions.completeLesson('a1', T0);
+
+    // A new store instance over the same storage is what a restarted browser sees.
+    const reopened = actionsFor(area);
+    const progress = await reopened.store.getProgress();
+    expect(progress.completedLessons.a1).toBe(T0);
+    expect(progress.items.a1?.dueAt).toBe(T0 + DAY_MS);
+    const next = await reopened.actions.nextActivity('focused', T0 + 1);
+    expect(next.kind === 'new-lesson' && next.lesson.id).toBe('a2');
+  });
+
+  it('micro-learning and focused practice share the same state', async () => {
+    const area = createMemoryArea();
+    const page = actionsFor(area); // content script on x.com
+    const panel = actionsFor(area); // side panel
+    const lesson = fixtureLesson('a1');
+    await page.actions.answer({ lesson, exercise: lesson.exercises[0]!, response: 'a', mode: 'micro', now: T0 });
+    await page.actions.completeLesson('a1', T0);
+
+    const review = await panel.actions.nextActivity('focused', T0 + DAY_MS);
+    expect(review.kind === 'review' && review.lesson.id).toBe('a1');
+    expect(review.kind === 'review' && review.exercise.stage).toBe('supportedRecall');
+  });
+
   it('serialises quick successive writes from one context', async () => {
-    const store = createLearningStore(createMemoryArea());
+    const { store } = actionsFor();
     await Promise.all(
       ['a1', 'a2', 'a3'].map((id, i) => store.updateProgress((p) => ({ ...p, completedLessons: { ...p.completedLessons, [id]: i } }))),
     );
@@ -28,6 +64,27 @@ describe('persistence', () => {
     expect(parseProgress({ version: 99 }).completedLessons).toEqual({});
     expect(parsePreferences(null)).toEqual(DEFAULT_PREFERENCES);
     expect(parsePreferences({ promptAfterMinutes: 0.2, speechRate: 9 })).toMatchObject({ promptAfterMinutes: 2, speechRate: 1.2 });
+  });
+
+  it('a failed micro answer is not offered again in the same browsing session', async () => {
+    const { actions } = actionsFor();
+    const lesson = fixtureLesson('a1');
+    await actions.answer({ lesson, exercise: lesson.exercises[0]!, response: 'a', mode: 'micro', now: T0 });
+    await actions.completeLesson('a1', T0);
+    const day1 = T0 + DAY_MS;
+    const review = await actions.nextActivity('micro', day1);
+    expect(review.kind).toBe('review');
+    if (review.kind !== 'review') return;
+    await actions.answer({ lesson, exercise: review.exercise, response: 'wrong', mode: 'micro', now: day1 });
+
+    const later = day1 + 15 * MINUTE_MS; // the relearn delay has passed, but it is the same session
+    const micro = await actions.nextActivity('micro', later);
+    expect(micro.kind === 'new-lesson' && micro.lesson.id).toBe('a2');
+    // Focused practice still brings it back, and so does the next browsing session.
+    const focused = await actions.nextActivity('focused', later);
+    expect(focused.kind === 'review' && focused.lesson.id).toBe('a1');
+    const nextSession = await actions.nextActivity('micro', day1 + SESSION_GAP_MS + MINUTE_MS);
+    expect(nextSession.kind === 'review' && nextSession.lesson.id).toBe('a1');
   });
 });
 

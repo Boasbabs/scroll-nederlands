@@ -1,0 +1,168 @@
+/*
+ * TaalNudge design tokens. Palette from the brand board:
+ * Sunset Orange #f36b2e · Mango #f59a1e · Ocean Water #c4e7e5 ·
+ * Brilliant Blue #253c96 · Oiler Navy #19244e.
+ * Contrast notes: navy text on Sunset is ~5:1 (white on Sunset is only ~3:1,
+ * so buttons use navy labels); white on Brilliant Blue ~9.7:1; navy on Ocean ~11:1.
+ * Tokens live on :root (side panel) and :host (shadow root of the in-page card).
+ */
+:root,
+:host {
+  /* Brand palette */
+  --sunset: #f36b2e;
+  --mango: #f59a1e;
+  --ocean: #c4e7e5;
+  --blue: #253c96;
+  --navy: #19244e;
+
+  /* Tints and shades derived from the palette (for edges, surfaces and AA text) */
+  --sunset-edge: #c4501c;
+  --sunset-tint: #feede6; /* Sunset at 12% on white */
+  --sunset-ink: #9a3a10;
+  --mango-edge: #c47a12;
+  --mango-tint: #fdf0d9;
+  --ocean-wash: #eef8f7;
+  --ocean-edge: #93cdc9;
+  --ocean-ink: #1f6b66;
+  --blue-tint: #e6eaf8;
+  --blue-edge: #1a2a6c;
+  --navy-soft: #3b4570;
+
+  /* Roles */
+  --bg: var(--ocean-wash);
+  --surface: #ffffff;
+  --surface-sunken: #f3f6f9;
+  --ink: var(--navy);
+  --ink-muted: #59617f;
+  --ink-faint: #8a90a8;
+  --line: #dfe5ec;
+  --line-strong: #c9d2dd;
+
+  --primary: var(--sunset);
+  --primary-edge: var(--sunset-edge);
+  --on-primary: var(--navy);
+
+  --accent: var(--blue);
+  --accent-edge: var(--blue-edge);
+  --on-accent: #ffffff;
+
+  --selected: var(--blue);
+  --selected-fill: var(--blue-tint);
+
+  --correct: var(--ocean-ink);
+  --correct-fill: var(--ocean);
+  --correct-edge: var(--ocean-edge);
+  --wrong: var(--sunset-ink);
+  --wrong-fill: var(--sunset-tint);
+
+  /* Mango means "come back to this": reviews, tips, checkpoints. Orange: streaks and the current node. */
+  --tip-fill: var(--mango-tint);
+  --tip-edge: var(--mango);
+  --highlight: var(--mango);
+  --progress: var(--blue);
+  --focus: var(--blue);
+
+  /* Type */
+  --font-display: 'TN Fredoka', 'Fredoka', ui-rounded, 'SF Pro Rounded', 'Nunito', system-ui, sans-serif;
+  --font-body: 'TN Nunito', 'Nunito', ui-rounded, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --text-xs: 12px;
+  --text-sm: 13.5px;
+  --text-md: 15px;
+  --text-lg: 18px;
+  --text-xl: 22px;
+  --text-2xl: 28px;
+  --text-3xl: 34px;
+
+  /* Shape */
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-pill: 999px;
+  --edge: 4px; /* depth of the tactile bottom edge on buttons, options and tiles */
+  --shadow-card: 0 1px 0 rgba(25, 36, 78, 0.04), 0 8px 24px -12px rgba(25, 36, 78, 0.22);
+  --shadow-float: 0 2px 4px rgba(25, 36, 78, 0.08), 0 18px 40px -14px rgba(25, 36, 78, 0.38);
+
+  /* Space */
+  --gutter: 16px;
+}
+
+@font-face {
+  font-family: 'TN Fredoka';
+  src: url('/fonts/fredoka-latin-wght-normal.woff2') format('woff2-variations');
+  font-weight: 300 700;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'TN Fredoka';
+  src: url('/fonts/fredoka-latin-ext-wght-normal.woff2') format('woff2-variations');
+  font-weight: 300 700;
+  font-display: swap;
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'TN Nunito';
+  src: url('/fonts/nunito-latin-wght-normal.woff2') format('woff2-variations');
+  font-weight: 200 1000;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'TN Nunito';
+  src: url('/fonts/nunito-latin-ext-wght-normal.woff2') format('woff2-variations');
+  font-weight: 200 1000;
+  font-display: swap;
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+/* Base, scoped to the app root so nothing leaks into host pages. */
+.tn-root {
+  font-family: var(--font-body);
+  font-size: var(--text-md);
+  line-height: 1.45;
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+.tn-root *,
+.tn-root *::before,
+.tn-root *::after {
+  box-sizing: border-box;
+}
+.tn-root :where(h1, h2, h3, h4, p, ul, ol, figure) {
+  margin: 0;
+}
+.tn-root :where(button, input, textarea, select) {
+  font: inherit;
+  color: inherit;
+}
+.tn-root :where(button) {
+  cursor: pointer;
+}
+.tn-root :focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.tn-display {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+}
+.tn-dutch {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--ink);
+}
+.tn-muted {
+  color: var(--ink-muted);
+}
+.tn-visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}

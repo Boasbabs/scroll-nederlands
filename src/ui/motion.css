@@ -1,0 +1,142 @@
+/*
+ * Motion, after John Lasseter's "Principles of Traditional Animation Applied
+ * to 3D Computer Animation" (1987). Each keyframe names the principle it uses.
+ * Everything here is switched off under prefers-reduced-motion (see bottom).
+ */
+:root,
+:host {
+  /* Timing: small things move fast, big things take longer. */
+  --t-tap: 90ms;
+  --t-quick: 160ms;
+  --t-base: 240ms;
+  --t-slow: 380ms;
+  --t-scene: 560ms;
+
+  /* Slow in and slow out: nothing moves linearly. */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1); /* arrive and settle */
+  --ease-in: cubic-bezier(0.55, 0, 1, 0.45); /* wind up and leave */
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  /* Exaggeration and follow-through: overshoot, then settle. */
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-bounce: cubic-bezier(0.68, -0.6, 0.32, 1.6);
+
+  /* Overlapping action: children start a beat after their parent. */
+  --stagger: 45ms;
+}
+
+/* Squash and stretch on press: the button compresses into its edge and springs back. */
+@keyframes tn-press-release {
+  0% { transform: translateY(var(--press-depth, 3px)) scale(1.02, 0.95); }
+  55% { transform: translateY(-1px) scale(0.99, 1.03); }
+  100% { transform: none; }
+}
+
+/* Anticipation then entrance: a small dip before rising, then overshoot and settle. */
+@keyframes tn-rise-in {
+  0% { opacity: 0; transform: translateY(14px) scale(0.96); }
+  18% { opacity: 0; transform: translateY(18px) scale(0.95); }
+  70% { opacity: 1; transform: translateY(-3px) scale(1.01); }
+  100% { opacity: 1; transform: none; }
+}
+
+/* Exit with anticipation: a slight lift, then away quickly (slow in). */
+@keyframes tn-drop-out {
+  0% { opacity: 1; transform: none; }
+  25% { opacity: 1; transform: translateY(-3px) scale(1.01); }
+  100% { opacity: 0; transform: translateY(16px) scale(0.97); }
+}
+
+/* Follow-through for stacked content: each child settles a beat later. */
+@keyframes tn-settle-in {
+  0% { opacity: 0; transform: translateY(8px); }
+  100% { opacity: 1; transform: none; }
+}
+
+/* Staging: the feedback sheet slides up from where the Check button was. */
+@keyframes tn-sheet-up {
+  0% { transform: translateY(100%); }
+  75% { transform: translateY(-4px); }
+  100% { transform: none; }
+}
+
+/* Exaggeration: the correct mark pops past full size, then settles. */
+@keyframes tn-pop {
+  0% { opacity: 0; transform: scale(0.3) rotate(-12deg); }
+  60% { opacity: 1; transform: scale(1.18) rotate(4deg); }
+  100% { opacity: 1; transform: none; }
+}
+
+/* A wrong answer shakes with decaying amplitude (follow-through). */
+@keyframes tn-shake {
+  0%, 100% { transform: none; }
+  15% { transform: translateX(-7px) rotate(-1deg); }
+  35% { transform: translateX(6px) rotate(0.8deg); }
+  55% { transform: translateX(-4px); }
+  75% { transform: translateX(2px); }
+}
+
+/* Secondary action: sparks fly outward along arcs when an answer is right. */
+@keyframes tn-spark {
+  0% { opacity: 1; transform: rotate(var(--angle)) translateY(0) scale(0.4); }
+  60% { opacity: 1; }
+  100% { opacity: 0; transform: rotate(var(--angle)) translateY(calc(-1 * var(--reach, 34px))) scale(1); }
+}
+
+/* Secondary action: sound bars bounce while Dutch is playing. */
+@keyframes tn-bars {
+  0%, 100% { transform: scaleY(0.35); }
+  50% { transform: scaleY(1); }
+}
+
+/* Appeal: the nudge's mark breathes once to say hello, then holds still. */
+@keyframes tn-wave {
+  0%, 100% { transform: rotate(0); }
+  20% { transform: rotate(-14deg); }
+  40% { transform: rotate(10deg); }
+  60% { transform: rotate(-6deg); }
+  80% { transform: rotate(3deg); }
+}
+
+/* Progress fill grows with slow out and a small overshoot. */
+@keyframes tn-glint {
+  0% { transform: translateX(-120%); }
+  100% { transform: translateX(320%); }
+}
+
+/* Celebration: the completion badge squashes on landing (squash and stretch). */
+@keyframes tn-land {
+  0% { opacity: 0; transform: translateY(-40px) scale(0.8, 1.15); }
+  55% { opacity: 1; transform: translateY(0) scale(1.15, 0.85); }
+  75% { transform: translateY(-6px) scale(0.96, 1.04); }
+  100% { transform: none; }
+}
+
+.tn-rise-in { animation: tn-rise-in var(--t-slow) var(--ease-out) both; }
+.tn-drop-out { animation: tn-drop-out var(--t-base) var(--ease-in) both; }
+.tn-settle-in { animation: tn-settle-in var(--t-base) var(--ease-out) both; animation-delay: calc(var(--i, 0) * var(--stagger)); }
+.tn-pop { animation: tn-pop var(--t-slow) var(--ease-spring) both; }
+.tn-shake { animation: tn-shake var(--t-slow) var(--ease-out); }
+.tn-land { animation: tn-land var(--t-scene) var(--ease-out) both; }
+
+@media (prefers-reduced-motion: reduce) {
+  :root,
+  :host {
+    --t-tap: 1ms;
+    --t-quick: 1ms;
+    --t-base: 120ms;
+    --t-slow: 120ms;
+    --t-scene: 120ms;
+    --stagger: 0ms;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-name: tn-fade !important;
+    animation-iteration-count: 1 !important;
+    transition-property: opacity, background-color, border-color, color !important;
+  }
+  @keyframes tn-fade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+}

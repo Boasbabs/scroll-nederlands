@@ -4,6 +4,7 @@ import { describe, expect, it, vi } from 'vitest';
 import type { Lesson } from '../../src/curriculum/types';
 import { RELEARN_DELAY_MS } from '../../src/engine/schedule';
 import { LessonFlow, ReviewFlow } from '../../src/ui/LessonFlow';
+import { Nudge } from '../../src/ui/nudge/Nudge';
 import { createTestEnv, renderWithEnv } from '../fixtures/env';
 
 const NOW = Date.UTC(2026, 0, 5, 9);
@@ -96,5 +97,53 @@ describe('lesson flow', () => {
     await user.keyboard('{Enter}');
     await waitFor(() => expect(onDone).toHaveBeenCalledWith(expect.objectContaining({ correct: true })));
     expect((await store.getProgress()).items[lesson.id]?.level).toBe('independentRecall');
+  });
+});
+
+describe('in-page nudge', () => {
+  const activity = { kind: 'new-lesson' as const, lesson };
+
+  it('offers Learn now, Not now and a menu with snooze and quiet mode', async () => {
+    const user = userEvent.setup();
+    const { env } = createTestEnv({ now: () => NOW });
+    const onRespond = vi.fn(async () => undefined);
+    const onClose = vi.fn();
+    renderWithEnv(<Nudge activity={activity} onRespond={onRespond} onUndo={vi.fn(async () => undefined)} onClose={onClose} />, env);
+
+    await user.click(screen.getByRole('button', { name: 'More options' }));
+    expect(screen.getByRole('menuitem', { name: 'Snooze 1 hour' })).toBeInTheDocument();
+    expect(screen.getByRole('menuitem', { name: /Quiet mode/ })).toBeInTheDocument();
+    await user.click(screen.getByRole('menuitem', { name: 'Snooze 1 hour' }));
+    expect(onRespond).toHaveBeenCalledWith('snooze', NOW + 3_600_000);
+    expect(screen.getByText('Snoozed 1 hour')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Undo' })).toBeInTheDocument();
+  });
+
+  it('"Not now" closes the card; "Learn now" opens the lesson in place', async () => {
+    const user = userEvent.setup();
+    const { env } = createTestEnv({ now: () => NOW });
+    const onRespond = vi.fn(async () => undefined);
+    const onClose = vi.fn();
+    const view = renderWithEnv(<Nudge activity={activity} onRespond={onRespond} onUndo={vi.fn(async () => undefined)} onClose={onClose} />, env);
+    await user.click(screen.getByRole('button', { name: 'Learn now' }));
+    expect(onRespond).toHaveBeenCalledWith('learn');
+    expect(screen.getByRole('button', { name: 'Practise it' })).toBeInTheDocument();
+    view.unmount();
+
+    renderWithEnv(<Nudge activity={activity} onRespond={onRespond} onUndo={vi.fn(async () => undefined)} onClose={onClose} />, env);
+    await user.click(screen.getAllByRole('button', { name: 'Not now' })[1]!);
+    await waitFor(() => expect(onClose).toHaveBeenCalled());
+    expect(onRespond).toHaveBeenCalledWith('not-now');
+  });
+
+  it('does not reveal the answer when prompting a review', () => {
+    const { env } = createTestEnv({ now: () => NOW });
+    const item = { lessonId: lesson.id, level: 'recognition' as const, step: 1, dueAt: NOW, introducedAt: NOW, lastAttemptAt: null, correctCount: 1, incorrectCount: 0, history: [] };
+    renderWithEnv(
+      <Nudge activity={{ kind: 'review', lesson, exercise: lesson.exercises[2]!, item }} onRespond={vi.fn(async () => undefined)} onUndo={vi.fn(async () => undefined)} onClose={vi.fn()} />,
+      env,
+    );
+    expect(screen.getByText(/Quick review/)).toBeInTheDocument();
+    expect(screen.queryByText('Ik wil graag een koffie.')).not.toBeInTheDocument();
   });
 });

@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>TaalNudge preview · in-page card</title>
+    <style>
+      body { margin: 0; font: 15px system-ui, sans-serif; background: #fff; color: #0f1419; }
+      .feed { display: grid; grid-template-columns: 240px 600px 350px; justify-content: center; min-height: 200vh; }
+      .nav, .rail { padding: 16px; }
+      .col { border-inline: 1px solid #eff3f4; }
+      .post { display: grid; grid-template-columns: 40px 1fr; gap: 12px; padding: 14px 16px; border-bottom: 1px solid #eff3f4; }
+      .avatar { width: 40px; height: 40px; border-radius: 50%; background: #cfd9de; }
+      .line { height: 10px; margin: 6px 0; border-radius: 5px; background: #e7ecf0; }
+      .box { height: 220px; margin-bottom: 16px; border-radius: 16px; background: #f7f9f9; }
+      .dock { position: fixed; right: 20px; bottom: 20px; display: grid; gap: 8px; }
+      .dock span { width: 54px; height: 54px; border-radius: 16px; background: #fff; box-shadow: 0 0 8px rgba(0,0,0,.2); }
+      input { width: 90%; padding: 10px; }
+    </style>
+  </head>
+  <body>
+    <div class="feed">
+      <div class="nav"><div class="line" style="width:60%"></div><div class="line" style="width:40%"></div></div>
+      <div class="col">
+        <div class="post"><span class="avatar"></span><div><input placeholder="What is happening?! (typing here must not trigger card keys)" /></div></div>
+        <div id="posts"></div>
+      </div>
+      <div class="rail"><div class="box"></div><div class="box"></div></div>
+    </div>
+    <div class="dock" aria-hidden="true"><span></span><span></span></div>
+    <div id="card-host"></div>
+    <script>
+      const posts = document.getElementById('posts');
+      for (let i = 0; i < 30; i++) posts.insertAdjacentHTML('beforeend', '<div class="post"><span class="avatar"></span><div><div class="line" style="width:40%"></div><div class="line"></div><div class="line" style="width:80%"></div></div></div>');
+    </script>
+    <script type="module" src="./nudge-main.tsx"></script>
+  </body>
+</html>

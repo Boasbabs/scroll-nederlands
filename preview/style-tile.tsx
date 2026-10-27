@@ -1,0 +1,129 @@
+// Style tile: every core component and state at side-panel width, for visual checks.
+import { useState } from 'react';
+import { createRoot } from 'react-dom/client';
+import '../src/ui/theme.css';
+import '../src/ui/motion.css';
+import '../src/ui/components.css';
+import { AudioButton, SpeechProvider } from '../src/ui/components/AudioButton';
+import { Button } from '../src/ui/components/Button';
+import { SquigglePattern, Sparks, Wordmark } from '../src/ui/components/Decor';
+import { Icon } from '../src/ui/components/Icon';
+import { ProgressBar } from '../src/ui/components/ProgressBar';
+import { previewSpeaker } from './preview-speaker';
+
+const page: React.CSSProperties = { width: 380, margin: '24px auto', background: 'var(--bg)', borderRadius: 24, overflow: 'hidden', boxShadow: 'var(--shadow-float)' };
+const section: React.CSSProperties = { display: 'grid', gap: 12, padding: 'var(--gutter)' };
+const heading: React.CSSProperties = { fontSize: 'var(--text-xs)', fontWeight: 800, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--ink-muted)' };
+
+function StyleTile() {
+  const [step, setStep] = useState(3);
+  const [selected, setSelected] = useState(1);
+  const [sheetKey, setSheetKey] = useState(0);
+  return (
+    <div className="tn-root" style={{ background: '#dfe7ee', minHeight: '100vh', padding: 1 }}>
+      <div style={page}>
+        <header className="tn-band" style={{ padding: '18px var(--gutter) 22px' }}>
+          <SquigglePattern />
+          <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Wordmark size={26} />
+            <span className="tn-chip tn-chip--mango">Stage 0 · pre-A1</span>
+          </div>
+          <p className="tn-display" style={{ position: 'relative', marginTop: 10, fontSize: 'var(--text-xl)' }}>
+            Goedemiddag! Ready for 2 minutes of Dutch?
+          </p>
+        </header>
+
+        <div style={section}>
+          <span style={heading}>Progress</span>
+          <ProgressBar value={step} max={8} label="Lesson progress" />
+          <div style={{ display: 'flex', gap: 8 }}>
+            <Button size="sm" variant="secondary" onClick={() => setStep((value) => Math.max(0, value - 1))}>Back</Button>
+            <Button size="sm" variant="accent" onClick={() => setStep((value) => Math.min(8, value + 1))}>Advance</Button>
+          </div>
+        </div>
+
+        <div style={section}>
+          <span style={heading}>Learn card</span>
+          <article className="tn-card tn-rise-in" style={{ padding: 18, display: 'grid', gap: 12 }}>
+            <span className="tn-chip tn-chip--ocean" style={{ justifySelf: 'start' }}>New phrase</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <AudioButton text="Goedemiddag!" />
+              <AudioButton text="Goedemiddag!" slow />
+              <h2 className="tn-dutch" style={{ fontSize: 'var(--text-2xl)' }}>Goedemiddag!</h2>
+            </div>
+            <p className="tn-muted">Good afternoon!</p>
+            <p className="tn-tip"><strong>Tip</strong>The final g is the throaty ch: “khoo-duh-MID-dakh”.</p>
+          </article>
+        </div>
+
+        <div style={section}>
+          <span style={heading}>Options</span>
+          {['Goedemorgen!', 'Goedemiddag!', 'Goedenavond!'].map((option, i) => (
+            <button key={option} type="button" className="tn-option tn-settle-in" style={{ '--i': i } as React.CSSProperties} aria-pressed={selected === i} onClick={() => setSelected(i)}>
+              <span className="tn-option__key">{i + 1}</span>
+              {option}
+            </button>
+          ))}
+          <button type="button" className="tn-option" data-state="correct"><span className="tn-option__key"><Icon name="check" size={16} /></span>Correct state</button>
+          <button type="button" className="tn-option tn-shake" data-state="wrong"><span className="tn-option__key"><Icon name="cross" size={16} /></span>Wrong state</button>
+        </div>
+
+        <div style={section}>
+          <span style={heading}>Tiles and input</span>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+            {['Ik', 'wil', 'graag', 'betalen.'].map((word) => (
+              <button key={word} type="button" className="tn-tile">{word}</button>
+            ))}
+            <span className="tn-tile tn-tile--ghost">koffie</span>
+          </div>
+          <input className="tn-input" placeholder="Type in Dutch" defaultValue="Ik wil graag betalen" />
+        </div>
+
+        <div style={section}>
+          <span style={heading}>Buttons</span>
+          <Button block>Learn now</Button>
+          <Button block variant="secondary">Not now</Button>
+          <Button block variant="accent">Review 3 phrases</Button>
+          <Button block disabled>Check</Button>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            <Button variant="ghost" size="sm">Snooze</Button>
+            <button type="button" className="tn-icon-btn" aria-label="More"><Icon name="more" /></button>
+            <button type="button" className="tn-icon-btn" aria-label="Close"><Icon name="close" /></button>
+          </div>
+        </div>
+
+        <div style={{ ...section, paddingBottom: 0 }}>
+          <span style={heading}>Feedback</span>
+          <Button size="sm" variant="secondary" onClick={() => setSheetKey((key) => key + 1)}>Replay feedback</Button>
+        </div>
+        <div key={sheetKey} style={{ display: 'grid', gap: 12, paddingTop: 12 }}>
+          <div className="tn-sheet tn-sheet--correct">
+            <p className="tn-sheet__title">
+              <span className="tn-sheet__mark"><Icon name="check" /><Sparks /></span>
+              Goed zo!
+            </p>
+            <p style={{ marginBottom: 12 }}>Meaning: Good afternoon!</p>
+            <Button block variant="correct">Continue</Button>
+          </div>
+          <div className="tn-sheet tn-sheet--wrong">
+            <p className="tn-sheet__title">
+              <span className="tn-sheet__mark"><Icon name="cross" /></span>
+              Not quite
+            </p>
+            <p style={{ marginBottom: 4 }}>Correct answer:</p>
+            <p className="tn-dutch" style={{ fontSize: 'var(--text-lg)', marginBottom: 12 }}>
+              Ik wil <span className="tn-miss">graag</span> betalen.
+            </p>
+            <Button block variant="wrong">Got it</Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+createRoot(document.getElementById('root')!).render(
+  <SpeechProvider speaker={previewSpeaker}>
+    <StyleTile />
+  </SpeechProvider>,
+);

@@ -4,8 +4,24 @@
     {
       "name": "taalnudge-preview",
       "runtimeExecutable": "pnpm",
-      "runtimeArgs": ["vite", "--config", "preview/vite.config.ts"],
+      "runtimeArgs": [
+        "vite",
+        "--config",
+        "preview/vite.config.ts"
+      ],
       "port": 5199
+    },
+    {
+      "name": "taalnudge-preview-alt",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": [
+        "vite",
+        "--config",
+        "preview/vite.config.ts",
+        "--port",
+        "5299"
+      ],
+      "port": 5299
     }
   ]
 }

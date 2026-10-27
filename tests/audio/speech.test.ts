@@ -1,76 +1,108 @@
-import { describe, expect, it, vi } from 'vitest';
-import { createSpeaker, pickDutchVoice } from '../../src/audio/speech';
+import { createSpeaker, pickDutchVoice, type SpeakerDeps } from '../../src/audio/speech';
 
 type FakeVoice = { lang: string; name: string; localService: boolean };
 
-function fakeSynth(voices: Array<FakeVoice>, { async = false } = {}) {
-  let loaded = !async;
+function fakeSynth(voices: Array<FakeVoice>, { lateVoices = false } = {}) {
   const listeners = new Set<() => void>();
+  let available = lateVoices ? [] : voices;
+  const spoken: Array<{ text: string; lang: string; voice?: string; rate: number }> = [];
   return {
-    spoken: [] as Array<{ text: string; lang: string; voice: unknown; rate: number }>,
-    getVoices: () => (loaded ? voices : []),
-    speak(utterance: { text: string; lang: string; voice: unknown; rate: number }) {
-      this.spoken.push({ text: utterance.text, lang: utterance.lang, voice: utterance.voice, rate: utterance.rate });
+    spoken,
+    loadVoices() {
+      available = voices;
+      for (const listener of listeners) listener();
     },
-    cancel: vi.fn(),
-    addEventListener: (_: string, fn: () => void) => listeners.add(fn),
-    removeEventListener: (_: string, fn: () => void) => listeners.delete(fn),
-    loadNow() {
-      loaded = true;
-      for (const fn of [...listeners]) fn();
-    },
+    synth: {
+      getVoices: () => available as unknown as Array<SpeechSynthesisVoice>,
+      speak: (utterance: SpeechSynthesisUtterance) => {
+        spoken.push({ text: utterance.text, lang: utterance.lang, voice: utterance.voice?.name, rate: utterance.rate });
+        queueMicrotask(() => utterance.onend?.(new Event('end') as SpeechSynthesisEvent));
+      },
+      cancel: () => {},
+      addEventListener: (_: string, listener: () => void) => listeners.add(listener),
+      removeEventListener: (_: string, listener: () => void) => listeners.delete(listener),
+    } as unknown as SpeakerDeps['synth'],
   };
 }
 
-const createUtterance = (text: string) => ({ text, lang: '', voice: null, rate: 1 }) as unknown as SpeechSynthesisUtterance;
+function makeSpeaker(voices: Array<FakeVoice>, overrides: Partial<SpeakerDeps> = {}, options = {}) {
+  const fake = fakeSynth(voices, options);
+  const played: Array<{ path: string; rate: number }> = [];
+  const speaker = createSpeaker({
+    synth: fake.synth,
+    createUtterance: (text) => ({ text }) as SpeechSynthesisUtterance,
+    playClip: async (path, rate) => void played.push({ path, rate }),
+    stopClip: () => {},
+    manifest: { clips: {} },
+    voiceTimeoutMs: 50,
+    ...overrides,
+  });
+  return { speaker, fake, played };
+}
+
+const google = { lang: 'nl-NL', name: 'Google Nederlands', localService: false };
+const xander = { lang: 'nl_NL', name: 'Xander', localService: true };
+const flemish = { lang: 'nl-BE', name: 'Ellen', localService: true };
+const english = { lang: 'en-US', name: 'Samantha', localService: true };
 
 describe('pickDutchVoice', () => {
-  it('prefers a Netherlands voice over Belgian Dutch and English', () => {
-    const voices = [
-      { lang: 'en-US', name: 'Samantha', localService: true },
-      { lang: 'nl-BE', name: 'Ellen', localService: true },
-      { lang: 'nl_NL', name: 'Xander', localService: true },
-      { lang: 'nl-NL', name: 'Google Nederlands', localService: false },
-    ];
-    expect(pickDutchVoice(voices)).toEqual({ voice: voices[3], match: 'nl-NL' });
-    expect(pickDutchVoice(voices.slice(0, 3)).voice?.name).toBe('Xander');
-    expect(pickDutchVoice(voices.slice(0, 2))).toEqual({ voice: voices[1], match: 'nl-other' });
-    expect(pickDutchVoice(voices.slice(0, 1))).toEqual({ match: 'none' });
+  it('prefers a Netherlands voice, Google first, then any Dutch variety', () => {
+    expect(pickDutchVoice([english, flemish, xander, google])).toEqual({ voice: google, match: 'nl-NL' });
+    expect(pickDutchVoice([english, xander])).toEqual({ voice: xander, match: 'nl-NL' });
+    expect(pickDutchVoice([english, flemish])).toEqual({ voice: flemish, match: 'nl-other' });
+    expect(pickDutchVoice([english])).toEqual({ match: 'none' });
   });
 });
 
 describe('speaker', () => {
-  it('speaks with the nl-NL locale and a Dutch voice', async () => {
-    const synth = fakeSynth([{ lang: 'nl-NL', name: 'Xander', localService: true }]);
-    const speaker = createSpeaker({ synth: synth as never, createUtterance, playClip: vi.fn(), clips: {} });
-    const result = await speaker.speak('Goedemorgen', { rate: 0.8 });
-    expect(result).toMatchObject({ ok: true, engine: 'synthesis', match: 'nl-NL', voiceName: 'Xander' });
-    expect(synth.spoken[0]).toMatchObject({ text: 'Goedemorgen', lang: 'nl-NL', rate: 0.8 });
+  it('uses a bundled clip when one exists, at the requested speed', async () => {
+    const { speaker, played, fake } = makeSpeaker([google], { manifest: { clips: { 'Goedemiddag!': 'audio/a.mp3' } } });
+    expect(await speaker.speak('  Goedemiddag! ', { rate: 0.7 })).toMatchObject({ ok: true, engine: 'clip' });
+    expect(played).toEqual([{ path: 'audio/a.mp3', rate: 0.7 }]);
+    expect(fake.spoken).toEqual([]);
   });
 
-  it('waits for voices that load asynchronously', async () => {
-    const synth = fakeSynth([{ lang: 'nl-NL', name: 'Google Nederlands', localService: false }], { async: true });
-    const speaker = createSpeaker({ synth: synth as never, createUtterance, playClip: vi.fn(), clips: {} });
-    const pending = speaker.speak('Hallo');
-    synth.loadNow();
-    expect(await pending).toMatchObject({ ok: true, voiceName: 'Google Nederlands' });
+  it('reads with an nl-NL voice and nl-NL locale when there is no clip', async () => {
+    const { speaker, fake } = makeSpeaker([english, google]);
+    expect(await speaker.speak('Dank je wel.')).toMatchObject({ ok: true, engine: 'synthesis', match: 'nl-NL' });
+    expect(fake.spoken[0]).toMatchObject({ text: 'Dank je wel.', lang: 'nl-NL', voice: 'Google Nederlands' });
   });
 
-  it('fails gracefully without a Dutch voice or without speech synthesis', async () => {
-    const synth = fakeSynth([{ lang: 'en-GB', name: 'Daniel', localService: true }]);
-    const speaker = createSpeaker({ synth: synth as never, createUtterance, playClip: vi.fn(), clips: {}, voiceTimeoutMs: 10 });
-    expect(await speaker.speak('Dag')).toEqual({ ok: false, reason: 'no-dutch-voice' });
-    expect(synth.spoken).toHaveLength(0);
-    const none = createSpeaker({ synth: undefined, createUtterance, playClip: vi.fn(), clips: {} });
-    expect(await none.speak('Dag')).toEqual({ ok: false, reason: 'unsupported' });
+  it('waits for voices that load late', async () => {
+    const { speaker, fake } = makeSpeaker([google], {}, { lateVoices: true });
+    const result = speaker.speak('Hallo');
+    setTimeout(() => fake.loadVoices(), 5);
+    expect(await result).toMatchObject({ ok: true, engine: 'synthesis' });
   });
 
-  it('prefers a bundled clip and falls back to synthesis if it cannot play', async () => {
-    const synth = fakeSynth([{ lang: 'nl-NL', name: 'Xander', localService: true }]);
-    const playClip = vi.fn().mockResolvedValueOnce(undefined).mockRejectedValueOnce(new Error('blocked'));
-    const speaker = createSpeaker({ synth: synth as never, createUtterance, playClip, clips: { 'Dank je wel.': 'audio/abc.mp3' } });
-    expect(await speaker.speak('  Dank je   wel. ')).toMatchObject({ ok: true, engine: 'clip' });
-    expect(playClip).toHaveBeenCalledWith('audio/abc.mp3');
-    expect(await speaker.speak('Dank je wel.')).toMatchObject({ ok: true, engine: 'synthesis' });
+  it('falls back to synthesis when a clip cannot play', async () => {
+    const { speaker } = makeSpeaker([google], {
+      manifest: { clips: { Hallo: 'audio/h.mp3' } },
+      playClip: () => Promise.reject(new Error('blocked')),
+    });
+    expect(await speaker.speak('Hallo')).toMatchObject({ ok: true, engine: 'synthesis' });
+  });
+
+  it('stays silent, with a reason, when no Dutch voice exists', async () => {
+    const { speaker, fake } = makeSpeaker([english]);
+    expect(await speaker.speak('Hallo')).toEqual({ ok: false, reason: 'no-dutch-voice' });
+    expect(fake.spoken).toEqual([]);
+    expect(await makeSpeaker([], { synth: undefined }).speaker.speak('Hallo')).toEqual({ ok: false, reason: 'unsupported' });
+  });
+
+  it('gives the second dialogue speaker the second voice', async () => {
+    const { speaker, played } = makeSpeaker([google], {
+      manifest: { clips: { 'Hoi!': 'audio/1.mp3', 'Hallo!': 'audio/2.mp3' }, clipsB: { 'Hallo!': 'audio/2b.mp3' } },
+    });
+    const seen: Array<number> = [];
+    await speaker.speakDialogue(
+      [
+        { speaker: 'Sanne', dutch: 'Hoi!' },
+        { speaker: 'You', dutch: 'Hallo!' },
+      ],
+      (index) => seen.push(index),
+    );
+    expect(played.map((clip) => clip.path)).toEqual(['audio/1.mp3', 'audio/2b.mp3']);
+    expect(seen).toEqual([0, 1, -1]);
   });
 });

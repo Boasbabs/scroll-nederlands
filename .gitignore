@@ -1,0 +1,6 @@
+node_modules
+.output
+dist
+.wxt
+stats.html
+.DS_Store

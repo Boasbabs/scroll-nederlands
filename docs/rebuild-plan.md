@@ -1,6 +1,6 @@
 # TaalNudge v2 rebuild: status and plan
 
-Branch `rebuild/v2` (nothing committed yet; v1 is on `main`). This file is the handoff between sessions: update the status table when a phase is done.
+Branch `rebuild/v2` (v1 is on `main`). This file is the handoff between sessions: update the status table when a phase is done.
 
 ## Owner's requirements for the rebuild
 
@@ -21,12 +21,12 @@ Branch `rebuild/v2` (nothing committed yet; v1 is on `main`). This file is the h
 | Learning engine (schedule, selection, plans, progress, summary, answers) | Done | `tests/engine` (35 tests) |
 | Storage, browsing trigger, shared actions | Done | `tests/storage` (18 tests) |
 | Audio playback module | Done | `tests/audio` (7 tests) |
-| Audio voice research | Provisional (key in `.env.local` is a key ID, not an `sk_` secret) | `docs/audio-research.md` |
+| Audio voice research | Done: Serge de Beer reads the main voice and Roos the second speaker in dialogues, on `eleven_v4` with `language_code: "nl"` | `docs/audio-research.md` |
 | UX research (Mobbin) | Done: ~110 cited screens/flows (§7–§8 added while building; the `ai_usage_notice` returned by later searches was shown to the owner each time); composed/rule items are marked in the doc | `docs/ux-research.md` |
 | Design tokens, motion, core components, style tile | Done, colour roles aligned with the research (correct = Ocean sheet + blue button; miss = Sunset 12% tint + navy button, no red; progress blue; Mango = come back to this), visually checked | `preview/style-tile.tsx` on http://localhost:5199 |
-| Lesson player, side panel, nudge | **Done** (built by the second session, tested and checked by the third). Engine helpers, `src/ui/{env,format,sfx,hotkeys}`, player (all step and exercise kinds, feedback sheet with retry, per-pair match grading, quit and shortcut sheets, end screens), panel (onboarding, Today, Course, Review, Progress, Settings), nudge (card, ⋯ menu, toast with Undo, micro session), preview pages. Every screen visually checked in the preview (see "Phase 6: checks and fixes") | `tests/ui/panel.test.tsx` (10), `tests/ui/nudge.test.tsx` (7), `tests/ui/player.test.tsx` (4), `tests/engine` (44); 106 tests pass, 4 skipped (`tests/audio/clips.test.ts` waits for the clips) |
+| Lesson player, side panel, nudge | **Done** (built by the second session, tested and checked by the third). Engine helpers, `src/ui/{env,format,sfx,hotkeys}`, player (all step and exercise kinds, feedback sheet with retry, per-pair match grading, quit and shortcut sheets, end screens), panel (onboarding, Today, Course, Review, Progress, Settings), nudge (card, ⋯ menu, toast with Undo, micro session), preview pages. Every screen visually checked in the preview (see "Phase 6: checks and fixes") | `tests/ui/panel.test.tsx` (10), `tests/ui/nudge.test.tsx` (7), `tests/ui/player.test.tsx` (4), `tests/engine` (44); 106 tests passed then, 4 skipped (`tests/audio/clips.test.ts` waited for the clips) |
 | Entrypoints (background, content script, offscreen audio) | **Done** (fourth session). `src/extension/` holds the wiring with injectable APIs (registration sync, prompt loop, placement, offscreen relay, clip player, messages, guarded clip manifest); `entrypoints/` stays thin. See "Phase 7: what was built" | `tests/extension` (33 tests: registration 6, placement and measuring 10, prompt loop 12, clip player and offscreen relay 5); `pnpm build` manifest checked |
-| ElevenLabs generation + verification | **In progress in the first session** (the owner added an `sk_…` key; voices are being verified, then clips generated). Other sessions skip phase 8 and do not touch `scripts/generate-audio.ts`, `src/audio/clips.json`, `public/audio/**`, `docs/audio-research.md`, `docs/audio-qa.md` or `tests/audio/clips.test.ts` | The first session messages when the clips are in |
+| ElevenLabs generation + verification | **41% done** (first session): 1,270 of 3,115 clips. Target phrases, learning items and listening exercises are complete, plus 39 of the 266 lines in dialogue-reply exercises; dialogues, examples and model answers have none yet. The run stopped cleanly at the monthly quota. After the reset, `pnpm audio:generate` resumes with the remaining 1,845 clips (64,473 characters), then `pnpm build`. Speech-to-text flagged 42 clips that need a listen by ear | `tests/audio/clips.test.ts` (the manifest matches the course and every clip file exists); `docs/audio-qa.md` |
 | Build, Chrome smoke test, README | **Done** (fourth session): `pnpm build` passes; unpacked build smoke-tested in Chrome for Testing (16/16 checks, see "Phase 9: what was checked"); README rewritten from `curriculumStats`; final report in `docs/final-report.md` | `npx vitest run` 143 pass; `npx tsc --noEmit` clean |
 
 ## Architecture (new code)
@@ -38,7 +38,7 @@ src/curriculum/
   assemble.ts     Pure assembly: stage/module order, global item ids "lesson-id/key", exerciseItemIds()
   index.ts        Bundles content/<stage>/<module>.ts → `curriculum`, `course` (CurriculumIndex)
   validate.ts     Structure, references, answers, leaks, coverage of objectives.ts, curriculumStats()
-  structure.ts, objectives.ts, content/**   Data (4 stages, 56 modules, 272 lessons, ~1.1k items)
+  structure.ts, objectives.ts, content/**   Data (4 stages, 56 modules, 272 lessons, 1,024 items)
 src/engine/       Pure TS, no React/browser
   answers.ts      normalizeAnswer, checkTyped (accent/typo tolerance, `strict`), checkOrder, checkWriting, diffTokens
   schedule.ts     Item stages introduced→recognition→supportedRecall→independentRecall→transfer;
@@ -70,7 +70,7 @@ src/ui/nudge/           NudgeCard (card, ⋯ menu, toast), NudgeApp (states + Nu
 preview/                Dev harness (vite): style tile, panel.html?state=…, nudge.html (fake feed, shadow root), fake-chrome.ts
 ```
 
-v1 code (UI, entrypoints, old engine) was removed on this branch; it is in git history on `main`. The v1 audio files and its 463-clip manifest are kept outside the repo in the first session's scratchpad (`…/scratchpad/v1-audio/`); the clips themselves are still in `public/audio/` (untracked).
+v1 code (UI, entrypoints, old engine) was removed on this branch; it is in git history on `main`. The 463 v1 clips and their manifest were never committed; they were moved out of `public/audio/` to the first session's scratchpad (`…/scratchpad/v1-audio/`), which is temporary.
 
 ## Next phases, in order
 
@@ -110,9 +110,11 @@ Audio clips for phase 7 (agreed with the first session, which generates them):
 - `pnpm build` → `dist/chrome-mv3`: manifest has no `content_scripts` and no required host permissions; `side_panel`, `background.service_worker`, `offscreen.html`. Content script and side panel bundles are about 1.6 MB each (the curriculum is bundled in both).
 - Unpacked smoke test (Playwright driving Chrome for Testing, script outside the repo): the build copy got `https://x.com/*` as a required host permission to stand in for the permission dialog, and requests to `https://x.com` were answered with a local three-column feed with X-style Grok/Chat buttons. Passed: service worker; side panel onboarding; panel follows storage changes; content script registered for the granted origin only; card appears after the interval; 24px from the right; 16px above the dock; not over the feed; copy; brand fonts load from the extension into the page; lease held; keys typed in the card never reach the page's `keydown` listener; Learn now grows the card to 520px in its corner; a clip plays through the offscreen document; no errors in the panel or the page. Screenshots were checked by eye.
 - Not checked: live x.com and linkedin.com (logged-in pages), the side panel opening from the card's `Open side panel` (headless Chrome has no side panel UI), microphone recording in the side panel.
-- Note for phase 8: `public/audio/` currently holds the v1 clips (12-hex names) next to the new ones, and the build copies every file in it, referenced or not. Removing unreferenced files is the first session's call.
+- Note for phase 8 (resolved): `public/audio/` held the v1 clips (12-hex names) next to the new ones, and the build copies every file in it, referenced or not. The v1 clips were moved out, so it now holds only the 1,270 clips the manifest references.
 
-### Phase 8: ElevenLabs audio (owned by the first session; skip it)
+### Phase 8: ElevenLabs audio (first session)
+**Outcome:** 41% generated (see the status table). The final voices and model differ from the provisional ones in the plan below: Serge de Beer (main) and Roos (second voice) on `eleven_v4` with `language_code: "nl"`; `docs/audio-research.md` explains why.
+
 Needs a valid `sk_…` key in `.env.local`. Run the prepared research harness (first session's `scratchpad/tools/research.mjs`; results feed `docs/audio-research.md`), confirm voices (provisional: Ruth `YUdpWWny7k5yb4QCeweX` main, Serge de Beer `UNBIyLbtFB9k7FKW8wJv` second voice; model `eleven_multilingual_v2`, stability 0.6, similarity 0.75, speed 0.9, `mp3_44100_64`). Rewrite `scripts/generate-audio.ts` for the v2 course: collect every Dutch string learners hear (target phrases, items, examples, dialogue lines with voice b for the second speaker, `audioText`, cloze/type model answers shown with audio), cache by hash(text+voice+model+settings), resumable, loudness-normalise (ffmpeg loudnorm ≈ −18 LUFS), verify each clip with ElevenLabs speech-to-text and flag mismatches; manifest `src/audio/clips.json` `{ voices, model, clips, clipsB }`. Slow replay = playbackRate 0.7 on the same clip. Character budget ≈ 56–90k.
 
 ### Phase 9: build and ship

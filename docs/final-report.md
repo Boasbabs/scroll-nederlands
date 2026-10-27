@@ -1,6 +1,6 @@
 # TaalNudge v2: final handoff report
 
-Spec §15, as of 2026-10-27 (branch `rebuild/v2`, nothing committed). Audio generation (phase 8) is still with the first session; its own report covers voices and clip QA (`docs/audio-research.md`, `docs/audio-qa.md`).
+Spec §15, as of 2026-10-27 (branch `rebuild/v2`). Audio generation (phase 8) stopped at the ElevenLabs monthly quota with 1,270 of the course's 3,115 clips made; `docs/audio-research.md` covers the voices and the quota, `docs/audio-qa.md` the clip QA.
 
 ## 1. What was built
 
@@ -58,7 +58,7 @@ Limited or not verified:
 - Live x.com and linkedin.com were not tested (they need a logged-in account; their markup changes often). Placement relies on known feed selectors and on measuring fixed elements in the bottom corners.
 - Opening the side panel from the card was not exercised in a real browser window (headless Chrome has no side panel UI). It follows Chrome's documented pattern; if Chrome refuses, the panel page opens in a tab.
 - Recording in the side panel depends on Chrome granting the extension microphone access; without it the speaking step stays listen-and-repeat.
-- Audio clips are still being generated and verified by the first session; lines without a clip use the browser's voice.
+- Audio: 1,270 of 3,115 clips (41%) are generated, covering every target phrase, learning item and listening exercise, and 39 of the 266 lines in dialogue-reply exercises. Dialogues, examples and model answers have no clips yet, so they use the browser's voice until `pnpm audio:generate` resumes after the quota resets. Speech-to-text flagged 42 clips that still need a listen by ear (`docs/audio-qa.md`).
 
 ## 6. Known limitations
 

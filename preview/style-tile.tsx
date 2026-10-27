@@ -15,18 +15,32 @@ const page: React.CSSProperties = { width: 380, margin: '24px auto', background:
 const section: React.CSSProperties = { display: 'grid', gap: 12, padding: 'var(--gutter)' };
 const heading: React.CSSProperties = { fontSize: 'var(--text-xs)', fontWeight: 800, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--ink-muted)' };
 
+// The board in its two rows, each swatch labelled with the role it plays (docs/colour-system.md).
+const PALETTE = [
+  { name: 'Golden Yellow', token: '--golden-yellow', role: 'Look here', ink: 'var(--ink)' },
+  { name: 'Seaweed Green', token: '--seaweed-green', role: 'Correct', ink: 'var(--ink)' },
+  { name: 'Denim Blue', token: '--denim-blue', role: 'Soft', ink: 'var(--ink)' },
+  { name: 'Mango Orange', token: '--mango-orange', role: 'Now', ink: 'var(--ink)' },
+  { name: 'Warm Blue', token: '--warm-blue', role: 'Brand, action', ink: 'var(--white)' },
+  { name: 'Dodger Blue', token: '--dodger-blue', role: 'Focus', ink: 'var(--ink)' },
+  { name: 'Mid Blue', token: '--mid-blue', role: 'Selected', ink: 'var(--white)' },
+  { name: 'Butterfly Bush', token: '--butterfly-bush', role: 'Checkpoint', ink: 'var(--white)' },
+  { name: 'Flush Mahogany', token: '--flush-mahogany', role: 'Wrong', ink: 'var(--white)' },
+  { name: 'Dark Cerulean', token: '--dark-cerulean', role: 'Dark', ink: 'var(--white)' },
+];
+
 function StyleTile() {
   const [step, setStep] = useState(3);
   const [selected, setSelected] = useState(1);
   const [sheetKey, setSheetKey] = useState(0);
   return (
-    <div className="tn-root" style={{ background: '#dfe7ee', minHeight: '100vh', padding: 1 }}>
+    <div className="tn-root" style={{ background: '#e4e6ec', minHeight: '100vh', padding: 1 }}>
       <div style={page}>
         <header className="tn-band" style={{ padding: '18px var(--gutter) 22px' }}>
           <SquigglePattern />
           <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <Wordmark size={26} />
-            <span className="tn-chip tn-chip--mango">Stage 0 · pre-A1</span>
+            <span className="tn-chip tn-chip--highlight">Stage 0 · pre-A1</span>
           </div>
           <p className="tn-display" style={{ position: 'relative', marginTop: 10, fontSize: 'var(--text-xl)' }}>
             Goedemiddag! Ready for 2 minutes of Dutch?
@@ -34,18 +48,30 @@ function StyleTile() {
         </header>
 
         <div style={section}>
+          <span style={heading}>Palette</span>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 4 }}>
+            {PALETTE.map((swatch, i) => (
+              <div key={swatch.token} style={{ display: 'grid', alignContent: 'space-between', minHeight: i < 5 ? 92 : 64, padding: 6, borderRadius: 8, background: `var(${swatch.token})`, color: swatch.ink, fontSize: 10, fontWeight: 800, lineHeight: 1.2 }}>
+                <span>{swatch.name}</span>
+                <span style={{ fontWeight: 600 }}>{swatch.role}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div style={section}>
           <span style={heading}>Progress</span>
           <ProgressBar value={step} max={8} label="Lesson progress" />
           <div style={{ display: 'flex', gap: 8 }}>
             <Button size="sm" variant="secondary" onClick={() => setStep((value) => Math.max(0, value - 1))}>Back</Button>
-            <Button size="sm" variant="accent" onClick={() => setStep((value) => Math.min(8, value + 1))}>Advance</Button>
+            <Button size="sm" onClick={() => setStep((value) => Math.min(8, value + 1))}>Advance</Button>
           </div>
         </div>
 
         <div style={section}>
           <span style={heading}>Learn card</span>
           <article className="tn-card tn-rise-in" style={{ padding: 18, display: 'grid', gap: 12 }}>
-            <span className="tn-chip tn-chip--ocean" style={{ justifySelf: 'start' }}>New phrase</span>
+            <span className="tn-chip tn-chip--info" style={{ justifySelf: 'start' }}>New phrase</span>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <AudioButton text="Goedemiddag!" />
               <AudioButton text="Goedemiddag!" slow />
@@ -83,8 +109,11 @@ function StyleTile() {
           <span style={heading}>Buttons</span>
           <Button block>Learn now</Button>
           <Button block variant="secondary">Not now</Button>
-          <Button block variant="accent">Review 3 phrases</Button>
           <Button block disabled>Check</Button>
+          <section className="tn-review-card" style={{ display: 'grid', gap: 8, justifyItems: 'start', padding: 18, borderRadius: 'var(--radius-lg)', background: 'var(--highlight)' }}>
+            <p className="tn-display" style={{ fontSize: 20 }}>3 reviews due</p>
+            <Button variant="ink">Review now</Button>
+          </section>
           <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
             <Button variant="ghost" size="sm">Snooze</Button>
             <button type="button" className="tn-icon-btn" aria-label="More"><Icon name="more" /></button>

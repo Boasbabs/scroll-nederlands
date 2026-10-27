@@ -1,6 +1,6 @@
 import type { ComponentPropsWithRef } from 'react';
 
-export type ButtonVariant = 'primary' | 'secondary' | 'accent' | 'ghost' | 'correct' | 'wrong';
+export type ButtonVariant = 'primary' | 'secondary' | 'ink' | 'ghost' | 'correct' | 'wrong';
 
 type ButtonProps = ComponentPropsWithRef<'button'> & {
   variant?: ButtonVariant;

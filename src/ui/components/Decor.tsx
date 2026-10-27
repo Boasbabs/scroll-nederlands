@@ -1,6 +1,6 @@
 import type { CSSProperties } from 'react';
 
-/** The brand board's organic pattern: squiggles, stars and spirals, tone on tone. */
+/** Squiggles, stars and spirals, drawn tone on tone over a band (Dodger Blue on Warm Blue, Mid Blue on Dark Cerulean). */
 export function SquigglePattern({ className = 'tn-band__pattern' }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 360 120" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
@@ -26,18 +26,17 @@ export function SquigglePattern({ className = 'tn-band__pattern' }: { className?
   );
 }
 
-/** Three-colour wordmark in the style of the brand board's logo. */
+/** Two-tone wordmark: "Taal" in the surface's type colour, "Nudge" in Warm Blue (Golden Yellow on a band). */
 export function Wordmark({ size = 22 }: { size?: number }) {
   return (
     <span className="tn-wordmark" style={{ fontSize: size }} aria-label="TaalNudge">
       <span aria-hidden="true">Taal</span>
-      <span aria-hidden="true">Nud</span>
-      <span aria-hidden="true">ge</span>
+      <span aria-hidden="true">Nudge</span>
     </span>
   );
 }
 
-const SPARK_COLOURS = ['var(--mango)', 'var(--sunset)', 'var(--ocean)', 'var(--blue)'];
+const SPARK_COLOURS = ['var(--golden-yellow)', 'var(--mango-orange)', 'var(--seaweed-green)', 'var(--dodger-blue)'];
 
 /** Secondary action for a correct answer: a burst of sparks along radial arcs. */
 export function Sparks({ count = 8, reach = 30 }: { count?: number; reach?: number }) {

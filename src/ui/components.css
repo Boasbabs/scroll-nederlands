@@ -41,10 +41,10 @@
   transition-duration: var(--t-tap);
   transition-timing-function: var(--ease-out);
 }
-/* Disabled is flat: navy 8% fill, navy 45% label, no edge. */
+/* Disabled is flat: ink 8% fill, ink 45% label, no edge. */
 .tn-btn:disabled {
-  --btn-fill: rgba(25, 36, 78, 0.08);
-  --btn-ink: rgba(25, 36, 78, 0.45);
+  --btn-fill: var(--track);
+  --btn-ink: var(--ink-soft);
   box-shadow: none;
   outline: 0;
   cursor: not-allowed;
@@ -61,31 +61,33 @@
 }
 .tn-btn--secondary {
   --btn-fill: var(--surface);
-  --btn-edge: var(--navy);
-  --btn-ink: var(--navy);
-  outline: 2px solid var(--navy);
+  --btn-edge: var(--ink);
+  --btn-ink: var(--ink);
+  outline: 2px solid var(--ink);
   outline-offset: -2px;
 }
-.tn-btn--accent {
-  --btn-fill: var(--accent);
-  --btn-edge: var(--accent-edge);
-  --btn-ink: var(--on-accent);
+/* Ink: the dark button on a Golden Yellow card (Babbel's black "Review now"). */
+.tn-btn--ink {
+  --btn-fill: var(--ink);
+  --btn-edge: black;
+  --btn-ink: var(--white);
 }
+/* Seaweed Green with an ink label: white on this green is only 2.9:1 (Spotify labels its green buttons in black). */
 .tn-btn--correct {
-  --btn-fill: var(--accent);
-  --btn-edge: var(--accent-edge);
-  --btn-ink: var(--on-accent);
+  --btn-fill: var(--correct);
+  --btn-edge: var(--correct-edge);
+  --btn-ink: var(--on-correct);
 }
-/* No red anywhere: a miss is a calm navy action on a warm tint ("Not quite"). */
+/* A miss: Flush Mahogany with a white label, on the Mahogany-tint sheet ("Not quite"). */
 .tn-btn--wrong {
-  --btn-fill: var(--navy);
-  --btn-edge: #0b1230;
-  --btn-ink: #ffffff;
+  --btn-fill: var(--wrong);
+  --btn-edge: var(--wrong-edge);
+  --btn-ink: var(--on-wrong);
 }
 .tn-btn--ghost {
   --btn-fill: transparent;
   --btn-edge: transparent;
-  --btn-ink: var(--accent);
+  --btn-ink: var(--primary);
   box-shadow: none;
 }
 .tn-btn--ghost:active:not(:disabled) {
@@ -129,25 +131,25 @@
   height: var(--audio-size);
   border: 0;
   border-radius: var(--radius-pill);
-  background: var(--accent);
-  color: #ffffff;
-  box-shadow: 0 3px 0 var(--accent-edge);
+  background: var(--primary);
+  color: var(--on-primary);
+  box-shadow: 0 3px 0 var(--primary-edge);
   transition: transform var(--t-quick) var(--ease-spring), box-shadow var(--t-quick) var(--ease-spring);
 }
 .tn-audio:active {
   transform: translateY(3px) scale(1.04, 0.94);
-  box-shadow: 0 0 0 var(--accent-edge);
+  box-shadow: 0 0 0 var(--primary-edge);
   transition-duration: var(--t-tap);
 }
 .tn-audio--slow {
   --audio-size: 40px;
   background: var(--surface);
-  color: var(--accent);
+  color: var(--primary);
   box-shadow: 0 3px 0 var(--line-strong), inset 0 0 0 2px var(--line-strong);
 }
 .tn-audio--small {
   --audio-size: 34px;
-  box-shadow: 0 2px 0 var(--accent-edge);
+  box-shadow: 0 2px 0 var(--primary-edge);
 }
 .tn-audio svg {
   width: 52%;
@@ -177,7 +179,7 @@
   height: 14px;
   overflow: hidden;
   border-radius: var(--radius-pill);
-  background: rgba(25, 36, 78, 0.08);
+  background: var(--track);
 }
 .tn-progress__fill {
   position: relative;
@@ -225,17 +227,20 @@
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
-.tn-chip--mango {
-  background: var(--mango-tint);
-  color: #7a4a06;
+/* Golden Yellow: look here (Review, Recommended). */
+.tn-chip--highlight {
+  background: var(--highlight);
+  color: var(--on-highlight);
 }
-.tn-chip--ocean {
-  background: var(--ocean);
-  color: var(--ocean-ink);
+/* Denim tint: a plain fact, such as a CEFR level. */
+.tn-chip--info {
+  background: var(--soft-fill);
+  color: var(--ink);
 }
-.tn-chip--blue {
-  background: var(--blue-tint);
-  color: var(--blue);
+/* A selected row is already Denim tint, so its chip turns white. */
+.tn-option[aria-pressed='true'] .tn-chip--info,
+.tn-option[aria-checked='true'] .tn-chip--info {
+  background: var(--surface);
 }
 
 /* ---------- Cards and callouts ---------- */
@@ -246,9 +251,9 @@
 }
 .tn-tip {
   padding: 12px 14px;
-  border-left: 4px solid var(--tip-edge);
+  border-left: 4px solid var(--highlight);
   border-radius: var(--radius-sm);
-  background: var(--tip-fill);
+  background: var(--highlight-fill);
   font-size: var(--text-sm);
 }
 .tn-tip strong {
@@ -256,7 +261,7 @@
   margin-bottom: 2px;
   font-family: var(--font-display);
   font-weight: 600;
-  color: #7a4a06;
+  color: var(--ink);
 }
 
 /* ---------- Answer options and tiles ---------- */
@@ -289,31 +294,33 @@
   box-shadow: 0 0 0 var(--opt-line);
   transition-duration: var(--t-tap);
 }
-/* Selected before Check: white fill, blue border, the number badge filled blue. */
+/* Selected before Check: Denim tint fill, Mid Blue border, the number badge filled Mid Blue. */
 .tn-option[aria-pressed='true'],
 .tn-option[aria-checked='true'] {
+  --opt-fill: var(--selected-fill);
   --opt-line: var(--selected);
   --key-fill: var(--selected);
-  --key-ink: #ffffff;
+  --key-ink: var(--on-selected);
 }
 .tn-option[data-state='correct'] {
   --opt-fill: var(--correct-fill);
-  --opt-line: var(--blue);
-  --opt-ink: var(--navy);
-  --key-fill: var(--blue);
-  --key-ink: #ffffff;
+  --opt-line: var(--correct-edge);
+  --opt-ink: var(--ink);
+  --key-fill: var(--correct);
+  --key-ink: var(--on-correct);
 }
 .tn-option[data-state='wrong'] {
   --opt-fill: var(--wrong-fill);
-  --opt-line: var(--sunset);
-  --opt-ink: var(--navy);
-  --key-fill: var(--sunset);
-  --key-ink: var(--navy);
+  --opt-line: var(--wrong);
+  --opt-ink: var(--ink);
+  --key-fill: var(--wrong);
+  --key-ink: var(--on-wrong);
 }
+/* The right answer, shown after a miss: green, like a correct pick. */
 .tn-option[data-state='answer'] {
-  --opt-line: var(--blue);
-  --key-fill: var(--blue);
-  --key-ink: #ffffff;
+  --opt-line: var(--correct-edge);
+  --key-fill: var(--correct);
+  --key-ink: var(--on-correct);
 }
 .tn-option:disabled {
   cursor: default;
@@ -373,9 +380,9 @@
   transition: border-color var(--t-quick) var(--ease-out), box-shadow var(--t-quick) var(--ease-out);
 }
 .tn-input:focus {
-  border-color: var(--selected);
+  border-color: var(--focus);
   outline: none;
-  box-shadow: 0 0 0 4px var(--selected-fill);
+  box-shadow: 0 0 0 4px var(--soft-fill);
 }
 .tn-input::placeholder {
   color: var(--ink-faint);
@@ -389,13 +396,14 @@
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;
   animation: tn-sheet-up var(--t-slow) var(--ease-out) both;
 }
+/* The sheet is a tint with ink type; the state colour is the mark and the button. */
 .tn-sheet--correct {
   background: var(--correct-fill);
-  color: var(--navy);
+  color: var(--ink);
 }
 .tn-sheet--wrong {
   background: var(--wrong-fill);
-  color: var(--navy);
+  color: var(--ink);
 }
 .tn-sheet__title {
   display: flex;
@@ -406,8 +414,6 @@
   font-size: var(--text-xl);
   font-weight: 600;
 }
-.tn-sheet--correct .tn-sheet__title { color: var(--blue); }
-.tn-sheet--wrong .tn-sheet__title { color: var(--navy); }
 .tn-sheet__mark {
   position: relative;
   display: inline-grid;
@@ -416,13 +422,13 @@
   width: 34px;
   height: 34px;
   border-radius: var(--radius-pill);
-  background: var(--blue);
-  color: #ffffff;
+  background: var(--correct);
+  color: var(--on-correct);
   animation: tn-pop var(--t-slow) var(--ease-spring) 120ms both; /* overlaps the sheet's arrival */
 }
 .tn-sheet--wrong .tn-sheet__mark {
-  background: var(--sunset);
-  color: var(--navy);
+  background: var(--wrong);
+  color: var(--on-wrong);
 }
 .tn-sheet__mark svg {
   width: 20px;
@@ -439,38 +445,49 @@
   height: 6px;
   margin: -3px;
   border-radius: 2px;
-  background: var(--c, var(--mango));
+  background: var(--c, var(--highlight));
   animation: tn-spark 620ms var(--ease-out) 180ms both;
 }
 .tn-miss {
   font-weight: 800;
   text-decoration: underline;
-  text-decoration-color: var(--sunset);
+  text-decoration-color: var(--wrong);
   text-decoration-thickness: 3px;
   text-underline-offset: 3px;
 }
 
-/* ---------- Brand band with the squiggle pattern ---------- */
+/* ---------- Bands: full-bleed colour fields, as on the board's character pages ---------- */
+/* Dark band: Dark Cerulean with a Mid Blue squiggle. */
 .tn-band {
   position: relative;
   overflow: hidden;
-  background: var(--navy);
-  color: #ffffff;
+  background: var(--dark);
+  color: var(--on-dark);
 }
-/* Brand hero (welcome, lesson complete): Brilliant Blue with a blue-on-blue squiggle. */
+/* Brand hero (welcome, lesson complete): Warm Blue with a Dodger Blue squiggle, like the board's billboard. */
 .tn-band--hero {
-  background: var(--blue);
+  background: var(--primary);
 }
 .tn-band--hero .tn-band__pattern {
-  color: #3550b4;
+  color: var(--dodger-blue);
   opacity: 1;
+}
+/* On a band the main button is Golden Yellow with an ink label (Memrise and Codecademy put yellow buttons on navy). */
+.tn-band .tn-btn--primary {
+  --btn-fill: var(--highlight);
+  --btn-edge: var(--highlight-edge);
+  --btn-ink: var(--on-highlight);
+}
+/* A Dodger Blue ring would vanish on blue, so focus is white on a band. */
+.tn-root .tn-band :focus-visible {
+  outline-color: var(--white);
 }
 .tn-band__pattern {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  color: var(--blue);
+  color: var(--mid-blue);
   opacity: 0.9;
   pointer-events: none;
 }
@@ -479,6 +496,6 @@
   font-weight: 700;
   letter-spacing: -0.02em;
 }
-.tn-wordmark span:nth-child(1) { color: var(--sunset); }
-.tn-wordmark span:nth-child(2) { color: var(--mango); }
-.tn-wordmark span:nth-child(3) { color: var(--ocean); }
+/* "Taal" takes the surface's type colour; "Nudge" is Warm Blue, or Golden Yellow on a band. */
+.tn-wordmark span:nth-child(2) { color: var(--primary); }
+.tn-band .tn-wordmark span:nth-child(2) { color: var(--highlight); }

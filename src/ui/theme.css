@@ -1,66 +1,113 @@
 /*
- * TaalNudge design tokens. Palette from the brand board:
- * Sunset Orange #f36b2e · Mango #f59a1e · Ocean Water #c4e7e5 ·
- * Brilliant Blue #253c96 · Oiler Navy #19244e.
- * Contrast notes: navy text on Sunset is ~5:1 (white on Sunset is only ~3:1,
- * so buttons use navy labels); white on Brilliant Blue ~9.7:1; navy on Ocean ~11:1.
+ * TaalNudge design tokens. Colours: the Makuteam palette board. docs/colour-system.md has the
+ * rules, the contrast table and the Mobbin evidence; read it before adding a colour.
+ *   Top row, used as big fields: Golden Yellow · Seaweed Green · Denim Blue · Mango Orange · Warm Blue.
+ *   Bottom row, support:         Dodger Blue · Mid Blue · Butterfly Bush · Flush Mahogany · Dark Cerulean.
+ * Each colour has one job (the roles below) and keeps it on every surface.
+ * Type is only ever ink or white: ink on Golden Yellow, Seaweed Green, Denim Blue, Mango Orange and
+ * Dodger Blue (5:1 or more); white on Warm Blue, Mid Blue, Butterfly Bush, Flush Mahogany and
+ * Dark Cerulean (5.3:1 or more). Golden Yellow, Seaweed Green, Denim Blue and Mango Orange are under 3:1
+ * on white, so there they are fills, never text, borders or lone icons.
  * Tokens live on :root (side panel) and :host (shadow root of the in-page card).
  */
 :root,
 :host {
-  /* Brand palette */
-  --sunset: #f36b2e;
-  --mango: #f59a1e;
-  --ocean: #c4e7e5;
-  --blue: #253c96;
-  --navy: #19244e;
+  /* Palette */
+  --golden-yellow: #ffe60f;
+  --seaweed-green: #37ae5c;
+  --denim-blue: #73b9ff;
+  --mango-orange: #ff8037;
+  --warm-blue: #445ddb;
+  --dodger-blue: #4582ff;
+  --mid-blue: #366bbb;
+  --butterfly-bush: #603ea2;
+  --flush-mahogany: #c43136;
+  --dark-cerulean: #064f70;
 
-  /* Tints and shades derived from the palette (for edges, surfaces and AA text) */
-  --sunset-edge: #c4501c;
-  --sunset-tint: #feede6; /* Sunset at 12% on white */
-  --sunset-ink: #9a3a10;
-  --mango-edge: #c47a12;
-  --mango-tint: #fdf0d9;
-  --ocean-wash: #eef8f7;
-  --ocean-edge: #93cdc9;
-  --ocean-ink: #1f6b66;
-  --blue-tint: #e6eaf8;
-  --blue-edge: #1a2a6c;
-  --navy-soft: #3b4570;
+  /* Neutrals: the board's black type on white, and greys mixed from that black */
+  --ink: #16171d;
+  --white: #ffffff;
+  --ink-muted: #5a5d69; /* 6.5:1 on white, 5.4:1 or more on every tint below */
+  --ink-faint: #8a8d98; /* 3.3:1: placeholders, chevrons, dotted underlines */
+  --ink-soft: rgba(22, 23, 29, 0.45); /* disabled labels, locked glyphs */
+  --track: rgba(22, 23, 29, 0.08); /* progress tracks, disabled and locked fills */
+  --line: #e2e4ea;
+  --line-strong: #cbcfd8;
 
-  /* Roles */
-  --bg: var(--ocean-wash);
-  --surface: #ffffff;
-  --surface-sunken: #f3f6f9;
-  --ink: var(--navy);
-  --ink-muted: #59617f;
-  --ink-faint: #8a90a8;
-  --line: #dfe5ec;
-  --line-strong: #c9d2dd;
+  /* Derived, never used on their own. Tints sit behind ink text. Edges (25% black) are the tactile
+     bottom edge; the green one is also dark enough for a tick or a border on white (4.7:1).
+     Golden Yellow turns olive when darkened, so its edge is half Mango Orange instead. */
+  --seaweed-green-tint: color-mix(in srgb, var(--seaweed-green) 20%, white);
+  --seaweed-green-edge: color-mix(in srgb, var(--seaweed-green) 75%, black);
+  --flush-mahogany-tint: color-mix(in srgb, var(--flush-mahogany) 12%, white);
+  --flush-mahogany-edge: color-mix(in srgb, var(--flush-mahogany) 75%, black);
+  --golden-yellow-tint: color-mix(in srgb, var(--golden-yellow) 30%, white);
+  --golden-yellow-edge: color-mix(in srgb, var(--golden-yellow), var(--mango-orange));
+  --mango-orange-tint: color-mix(in srgb, var(--mango-orange) 18%, white);
+  --denim-blue-tint: color-mix(in srgb, var(--denim-blue) 22%, white);
+  --warm-blue-edge: color-mix(in srgb, var(--warm-blue) 75%, black);
+  --butterfly-bush-edge: color-mix(in srgb, var(--butterfly-bush) 75%, black);
 
-  --primary: var(--sunset);
-  --primary-edge: var(--sunset-edge);
-  --on-primary: var(--navy);
+  /* Roles: components use these, not the palette names */
+  --bg: #f3f4f7;
+  --surface: var(--white);
+  --surface-sunken: #eceef2;
 
-  --accent: var(--blue);
-  --accent-edge: var(--blue-edge);
-  --on-accent: #ffffff;
+  /* Warm Blue: the brand and every action (main buttons, links, audio, progress, done lessons, heroes) */
+  --primary: var(--warm-blue);
+  --primary-edge: var(--warm-blue-edge);
+  --on-primary: var(--white);
+  --progress: var(--warm-blue);
 
-  --selected: var(--blue);
-  --selected-fill: var(--blue-tint);
+  /* Mid Blue on a Denim tint: the answer or choice you picked, before Check */
+  --selected: var(--mid-blue);
+  --selected-fill: var(--denim-blue-tint);
+  --on-selected: var(--white);
 
-  --correct: var(--ocean-ink);
-  --correct-fill: var(--ocean);
-  --correct-edge: var(--ocean-edge);
-  --wrong: var(--sunset-ink);
-  --wrong-fill: var(--sunset-tint);
+  /* Dodger Blue: keyboard focus (3.6:1 on white) */
+  --focus: var(--dodger-blue);
 
-  /* Mango means "come back to this": reviews, tips, checkpoints. Orange: streaks and the current node. */
-  --tip-fill: var(--mango-tint);
-  --tip-edge: var(--mango);
-  --highlight: var(--mango);
-  --progress: var(--blue);
-  --focus: var(--blue);
+  /* Denim Blue: soft surfaces (avatars, your chat bubble, info chips, notes) */
+  --soft: var(--denim-blue);
+  --soft-fill: var(--denim-blue-tint);
+
+  /* Seaweed Green: correct, matched, remembered, strong */
+  --correct: var(--seaweed-green);
+  --correct-edge: var(--seaweed-green-edge);
+  --correct-fill: var(--seaweed-green-tint);
+  --on-correct: var(--ink);
+
+  /* Flush Mahogany: wrong answers and destructive actions */
+  --wrong: var(--flush-mahogany);
+  --wrong-edge: var(--flush-mahogany-edge);
+  --wrong-fill: var(--flush-mahogany-tint);
+  --on-wrong: var(--white);
+
+  /* Golden Yellow: look here (reviews due, tips, Recommended, the lesson-complete badge, the button on a band) */
+  --highlight: var(--golden-yellow);
+  --highlight-edge: var(--golden-yellow-edge);
+  --highlight-fill: var(--golden-yellow-tint);
+  --on-highlight: var(--ink);
+
+  /* Mango Orange: now and ongoing (streak, current lesson, the line playing, still learning, due counts) */
+  --now: var(--mango-orange);
+  --now-fill: var(--mango-orange-tint);
+  --on-now: var(--ink);
+
+  /* Butterfly Bush: checkpoints */
+  --checkpoint: var(--butterfly-bush);
+  --checkpoint-edge: var(--butterfly-bush-edge);
+  --on-checkpoint: var(--white);
+
+  /* Dark Cerulean: dark surfaces (tooltips, label bubbles, the floating pill, the dark band) */
+  --dark: var(--dark-cerulean);
+  --on-dark: var(--white);
+
+  /* Stage identity: each stage's band takes one light top-row colour, in board order, with ink type */
+  --stage-1: var(--golden-yellow);
+  --stage-2: var(--seaweed-green);
+  --stage-3: var(--denim-blue);
+  --stage-4: var(--mango-orange);
 
   /* Type */
   --font-display: 'TN Fredoka', 'Fredoka', ui-rounded, 'SF Pro Rounded', 'Nunito', system-ui, sans-serif;
@@ -79,8 +126,8 @@
   --radius-lg: 20px;
   --radius-pill: 999px;
   --edge: 4px; /* depth of the tactile bottom edge on buttons, options and tiles */
-  --shadow-card: 0 1px 0 rgba(25, 36, 78, 0.04), 0 8px 24px -12px rgba(25, 36, 78, 0.22);
-  --shadow-float: 0 2px 4px rgba(25, 36, 78, 0.08), 0 18px 40px -14px rgba(25, 36, 78, 0.38);
+  --shadow-card: 0 1px 0 rgba(22, 23, 29, 0.04), 0 8px 24px -12px rgba(22, 23, 29, 0.22);
+  --shadow-float: 0 2px 4px rgba(22, 23, 29, 0.08), 0 18px 40px -14px rgba(22, 23, 29, 0.38);
 
   /* Space */
   --gutter: 16px;

@@ -5,12 +5,12 @@ import { Button } from '../components/Button';
 import { Icon } from '../components/Icon';
 import { formatClock } from '../format';
 
-/** The brand mark: a Sunset tile with the rounded T. It waves once on arrival (appeal). */
+/** The brand mark: a Warm Blue tile with a white rounded T. It waves once on arrival (appeal). */
 export function BrandMark({ size = 20 }: { size?: number }) {
   return (
     <svg className="tn-mark" width={size} height={size} viewBox="0 0 20 20" aria-hidden="true">
-      <rect width="20" height="20" rx="6" fill="var(--sunset)" />
-      <path d="M5.5 6.5h9 M10 6.5v8" stroke="var(--navy)" strokeWidth="2.6" strokeLinecap="round" fill="none" />
+      <rect width="20" height="20" rx="6" fill="var(--primary)" />
+      <path d="M5.5 6.5h9 M10 6.5v8" stroke="var(--on-primary)" strokeWidth="2.6" strokeLinecap="round" fill="none" />
     </svg>
   );
 }

@@ -11,6 +11,9 @@ import type { StartSession } from './PanelApp';
 
 const LEVEL_LABEL: Record<CurriculumLevel, string> = { 'pre-a1': 'Pre-A1', a1: 'A1', 'a1-a2': 'A1–A2', a2: 'A2' };
 
+/** How many --stage-n colours theme.css defines. */
+const STAGE_COLOURS = 4;
+
 type NodeState = 'done' | 'current' | 'locked' | 'open';
 
 function LessonNode({ lesson, state, started, onStart }: { lesson: Lesson; state: NodeState; started: boolean; onStart: () => void }) {
@@ -89,10 +92,16 @@ export function CourseScreen({ snap, start }: { snap: Snapshot; start: StartSess
         const previous = course.curriculum.stages[stageIndex - 1];
         const canJump = currentStage >= 0 && stageIndex > currentStage && previous;
         return (
-          <section key={stage.id} className="tn-stage" data-expanded={expanded}>
+          <section
+            key={stage.id}
+            className="tn-stage"
+            data-expanded={expanded}
+            // Each stage keeps one light top-row colour for its band, in board order.
+            style={{ '--stage': `var(--stage-${(stageIndex % STAGE_COLOURS) + 1})` } as React.CSSProperties}
+          >
             <button type="button" className="tn-stage__head" aria-expanded={expanded} onClick={() => setOpenStages(toggle(openStages, stage.id))}>
               <span className="tn-stage__title">{stage.title}</span>
-              <span className="tn-chip tn-chip--blue">{LEVEL_LABEL[stage.level]}</span>
+              <span className="tn-chip">{LEVEL_LABEL[stage.level]}</span>
               <Icon name="chevron" size={20} />
             </button>
             <ProgressBar value={stageSummary.completed} max={stageSummary.total} label={`${stage.title} progress`} thin />

@@ -20,7 +20,7 @@ const learning = createLearning({ store: createStore(area), course });
 
 createRoot(document.getElementById('root')!).render(
   // The transform makes this frame the containing block for fixed dialogs, as the real panel's viewport is.
-  <div style={{ width: Number(new URLSearchParams(location.search).get('w') ?? 380), height: '100vh', margin: '0 auto', boxShadow: '0 0 0 1px #dfe5ec', transform: 'translateZ(0)' }}>
+  <div style={{ width: Number(new URLSearchParams(location.search).get('w') ?? 380), height: '100vh', margin: '0 auto', boxShadow: '0 0 0 1px #e2e4ea', transform: 'translateZ(0)' }}>
     <PanelApp deps={{ learning, course, speaker: previewSpeaker, permissions: fakePermissions(), subscribe, canRecord: true }} />
   </div>,
 );

@@ -52,20 +52,20 @@ function MissedList({ itemIds }: { itemIds: ReadonlyArray<string> }) {
   );
 }
 
-/** Correct in blue, incorrect in Sunset, as two segments of one ring. */
+/** Correct in Seaweed Green, incorrect in Flush Mahogany, as two segments of one ring. */
 function ScoreRing({ correct, total }: { correct: number; total: number }) {
   const r = 34;
   const length = 2 * Math.PI * r;
   const share = total > 0 ? correct / total : 0;
   return (
     <svg className="tn-ring" viewBox="0 0 84 84" width="84" height="84" aria-hidden="true">
-      <circle cx="42" cy="42" r={r} fill="none" stroke="var(--sunset)" strokeWidth="10" />
+      <circle cx="42" cy="42" r={r} fill="none" stroke="var(--wrong)" strokeWidth="10" />
       <circle
         cx="42"
         cy="42"
         r={r}
         fill="none"
-        stroke="var(--blue)"
+        stroke="var(--correct)"
         strokeWidth="10"
         strokeDasharray={`${share * length} ${length}`}
         transform="rotate(-90 42 42)"
@@ -127,10 +127,10 @@ export function SessionComplete({ plan, outcome, stats, onAction }: SessionCompl
             </div>
             <ul className="tn-score__legend">
               <li>
-                <i style={{ background: 'var(--blue)' }} /> Correct {stats.correct}
+                <i style={{ background: 'var(--correct)' }} /> Correct {stats.correct}
               </li>
               <li>
-                <i style={{ background: 'var(--sunset)' }} /> Incorrect {total - stats.correct}
+                <i style={{ background: 'var(--wrong)' }} /> Incorrect {total - stats.correct}
               </li>
             </ul>
             <p className="tn-complete__verdict">
@@ -178,8 +178,8 @@ export function SessionComplete({ plan, outcome, stats, onAction }: SessionCompl
             </span>
             <h2 className="tn-title">Review done</h2>
             <div className="tn-pills">
-              <span className="tn-pill tn-pill--blue">Remembered {remembered}</span>
-              <span className="tn-pill tn-pill--mango">Still learning {missed}</span>
+              <span className="tn-pill tn-pill--correct">Remembered {remembered}</span>
+              <span className="tn-pill tn-pill--now">Still learning {missed}</span>
             </div>
             <MissedList itemIds={outcome.missedItemIds} />
           </div>

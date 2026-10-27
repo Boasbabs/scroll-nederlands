@@ -99,7 +99,7 @@ export function Onboarding({ start }: { start: StartSession }) {
                 >
                   <SignalBars level={entry.bars} />
                   <span className="tn-option__grow">{entry.label}</span>
-                  <span className="tn-chip tn-chip--blue">{entry.cefr}</span>
+                  <span className="tn-chip tn-chip--info">{entry.cefr}</span>
                 </button>
               ))}
             </div>
@@ -112,7 +112,7 @@ export function Onboarding({ start }: { start: StartSession }) {
                       <strong>Start from scratch</strong>
                       <span className="tn-muted">Begin with sounds and greetings.</span>
                     </span>
-                    <span className="tn-chip tn-chip--mango">Recommended</span>
+                    <span className="tn-chip tn-chip--highlight">Recommended</span>
                   </button>
                   {skipStage ? (
                     <button type="button" role="radio" aria-checked={from === 'checkpoint'} className="tn-option tn-start-card" onClick={() => setFrom('checkpoint')}>

@@ -1,5 +1,5 @@
-// The answer sheet that rises in place of Check (staging): Ocean Water and
-// blue when right, a warm Sunset tint and navy when not. Never red.
+// The answer sheet that rises in place of Check (staging): a Seaweed Green tint
+// and a green button when right, a Flush Mahogany tint and a red button when not.
 import { useContext, useEffect, useRef, useState } from 'react';
 import { diffTokens } from '../../engine/answers';
 import { Button } from '../components/Button';

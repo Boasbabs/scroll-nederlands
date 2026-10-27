@@ -123,7 +123,7 @@ export function SignalBars({ level }: { level: 1 | 2 | 3 }) {
   return (
     <svg className="tn-signal" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
       {[0, 1, 2].map((i) => (
-        <rect key={i} x={4 + i * 6} y={16 - i * 5} width="4" height={4 + i * 5} rx="1.5" fill={i < level ? 'var(--blue)' : 'rgba(25, 36, 78, 0.15)'} />
+        <rect key={i} x={4 + i * 6} y={16 - i * 5} width="4" height={4 + i * 5} rx="1.5" fill={i < level ? 'var(--primary)' : 'var(--line-strong)'} />
       ))}
     </svg>
   );

@@ -1,4 +1,4 @@
-// Draws the toolbar icon (Dutch-orange rounded tile with a white speech bubble) as PNGs.
+// Draws the toolbar icon (Warm Blue rounded tile with a white speech bubble, 5.5:1) as PNGs.
 import { writeFileSync } from 'node:fs';
 import { deflateSync } from 'node:zlib';
 
@@ -45,9 +45,10 @@ function icon(size) {
     for (let x = 0; x < size; x++) {
       const t = tile(x, y);
       const b = bubble(x, y) * t;
-      const r = Math.round(232 * (1 - b) + 255 * b);
-      const g = Math.round(101 * (1 - b) + 255 * b);
-      const bl = Math.round(12 * (1 - b) + 255 * b);
+      // Warm Blue #445ddb, the brand colour in src/ui/theme.css.
+      const r = Math.round(68 * (1 - b) + 255 * b);
+      const g = Math.round(93 * (1 - b) + 255 * b);
+      const bl = Math.round(219 * (1 - b) + 255 * b);
       row.push(r, g, bl, Math.round(255 * t));
     }
     rows.push(Buffer.from(row));

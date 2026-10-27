@@ -53,7 +53,7 @@ export function TodayScreen({ snap, start }: ScreenProps) {
         <section className="tn-review-card tn-settle-in">
           <p className="tn-review-card__count tn-display">{plural(summary.dueNow, 'review')} due</p>
           <p>Short practice keeps what you learned.</p>
-          <Button variant="wrong" onClick={() => void start(() => learning.startReview('focused'))}>
+          <Button variant="ink" onClick={() => void start(() => learning.startReview('focused'))}>
             Review now
           </Button>
         </section>
@@ -133,10 +133,11 @@ export function ReviewScreen({ snap, start, onCourse }: ScreenProps & { onCourse
   );
 }
 
+// Quizlet's progress rings: grey for new, orange for still learning, green for mastered.
 const STATES = [
-  { key: 'new', label: 'New', colour: 'rgba(25, 36, 78, 0.45)' },
-  { key: 'learning', label: 'Learning', colour: 'var(--mango)' },
-  { key: 'strong', label: 'Strong', colour: 'var(--blue)' },
+  { key: 'new', label: 'New', colour: 'var(--ink-soft)' },
+  { key: 'learning', label: 'Learning', colour: 'var(--now)' },
+  { key: 'strong', label: 'Strong', colour: 'var(--correct)' },
 ] as const;
 
 function Ring({ share, colour }: { share: number; colour: string }) {
@@ -144,7 +145,7 @@ function Ring({ share, colour }: { share: number; colour: string }) {
   const length = 2 * Math.PI * r;
   return (
     <svg width="36" height="36" viewBox="0 0 36 36" aria-hidden="true">
-      <circle cx="18" cy="18" r={r} fill="none" stroke="rgba(25, 36, 78, 0.08)" strokeWidth="5" />
+      <circle cx="18" cy="18" r={r} fill="none" stroke="var(--track)" strokeWidth="5" />
       {/* No arc at zero: a round cap on an empty arc would still draw a dot. */}
       {share > 0 ? (
         <circle cx="18" cy="18" r={r} fill="none" stroke={colour} strokeWidth="5" strokeDasharray={`${share * length} ${length}`} transform="rotate(-90 18 18)" strokeLinecap="round" />

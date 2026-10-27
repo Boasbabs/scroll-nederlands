@@ -18,15 +18,16 @@ Product rule: we do not invent UI/UX. Every decision here cites Mobbin screens o
 - Tactile controls: buttons have a 12px radius and a 4px bottom edge in a darker tone. Option rows and tiles have a 2–3px edge. When pressed, the face drops by the height of the edge. Disabled controls are flat.
 - Keyboard: `1`–`4` pick an option (each option shows its number badge). `Enter` checks, then continues *(rule: standard form submit; no lesson screen on Mobbin shows this hint)*. `Backspace` removes the last placed tile. `Esc` closes a sheet or menu; in a lesson it asks "Quit lesson?". `?` lists the shortcuts. The nudge card only handles keys while focus is inside it *(rule: X and LinkedIn use single-key shortcuts)*.
 
-### 1.2 Colour roles (full table and evidence in §4)
-- Text is Oiler Navy `#19244e` on white (15:1). Muted text is navy at 70% (≈`#5E6683`, 5.7:1). Never set text in Sunset Orange or Mango on white (3.0:1 and 2.2:1).
-- **Primary CTA**: Sunset Orange fill, navy label (4.95:1), navy bottom edge. **Secondary**: white with a 2px navy border and navy label. **Links**: Brilliant Blue (9.7:1).
-- **Selected** (before Check): white fill, 2px Brilliant Blue border, and the number badge filled Brilliant Blue with a white digit.
-- **Correct**: Ocean Water surface with navy text (11.3:1), ✓ in a Brilliant Blue disc, and a Brilliant Blue `Continue` with a white label (9.7:1).
-- **Incorrect**: Sunset Orange 12% tint (≈`#FEEDE6`) with navy text (13:1). The ✕ disc is Sunset Orange. The differing token is bold with a 2px Sunset Orange underline. The button is navy with a white label. There is no red anywhere.
-- **Review / tip / checkpoint** (the "come back to this" family): Mango. Review hero card: Mango fill, navy text (6.8:1). Tip callout: Mango 20% tint (≈`#FDEBD2`). Checkpoint node: Mango disc with a navy glyph.
-- **Progress** bars are Brilliant Blue on a navy-8% track. **Streak/combo**: Sunset Orange flame with a navy count. **Disabled**: navy-8% fill, navy-45% label, no edge.
-- **Brand hero** surfaces (welcome, lesson complete): Brilliant Blue with the blue-on-blue squiggle pattern and white text.
+### 1.2 Colour roles (summary; the usage guide, contrast table and evidence are in `docs/colour-system.md`, see §4 and §10)
+- Palette: the Makuteam board. Each colour has one job and keeps it everywhere. Type is ink `#16171D` (17.9:1 on white) or white; muted text `#5A5D69` (6.5:1). Never set text in Golden Yellow, Seaweed Green, Denim Blue or Mango Orange (all under 3:1 on white).
+- **Primary CTA**: Warm Blue fill, white label (5.5:1), darker Warm Blue bottom edge. **Secondary**: white with a 2px ink border and ink label. **Links**: Warm Blue (5.5:1).
+- **Selected** (before Check): Denim Blue tint fill, 2px Mid Blue border, and the number badge filled Mid Blue with a white digit.
+- **Correct**: Seaweed Green tint sheet with ink text, ✓ (ink) in a Seaweed Green disc, and a Seaweed Green `Continue` with an ink label (6.3:1).
+- **Incorrect**: Flush Mahogany tint sheet with ink text. The ✕ (white) sits in a Flush Mahogany disc. The differing token is bold with a Flush Mahogany underline. `Got it` and `Try again` are Flush Mahogany with a white label (5.5:1).
+- **Look here** (Golden Yellow): the review card (ink text and the ink `Review now`), the `REVIEW` and `Recommended` chips, tip callouts (Golden tint), the lesson-complete badge. **Checkpoints**: Butterfly Bush disc with a white flag.
+- **Progress** bars are Warm Blue on an ink-8% track. **Streak/combo, current lesson, still learning, due badge**: Mango Orange (tint chips with an orange flame and an ink count). **Disabled**: ink-8% fill, ink-45% label, no edge.
+- **Brand hero** surfaces (welcome, lesson complete): Warm Blue with a Dodger Blue squiggle, white text, and Golden Yellow for the main button and the badge. **Dark surfaces** (tooltips, the `Start` bubble, the `Current lesson` pill): Dark Cerulean.
+- **Stages** each own a light top-row colour for the band at the top of their card: Golden Yellow, Seaweed Green, Denim Blue, Mango Orange.
 
 ### 1.3 Onboarding (three steps, then lesson 1)
 - Every step has a back arrow, a 3-segment progress bar and one question. The primary button stays disabled until a choice is made.
@@ -38,20 +39,20 @@ Product rule: we do not invent UI/UX. Every decision here cites Mobbin screens o
 ### 1.4 Today, Review tab, caught-up state
 - Today, from top to bottom:
   1. App bar: "Today", streak chip, gear.
-  2. **Review card**: Mango fill; "12 reviews due" in 20px navy display type; the navy button `Review now` (white label).
-  3. **Continue card**: white with a 1px navy-10% border. Shows "Stage 1 · Food, drinks and cafés", the lesson title, a progress bar and the primary `Continue`.
+  2. **Review card**: Golden Yellow fill; "12 reviews due" in 20px ink display type; the ink button `Review now` (white label).
+  3. **Continue card**: white with a 1px light grey border. Shows "Stage 1 · Food, drinks and cafés", the lesson title, a progress bar and the primary `Continue`.
   4. **Quick practice** row: outline button "Quick practice · 2 min".
   5. Stats row: two cells in one bordered row, "Lessons 14/270" and "Strong words 86".
 - Review tab: a due count in 40px display type, `Start review (12)` and the secondary `Practice anyway`.
-- Caught up (no reviews due): replaces the review card on Today and the body of the Review tab. Shows a 48px ✓ in an Ocean Water disc, "All caught up" (18px), "Next review in 3 h · 8 items" in muted text, and the secondary `Continue course`.
+- Caught up (no reviews due): replaces the review card on Today and the body of the Review tab. Shows a 48px ink ✓ in a Seaweed Green disc, "All caught up" (18px), "Next review in 3 h · 8 items" in muted text, and the secondary `Continue course`.
 
 ### 1.5 Course path (4 stages → ~56 modules → ~270 lessons)
-- The Course tab is a vertical list of four **stage cards**: "Stage 0 · Foundations" plus a CEFR chip, a progress bar and "5/8 modules". The current stage is expanded and the others collapsed. Future stages carry a `Jump here` link that opens that stage's checkpoint.
+- The Course tab is a vertical list of four **stage cards**, each headed by a band in its stage colour (§1.2): "Stage 0 · Foundations" plus a white CEFR chip, a progress bar and "5/8 modules". The current stage is expanded and the others collapsed. Future stages carry a `Jump here` link that opens that stage's checkpoint.
 - Inside a stage are **module rows** (accordions, 56px): number, title, "3/6", a thin bar and a chevron. An expanded module shows a **lesson stepper**: a 2px vertical connector with 32px nodes.
-  - Done: Brilliant Blue disc with a white ✓. Tapping it replays the lesson.
-  - Current: white disc with a 3px Sunset Orange ring, a navy "Start" label bubble above it, and an inline primary `Start` or `Continue`.
-  - Locked: navy-8% disc with a navy-45% lock. Not tappable.
-  - Checkpoint: Mango disc with a navy flag, labelled "Checkpoint". Placed wherever the curriculum defines one (`s0-check`, `s1-check`, …).
+  - Done: Warm Blue disc with a white ✓. Tapping it replays the lesson.
+  - Current: white disc with a 3px Mango Orange ring, a Dark Cerulean "Start" label bubble above it, and an inline primary `Start` or `Continue`.
+  - Locked: ink-8% disc with an ink-45% lock. Not tappable.
+  - Checkpoint: Butterfly Bush disc with a white flag, labelled "Checkpoint" in Butterfly Bush. Placed wherever the curriculum defines one (`s0-check`, `s1-check`, …).
 - On open, scroll so the current lesson is in view. When it scrolls out of view, a floating pill `↑ Current lesson` appears.
 
 ### 1.6 Lesson player
@@ -60,26 +61,26 @@ Product rule: we do not invent UI/UX. Every decision here cites Mobbin screens o
 - **Learn card**, top to bottom:
   1. Label `NEW PHRASE`.
   2. Dutch phrase (28px display).
-  3. Audio row: play (48px, Brilliant Blue) and slow/turtle (40px).
+  3. Audio row: play (48px, Warm Blue) and slow/turtle (40px).
   4. Translation (16px muted).
   5. Word breakdown: tokens with dotted underlines; tapping or hovering shows the meaning. For multi-word phrases, add a 2-column mini table (Dutch | English).
-  6. 1–2 examples: speaker, Dutch with the target word in bold Brilliant Blue, English muted.
+  6. 1–2 examples: speaker, Dutch with the target word in bold Warm Blue, English muted.
   7. Tip callout.
   8. `Continue`.
 
   If Autoplay is on, the phrase audio plays when the card opens.
 - **Multiple choice**: a prompt card (Dutch + speaker), then 2–4 option rows (52px, 8px gaps, number badge on the left).
 - **Listen-and-choose**: a centred 64px play button and 48px slow button, then option rows. The text link `Can't listen now` skips audio-only items for the rest of the session *(duration is a rule)*.
-- **Match pairs**: two 160px columns of 4–5 rows of 48px tiles, Dutch on the left and English on the right, both shuffled. Tap one tile in each column. A match turns both tiles Ocean Water with a ✓, after which they go disabled. A mismatch shows the incorrect style on both, then resets *(rule: no mismatch frame on Mobbin)*. `Continue` enables once every pair is matched.
-- **Fill the gap (typed)**: the sentence card has an inline input in the gap (2px underline, Sunset Orange when focused) with the translation underneath. A 💡 hint button reveals the first letter *(what it reveals is a rule)*.
+- **Match pairs**: two 160px columns of 4–5 rows of 48px tiles, Dutch on the left and English on the right, both shuffled. Tap one tile in each column. A match turns both tiles Seaweed Green tint with a green ✓, after which they go disabled. A mismatch shows the incorrect style on both, then resets *(rule: no mismatch frame on Mobbin)*. `Continue` enables once every pair is matched.
+- **Fill the gap (typed)**: the sentence card has an inline input in the gap (2px underline, Dodger Blue when focused) with the translation underneath. A 💡 hint button reveals the first letter *(what it reveals is a rule)*.
 - **Word tiles / sentence builder**: two ruled answer lines on top and the tile bank below (wrapping, 8px gaps, 40px tiles). Tapping a tile moves it to the end of the answer and leaves a ghost slot in the bank. Tapping a placed tile sends it back. `⌫` removes the last tile.
 - **Type the Dutch**: an English prompt card, then a multi-line input that is auto-focused, then the text link `Don't know`. Answers typed without diacritics are accepted, and feedback shows the accented form *(rule)*.
 - **Dictation**: an audio header (play + slow), then an input, then `Check` *(composed)*.
 - **Dialogue**: the partner's bubble sits on the left (32px avatar, Dutch text, speaker, and a translate icon that reveals the English). Below it, "Choose the reply" offers 2–3 numbered options. On Check, the chosen reply joins the chat as a right-aligned bubble with ✓ or ✕.
-- **Short writing**: a situation card with an English cue, then a 3-line input with a character count, then `Check`. Check reveals a "Model answer" box (navy-4% fill) and a checklist ("Did you use *ik woon*?"), followed by the self-rating buttons *(composed)*.
+- **Short writing**: a situation card with an English cue, then a 3-line input with a character count, then `Check`. Check reveals a "Model answer" box (ink-4% fill) and a checklist ("Did you use *ik woon*?"), followed by the self-rating buttons *(composed)*.
 - **Speaking** (never auto-assessed):
   1. Phrase card with play and slow buttons.
-  2. A 72px Brilliant Blue mic button labelled "Tap to record". While recording it becomes a stop button with a live waveform and a timer.
+  2. A 72px Warm Blue mic button labelled "Tap to record". While recording it becomes a stop button with a live waveform and a timer.
   3. Review state: two rows, **Native ▶** and **You ▶**, plus `Record again` *(composed)*.
   4. "How close was it?" with `Not yet` / `Sounds right` (feeds scheduling).
 
@@ -87,13 +88,13 @@ Product rule: we do not invent UI/UX. Every decision here cites Mobbin screens o
 
 ### 1.7 Answer feedback
 - On Check, the answer locks and a sheet slides up over the action zone: full width, 16px top radius, 16px padding.
-- **Correct**: Ocean Water sheet, ✓ disc, "Correct!" (20px bold), an optional "Meaning: …" line, and the Brilliant Blue `Continue`. The chosen option turns Ocean Water with a blue border and a ✓ badge.
-- **Incorrect**: Sunset-tint sheet, ✕ disc and "Not quite".
+- **Correct**: Seaweed Green tint sheet, green ✓ disc, "Correct!" (20px bold, ink), an optional "Meaning: …" line, and the Seaweed Green `Continue`. The chosen option turns Seaweed Green tint with a green border and a ✓ badge.
+- **Incorrect**: Flush Mahogany tint sheet, red ✕ disc and "Not quite" (ink).
   - Content: "Correct answer:" with the differing tokens bold and underlined. Typed answers also get a muted "Your answer:" line above, with the wrong token underlined. Then "Meaning:".
-  - Buttons: the navy `Got it`, plus the outline button `Why?`, which expands a 1–3 line explanation inside the sheet.
-  - Options: the wrong one gets the Sunset tint, a Sunset border and ✕. The right one gets a blue border and ✓.
+  - Buttons: the Flush Mahogany `Got it`, plus the outline button `Why?`, which expands a 1–3 line explanation inside the sheet.
+  - Options: the wrong one gets the Flush Mahogany tint, a Flush Mahogany border and ✕. The right one gets a green border and ✓.
 - **Typed and tile exercises**: the first miss shows "Not quite" with `Try again` (primary) and the text button `Show answer`. Only the second miss shows the full incorrect sheet.
-- Missed items come back later in the same lesson, labelled with a `REVIEW` chip (navy text on Mango).
+- Missed items come back later in the same lesson, labelled with a `REVIEW` chip (ink text on Golden Yellow).
 - Copy: "Correct!" and "Not quite". No exclamation mark on errors, and no guilt.
 
 ### 1.8 Lesson complete, review session, checkpoint result
@@ -105,13 +106,13 @@ Product rule: we do not invent UI/UX. Every decision here cites Mobbin screens o
   - Recall card: "How do you say this in Dutch?", tap to reveal (Dutch + audio), then "Did you remember it?" with `No` / `Yes`.
   - Other due items reuse the exercise types.
   - The end screen shows "Strong 9 · Still learning 3" pills, `Done`, and `Review 3 again`.
-- **Checkpoint result**: "12/15" in 40px display type with the percentage, plus a two-segment ring (blue correct, Sunset incorrect) with counts.
+- **Checkpoint result**: "12/15" in 40px display type with the percentage, plus a two-segment ring (Seaweed Green correct, Flush Mahogany incorrect) with counts.
   - Pass: "Stage 0 complete. Stage 1 is unlocked." with the primary `Continue`.
   - Below threshold: "Almost. You need 12/15." with the primary `Review mistakes (3)` and the secondary `Retake later`.
 
 ### 1.9 Progress (one short scroll; no leaderboards, no charts beyond bars)
-1. Streak row: seven day-circles, with days studied stamped by a Sunset Orange ✓.
-2. Words and phrases by state, as three rows (ring, count, label, chevron): **New** (navy-45% ring), **Learning** (Mango ring), **Strong** (Brilliant Blue ring). Tapping a row lists its items.
+1. Streak row: seven day-circles, with days studied stamped by a Mango Orange disc and an ink ✓.
+2. Words and phrases by state, as three rows (ring, count, label, chevron): **New** (ink-45% ring), **Learning** (Mango Orange ring), **Strong** (Seaweed Green ring). Tapping a row lists its items.
 3. Lessons: "14 of 270" with a bar, then four stage rows with bars.
 4. Upcoming reviews: four tiles in one row, **Today · Tomorrow · This week · Later**, each with a count.
 
@@ -122,7 +123,7 @@ Product rule: we do not invent UI/UX. Every decision here cites Mobbin screens o
   - `Quiet mode` (toggle, "No prompts until you turn this off").
   - `Snooze`: a row that opens 30 min / 1 hour / Until tomorrow. While a snooze is active, the row reads "Snoozed until 15:30 · Resume".
 - **Audio**: `Autoplay audio` (toggle), `Audio speed` (chips: Slow / Normal), `Sound effects` (toggle).
-- **Progress**: `Reset progress` (a navy text row) opens a dialog:
+- **Progress**: `Reset progress` (a Flush Mahogany text row) opens a dialog:
   - Title: "Reset all progress?"
   - Body: "Lessons and reviews go back to the start. This can't be undone."
   - Buttons: the primary `Keep my progress` and the text button `Reset everything`.
@@ -131,7 +132,7 @@ Product rule: we do not invent UI/UX. Every decision here cites Mobbin screens o
 - **Trigger**: after about 8 minutes of active browsing (the `Prompt after` setting), only while the tab is visible and the user isn't typing in a composer *(rule)*. The card stays until the user acts; it never auto-dismisses *(rule)*.
 - **Placement**: `position: fixed`, 24px from the right edge. Its bottom sits 16px above the host's floating UI in the bottom-right corner: on X, the stacked Grok/Chat buttons; on LinkedIn, the Messaging bar. Measure these at runtime. With no host dock, the bottom offset is 20px.
 - **Collision rule** *(rule)*: the card must never intersect the feed column, an open host chat window or X's Spaces dock. If it would, use bottom-left (over the left column, where LinkedIn shows its own toasts). If that also collides, skip this interval. There is no backdrop and the card never takes focus.
-- **Collapsed card**: 340px wide (`min(340px, 100vw - 48px)`), 16px radius, 16px padding, soft shadow, 1px navy-10% border.
+- **Collapsed card**: 340px wide (`min(340px, 100vw - 48px)`), 16px radius, 16px padding, soft shadow, 1px light grey border. Brand mark and `Learn now` in Warm Blue, `Not now` in ink.
   - Header: brand mark (20px), "Dutch · 2 min" (12px muted) and `×`.
   - Body: "Ready for a 2-minute Dutch break?" (16px bold), then a preview line "*Goedemorgen* · Good morning" (14px).
   - Action row, left to right: `Learn now` (primary, 40px), `Not now` (text), `⋯` (icon).
@@ -173,7 +174,7 @@ Product rule: we do not invent UI/UX. Every decision here cites Mobbin screens o
 
 **What they share:** one dominant resume card with a single button, review given its own warm card, streak as a small chip top-right, and at most two or three small stats.
 
-**Decisions:** the order in §1.4. The Mango review card follows Babbel's yellow review card and dark button. The Continue card follows Brilliant and Speak. The stats row follows Mimo. The Review tab and its badge follow Babbel's Review tab (badge "21" on the Learning plan, §2.3). Settings sits behind a gear in the app bar, as on [Uxcel Go – Profile](https://mobbin.com/screens/90071f3f-7e49-4430-9431-475af3dcf00a) and [Headspace – Profile](https://mobbin.com/screens/bb0004ec-e553-4e4d-a10e-1e21e59c8781).
+**Decisions:** the order in §1.4. The Golden Yellow review card follows Babbel's yellow review card and dark button. The Continue card follows Brilliant and Speak. The stats row follows Mimo. The Review tab and its badge follow Babbel's Review tab (badge "21" on the Learning plan, §2.3). Settings sits behind a gear in the app bar, as on [Uxcel Go – Profile](https://mobbin.com/screens/90071f3f-7e49-4430-9431-475af3dcf00a) and [Headspace – Profile](https://mobbin.com/screens/bb0004ec-e553-4e4d-a10e-1e21e59c8781).
 
 ### 2.3 Course path
 - [Duolingo – Sections](https://mobbin.com/screens/82371c0c-d233-45af-9fc7-26f96c2cde8f): stacked section cards with a progress bar, unit range, a target-language line, and `JUMP HERE` on future sections.
@@ -198,7 +199,7 @@ Product rule: we do not invent UI/UX. Every decision here cites Mobbin screens o
 
 **What they share:** the target language is the largest text; the translation sits directly beneath it and is muted; audio sits next to the phrase; word hints use dotted underlines; tips sit in a separate tinted box; one pinned CTA.
 
-**Decisions:** §1.6 learn-card order. Play and slow buttons copy Duolingo. Dotted-underline tokens and the mini table copy Duolingo's hints and grammar table. The tip box copies Babbel (Mango tint in our palette). The Autoplay setting mirrors Speak's `AUTO` toggle.
+**Decisions:** §1.6 learn-card order. Play and slow buttons copy Duolingo. Dotted-underline tokens and the mini table copy Duolingo's hints and grammar table. The tip box copies Babbel (Golden Yellow tint in our palette). The Autoplay setting mirrors Speak's `AUTO` toggle.
 
 ### 2.5 Exercises
 - Choice: [Duolingo web – number-key badges with `SKIP`/`CHECK`](https://mobbin.com/screens/552845c5-4230-454a-a36d-c39c6c4646d2), [Babbel web – "Listen and choose the correct translation" with options 1–5](https://mobbin.com/screens/9607627c-d29f-4ed9-a0af-fdc65e80d670), [Uxcel web – selected row is border plus light fill, number on the right](https://mobbin.com/screens/55d35782-1f23-4609-a59d-6c0fce819924), [Preply – audio bar plus "Choose the word you heard"](https://mobbin.com/screens/e892e35d-7801-46b2-9c3b-935a974e0463).
@@ -222,7 +223,7 @@ Product rule: we do not invent UI/UX. Every decision here cites Mobbin screens o
 
 **What they share:** feedback replaces the Check zone so the eye stays put; tint, icon and button colour all match the state; the right answer appears with the difference emphasised; the explanation sits behind a secondary button; a retry is offered on build and typed tasks.
 
-**Decisions:** §1.7. Errors use our warm Sunset tint with a navy button (Brilliant uses warm yellow, Quizlet orange, below). Correct uses Ocean Water and blue. The first-miss retry follows Brilliant's "Not quite" and Babbel's "Attempts 2/3".
+**Decisions:** §1.7. Since the palette change (§10), errors use a Flush Mahogany tint with a red button and correct uses a Seaweed Green tint with a green button, as Duolingo and Speak do (before it, the palette had no red or green, so errors used a warm tint like Brilliant's yellow and Quizlet's orange, below). The first-miss retry follows Brilliant's "Not quite" and Babbel's "Attempts 2/3".
 
 ### 2.7 Lesson complete, review, checkpoint
 - [Mimo – Lesson complete](https://mobbin.com/screens/b96677c5-4f73-40ff-8dee-2bda19aed27e): illustration, title, subtitle, three stats in one bordered row, `Continue`.
@@ -307,22 +308,24 @@ Product rule: we do not invent UI/UX. Every decision here cites Mobbin screens o
 
 ## 4. Colour roles (palette → role, WCAG check, evidence)
 
-| Role | Assignment | Text contrast | Mobbin support |
-|---|---|---|---|
-| Body text | Oiler Navy `#19244e` on white; muted = navy 70% | 15:1; 5.7:1 | Memrise navy type ([flow](https://mobbin.com/flows/97215372-5a04-4f1a-a800-7146e6aff4ad)) |
-| Primary CTA | Sunset Orange `#f36b2e` fill, **navy** label, navy 4px bottom edge | 4.95:1 | Orange CTAs: [Babbel](https://mobbin.com/flows/78aaba88-e477-4ba8-b178-a7c7ac7bf41e) pairs orange with white, which on our Sunset Orange is ~3.0:1, so we use navy. Dark labels on warm buttons: [Memrise paywall](https://mobbin.com/flows/97215372-5a04-4f1a-a800-7146e6aff4ad), [Codecademy](https://mobbin.com/screens/e5f9212c-2708-49ec-99ba-8ddb434b673b), [Greenlight](https://mobbin.com/screens/c7bc0de7-822a-4787-89a7-a6f70e6e19a8). Tactile edge: [Duolingo](https://mobbin.com/screens/a93fa0d8-0b53-4cec-bb29-2e7838163ea0), [Life Reset](https://mobbin.com/screens/104bab06-a01d-47aa-bc08-1de4360322ce), [Vocabulary](https://mobbin.com/screens/f6ba1a9b-3999-4272-9e43-40dcd1cea5e9) |
-| Secondary / link | White + 2px navy border, navy label / Brilliant Blue `#253c96` text | 15:1 / 9.7:1 | [Babbel outline `Correct my mistakes`](https://mobbin.com/screens/3f19cfed-6f89-46fc-b1af-188088273652) |
-| Selected | White fill, 2px Brilliant Blue border, blue number badge (white digit) | 9.7:1 | Blue selection: [Duolingo onboarding](https://mobbin.com/flows/ac9d2f58-868d-4fd3-a79c-9655ce6b1522), [Speak](https://mobbin.com/screens/c785de2a-9f85-41b8-a093-f862f26fb035). Border-led: [Uxcel](https://mobbin.com/screens/55d35782-1f23-4609-a59d-6c0fce819924) |
-| Correct | Ocean Water `#c4e7e5` sheet, navy text, blue ✓ disc, Brilliant Blue button with white label | 11.3:1; 9.7:1 | Tinted success sheet + state button: [Brilliant](https://mobbin.com/screens/3c5f9cbd-0ee9-4766-9bd4-578c5c297ab9). Teal success tick: [Speak](https://mobbin.com/screens/d9b1330c-32aa-430f-abc4-a9a4a8af1e61) |
-| Incorrect | Sunset 12% tint `#FEEDE6`, navy text, Sunset ✕ disc and diff underline, navy button with white label | 13:1; 15:1 | Warm, red-free errors: [Brilliant "Not quite"](https://mobbin.com/screens/82e01d81-cc4a-499f-af8d-90e39937a6ce), [Quizlet orange "Incorrect"](https://mobbin.com/screens/ed1ddb57-4ef7-47a5-a9f5-60aafbbf2014), [Coinbase ⚠ "Incorrect. Let's try again"](https://mobbin.com/screens/90d03299-7194-44df-bba1-cb1430f7a192). Dark button on an error sheet: [Brilliant](https://mobbin.com/screens/b8267636-47cb-40a3-8a65-af103494ea60) |
-| Review / "come back" | Mango `#f59a1e` card with navy text and a navy button; `REVIEW` chip | 6.8:1 | [Babbel yellow review card](https://mobbin.com/screens/4362b601-1544-43d7-aa4a-20a178466c8b), [Uxcel orange "Time to review"](https://mobbin.com/screens/2c40de62-214d-410c-81bb-a6a8cce4c42b), [Duolingo "PREVIOUS MISTAKE"](https://mobbin.com/flows/706ba483-579e-4628-9903-ba0809870d18) |
-| Tip callout | Mango 20% tint `#FDEBD2`, navy text, 💡 + "Tip" | 12.8:1 | [Babbel tinted "Heads up!" tip](https://mobbin.com/screens/75cab2bc-d7e2-4d02-9fce-ed9854d12874) |
-| Disabled | Navy 8% fill, navy 45% label, no edge | exempt | [Duolingo](https://mobbin.com/screens/8199682b-96e6-4d64-be65-98e3dd309fc2), [Babbel](https://mobbin.com/screens/895e2965-01d5-4727-94b5-f5c67b855a82) flat grey disabled |
-| Progress | Brilliant Blue bar on a navy-8% track; done nodes are blue ✓ discs | non-text ≥3:1 | [Speak blue bar](https://mobbin.com/screens/c785de2a-9f85-41b8-a093-f862f26fb035), [Noom dark ✓ stepper](https://mobbin.com/screens/4928d8b8-548f-41b8-a673-e9a5af552657) |
-| Streak / current | Sunset Orange flame, ✓ stamps, current-node ring; navy numerals | 4.95:1 | [Speak orange streak](https://mobbin.com/screens/91ee559c-d53f-4bff-b5cd-f853f38cf4c3), [Headspace orange current dot](https://mobbin.com/screens/1cba404f-413c-4a8b-be36-d791e9ca4fed), [Life Reset orange ring](https://mobbin.com/screens/cb3e87ef-1183-486f-bd20-2f465417d486) |
-| Brand hero | Brilliant Blue + blue-on-blue squiggle, white text | 9.7:1 | Navy/blue full-bleed brand steps: [Memrise](https://mobbin.com/flows/97215372-5a04-4f1a-a800-7146e6aff4ad). Squiggle art: [Quizlet](https://mobbin.com/screens/e3067f6b-ea92-4688-a482-22cb28c31b31) |
+Since the fifth session (§10) the palette is the Makuteam board. `docs/colour-system.md` is the usage guide: the full role table, the rules, where each colour appears, derived tints and edges with their contrast, and the Mobbin evidence. In short:
 
-Closest palette analogues: **Memrise** (navy + mango-yellow + light blue, chunky rounded logo, navy 3D buttons, navy-on-yellow CTA) and **Codecademy** (navy surface, yellow CTA with dark text, yellow progress). Rules: orange and mango are fills and icons only, never text on white. States never rely on colour alone, because every state also has an icon (✓/✕) and a title.
+| Role | Colour | Type on it | Mobbin support (more in `docs/colour-system.md` §7) |
+|---|---|---|---|
+| Brand, primary action, links, progress, done | Warm Blue `#445DDB` | white 5.5:1 | [Quizlet `Keep reviewing`](https://mobbin.com/screens/e3067f6b-ea92-4688-a482-22cb28c31b31), [Skillshare](https://mobbin.com/screens/81762058-a358-4516-af84-c5cd091ee1dc), [Speak blue bar](https://mobbin.com/screens/c785de2a-9f85-41b8-a093-f862f26fb035) |
+| Selected (before Check) | Mid Blue `#366BBB` line on a Denim Blue tint | white 5.3:1 (badge) | [Speak – Translate](https://mobbin.com/screens/9279c96b-3c92-414a-847b-22909ec6309c) |
+| Correct, strong, remembered | Seaweed Green `#37AE5C` (tint for sheets) | ink 6.3:1 | [Duolingo correct](https://mobbin.com/screens/a1d54661-39f7-4ae3-a1d5-ec01bf9f5ccb), [Speak correct](https://mobbin.com/screens/9279c96b-3c92-414a-847b-22909ec6309c), ink label: [Spotify](https://mobbin.com/screens/ffdd79c4-84cb-4f10-82c1-91f7190d707c) |
+| Wrong, destructive | Flush Mahogany `#C43136` (tint for sheets) | white 5.5:1 | [Duolingo incorrect](https://mobbin.com/screens/81b520ac-e864-4e64-bc18-f16caca3b124), [Speak incorrect](https://mobbin.com/screens/c785de2a-9f85-41b8-a093-f862f26fb035), [Brilliant red `Quit`](https://mobbin.com/screens/d7d7f00a-f59b-4bf2-acfb-8cb35b147154) |
+| Look here: review card, tips, Recommended, badge | Golden Yellow `#FFE60F` | ink 14.1:1 | [Babbel review card and black button](https://mobbin.com/screens/fdaa7267-a4f1-4088-a90a-d1a9611fa63a), [Babbel tip](https://mobbin.com/screens/75cab2bc-d7e2-4d02-9fce-ed9854d12874) |
+| Now: streak, current lesson, still learning, due badge | Mango Orange `#FF8037` | ink 7.1:1 | [Speak streak](https://mobbin.com/screens/91ee559c-d53f-4bff-b5cd-f853f38cf4c3), [Life Reset ring](https://mobbin.com/screens/cb3e87ef-1183-486f-bd20-2f465417d486), [Quizlet still learning](https://mobbin.com/screens/f5c83f4d-eded-4850-ac6a-9675f4b1141f), [Babbel badge](https://mobbin.com/screens/fdaa7267-a4f1-4088-a90a-d1a9611fa63a) |
+| Checkpoints | Butterfly Bush `#603EA2` | white 7.8:1 | [Brilliant Level Review](https://mobbin.com/screens/fd4efbd9-32d7-4abb-b129-dd5d335245ad), [Duolingo "Jump here?"](https://mobbin.com/screens/a13f2a69-17ab-48d1-b6bd-9b64b5cd426e) |
+| Dark surfaces: tooltips, bubbles, pill | Dark Cerulean `#064F70` | white 8.9:1 | [Reddit dark tooltip](https://mobbin.com/screens/01dc9c61-113b-44a0-a934-ca154f39e82e) |
+| Soft surfaces: avatars, your bubble, info chips | Denim Blue `#73B9FF` (tint) | ink 8.6:1 | carried over from the blue tints in §2.5 |
+| Focus | Dodger Blue `#4582FF` | ring 3.6:1 | *(rule)* WCAG focus-indicator contrast |
+| Stage bands | Golden Yellow, Seaweed Green, Denim Blue, Mango Orange | ink | [Duolingo unit colours](https://mobbin.com/screens/36ece572-4780-4cec-adac-195753fc86cd) |
+| Disabled | ink 8% fill, ink 45% label, no edge | exempt | [Duolingo](https://mobbin.com/screens/8199682b-96e6-4d64-be65-98e3dd309fc2), [Babbel](https://mobbin.com/screens/895e2965-01d5-4727-94b5-f5c67b855a82) |
+
+Rules: type is only ink or white; Golden Yellow, Seaweed Green, Denim Blue and Mango Orange are fills, never text, borders or lone icons on white. States never rely on colour alone, because every state also has an icon (✓/✕) and a title.
 
 ## 5. Motion moments (where reference apps show motion; specs are the motion designer's)
 
@@ -343,7 +346,7 @@ Mobbin shows still sequences, so each entry records only *where* a before→afte
 
 ## 6. Changes from the previous version
 - **Dropped** (not re-found on Mobbin this round): the Square timer-bar toast, the Slack/Outlook/ClickUp snooze menus, the Uxcel "Continue ENTER" hotkey, Quizlet's "You said:", the Acorns stepper, the Circle lesson panel, and the Hatch/LARQ/Deezer settings. Instagram, TikTok, Elevate, Uxcel Go, Alan, Headspace, Numo and Speak replace them.
-- **Changed**: green success and red danger become Ocean Water and a Sunset tint (the palette has neither green nor red). "No confetti" becomes one celebration at lesson complete. The tab bar gains a Review tab, and Settings moves behind a gear in the app bar. The path becomes a stage → module → lesson stepper with checkpoint nodes.
+- **Changed**: green success and red danger become Ocean Water and a Sunset tint (the palette has neither green nor red). *Reversed in §10: the Makuteam palette has both.* "No confetti" becomes one celebration at lesson complete. The tab bar gains a Review tab, and Settings moves behind a gear in the app bar. The path becomes a stage → module → lesson stepper with checkpoint nodes.
 - **Kept and re-validated**: Grammarly's action order and `⋯`, LinkedIn's bottom-left toast slot, X's bottom-right Grok/Chat stack, the Duolingo/Babbel learn card, and the bottom feedback sheet.
 
 ## 7. Decisions added while building (second session, 2026-10-27)
@@ -378,3 +381,22 @@ No new UI: these record how the existing placement, collision and trigger rules 
 - **When the page changes** (resize, navigation within the site): an untouched card moves to the other corner or, if neither fits, goes away until the next interval. A card the learner has pressed, focused or typed in stays in its corner and only adjusts its height.
 - **One prompt across tabs.** An untouched card also goes away when the learner turns on quiet mode, snoozes or switches the site off elsewhere, or when another tab took the prompt after this tab was in the background past its lease (10 minutes). This is not a timeout: the card still never dismisses itself while its tab is in use.
 - **Opening the side panel** from the card uses the click's user gesture through the background worker, as Chrome's own sample does. If Chrome refuses, the panel page opens in a tab rather than the button doing nothing.
+
+## 10. Palette change to the Makuteam board (fifth session, 2026-10-27)
+
+The owner replaced the brand board with the Makuteam palette (Golden Yellow, Seaweed Green, Denim Blue, Mango Orange, Warm Blue; Dodger Blue, Mid Blue, Butterfly Bush, Flush Mahogany, Dark Cerulean) and asked for it to be applied the way the [Makuteam case study](https://www.behance.net/gallery/240631589/Makuteam-Building-a-Creative-System-Through-Characters) applies it, with every decision checked on Mobbin. Layout, type, motion and copy are unchanged; only colour roles moved. The usage guide is `docs/colour-system.md`; §1.2 and §4 above are its summary.
+
+- **One colour, one job**, as each Makuteam character owns one colour. The roles are in §1.2.
+- **Correct is green and wrong is red again**, now that the palette has both: tinted sheets with state-coloured buttons, as on [Duolingo](https://mobbin.com/screens/81b520ac-e864-4e64-bc18-f16caca3b124) and [Speak](https://mobbin.com/screens/9279c96b-3c92-414a-847b-22909ec6309c). The sheet title is ink beside a coloured disc ([Vocabulary](https://mobbin.com/screens/a3538d35-c422-40ed-b571-121b4b16a4fb), [Alan](https://mobbin.com/screens/49f3790f-ac4e-4436-be11-6c9097aa08ec)). The green button has an ink label because white on Seaweed Green is 2.8:1 ([Spotify](https://mobbin.com/screens/ffdd79c4-84cb-4f10-82c1-91f7190d707c) labels its green buttons in black).
+- **The primary colour is Warm Blue** (Makuteam's brand blue), with white labels: [Quizlet](https://mobbin.com/screens/e3067f6b-ea92-4688-a482-22cb28c31b31), [Skillshare](https://mobbin.com/screens/81762058-a358-4516-af84-c5cd091ee1dc). On a Warm Blue hero the main button turns Golden Yellow with an ink label, as Makuteam sets yellow on Warm Blue and as Memrise and Codecademy put yellow buttons on navy (§4 before this session).
+- **Stage bands.** Each stage card opens with a band in one light top-row colour, the way each Makuteam character owns a band and each Duolingo unit owns a header colour ([Unit 1](https://mobbin.com/screens/a13f2a69-17ab-48d1-b6bd-9b64b5cd426e), [Unit 22](https://mobbin.com/screens/36ece572-4780-4cec-adac-195753fc86cd), [Unit 9](https://mobbin.com/screens/edb09afd-5b2a-4262-aca1-01d5d6b7e41f)). Lesson nodes keep their state colours, so done, current, locked and checkpoint read the same in every stage.
+- **The review card is Golden Yellow with the ink `Review now`**, matching [Babbel's "Time to review"](https://mobbin.com/screens/fdaa7267-a4f1-4088-a90a-d1a9611fa63a) more closely than Mango did. Babbel's review badge and flame are orange, so the due badge and streak are Mango Orange.
+- **Word states** follow [Quizlet's progress rings](https://mobbin.com/screens/f5c83f4d-eded-4850-ac6a-9675f4b1141f): grey new, orange still learning, green strong. The review end pills follow [Quizlet's Know / Still learning](https://mobbin.com/screens/f0707e72-e036-47fa-8f58-99e2387ba0ff).
+- **Checkpoints are Butterfly Bush**: [Brilliant's Level Review](https://mobbin.com/screens/fd4efbd9-32d7-4abb-b129-dd5d335245ad) and Duolingo's "Jump here?" node are purple.
+- **Destructive text is Flush Mahogany** under a safe primary: [Brilliant – red `Quit`](https://mobbin.com/screens/d7d7f00a-f59b-4bf2-acfb-8cb35b147154).
+- **Dark surfaces are Dark Cerulean** instead of navy: [Reddit's dark tooltip](https://mobbin.com/screens/01dc9c61-113b-44a0-a934-ca154f39e82e).
+- **Celebration fields**: [Tolan's "Level 2!" on indigo](https://mobbin.com/screens/434afe5a-4578-4531-a329-54663d478fcc); sparks in palette colours as in [Grab](https://mobbin.com/screens/9174df43-a3fd-4587-9f11-348d9e3609f9).
+- *(rule)* Focus rings are Dodger Blue (3.6:1 on white) and white on bands.
+- The toolbar icon and the in-page brand mark are Warm Blue; the wordmark is two-tone ("Taal" in the type colour, "Nudge" in Warm Blue, or Golden Yellow on a band).
+
+These searches returned the `ai_usage_notice` again (Mobbin AI usage is high this month); it was shown to the owner.

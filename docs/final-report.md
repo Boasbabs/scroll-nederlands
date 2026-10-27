@@ -10,7 +10,7 @@ A Manifest V3 Chrome extension (WXT, React 19, TypeScript) that teaches Dutch fr
 - **Focused practice in the side panel.** Onboarding with level and placement, Today, Course path, Review, Progress and Settings; lessons, reviews and checkpoints in a full-panel player with every exercise kind.
 - **The learning engine** (item stages, spaced intervals, relearning, checkpoints, placement) in pure TypeScript, and a 272-lesson original curriculum with a validator.
 - **Audio**: ElevenLabs clips where the manifest has them, nl-NL synthesis otherwise; in-page clips play through an offscreen document.
-- Every UI decision is cited in `docs/ux-research.md` (Mobbin); colours follow the brand palette roles in `src/ui/theme.css`; motion follows Lasseter's principles in `src/ui/motion.css` with reduced-motion support.
+- Every UI decision is cited in `docs/ux-research.md` (Mobbin); colours follow the Makuteam palette roles in `src/ui/theme.css`, documented in `docs/colour-system.md`; motion follows Lasseter's principles in `src/ui/motion.css` with reduced-motion support.
 
 ## 2. Project structure and important files
 

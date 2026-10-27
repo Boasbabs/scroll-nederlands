@@ -83,6 +83,7 @@ src/
 docs/
   rebuild-plan.md        Status of the v2 rebuild, phase by phase
   ux-research.md         Mobbin research behind every UI decision
+  colour-system.md       The Makuteam palette: one job per colour, usage rules, contrast, evidence
   curriculum-plan.md     Lesson-by-lesson plan and assumptions
   audio-research.md      Voice research for the ElevenLabs clips
   final-report.md        Final handoff report

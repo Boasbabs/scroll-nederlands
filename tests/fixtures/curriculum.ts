@@ -1,72 +1,148 @@
-import type { Curriculum, Exercise, Lesson, LessonKind } from '../../src/curriculum/types';
+import { assembleCurriculum, indexCurriculum, type CurriculumIndex } from '../../src/curriculum/assemble';
+import type { StagePlan } from '../../src/curriculum/structure';
+import type { Curriculum, Exercise, LessonDraft } from '../../src/curriculum/types';
 
-function exercises(id: string): Array<Exercise> {
+/** Four exercises, one per stage, all practising the lesson's main item. */
+export function stageExercises(dutch: string, english: string): Array<Exercise> {
   return [
-    { id: 'rec', stage: 'recognition', kind: 'choice', prompt: `Meaning of ${id}?`, options: ['a', 'b'], answer: 'a', explanation: 'a' },
-    { id: 'cloze', stage: 'supportedRecall', kind: 'cloze', prompt: 'Fill', sentence: 'Ik ___ koffie.', answers: ['wil'], explanation: 'wil' },
-    { id: 'type', stage: 'independentRecall', kind: 'type', prompt: 'Say it', answers: ['Ik wil koffie.'], explanation: 'x' },
-    { id: 'write', stage: 'transfer', kind: 'write', prompt: 'Write', mustInclude: [['thee']], minWords: 2, modelAnswer: 'Ik wil thee.', explanation: 'x', focusedOnly: true },
-    { id: 'transfer', stage: 'transfer', kind: 'type', prompt: 'New situation', answers: ['Ik wil thee.'], explanation: 'x' },
+    {
+      id: 'rec',
+      stage: 'recognition',
+      kind: 'choice',
+      prompt: `What does "${dutch}" mean?`,
+      options: [english, 'Something else', 'Another thing'],
+      answer: english,
+      explanation: `${dutch} means ${english}.`,
+    },
+    {
+      id: 'order',
+      stage: 'supportedRecall',
+      kind: 'order',
+      prompt: 'Put the words in order.',
+      words: dutch.split(' '),
+      english,
+      explanation: `${dutch}.`,
+    },
+    {
+      id: 'type',
+      stage: 'independentRecall',
+      kind: 'type',
+      prompt: `Say: ${english}`,
+      answers: [dutch],
+      explanation: `${dutch}.`,
+    },
+    {
+      id: 'transfer',
+      stage: 'transfer',
+      kind: 'type',
+      prompt: `A new situation that needs: ${english}`,
+      answers: [dutch],
+      explanation: `${dutch}.`,
+    },
   ];
 }
 
-export function lesson(id: string, stageId: string, moduleId: string, kind: LessonKind = 'core', extra: Partial<Lesson> = {}): Lesson {
+export function coreLesson(id: string, dutch: string, english: string, extra: Partial<LessonDraft> = {}): LessonDraft {
+  const key = dutch.toLowerCase().replace(/[^a-z]+/g, '-').replace(/^-|-$/g, '');
   return {
     id,
-    kind,
-    title: id,
-    objective: 'o',
-    situation: 's',
-    targetPhrase: `phrase ${id}`,
-    meaningEn: 'm',
-    skills: ['reading', 'listening'],
-    covers: [],
-    exercises: exercises(id),
-    moduleId,
-    stageId,
-    level: stageId === 's0' ? 'pre-a1' : 'a1',
+    kind: 'core',
+    title: english,
+    objective: `Say ${english}.`,
+    situation: 'Somewhere in the Netherlands.',
+    targetPhrase: dutch,
+    meaningEn: english,
+    items: [{ key, dutch, english, kind: 'phrase' }],
+    skills: ['reading'],
+    covers: ['greetings'],
+    exercises: stageExercises(dutch, english),
     ...extra,
   };
 }
 
-const checkpointExercises: Array<Exercise> = [
-  { id: 'c1', stage: 'transfer', kind: 'choice', prompt: 'q', options: ['a', 'b'], answer: 'a', explanation: 'x', testsLesson: 'a1' },
-  { id: 'c2', stage: 'transfer', kind: 'choice', prompt: 'q', options: ['a', 'b'], answer: 'a', explanation: 'x', testsLesson: 'a2' },
-  { id: 'c3', stage: 'transfer', kind: 'choice', prompt: 'q', options: ['a', 'b'], answer: 'a', explanation: 'x', testsLesson: 'a3' },
-  { id: 'c4', stage: 'transfer', kind: 'choice', prompt: 'q', options: ['a', 'b'], answer: 'a', explanation: 'x', testsLesson: 'a1' },
-  { id: 'c5', stage: 'transfer', kind: 'choice', prompt: 'q', options: ['a', 'b'], answer: 'a', explanation: 'x', testsLesson: 'a2' },
-];
+export function checkpointLesson(id: string, tests: Array<{ lessonId: string; itemId: string }>): LessonDraft {
+  return {
+    id,
+    kind: 'checkpoint',
+    title: 'Checkpoint',
+    objective: 'Show what you remember.',
+    situation: 'A short quiz.',
+    targetPhrase: 'Toets',
+    meaningEn: 'Test',
+    items: [],
+    skills: ['reading'],
+    covers: [],
+    exercises: Array.from({ length: 5 }, (_, i): Exercise => {
+      const target = tests[i % tests.length]!;
+      return {
+        id: `q${i + 1}`,
+        stage: 'independentRecall',
+        kind: 'choice',
+        prompt: `Question ${i + 1}`,
+        options: ['A', 'B'],
+        answer: 'A',
+        explanation: 'A is right.',
+        testsLesson: target.lessonId,
+        items: [target.itemId],
+      };
+    }),
+  };
+}
 
-export const fixtureCurriculum: Curriculum = {
-  stages: [
+/**
+ * A small two-stage course: x0 (three core lessons and a checkpoint) then x1
+ * (two core lessons and a checkpoint). Stage ids outside s0–s3 have no
+ * required objectives, so coverage does not get in the way of unit tests.
+ */
+export function makeCourse(overrides: Record<string, Partial<LessonDraft>> = {}): CurriculumIndex {
+  const drafts: Record<string, Array<LessonDraft>> = {
+    'x0-a': [
+      coreLesson('x0-a-hello', 'Hallo daar', 'Hello there'),
+      coreLesson('x0-a-thanks', 'Dank je wel', 'Thank you'),
+      coreLesson('x0-a-bye', 'Tot ziens', 'Goodbye'),
+    ],
+    'x0-check': [
+      checkpointLesson('x0-check-one', [
+        { lessonId: 'x0-a-hello', itemId: 'x0-a-hello/hallo-daar' },
+        { lessonId: 'x0-a-thanks', itemId: 'x0-a-thanks/dank-je-wel' },
+      ]),
+    ],
+    'x1-a': [
+      coreLesson('x1-a-coffee', 'Ik wil koffie', 'I want coffee'),
+      coreLesson('x1-a-pay', 'Ik wil betalen', 'I want to pay'),
+    ],
+    'x1-check': [
+      checkpointLesson('x1-check-one', [{ lessonId: 'x1-a-coffee', itemId: 'x1-a-coffee/ik-wil-koffie' }]),
+    ],
+  };
+  for (const lessons of Object.values(drafts)) {
+    for (const [index, lesson] of lessons.entries()) {
+      const override = overrides[lesson.id];
+      if (override) lessons[index] = { ...lesson, ...override };
+    }
+  }
+  const structure: Array<StagePlan> = [
     {
-      id: 's0',
+      id: 'x0',
       level: 'pre-a1',
-      title: 'Stage 0',
-      objective: 'o',
+      title: 'Stage X0',
+      objective: 'Basics',
       modules: [
-        { id: 'm1', stageId: 's0', title: 'M1', description: 'd', lessons: [lesson('a1', 's0', 'm1'), lesson('a2', 's0', 'm1'), lesson('a3', 's0', 'm1')] },
-        {
-          id: 'm2',
-          stageId: 's0',
-          title: 'M2',
-          description: 'd',
-          lessons: [lesson('check0', 's0', 'm2', 'checkpoint', { revisits: ['a1', 'a2', 'a3'], exercises: checkpointExercises })],
-        },
+        { id: 'x0-a', title: 'Module A', description: 'First module' },
+        { id: 'x0-check', title: 'Check', description: 'Checkpoint' },
       ],
     },
     {
-      id: 's1',
+      id: 'x1',
       level: 'a1',
-      title: 'Stage 1',
-      objective: 'o',
-      modules: [{ id: 'm3', stageId: 's1', title: 'M3', description: 'd', lessons: [lesson('b1', 's1', 'm3'), lesson('b2', 's1', 'm3')] }],
+      title: 'Stage X1',
+      objective: 'More',
+      modules: [
+        { id: 'x1-a', title: 'Module B', description: 'Second module' },
+        { id: 'x1-check', title: 'Check', description: 'Checkpoint' },
+      ],
     },
-  ],
-};
-
-export const fixtureLessons: Array<Lesson> = fixtureCurriculum.stages.flatMap((s) => s.modules.flatMap((m) => m.lessons));
-
-export function fixtureLesson(id: string): Lesson {
-  return fixtureLessons.find((l) => l.id === id)!;
+  ];
+  const curriculum: Curriculum = assembleCurriculum(structure, (_stage, moduleId) => drafts[moduleId] ?? []);
+  return indexCurriculum(curriculum);
 }

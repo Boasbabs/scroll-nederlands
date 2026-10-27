@@ -9,6 +9,30 @@ export const lessons: Array<LessonDraft> = [
     situation: 'A friend visits your new flat for the first time and you show her around.',
     targetPhrase: 'Dit is de woonkamer.',
     meaningEn: 'This is the living room.',
+    items: [
+      {
+        key: 'dit-is-de-woonkamer',
+        dutch: 'Dit is de woonkamer.',
+        english: 'This is the living room.',
+        kind: 'phrase',
+      },
+      { key: 'de-kamer', dutch: 'de kamer', english: 'the room', kind: 'word' },
+      {
+        key: 'de-slaapkamer',
+        dutch: 'de slaapkamer',
+        english: 'the bedroom',
+        kind: 'word',
+        note: 'slapen = to sleep',
+      },
+      {
+        key: 'de-badkamer',
+        dutch: 'de badkamer',
+        english: 'the bathroom',
+        kind: 'word',
+        note: 'the toilet is often a separate room: de wc',
+      },
+      { key: 'de-keuken', dutch: 'de keuken', english: 'the kitchen', kind: 'word' },
+    ],
     wordBreakdown: [
       { dutch: 'de kamer', english: 'room' },
       { dutch: 'de woonkamer', english: 'living room (wonen = to live)' },
@@ -18,10 +42,8 @@ export const lessons: Array<LessonDraft> = [
       { dutch: 'de wc', english: 'toilet' },
       { dutch: 'boven / beneden', english: 'upstairs / downstairs' },
     ],
-    patternExplanation:
-      'Many rooms end in -kamer, and the first part says what you do there: wonen (live), slapen (sleep). All these rooms are de-words. In many Dutch homes the wc is a small separate room, not part of the bathroom.',
-    pronunciationTip:
-      'Keuken: the eu is like the "u" in "hurt" said with rounded lips: KEU-kuh. Wc is said with the Dutch letter names: "way-say".',
+    patternExplanation: 'Many rooms end in -kamer, and the first part says what you do there: wonen (live), slapen (sleep). All these rooms are de-words. In many Dutch homes the wc is a small separate room, not part of the bathroom.',
+    pronunciationTip: 'Keuken: the eu is like the "u" in "hurt" said with rounded lips: KEU-kuh. Wc is said with the Dutch letter names: "way-say".',
     examples: [
       { dutch: 'De keuken is klein.', english: 'The kitchen is small.' },
       { dutch: 'Mijn slaapkamer is boven.', english: 'My bedroom is upstairs.' },
@@ -37,6 +59,7 @@ export const lessons: Array<LessonDraft> = [
         stage: 'recognition',
         kind: 'choice',
         prompt: 'What is "de slaapkamer"?',
+        items: ['de-slaapkamer'],
         options: ['the bedroom', 'the living room', 'the bathroom', 'the kitchen'],
         answer: 'the bedroom',
         explanation: 'Slapen = to sleep, so de slaapkamer is the room you sleep in.',
@@ -46,6 +69,7 @@ export const lessons: Array<LessonDraft> = [
         stage: 'supportedRecall',
         kind: 'cloze',
         prompt: 'Complete the sentence.',
+        items: ['de-keuken'],
         sentence: 'Ik maak koffie in de ___.',
         answers: ['keuken'],
         hint: 'k_____',
@@ -57,6 +81,7 @@ export const lessons: Array<LessonDraft> = [
         stage: 'independentRecall',
         kind: 'type',
         prompt: "You're visiting a friend and want to wash your hands. Ask where the bathroom is.",
+        items: ['de-badkamer'],
         answers: ['Waar is de badkamer?', 'Sorry, waar is de badkamer?', 'Pardon, waar is de badkamer?'],
         explanation: 'Waar is + de badkamer? Badkamer is a de-word, like all -kamer words.',
       },
@@ -65,6 +90,7 @@ export const lessons: Array<LessonDraft> = [
         stage: 'independentRecall',
         kind: 'choice',
         prompt: 'Listen. Where is the bathroom?',
+        items: ['dit-is-de-woonkamer', 'de-badkamer'],
         audioText: 'Dit is de keuken en dit is de woonkamer. De badkamer is boven.',
         listenOnly: true,
         options: ['Upstairs', 'Downstairs', 'Next to the kitchen'],
@@ -76,6 +102,7 @@ export const lessons: Array<LessonDraft> = [
         stage: 'transfer',
         kind: 'type',
         prompt: "You're showing a friend your flat. Open a door and say: this is my bedroom.",
+        items: ['dit-is-de-woonkamer', 'de-slaapkamer'],
         answers: ['Dit is mijn slaapkamer.', "Dit is m'n slaapkamer.", 'Dit is de slaapkamer.'],
         explanation: 'Dit is + mijn slaapkamer. Dit is works with any noun when you point at something.',
       },
@@ -89,6 +116,23 @@ export const lessons: Array<LessonDraft> = [
     situation: 'You are viewing a flat to rent and the landlord shows you around.',
     targetPhrase: 'Er zijn twee slaapkamers.',
     meaningEn: 'There are two bedrooms.',
+    items: [
+      {
+        key: 'er-zijn-twee-slaapkamers',
+        dutch: 'Er zijn twee slaapkamers.',
+        english: 'There are two bedrooms.',
+        kind: 'phrase',
+      },
+      {
+        key: 'er-is',
+        dutch: 'er is',
+        english: 'there is',
+        kind: 'phrase',
+        note: 'for one thing; for two or more: er zijn',
+      },
+      { key: 'het-balkon', dutch: 'het balkon', english: 'the balcony', kind: 'word' },
+      { key: 'de-tuin', dutch: 'de tuin', english: 'the garden', kind: 'word' },
+    ],
     wordBreakdown: [
       { dutch: 'er is', english: 'there is (one thing)' },
       { dutch: 'er zijn', english: 'there are (two or more)' },
@@ -96,8 +140,7 @@ export const lessons: Array<LessonDraft> = [
       { dutch: 'de tuin', english: 'garden' },
       { dutch: 'de lift', english: 'lift, elevator' },
     ],
-    patternExplanation:
-      'Use er is for one thing and er zijn for two or more: Er is een tuin. Er zijn drie kamers. In a question the verb goes first: Is er een lift? Zijn er twee badkamers?',
+    patternExplanation: 'Use er is for one thing and er zijn for two or more: Er is een tuin. Er zijn drie kamers. In a question the verb goes first: Is er een lift? Zijn er twee badkamers?',
     pronunciationTip: 'The word er is weak, almost "uh". In er is the two words run together: "uh-RIS".',
     examples: [
       { dutch: 'Er is een balkon.', english: 'There is a balcony.' },
@@ -114,6 +157,7 @@ export const lessons: Array<LessonDraft> = [
         stage: 'recognition',
         kind: 'choice',
         prompt: 'The landlord says "Er is een balkon." What does he mean?',
+        items: ['er-is', 'het-balkon'],
         options: ['There is a balcony.', 'Is there a balcony?', 'There are two balconies.'],
         answer: 'There is a balcony.',
         explanation: 'Er is = there is. A question would start with the verb: Is er een balkon?',
@@ -134,6 +178,7 @@ export const lessons: Array<LessonDraft> = [
         stage: 'independentRecall',
         kind: 'type',
         prompt: 'The flat is on the fourth floor. Ask the landlord if there is a lift.',
+        items: ['er-is'],
         answers: ['Is er een lift?', 'Is er ook een lift?', 'Is er hier een lift?', 'Is hier een lift?'],
         explanation: 'Er is → Is er …? The verb comes first in a yes/no question.',
       },
@@ -142,9 +187,14 @@ export const lessons: Array<LessonDraft> = [
         stage: 'independentRecall',
         kind: 'choice',
         prompt: 'Listen. What does the house have?',
+        items: ['er-zijn-twee-slaapkamers', 'er-is', 'de-tuin'],
         audioText: 'Er zijn drie slaapkamers en er is een tuin.',
         listenOnly: true,
-        options: ['Three bedrooms and a garden', 'Two bedrooms and a garden', 'Three bedrooms and a balcony'],
+        options: [
+          'Three bedrooms and a garden',
+          'Two bedrooms and a garden',
+          'Three bedrooms and a balcony',
+        ],
         answer: 'Three bedrooms and a garden',
         explanation: 'Er zijn drie slaapkamers = there are three bedrooms; er is een tuin = there is a garden.',
       },
@@ -171,6 +221,19 @@ export const lessons: Array<LessonDraft> = [
     situation: "You're about to leave the house and your partner can't find the keys.",
     targetPhrase: 'De sleutels liggen op de tafel.',
     meaningEn: 'The keys are on the table.',
+    items: [
+      {
+        key: 'de-sleutels-liggen-op-de-tafel',
+        dutch: 'De sleutels liggen op de tafel.',
+        english: 'The keys are on the table.',
+        kind: 'phrase',
+        accept: ['De sleutels liggen op tafel.'],
+      },
+      { key: 'onder', dutch: 'onder', english: 'under', kind: 'word' },
+      { key: 'naast', dutch: 'naast', english: 'next to', kind: 'word' },
+      { key: 'achter', dutch: 'achter', english: 'behind', kind: 'word' },
+      { key: 'voor', dutch: 'voor', english: 'in front of', kind: 'word', note: 'also means "for"' },
+    ],
     wordBreakdown: [
       { dutch: 'op', english: 'on' },
       { dutch: 'in', english: 'in' },
@@ -181,10 +244,8 @@ export const lessons: Array<LessonDraft> = [
       { dutch: 'liggen / staan', english: 'to lie / to stand (used to say where things are)' },
       { dutch: 'de sleutel / de sleutels', english: 'key / keys' },
     ],
-    patternExplanation:
-      'Preposition + de/het + noun says where something is: op de tafel, onder het bed. Where English just says "is", Dutch usually says liggen (lie) for things lying flat and staan (stand) for upright things: De fiets staat achter het huis.',
-    pronunciationTip:
-      'Naast has a long "ah": "nahst". Achter has the throaty ch of Scottish "loch" in the middle: "AKH-ter".',
+    patternExplanation: 'Preposition + de/het + noun says where something is: op de tafel, onder het bed. Where English just says "is", Dutch usually says liggen (lie) for things lying flat and staan (stand) for upright things: De fiets staat achter het huis.',
+    pronunciationTip: 'Naast has a long "ah": "nahst". Achter has the throaty ch of Scottish "loch" in the middle: "AKH-ter".',
     examples: [
       { dutch: 'Je jas ligt op het bed.', english: 'Your coat is on the bed.' },
       { dutch: 'De auto staat voor het huis.', english: 'The car is in front of the house.' },
@@ -200,6 +261,7 @@ export const lessons: Array<LessonDraft> = [
         stage: 'recognition',
         kind: 'choice',
         prompt: 'What does "Je tas staat naast de stoel." mean?',
+        items: ['naast'],
         options: [
           'Your bag is next to the chair.',
           'Your bag is on the chair.',
@@ -214,6 +276,7 @@ export const lessons: Array<LessonDraft> = [
         stage: 'supportedRecall',
         kind: 'cloze',
         prompt: 'Complete with the Dutch for "under".',
+        items: ['de-sleutels-liggen-op-de-tafel', 'onder'],
         sentence: 'De sleutels liggen ___ de tafel.',
         answers: ['onder'],
         hint: 'under',
@@ -225,6 +288,7 @@ export const lessons: Array<LessonDraft> = [
         stage: 'supportedRecall',
         kind: 'order',
         prompt: 'Put the words in order.',
+        items: ['achter'],
         words: ['De', 'fiets', 'staat', 'achter', 'het', 'huis.'],
         alternatives: [['Achter', 'het', 'huis', 'staat', 'de', 'fiets.']],
         english: 'The bike is behind the house.',
@@ -253,6 +317,7 @@ export const lessons: Array<LessonDraft> = [
         stage: 'transfer',
         kind: 'type',
         prompt: "A friend is looking for her phone. It's under the sofa (de bank). Tell her.",
+        items: ['de-sleutels-liggen-op-de-tafel', 'onder'],
         answers: [
           'Je telefoon ligt onder de bank.',
           'Jouw telefoon ligt onder de bank.',
@@ -274,6 +339,24 @@ export const lessons: Array<LessonDraft> = [
     situation: "You're about to leave for work and can't find your things.",
     targetPhrase: 'Waar is mijn telefoon?',
     meaningEn: 'Where is my phone?',
+    items: [
+      {
+        key: 'waar-is-mijn-telefoon',
+        dutch: 'Waar is mijn telefoon?',
+        english: 'Where is my phone?',
+        kind: 'phrase',
+        accept: ["Waar is m'n telefoon?"],
+      },
+      { key: 'de-telefoon', dutch: 'de telefoon', english: 'the phone', kind: 'word' },
+      { key: 'de-sleutels', dutch: 'de sleutels', english: 'the keys', kind: 'word', note: 'one key: de sleutel' },
+      {
+        key: 'de-portemonnee',
+        dutch: 'de portemonnee',
+        english: 'the wallet, the purse',
+        kind: 'word',
+      },
+      { key: 'de-oplader', dutch: 'de oplader', english: 'the charger', kind: 'word', note: 'opladen = to charge' },
+    ],
     wordBreakdown: [
       { dutch: 'de telefoon', english: 'phone' },
       { dutch: 'de sleutels', english: 'keys' },
@@ -283,10 +366,8 @@ export const lessons: Array<LessonDraft> = [
       { dutch: 'de bril', english: 'glasses (singular in Dutch)' },
       { dutch: 'de bank', english: 'sofa (also: bank)' },
     ],
-    patternExplanation:
-      'Ask Waar is …? for one thing and Waar zijn …? for more than one: Waar zijn mijn sleutels? Bril (glasses) is singular in Dutch: Waar is mijn bril?',
-    pronunciationTip:
-      'Portemonnee has four syllables with the stress at the end: por-tuh-mo-NAY. Oplader: OP-lah-der.',
+    patternExplanation: 'Ask Waar is …? for one thing and Waar zijn …? for more than one: Waar zijn mijn sleutels? Bril (glasses) is singular in Dutch: Waar is mijn bril?',
+    pronunciationTip: 'Portemonnee has four syllables with the stress at the end: por-tuh-mo-NAY. Oplader: OP-lah-der.',
     examples: [
       { dutch: 'Mijn bril ligt op de bank.', english: 'My glasses are on the sofa.' },
       { dutch: 'Is dit jouw oplader?', english: 'Is this your charger?' },
@@ -302,6 +383,7 @@ export const lessons: Array<LessonDraft> = [
         stage: 'recognition',
         kind: 'choice',
         prompt: 'What is "de oplader"?',
+        items: ['de-oplader'],
         options: ['the charger', 'the laptop', 'the key', 'the wallet'],
         answer: 'the charger',
         explanation: 'Opladen = to charge, so de oplader is the charger.',
@@ -311,6 +393,7 @@ export const lessons: Array<LessonDraft> = [
         stage: 'supportedRecall',
         kind: 'cloze',
         prompt: 'Complete with is or zijn.',
+        items: ['waar-is-mijn-telefoon', 'de-sleutels'],
         sentence: 'Waar ___ mijn sleutels?',
         answers: ['zijn'],
         hint: 'is or zijn?',
@@ -322,7 +405,12 @@ export const lessons: Array<LessonDraft> = [
         stage: 'independentRecall',
         kind: 'type',
         prompt: "You're leaving the house and can't find your phone. Ask your housemate where it is.",
-        answers: ['Waar is mijn telefoon?', "Waar is m'n telefoon?", 'Weet je waar mijn telefoon is?', 'Weet jij waar mijn telefoon is?'],
+        answers: [
+          'Waar is mijn telefoon?',
+          "Waar is m'n telefoon?",
+          'Weet je waar mijn telefoon is?',
+          'Weet jij waar mijn telefoon is?',
+        ],
         explanation: 'Waar is + mijn telefoon? One phone, so is.',
       },
       {
@@ -332,7 +420,11 @@ export const lessons: Array<LessonDraft> = [
         prompt: 'Listen. Where are the glasses?',
         audioText: 'Je bril ligt in de slaapkamer, op het bed.',
         listenOnly: true,
-        options: ['On the bed in the bedroom', 'Under the bed in the bedroom', 'On the sofa in the living room'],
+        options: [
+          'On the bed in the bedroom',
+          'Under the bed in the bedroom',
+          'On the sofa in the living room',
+        ],
         answer: 'On the bed in the bedroom',
         explanation: 'In de slaapkamer, op het bed = in the bedroom, on the bed.',
       },
@@ -341,7 +433,13 @@ export const lessons: Array<LessonDraft> = [
         stage: 'transfer',
         kind: 'type',
         prompt: "Your phone is almost dead at a friend's house. Ask if he has a charger.",
-        answers: ['Heb je een oplader?', 'Heb jij een oplader?', 'Heb je misschien een oplader?', 'Heb je een oplader voor mij?'],
+        items: ['de-oplader'],
+        answers: [
+          'Heb je een oplader?',
+          'Heb jij een oplader?',
+          'Heb je misschien een oplader?',
+          'Heb je een oplader voor mij?',
+        ],
         explanation: 'Heb je + een oplader? A yes/no question with an everyday object.',
       },
     ],
@@ -354,6 +452,40 @@ export const lessons: Array<LessonDraft> = [
     situation: 'A new colleague asks what your place is like.',
     targetPhrase: 'Ik woon in een huis met een tuin.',
     meaningEn: 'I live in a house with a garden.',
+    items: [
+      {
+        key: 'ik-woon-in-een-huis-met',
+        dutch: 'Ik woon in een huis met een tuin.',
+        english: 'I live in a house with a garden.',
+        kind: 'phrase',
+      },
+      {
+        key: 'het-appartement',
+        dutch: 'het appartement',
+        english: 'the flat, the apartment',
+        kind: 'word',
+      },
+      {
+        key: 'het-rijtjeshuis',
+        dutch: 'het rijtjeshuis',
+        english: 'the terraced house',
+        kind: 'word',
+      },
+      {
+        key: 'de-verdieping',
+        dutch: 'de verdieping',
+        english: 'the floor, the storey',
+        kind: 'word',
+        note: 'the ground floor is de begane grond',
+      },
+      {
+        key: 'op-de-tweede-verdieping',
+        dutch: 'op de tweede verdieping',
+        english: 'on the second floor',
+        kind: 'phrase',
+        note: 'op de + eerste, tweede, derde … + verdieping',
+      },
+    ],
     wordBreakdown: [
       { dutch: 'het appartement', english: 'flat, apartment' },
       { dutch: 'het huis', english: 'house' },
@@ -362,12 +494,13 @@ export const lessons: Array<LessonDraft> = [
       { dutch: 'de verdieping', english: 'floor, storey' },
       { dutch: 'op de tweede verdieping', english: 'on the second floor' },
     ],
-    patternExplanation:
-      'Ik woon in een … met … says what kind of home you have. For a flat, say the floor with op de + ordinal + verdieping: op de derde verdieping. The ground floor is de begane grond.',
-    pronunciationTip:
-      'In appartement the stress is at the end: ah-par-tuh-MENT. Tuin has the Dutch ui sound you know from huis.',
+    patternExplanation: 'Ik woon in een … met … says what kind of home you have. For a flat, say the floor with op de + ordinal + verdieping: op de derde verdieping. The ground floor is de begane grond.',
+    pronunciationTip: 'In appartement the stress is at the end: ah-par-tuh-MENT. Tuin has the Dutch ui sound you know from huis.',
     examples: [
-      { dutch: 'Mijn appartement is op de derde verdieping.', english: 'My flat is on the third floor.' },
+      {
+        dutch: 'Mijn appartement is op de derde verdieping.',
+        english: 'My flat is on the third floor.',
+      },
       { dutch: 'We wonen in een rijtjeshuis.', english: 'We live in a terraced house.' },
       { dutch: 'Heb je een balkon?', english: 'Do you have a balcony?' },
     ],
@@ -381,6 +514,7 @@ export const lessons: Array<LessonDraft> = [
         stage: 'recognition',
         kind: 'choice',
         prompt: 'What does "Ik woon in een appartement met een balkon." mean?',
+        items: ['het-appartement'],
         options: [
           'I live in a flat with a balcony.',
           'I live in a house with a garden.',
@@ -405,6 +539,7 @@ export const lessons: Array<LessonDraft> = [
         stage: 'independentRecall',
         kind: 'type',
         prompt: 'A colleague asks where you live. Say you live in a flat in Rotterdam.',
+        items: ['ik-woon-in-een-huis-met', 'het-appartement'],
         answers: [
           'Ik woon in een appartement in Rotterdam.',
           'Ik woon in Rotterdam in een appartement.',
@@ -418,6 +553,7 @@ export const lessons: Array<LessonDraft> = [
         stage: 'independentRecall',
         kind: 'choice',
         prompt: 'Listen. What kind of home do they have?',
+        items: ['het-rijtjeshuis'],
         audioText: 'Wij wonen in een rijtjeshuis met drie slaapkamers en een tuin.',
         listenOnly: true,
         options: [
@@ -433,6 +569,7 @@ export const lessons: Array<LessonDraft> = [
         stage: 'transfer',
         kind: 'type',
         prompt: 'A new colleague asks which floor your flat is on. Say it is on the ground floor.',
+        items: ['de-verdieping'],
         answers: [
           'Mijn appartement is op de begane grond.',
           'Het appartement is op de begane grond.',
@@ -452,15 +589,33 @@ export const lessons: Array<LessonDraft> = [
     situation: 'You have just moved, and a friend calls to ask what the new flat is like.',
     targetPhrase: 'Het appartement heeft twee slaapkamers en een balkon.',
     meaningEn: 'The flat has two bedrooms and a balcony.',
+    items: [
+      {
+        key: 'het-appartement-heeft-twee-slaapkamers-e',
+        dutch: 'Het appartement heeft twee slaapkamers en een balkon.',
+        english: 'The flat has two bedrooms and a balcony.',
+        kind: 'phrase',
+      },
+      {
+        key: 'op-welke-verdieping',
+        dutch: 'Op welke verdieping?',
+        english: 'On which floor?',
+        kind: 'phrase',
+      },
+      { key: 'de-deur', dutch: 'de deur', english: 'the door', kind: 'word' },
+    ],
     wordBreakdown: [
       { dutch: 'groot / klein', english: 'big / small' },
       { dutch: 'Op welke verdieping?', english: 'On which floor?' },
       { dutch: 'de deur', english: 'door' },
     ],
-    patternExplanation:
-      'Two ways to say what a home has: Het appartement heeft een balkon, or Er is een balkon. Describe a room with is + groot or klein: De keuken is klein.',
+    patternExplanation: 'Two ways to say what a home has: Het appartement heeft een balkon, or Er is een balkon. Describe a room with is + groot or klein: De keuken is klein.',
     dialogue: [
-      { speaker: 'Joost', dutch: 'Hoi! Hoe is het appartement?', english: "Hi! How's the flat?" },
+      {
+        speaker: 'Joost',
+        dutch: 'Hoi! Hoe is het appartement?',
+        english: "Hi! How's the flat?",
+      },
       {
         speaker: 'You',
         dutch: 'Leuk! Er zijn twee slaapkamers en er is een balkon.',
@@ -472,10 +627,26 @@ export const lessons: Array<LessonDraft> = [
         dutch: 'Nee, de keuken is klein. De woonkamer is groot.',
         english: 'No, the kitchen is small. The living room is big.',
       },
-      { speaker: 'Joost', dutch: 'Op welke verdieping woon je?', english: 'Which floor do you live on?' },
-      { speaker: 'You', dutch: 'Op de derde verdieping. Er is een lift.', english: 'On the third floor. There is a lift.' },
-      { speaker: 'Joost', dutch: 'En waar staat je fiets?', english: 'And where do you keep your bike?' },
-      { speaker: 'You', dutch: 'Beneden, naast de deur.', english: 'Downstairs, next to the door.' },
+      {
+        speaker: 'Joost',
+        dutch: 'Op welke verdieping woon je?',
+        english: 'Which floor do you live on?',
+      },
+      {
+        speaker: 'You',
+        dutch: 'Op de derde verdieping. Er is een lift.',
+        english: 'On the third floor. There is a lift.',
+      },
+      {
+        speaker: 'Joost',
+        dutch: 'En waar staat je fiets?',
+        english: 'And where do you keep your bike?',
+      },
+      {
+        speaker: 'You',
+        dutch: 'Beneden, naast de deur.',
+        english: 'Downstairs, next to the door.',
+      },
     ],
     speakingPrompt: "Answer Joost's questions about your own home aloud.",
     revisits: [
@@ -503,6 +674,7 @@ export const lessons: Array<LessonDraft> = [
         stage: 'supportedRecall',
         kind: 'cloze',
         prompt: 'Complete with the Dutch for "behind".',
+        items: ['s1-home-prepositions/achter'],
         sentence: 'Mijn fiets staat ___ het huis.',
         answers: ['achter'],
         hint: 'behind',
@@ -514,8 +686,7 @@ export const lessons: Array<LessonDraft> = [
         stage: 'independentRecall',
         kind: 'choice',
         prompt: 'Read the message. What is small?',
-        passage:
-          'Hoi Mila! Het appartement is leuk. Er zijn twee slaapkamers en er is een balkon. De keuken is klein, de woonkamer is groot. Tom',
+        passage: 'Hoi Mila! Het appartement is leuk. Er zijn twee slaapkamers en er is een balkon. De keuken is klein, de woonkamer is groot. Tom',
         options: ['The kitchen', 'The living room', 'The balcony'],
         answer: 'The kitchen',
         explanation: 'De keuken is klein = the kitchen is small. The living room is big (groot).',
@@ -535,6 +706,29 @@ export const lessons: Array<LessonDraft> = [
           'Achter mijn huis is een tuin.',
         ],
         explanation: 'Er is een tuin + achter het huis. Starting with Achter het huis is fine too: the verb is still second.',
+      },
+      {
+        id: 'reply',
+        stage: 'independentRecall',
+        kind: 'choice',
+        prompt: 'What do you reply?',
+        items: ['s1-home-er-is/er-is'],
+        context: [
+          { speaker: 'Joost', dutch: 'Hoi! Hoe is het appartement?', english: "Hi! How's the flat?" },
+          {
+            speaker: 'You',
+            dutch: 'Leuk! Ik woon op de derde verdieping.',
+            english: 'Great! I live on the third floor.',
+          },
+          {
+            speaker: 'Joost',
+            dutch: 'De derde verdieping? Is er een lift?',
+            english: 'The third floor? Is there a lift?',
+          },
+        ],
+        options: ['Ja, er is een lift.', 'Nee, de keuken is klein.', 'Er zijn twee slaapkamers.'],
+        answer: 'Ja, er is een lift.',
+        explanation: 'Joost asks Is er een lift?, so answer with er is: Ja, er is een lift. The kitchen and the bedrooms are not what he asked about.',
       },
       {
         id: 'transfer',

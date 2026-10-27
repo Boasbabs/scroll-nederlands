@@ -9,6 +9,36 @@ export const lessons: Array<LessonDraft> = [
     situation: 'You are at work and your partner sends you a short message on your phone.',
     targetPhrase: 'Hoi! Ik ben om zes uur thuis. Groetjes',
     meaningEn: "Hi! I'll be home at six. Cheers",
+    items: [
+      {
+        key: 'hoi-ik-ben-om-zes-uur',
+        dutch: 'Hoi! Ik ben om zes uur thuis. Groetjes',
+        english: "Hi! I'll be home at six. Cheers",
+        kind: 'phrase',
+        accept: ['Hoi! Om zes uur ben ik thuis. Groetjes'],
+      },
+      {
+        key: 'groetjes',
+        dutch: 'Groetjes',
+        english: 'Cheers (informal sign-off)',
+        kind: 'word',
+        note: 'literally: little greetings',
+      },
+      {
+        key: 'liefs',
+        dutch: 'Liefs',
+        english: 'Love (sign-off)',
+        kind: 'word',
+        note: 'to a partner, family or close friend',
+      },
+      {
+        key: 'tot-straks',
+        dutch: 'Tot straks!',
+        english: 'See you later!',
+        kind: 'phrase',
+        note: 'later today',
+      },
+    ],
     wordBreakdown: [
       { dutch: 'Hoi!', english: 'Hi!' },
       { dutch: 'ik ben … thuis', english: "I am / I'll be home" },
@@ -17,19 +47,20 @@ export const lessons: Array<LessonDraft> = [
       { dutch: 'Liefs', english: 'love (to a partner, family or close friend)' },
       { dutch: 'Tot straks!', english: 'See you later! (later today)' },
     ],
-    patternExplanation:
-      'Messages often use the present tense for the near future: Ik ben om zes uur thuis = I\'ll be home at six. Look for the key facts first: the time (om …), the place (thuis, op kantoor) and the day.',
-    pronunciationTip:
-      'In Groetjes the oe is like "oo" in "food", and tj sounds like a soft "ch": "GROO-chus".',
+    patternExplanation: "Messages often use the present tense for the near future: Ik ben om zes uur thuis = I'll be home at six. Look for the key facts first: the time (om …), the place (thuis, op kantoor) and the day.",
+    pronunciationTip: 'In Groetjes the oe is like "oo" in "food", and tj sounds like a soft "ch": "GROO-chus".',
     examples: [
-      { dutch: 'Ik ben om half acht op het station.', english: "I'll be at the station at half past seven." },
+      {
+        dutch: 'Ik ben om half acht op het station.',
+        english: "I'll be at the station at half past seven.",
+      },
       { dutch: 'Ben je morgen thuis?', english: 'Will you be home tomorrow?' },
       { dutch: 'Tot straks! Liefs, Anna', english: 'See you later! Love, Anna' },
     ],
     speakingPrompt: 'Read the message aloud as if you were telling a friend: Hoi! Ik ben om zes uur thuis.',
+    revisits: ['s1-time-what-time'],
     skills: ['reading'],
     covers: ['reading-simple'],
-    revisits: ['s1-time-what-time'],
     exercises: [
       {
         id: 'rec',
@@ -39,7 +70,7 @@ export const lessons: Array<LessonDraft> = [
         passage: 'Hoi! Ik ben om zes uur thuis. Groetjes, Mark',
         options: ['5:30', '6:00', '6:30', '7:00'],
         answer: '6:00',
-        explanation: 'Om zes uur = at six o\'clock. Half zes would be 5:30.',
+        explanation: "Om zes uur = at six o'clock. Half zes would be 5:30.",
       },
       {
         id: 'cloze',
@@ -50,7 +81,7 @@ export const lessons: Array<LessonDraft> = [
         answers: ['thuis'],
         hint: 't____',
         english: "Hi! I'll be home at seven. Cheers",
-        explanation: 'Thuis = at home. Ik ben om zeven uur thuis = I\'ll be home at seven.',
+        explanation: "Thuis = at home. Ik ben om zeven uur thuis = I'll be home at seven.",
       },
       {
         id: 'read',
@@ -60,7 +91,7 @@ export const lessons: Array<LessonDraft> = [
         passage: 'Hoi! Ik ben vandaag om half zeven thuis, want ik heb een vergadering. Kun jij koken? Groetjes, Daan',
         options: ['Go to a meeting', 'Cook', 'Be home at half past six', 'Call him'],
         answer: 'Cook',
-        explanation: 'Kun jij koken? = Can you cook? He is late (half zeven = 6:30) because he has a meeting.',
+        explanation: 'Kun jij koken? = Can you cook? He will be home at half past six (half zeven = 6:30) because he has a meeting.',
       },
       {
         id: 'transfer',
@@ -82,6 +113,32 @@ export const lessons: Array<LessonDraft> = [
     situation: 'You are meeting a friend at a café at eight, but your bus is late. You send her a quick message.',
     targetPhrase: 'Ik ben te laat. Ik ben er om kwart over acht.',
     meaningEn: "I'm running late. I'll be there at quarter past eight.",
+    items: [
+      {
+        key: 'ik-ben-te-laat-ik-ben',
+        dutch: 'Ik ben te laat. Ik ben er om kwart over acht.',
+        english: "I'm running late. I'll be there at quarter past eight.",
+        kind: 'phrase',
+        accept: [
+          'Ik kom te laat. Ik ben er om kwart over acht.',
+          'Ik ben te laat. Om kwart over acht ben ik er.',
+        ],
+      },
+      {
+        key: 'te-laat',
+        dutch: 'te laat',
+        english: 'late (for something)',
+        kind: 'phrase',
+        note: 'literally: too late. Ik ben te laat.',
+      },
+      {
+        key: 'ik-ben-er',
+        dutch: 'ik ben er',
+        english: "I'll be there",
+        kind: 'phrase',
+        note: "er = there; also: I'm here (when you arrive)",
+      },
+    ],
     wordBreakdown: [
       { dutch: 'te laat', english: 'late (literally: too late)' },
       { dutch: 'ik ben er', english: "I'm there, I'll be there (er = there)" },
@@ -89,19 +146,17 @@ export const lessons: Array<LessonDraft> = [
       { dutch: 'een beetje', english: 'a bit' },
       { dutch: 'later', english: 'later' },
     ],
-    patternExplanation:
-      'Ik ben er om … tells someone when you will arrive; er means "there". Keep it short: sorry, the problem, the new time. Ik ben tien minuten later is another common way to say you are running late.',
-    pronunciationTip:
-      'Laat has a long aa, like "ah" held a little longer. Er sounds like a short "air".',
+    patternExplanation: 'Ik ben er om … tells someone when you will arrive; er means "there". Keep it short: sorry, the problem, the new time. Ik ben tien minuten later is another common way to say you are running late.',
+    pronunciationTip: 'Laat has a long aa, like "ah" held a little longer. Er sounds like a short "air".',
     examples: [
       { dutch: 'Sorry, ik ben een beetje laat.', english: "Sorry, I'm a bit late." },
       { dutch: 'Ik ben tien minuten later.', english: "I'll be ten minutes late." },
       { dutch: 'Ik ben er om half negen.', english: "I'll be there at half past eight." },
     ],
     speakingPrompt: 'Say the message aloud as if leaving a voice note: Sorry, ik ben te laat. Ik ben er om kwart over acht.',
+    revisits: ['s0-numbers-time-quarters', 's0-greet-sorry'],
     skills: ['writing', 'reading'],
     covers: ['writing-simple'],
-    revisits: ['s0-numbers-time-quarters', 's0-greet-sorry'],
     exercises: [
       {
         id: 'rec',
@@ -127,6 +182,7 @@ export const lessons: Array<LessonDraft> = [
         hint: 'there',
         english: "I'll be there at eight.",
         explanation: 'Er = there. Ik ben er om acht uur = I will be there at eight.',
+        items: ['ik-ben-er'],
       },
       {
         id: 'order',
@@ -137,6 +193,7 @@ export const lessons: Array<LessonDraft> = [
         alternatives: [['Om', 'half', 'negen', 'ben', 'ik', 'er.']],
         english: "I'll be there at half past eight.",
         explanation: 'Ik ben er + om half negen. If you start with the time, the verb comes next: Om half negen ben ik er.',
+        items: ['ik-ben-er'],
       },
       {
         id: 'type',
@@ -150,8 +207,10 @@ export const lessons: Array<LessonDraft> = [
           'Sorry, ik ben te laat. Ik ben er om 8.15.',
           'Ik ben te laat. Ik ben er om 20.15.',
           'Ik ben te laat. Om kwart over acht ben ik er.',
+          'Ik kom te laat. Ik ben er om kwart over acht.',
+          'Sorry, ik kom te laat. Ik ben er om kwart over acht.',
         ],
-        explanation: 'Two short sentences: Ik ben te laat. Ik ben er om kwart over acht.',
+        explanation: 'Two short sentences: Ik ben te laat. Ik ben er om kwart over acht. Ik kom te laat is just as common.',
       },
       {
         id: 'transfer',
@@ -167,6 +226,7 @@ export const lessons: Array<LessonDraft> = [
           'Om half acht ben ik er.',
         ],
         explanation: 'Ik ben er om half acht. Remember: half acht = 7:30, half an hour before eight.',
+        items: ['ik-ben-er'],
       },
       {
         id: 'write',
@@ -189,6 +249,30 @@ export const lessons: Array<LessonDraft> = [
     situation: 'You arrive at the town hall and see signs on the doors and on the shop next door.',
     targetPhrase: 'Vandaag gesloten',
     meaningEn: 'Closed today',
+    items: [
+      {
+        key: 'vandaag-gesloten',
+        dutch: 'Vandaag gesloten',
+        english: 'Closed today',
+        kind: 'phrase',
+      },
+      {
+        key: 'de-ingang',
+        dutch: 'de ingang',
+        english: 'the entrance',
+        kind: 'word',
+        note: 'in = in: the way in',
+      },
+      {
+        key: 'de-uitgang',
+        dutch: 'de uitgang',
+        english: 'the exit',
+        kind: 'word',
+        note: 'uit = out: the way out',
+      },
+      { key: 'duwen', dutch: 'duwen', english: 'push (sign on a door)', kind: 'word' },
+      { key: 'trekken', dutch: 'trekken', english: 'pull (sign on a door)', kind: 'word' },
+    ],
     wordBreakdown: [
       { dutch: 'open', english: 'open' },
       { dutch: 'gesloten', english: 'closed' },
@@ -197,10 +281,8 @@ export const lessons: Array<LessonDraft> = [
       { dutch: 'duwen', english: 'push' },
       { dutch: 'trekken', english: 'pull' },
     ],
-    patternExplanation:
-      'Signs use single words: Open, Gesloten, Ingang, Uitgang, Duwen, Trekken. In and uit are the clue: ingang is the way in, uitgang the way out. Duwen and trekken on doors are verbs in their basic form.',
-    pronunciationTip:
-      'Uitgang starts with the ui sound you met in huis. In duwen the u is like "ee" said with rounded lips: "DUU-wuh".',
+    patternExplanation: 'Signs use single words: Open, Gesloten, Ingang, Uitgang, Duwen, Trekken. In and uit are the clue: ingang is the way in, uitgang the way out. Duwen and trekken on doors are verbs in their basic form.',
+    pronunciationTip: 'Uitgang starts with the ui sound you met in huis. In duwen the u is like "ee" said with rounded lips: "DUU-wuh".',
     examples: [
       { dutch: 'Gesloten op zondag', english: 'Closed on Sundays' },
       { dutch: 'Ingang', english: 'Entrance' },
@@ -208,9 +290,9 @@ export const lessons: Array<LessonDraft> = [
       { dutch: 'Duwen', english: 'Push' },
     ],
     speakingPrompt: 'Look at the doors around you and say what the sign would be: Duwen or Trekken, Ingang or Uitgang.',
+    revisits: ['s1-time-opening-hours'],
     skills: ['reading'],
     covers: ['reading-simple'],
-    revisits: ['s1-time-opening-hours'],
     exercises: [
       {
         id: 'rec',
@@ -229,6 +311,7 @@ export const lessons: Array<LessonDraft> = [
         options: ['Ingang', 'Trekken', 'Uitgang', 'Gesloten'],
         answer: 'Uitgang',
         explanation: 'Uit = out, so uitgang is the exit. Ingang is the way in.',
+        items: ['de-uitgang', 'de-ingang'],
       },
       {
         id: 'type',
@@ -237,6 +320,7 @@ export const lessons: Array<LessonDraft> = [
         prompt: 'Your friend pulls on a door that will not open. Type the word that must be on the door: "push".',
         answers: ['Duwen'],
         explanation: 'Duwen = push. Trekken = pull.',
+        items: ['duwen'],
       },
       {
         id: 'read',
@@ -244,7 +328,12 @@ export const lessons: Array<LessonDraft> = [
         kind: 'choice',
         prompt: 'Read the sign on the library. Can you go there on Sunday?',
         passage: 'Bibliotheek\nma–vr: 10.00–18.00\nza: 10.00–14.00\nzo: gesloten',
-        options: ['Yes, from 10 to 2.', "No, it's closed on Sunday.", 'Yes, from 10 to 6.', 'Only in the morning.'],
+        options: [
+          'Yes, from 10 to 2.',
+          "No, it's closed on Sunday.",
+          'Yes, from 10 to 6.',
+          'Only in the morning.',
+        ],
         answer: "No, it's closed on Sunday.",
         explanation: 'Zo = zondag, and it says gesloten. Za (zaterdag) is 10 to 2.',
       },
@@ -261,6 +350,7 @@ export const lessons: Array<LessonDraft> = [
         ],
         answer: 'This is the exit towards the town centre.',
         explanation: 'Uitgang = exit, centrum = (town) centre. Big stations have several exits.',
+        items: ['de-uitgang'],
       },
     ],
   },
@@ -272,6 +362,36 @@ export const lessons: Array<LessonDraft> = [
     situation: 'Your bike is at the bike shop for repair. You missed a call and there is a voicemail.',
     targetPhrase: 'Hallo, met Pieter van de fietsenwinkel.',
     meaningEn: 'Hello, this is Pieter from the bike shop.',
+    items: [
+      {
+        key: 'hallo-met-pieter-van-de-fietsenwinkel',
+        dutch: 'Hallo, met Pieter van de fietsenwinkel.',
+        english: 'Hello, this is Pieter from the bike shop.',
+        kind: 'phrase',
+      },
+      {
+        key: 'de-fietsenwinkel',
+        dutch: 'de fietsenwinkel',
+        english: 'the bike shop',
+        kind: 'word',
+        note: 'de fiets + de winkel',
+      },
+      {
+        key: 'uw-fiets-is-klaar',
+        dutch: 'Uw fiets is klaar.',
+        english: 'Your bike is ready. (polite)',
+        kind: 'phrase',
+        note: 'klaar = ready, done',
+      },
+      {
+        key: 'kunt-u-mij-bellen',
+        dutch: 'Kunt u mij bellen?',
+        english: 'Could you call me? (polite)',
+        kind: 'phrase',
+        accept: ['Kunt u me bellen?'],
+        note: 'bellen = to call (on the phone)',
+      },
+    ],
     wordBreakdown: [
       { dutch: 'met Pieter', english: 'this is Pieter (how Dutch people say who is calling)' },
       { dutch: 'van de fietsenwinkel', english: 'from the bike shop' },
@@ -279,25 +399,41 @@ export const lessons: Array<LessonDraft> = [
       { dutch: 'Kunt u mij bellen?', english: 'Could you call me?' },
       { dutch: 'Tot straks!', english: 'See you later!' },
     ],
-    patternExplanation:
-      'On the phone, Dutch people say met + their name: Met Pieter = It\'s Pieter. In a voicemail, listen for three things: who (met …), why (Uw fiets is klaar) and what to do (Kunt u mij bellen?).',
-    pronunciationTip:
-      'Fietsenwinkel: "FEET-suh-vin-kul". The w is soft, close to a v.',
+    patternExplanation: "On the phone, Dutch people say met + their name: Met Pieter = It's Pieter. In a voicemail, listen for three things: who (met …), why (Uw fiets is klaar) and what to do (Kunt u mij bellen?).",
+    pronunciationTip: 'Fietsenwinkel: "FEET-suh-vin-kul". The w is soft, close to a v.',
     examples: [
-      { dutch: 'Hoi, met Lisa. Bel je me even?', english: "Hi, it's Lisa. Can you give me a call?" },
+      {
+        dutch: 'Hoi, met Lisa. Bel je me even?',
+        english: "Hi, it's Lisa. Can you give me a call?",
+      },
       { dutch: 'Uw fiets is klaar.', english: 'Your bike is ready.' },
-      { dutch: 'De winkel is vandaag open tot zes uur.', english: 'The shop is open until six today.' },
+      {
+        dutch: 'De winkel is vandaag open tot zes uur.',
+        english: 'The shop is open until six today.',
+      },
     ],
     dialogue: [
-      { speaker: 'Pieter', dutch: 'Hallo, met Pieter van de fietsenwinkel.', english: 'Hello, this is Pieter from the bike shop.' },
+      {
+        speaker: 'Pieter',
+        dutch: 'Hallo, met Pieter van de fietsenwinkel.',
+        english: 'Hello, this is Pieter from the bike shop.',
+      },
       { speaker: 'Pieter', dutch: 'Uw fiets is klaar.', english: 'Your bike is ready.' },
-      { speaker: 'Pieter', dutch: 'De winkel is vandaag open tot zes uur.', english: 'The shop is open until six today.' },
-      { speaker: 'Pieter', dutch: 'Het kost vijfendertig euro. Tot straks!', english: 'It costs thirty-five euros. See you later!' },
+      {
+        speaker: 'Pieter',
+        dutch: 'De winkel is vandaag open tot zes uur.',
+        english: 'The shop is open until six today.',
+      },
+      {
+        speaker: 'Pieter',
+        dutch: 'Het kost vijfendertig euro. Tot straks!',
+        english: 'It costs thirty-five euros. See you later!',
+      },
     ],
     speakingPrompt: 'Answer your phone the Dutch way: Hallo, met … (your name).',
+    revisits: ['s1-time-opening-hours', 's1-shop-how-much'],
     skills: ['listening'],
     covers: ['listening-simple'],
-    revisits: ['s1-time-opening-hours', 's1-shop-how-much'],
     exercises: [
       {
         id: 'rec',
@@ -314,6 +450,7 @@ export const lessons: Array<LessonDraft> = [
         ],
         answer: 'The bike shop: your bike is ready.',
         explanation: 'Met Pieter van de fietsenwinkel = this is Pieter from the bike shop. Klaar = ready.',
+        items: ['hallo-met-pieter-van-de-fietsenwinkel', 'uw-fiets-is-klaar'],
       },
       {
         id: 'cloze',
@@ -348,6 +485,7 @@ export const lessons: Array<LessonDraft> = [
         listenOnly: true,
         answers: ['Kunt u mij bellen?'],
         explanation: 'Kunt u mij bellen? = Could you call me? Bellen = to call (on the phone).',
+        items: ['kunt-u-mij-bellen'],
       },
       {
         id: 'transfer',
@@ -375,6 +513,29 @@ export const lessons: Array<LessonDraft> = [
     situation: 'Your friend Sanne messages you about going to the market on Saturday.',
     targetPhrase: 'Ja, leuk! Hoe laat ben je er?',
     meaningEn: 'Yes, sounds fun! What time will you be there?',
+    items: [
+      {
+        key: 'ja-leuk-hoe-laat-ben-je',
+        dutch: 'Ja, leuk! Hoe laat ben je er?',
+        english: 'Yes, sounds fun! What time will you be there?',
+        kind: 'phrase',
+        accept: ['Ja, leuk! Hoe laat ben jij er?'],
+      },
+      {
+        key: 'kom-je-ook',
+        dutch: 'Kom je ook?',
+        english: 'Are you coming too?',
+        kind: 'phrase',
+        accept: ['Kom jij ook?'],
+      },
+      {
+        key: 'tot-zaterdag',
+        dutch: 'Tot zaterdag!',
+        english: 'See you on Saturday!',
+        kind: 'phrase',
+        note: 'tot + day: Tot maandag! Tot morgen!',
+      },
+    ],
     wordBreakdown: [
       { dutch: 'Kom je ook?', english: 'Are you coming too?' },
       { dutch: 'Ja, leuk!', english: 'Yes, sounds fun!' },
@@ -382,18 +543,38 @@ export const lessons: Array<LessonDraft> = [
       { dutch: 'daar', english: 'there' },
       { dutch: 'Tot zaterdag!', english: 'See you on Saturday!' },
     ],
-    patternExplanation:
-      'A good reply answers the question first (Ja, leuk! or Sorry, ik kan niet), then adds one detail or one question. Close with Groetjes or Tot …!',
+    patternExplanation: 'A good reply answers the question first (Ja, leuk! or Sorry, ik kan niet), then adds one detail or one question. Close with Groetjes or Tot …!',
     dialogue: [
-      { speaker: 'Sanne', dutch: 'Hoi! Ik ga zaterdag naar de markt in Leiden. Kom je ook?', english: "Hi! I'm going to the market in Leiden on Saturday. Are you coming too?" },
-      { speaker: 'You', dutch: 'Ja, leuk! Hoe laat ben je er?', english: 'Yes, sounds fun! What time will you be there?' },
-      { speaker: 'Sanne', dutch: 'Om elf uur. We kunnen daar koffie drinken.', english: 'At eleven. We can have a coffee there.' },
-      { speaker: 'You', dutch: 'Prima! Tot zaterdag. Groetjes', english: 'Great! See you on Saturday. Cheers' },
+      {
+        speaker: 'Sanne',
+        dutch: 'Hoi! Ik ga zaterdag naar de markt in Leiden. Kom je ook?',
+        english: "Hi! I'm going to the market in Leiden on Saturday. Are you coming too?",
+      },
+      {
+        speaker: 'You',
+        dutch: 'Ja, leuk! Hoe laat ben je er?',
+        english: 'Yes, sounds fun! What time will you be there?',
+      },
+      {
+        speaker: 'Sanne',
+        dutch: 'Om elf uur. We kunnen daar koffie drinken.',
+        english: 'At eleven. We can have a coffee there.',
+      },
+      {
+        speaker: 'You',
+        dutch: 'Prima! Tot zaterdag. Groetjes',
+        english: 'Great! See you on Saturday. Cheers',
+      },
     ],
     speakingPrompt: 'Read the chat aloud, then reply to Sanne in your own words.',
+    revisits: [
+      's1-texts-read-message',
+      's1-texts-write-message',
+      's1-connect-of-want',
+      's1-modals-kunnen',
+    ],
     skills: ['reading', 'writing'],
     covers: ['writing-simple', 'reading-simple'],
-    revisits: ['s1-texts-read-message', 's1-texts-write-message', 's1-connect-of-want', 's1-modals-kunnen'],
     exercises: [
       {
         id: 'rec',
@@ -409,6 +590,7 @@ export const lessons: Array<LessonDraft> = [
         ],
         answer: 'If you are coming to the market on Saturday',
         explanation: 'Zaterdag = Saturday, de markt = the market, Kom je ook? = Are you coming too?',
+        items: ['kom-je-ook'],
       },
       {
         id: 'order',
@@ -429,6 +611,7 @@ export const lessons: Array<LessonDraft> = [
         hint: 'because',
         english: "Sorry, I can't on Saturday, because I have to work.",
         explanation: 'Want gives the reason, and ik moet werken keeps normal order after it.',
+        items: ['s1-connect-of-want/want'],
       },
       {
         id: 'type',
@@ -445,25 +628,51 @@ export const lessons: Array<LessonDraft> = [
         explanation: 'Ja, leuk! answers the question. Hoe laat ben je er? asks for the time.',
       },
       {
+        id: 'reply',
+        stage: 'transfer',
+        kind: 'choice',
+        prompt: 'What do you reply?',
+        context: [
+          {
+            speaker: 'Bram',
+            dutch: 'Hoi! Ik ga vrijdag naar de bioscoop. Kom je ook?',
+            english: "Hi! I'm going to the cinema on Friday. Are you coming too?",
+          },
+          { speaker: 'You', dutch: 'Ja, leuk!', english: 'Yes, sounds fun!' },
+          { speaker: 'Bram', dutch: 'Top! Ik ben er om acht uur.', english: "Great! I'll be there at eight." },
+        ],
+        options: ['Prima! Tot vrijdag!', 'Hoe laat ben je er?', 'Kom je ook?'],
+        answer: 'Prima! Tot vrijdag!',
+        explanation: 'Bram has told you the time, so confirm and close the chat: Prima! Tot vrijdag! He has already said when he will be there, and he invited you, so Kom je ook? makes no sense.',
+        items: ['tot-zaterdag'],
+      },
+      {
         id: 'choice',
         stage: 'transfer',
         kind: 'choice',
         prompt: 'Your colleague Tim texts: "Ik kook zondag. Kom je eten?" Which reply answers his question?',
-        options: ['Ja, ik eet graag kaas.', 'Ja, graag! Tot zondag.', 'Om zes uur.', 'Nee, ik kook niet.'],
+        options: [
+          'Ja, ik eet graag kaas.',
+          'Ja, graag! Tot zondag.',
+          'Om zes uur.',
+          'Nee, ik kook niet.',
+        ],
         answer: 'Ja, graag! Tot zondag.',
         explanation: 'Kom je eten? = Are you coming for dinner? Ja, graag! accepts, and Tot zondag closes the message.',
+        items: ['tot-zaterdag'],
       },
       {
         id: 'write',
         stage: 'transfer',
         kind: 'write',
-        prompt: 'Read Tim\'s message. Reply: say sorry, you cannot come, and give a reason with want. Close the message.',
+        prompt: "Read Tim's message. Reply: say sorry, you cannot come, and give a reason with want. Close the message.",
         passage: 'Hoi! Ik kook zondag. Kom je eten? Om zes uur bij mij thuis. Groetjes, Tim',
         mustInclude: [['sorry', 'nee'], ['niet'], ['want']],
         minWords: 8,
         modelAnswer: 'Hoi Tim! Sorry, ik kan zondag niet komen, want ik moet werken. Groetjes, Alex',
         focusedOnly: true,
         explanation: 'Your reply needs the answer (ik kan niet komen), the reason after want, and a sign-off like Groetjes.',
+        items: ['s1-connect-of-want/ik-kom-niet-want-ik-moet'],
       },
     ],
   },

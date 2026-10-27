@@ -9,16 +9,36 @@ export const lessons: Array<LessonDraft> = [
     situation: 'At lunch a new colleague asks what you like doing. You want to say you like cycling.',
     targetPhrase: 'Ik fiets graag.',
     meaningEn: 'I like cycling.',
+    items: [
+      {
+        key: 'ik-fiets-graag',
+        dutch: 'Ik fiets graag.',
+        english: 'I like cycling.',
+        kind: 'phrase',
+      },
+      {
+        key: 'ik-lees',
+        dutch: 'ik lees',
+        english: 'I read',
+        kind: 'phrase',
+        note: 'from lezen',
+      },
+      {
+        key: 'ik-kook-niet-graag',
+        dutch: 'Ik kook niet graag.',
+        english: "I don't like cooking.",
+        kind: 'phrase',
+        note: 'niet goes before graag',
+      },
+    ],
     wordBreakdown: [
       { dutch: 'ik fiets', english: 'I cycle (from fietsen)' },
       { dutch: 'graag', english: 'gladly; after a verb it means "like to"' },
       { dutch: 'ik lees', english: 'I read (from lezen)' },
       { dutch: 'niet graag', english: "don't like to" },
     ],
-    patternExplanation:
-      'Put graag straight after the verb to say you like doing something: Ik lees graag. In a question it comes after je: Kook je graag? Niet graag means you do not like it: Ik kook niet graag.',
-    pronunciationTip:
-      'Both g sounds in graag come from the throat, like a soft "ch" in Scottish "loch", and the aa is a long "ah". The ie in fiets sounds like the "ee" in "feet".',
+    patternExplanation: 'Put graag straight after the verb to say you like doing something: Ik lees graag. In a question it comes after je: Kook je graag? Niet graag means you do not like it: Ik kook niet graag.',
+    pronunciationTip: 'Both g sounds in graag come from the throat, like a soft "ch" in Scottish "loch", and the aa is a long "ah". The ie in fiets sounds like the "ee" in "feet".',
     examples: [
       { dutch: 'Ik lees graag.', english: 'I like reading.' },
       { dutch: 'Mijn vriendin zwemt graag.', english: 'My girlfriend likes swimming.' },
@@ -26,9 +46,9 @@ export const lessons: Array<LessonDraft> = [
       { dutch: 'Ik sport niet graag.', english: "I don't like doing sport." },
     ],
     speakingPrompt: 'Say three things you like doing: Ik fiets graag. Ik lees graag. Ik kook graag.',
+    revisits: ['s1-verbs-regular'],
     skills: ['speaking', 'listening', 'reading'],
     covers: ['hobbies'],
-    revisits: ['s1-verbs-regular'],
     exercises: [
       {
         id: 'rec',
@@ -37,8 +57,8 @@ export const lessons: Array<LessonDraft> = [
         prompt: 'What does "Ik lees graag." mean?',
         options: ['I read a lot.', 'I like reading.', "I'd like to read.", "I'm reading right now."],
         answer: 'I like reading.',
-        explanation:
-          'Verb + graag = you like doing it. "I\'d like to read" would be Ik wil graag lezen, and "I read a lot" is Ik lees veel.',
+        explanation: 'Verb + graag = you like doing it. "I\'d like to read" would be Ik wil graag lezen, and "I read a lot" is Ik lees veel.',
+        items: ['ik-fiets-graag', 'ik-lees'],
       },
       {
         id: 'cloze',
@@ -60,6 +80,7 @@ export const lessons: Array<LessonDraft> = [
         distractors: ['geen'],
         english: "I don't like cooking.",
         explanation: 'Niet goes before graag: Ik kook niet graag. Geen is only for nouns (geen auto), not for verbs.',
+        items: ['ik-kook-niet-graag'],
       },
       {
         id: 'type',
@@ -75,8 +96,7 @@ export const lessons: Array<LessonDraft> = [
         kind: 'type',
         prompt: "You meet your neighbour's partner for the first time. Ask her (informally) whether she likes cooking.",
         answers: ['Kook je graag?', 'Kook jij graag?'],
-        explanation:
-          'In a question the verb comes first. With je after it, the verb has no -t: Kook je graag? (not Kookt je).',
+        explanation: 'In a question the verb comes first. With je after it, the verb has no -t: Kook je graag? (not Kookt je).',
       },
     ],
   },
@@ -85,18 +105,33 @@ export const lessons: Array<LessonDraft> = [
     kind: 'core',
     title: 'I love music',
     objective: 'Say what you love or really like with houden van + a noun.',
-    situation: 'At a neighbour\'s birthday party someone asks what you are into. You want to say you love music.',
+    situation: "At a neighbour's birthday party someone asks what you are into. You want to say you love music.",
     targetPhrase: 'Ik hou van muziek.',
     meaningEn: 'I love music.',
+    items: [
+      {
+        key: 'ik-hou-van-muziek',
+        dutch: 'Ik hou van muziek.',
+        english: 'I love music.',
+        kind: 'phrase',
+        accept: ['Ik houd van muziek.'],
+      },
+      {
+        key: 'houden-van',
+        dutch: 'houden van',
+        english: 'to love, to be really fond of',
+        kind: 'phrase',
+        note: 'ik hou van, jij houdt van',
+      },
+      { key: 'de-muziek', dutch: 'de muziek', english: 'the music', kind: 'word' },
+    ],
     wordBreakdown: [
       { dutch: 'ik hou', english: 'I hold (from houden)' },
       { dutch: 'houden van', english: 'to love, to be really fond of' },
       { dutch: 'de muziek', english: 'music' },
     ],
-    patternExplanation:
-      'Houden van + a thing means to love or really like it: Ik hou van koffie. Use graag with a verb (Ik lees graag) and houden van with a noun (Ik hou van boeken). Forms: ik hou, jij houdt, hij/zij houdt, wij houden; in a question: Hou je van …?',
-    pronunciationTip:
-      'Hou sounds a lot like English "how". In houdt the d and t together are just one t sound: "howt".',
+    patternExplanation: 'Houden van + a thing means to love or really like it: Ik hou van koffie. Use graag with a verb (Ik lees graag) and houden van with a noun (Ik hou van boeken). Forms: ik hou, jij houdt, hij/zij houdt, wij houden; in a question: Hou je van …?',
+    pronunciationTip: 'Hou sounds a lot like English "how". In houdt the d and t together are just one t sound: "howt".',
     examples: [
       { dutch: 'Ik hou van koffie.', english: 'I love coffee.' },
       { dutch: 'Mijn zus houdt van films.', english: 'My sister loves films.' },
@@ -121,9 +156,15 @@ export const lessons: Array<LessonDraft> = [
         stage: 'supportedRecall',
         kind: 'choice',
         prompt: 'Your friend loves football. Which sentence is correct?',
-        options: ['Hij hou van voetbal.', 'Hij houdt van voetbal.', 'Hij houdt voetbal.', 'Hij houden van voetbal.'],
+        options: [
+          'Hij hou van voetbal.',
+          'Hij houdt van voetbal.',
+          'Hij houdt voetbal.',
+          'Hij houden van voetbal.',
+        ],
         answer: 'Hij houdt van voetbal.',
         explanation: 'With hij the verb gets -t: hij houdt. And you always need van: houden van.',
+        items: ['houden-van'],
       },
       {
         id: 'cloze',
@@ -135,6 +176,7 @@ export const lessons: Array<LessonDraft> = [
         hint: 'v__',
         english: 'I love coffee.',
         explanation: 'Houden always comes with van when it means "to love": Ik hou van koffie.',
+        items: ['houden-van'],
       },
       {
         id: 'type',
@@ -149,8 +191,14 @@ export const lessons: Array<LessonDraft> = [
         stage: 'transfer',
         kind: 'type',
         prompt: 'You are chatting with your new neighbour. Ask him (informally) whether he likes football.',
-        answers: ['Hou je van voetbal?', 'Hou jij van voetbal?', 'Houd je van voetbal?', 'Houd jij van voetbal?'],
+        answers: [
+          'Hou je van voetbal?',
+          'Hou jij van voetbal?',
+          'Houd je van voetbal?',
+          'Houd jij van voetbal?',
+        ],
         explanation: 'Question: verb first, then je. The -t drops before je (Houd je …?), and in everyday Dutch you say and write Hou je …?',
+        items: ['ik-hou-van-muziek', 'houden-van'],
       },
     ],
   },
@@ -162,37 +210,76 @@ export const lessons: Array<LessonDraft> = [
     situation: 'During a coffee break a colleague wants to get to know you and asks about your free time.',
     targetPhrase: 'Wat doe je in je vrije tijd?',
     meaningEn: 'What do you do in your free time?',
+    items: [
+      {
+        key: 'wat-doe-je-in-je-vrije',
+        dutch: 'Wat doe je in je vrije tijd?',
+        english: 'What do you do in your free time?',
+        kind: 'phrase',
+        accept: ['Wat doe jij in je vrije tijd?'],
+      },
+      {
+        key: 'in-mijn-vrije-tijd',
+        dutch: 'in mijn vrije tijd',
+        english: 'in my free time',
+        kind: 'phrase',
+        note: 'vrij = free; de tijd = time',
+      },
+      { key: 'ik-sport', dutch: 'ik sport', english: 'I do sport, I work out', kind: 'phrase' },
+      {
+        key: 'twee-keer-per-week',
+        dutch: 'twee keer per week',
+        english: 'twice a week',
+        kind: 'phrase',
+        note: 'literally: two times per week',
+      },
+    ],
     wordBreakdown: [
       { dutch: 'wat doe je', english: 'what do you do' },
       { dutch: 'in je vrije tijd', english: 'in your free time (vrij = free)' },
       { dutch: 'ik sport', english: 'I do sport, I work out' },
       { dutch: 'twee keer per week', english: 'twice a week (literally: two times per week)' },
     ],
-    patternExplanation:
-      'Answer with a verb and, if you like, how often: Ik sport twee keer per week. Keer means "time(s)": één keer, twee keer, drie keer per maand. If a time phrase comes first, the verb comes next: In het weekend zwem ik.',
-    pronunciationTip:
-      'Vrije and tijd have the same ij sound, somewhere between English "ay" and "eye". The d at the end of tijd sounds like a t.',
+    patternExplanation: 'Answer with a verb and, if you like, how often: Ik sport twee keer per week. Keer means "time(s)": één keer, twee keer, drie keer per maand. If a time phrase comes first, the verb comes next: In het weekend zwem ik.',
+    pronunciationTip: 'Vrije and tijd have the same ij sound, somewhere between English "ay" and "eye". The d at the end of tijd sounds like a t.',
     examples: [
       { dutch: 'Ik sport twee keer per week.', english: 'I work out twice a week.' },
       { dutch: 'Ik zwem één keer per week.', english: 'I swim once a week.' },
       { dutch: 'In het weekend fiets ik vaak.', english: 'At the weekend I often cycle.' },
     ],
     dialogue: [
-      { speaker: 'Collega', dutch: 'Wat doe je in je vrije tijd?', english: 'What do you do in your free time?' },
-      { speaker: 'You', dutch: 'Ik sport veel. Ik voetbal twee keer per week. En jij?', english: 'I do a lot of sport. I play football twice a week. And you?' },
-      { speaker: 'Collega', dutch: 'Ik lees graag. In het weekend fiets ik.', english: 'I like reading. At the weekend I cycle.' },
+      {
+        speaker: 'Collega',
+        dutch: 'Wat doe je in je vrije tijd?',
+        english: 'What do you do in your free time?',
+      },
+      {
+        speaker: 'You',
+        dutch: 'Ik sport veel. Ik voetbal twee keer per week. En jij?',
+        english: 'I do a lot of sport. I play football twice a week. And you?',
+      },
+      {
+        speaker: 'Collega',
+        dutch: 'Ik lees graag. In het weekend fiets ik.',
+        english: 'I like reading. At the weekend I cycle.',
+      },
     ],
     speakingPrompt: 'Ask the question aloud, then answer it for yourself: Wat doe je in je vrije tijd? Ik … twee keer per week.',
+    revisits: ['s1-routine-frequency', 's1-routine-weekend'],
     skills: ['speaking', 'listening', 'reading'],
     covers: ['hobbies', 'common-questions'],
-    revisits: ['s1-routine-frequency', 's1-routine-weekend'],
     exercises: [
       {
         id: 'rec',
         stage: 'recognition',
         kind: 'choice',
         prompt: 'A colleague asks you: "Wat doe je in je vrije tijd?" What does she want to know?',
-        options: ['What your job is', 'What you do in your free time', 'When you are free', 'What time it is'],
+        options: [
+          'What your job is',
+          'What you do in your free time',
+          'When you are free',
+          'What time it is',
+        ],
         answer: 'What you do in your free time',
         explanation: 'Vrije tijd = free time. "When are you free?" would be Wanneer ben je vrij?',
       },
@@ -206,6 +293,7 @@ export const lessons: Array<LessonDraft> = [
         options: ['Once a week', 'Twice a week', 'Two hours a week', 'Every weekend'],
         answer: 'Twice a week',
         explanation: 'Twee keer per week = two times a week, so twice a week.',
+        items: ['twee-keer-per-week'],
       },
       {
         id: 'cloze',
@@ -217,6 +305,7 @@ export const lessons: Array<LessonDraft> = [
         hint: 'k___',
         english: 'I work out three times a week.',
         explanation: 'Keer = time (as in "three times"). It stays keer after a number: drie keer, not drie keren.',
+        items: ['twee-keer-per-week', 'ik-sport'],
       },
       {
         id: 'type',
@@ -232,12 +321,32 @@ export const lessons: Array<LessonDraft> = [
         explanation: 'Wat doe je …? with no -t after doe, and vrije with -e because it comes before the noun tijd.',
       },
       {
+        id: 'reply',
+        stage: 'transfer',
+        kind: 'choice',
+        prompt: 'What do you reply?',
+        context: [
+          { speaker: 'Collega', dutch: 'Hoi! Jij bent nieuw hier, toch?', english: "Hi! You're new here, aren't you?" },
+          { speaker: 'You', dutch: 'Ja, ik werk hier sinds maandag.', english: "Yes, I've been working here since Monday." },
+          { speaker: 'Collega', dutch: 'Leuk! Wat doe je in je vrije tijd?', english: 'Nice! What do you do in your free time?' },
+        ],
+        options: [
+          'Ik sport veel. Ik zwem twee keer per week.',
+          'Ik werk van negen tot vijf.',
+          'Ik ben ontwikkelaar.',
+        ],
+        answer: 'Ik sport veel. Ik zwem twee keer per week.',
+        explanation: 'She asks about your free time, so name a hobby and, if you like, how often. Your working hours and your job answer other questions; Wat doe je voor werk? is the one about work.',
+        items: ['ik-sport', 'twee-keer-per-week'],
+      },
+      {
         id: 'transfer',
         stage: 'transfer',
         kind: 'type',
         prompt: 'Your neighbour sees your bike and asks how often you cycle. Say you cycle three times a week.',
         answers: ['Ik fiets drie keer per week.', 'Ik fiets 3 keer per week.'],
         explanation: 'Same pattern with a new verb: Ik fiets + drie keer per week.',
+        items: ['twee-keer-per-week'],
       },
     ],
   },
@@ -249,6 +358,29 @@ export const lessons: Array<LessonDraft> = [
     situation: 'At a taalcafé (language café) in Utrecht you chat with Sanne about what you both like doing.',
     targetPhrase: 'En jij? Wat doe jij graag?',
     meaningEn: 'And you? What do you like doing?',
+    items: [
+      {
+        key: 'en-jij-wat-doe-jij-graag',
+        dutch: 'En jij? Wat doe jij graag?',
+        english: 'And you? What do you like doing?',
+        kind: 'phrase',
+        accept: ['En jij? Wat doe je graag?'],
+      },
+      {
+        key: 'spelen',
+        dutch: 'spelen',
+        english: 'to play',
+        kind: 'word',
+        note: 'an instrument, a game',
+      },
+      {
+        key: 'ik-speel-gitaar',
+        dutch: 'ik speel gitaar',
+        english: 'I play the guitar',
+        kind: 'phrase',
+        note: 'no "the" in Dutch',
+      },
+    ],
     wordBreakdown: [
       { dutch: 'Wat doe jij graag?', english: 'What do you like doing?' },
       { dutch: 'Leuk!', english: 'Nice! / Fun!' },
@@ -256,21 +388,48 @@ export const lessons: Array<LessonDraft> = [
       { dutch: 'ik speel gitaar', english: 'I play the guitar (no "the" in Dutch)' },
       { dutch: 'ook', english: 'too, also' },
     ],
-    patternExplanation:
-      'Keep a hobby chat going: answer, then ask back with En jij? Use graag with a verb, houden van with a thing and keer per week for how often.',
+    patternExplanation: 'Keep a hobby chat going: answer, then ask back with En jij? Use graag with a verb, houden van with a thing and keer per week for how often.',
     dialogue: [
-      { speaker: 'Sanne', dutch: 'Hoi! Wat doe jij graag in je vrije tijd?', english: 'Hi! What do you like doing in your free time?' },
-      { speaker: 'You', dutch: 'Ik fiets graag en ik hou van muziek.', english: 'I like cycling and I love music.' },
-      { speaker: 'Sanne', dutch: 'Leuk! Speel je een instrument?', english: 'Nice! Do you play an instrument?' },
-      { speaker: 'You', dutch: 'Ja, ik speel gitaar. En jij? Wat doe jij graag?', english: 'Yes, I play the guitar. And you? What do you like doing?' },
-      { speaker: 'Sanne', dutch: 'Ik sport veel. Ik zwem drie keer per week.', english: 'I do a lot of sport. I swim three times a week.' },
-      { speaker: 'You', dutch: 'Zwem je ook in het weekend?', english: 'Do you swim at the weekend too?' },
-      { speaker: 'Sanne', dutch: 'Nee, in het weekend lees ik graag.', english: 'No, at the weekend I like to read.' },
+      {
+        speaker: 'Sanne',
+        dutch: 'Hoi! Wat doe jij graag in je vrije tijd?',
+        english: 'Hi! What do you like doing in your free time?',
+      },
+      {
+        speaker: 'You',
+        dutch: 'Ik fiets graag en ik hou van muziek.',
+        english: 'I like cycling and I love music.',
+      },
+      {
+        speaker: 'Sanne',
+        dutch: 'Leuk! Speel je een instrument?',
+        english: 'Nice! Do you play an instrument?',
+      },
+      {
+        speaker: 'You',
+        dutch: 'Ja, ik speel gitaar. En jij? Wat doe jij graag?',
+        english: 'Yes, I play the guitar. And you? What do you like doing?',
+      },
+      {
+        speaker: 'Sanne',
+        dutch: 'Ik sport veel. Ik zwem drie keer per week.',
+        english: 'I do a lot of sport. I swim three times a week.',
+      },
+      {
+        speaker: 'You',
+        dutch: 'Zwem je ook in het weekend?',
+        english: 'Do you swim at the weekend too?',
+      },
+      {
+        speaker: 'Sanne',
+        dutch: 'Nee, in het weekend lees ik graag.',
+        english: 'No, at the weekend I like to read.',
+      },
     ],
     speakingPrompt: 'Play your part in the dialogue aloud, then change the hobbies to your own.',
+    revisits: ['s1-free-graag', 's1-free-hou-van', 's1-free-free-time', 's1-verbs-inversion-jij'],
     skills: ['speaking', 'listening', 'reading'],
     covers: ['hobbies', 'common-questions'],
-    revisits: ['s1-free-graag', 's1-free-hou-van', 's1-free-free-time', 's1-verbs-inversion-jij'],
     exercises: [
       {
         id: 'rec',
@@ -285,6 +444,7 @@ export const lessons: Array<LessonDraft> = [
         ],
         answer: 'She swims three times a week.',
         explanation: 'Drie keer per week = three times a week. "Wants to" would need wil: Ik wil … zwemmen.',
+        items: ['s1-free-free-time/twee-keer-per-week'],
       },
       {
         id: 'choice',
@@ -294,6 +454,7 @@ export const lessons: Array<LessonDraft> = [
         options: ['Ik hou graag films.', 'Ik hou van films.', 'Ik graag kijk films.', 'Ik houd films.'],
         answer: 'Ik hou van films.',
         explanation: 'With a noun (films) you need houden van. Graag goes after a verb: Ik lees graag.',
+        items: ['s1-free-hou-van/ik-hou-van-muziek', 's1-free-hou-van/houden-van'],
       },
       {
         id: 'listen',
@@ -302,9 +463,15 @@ export const lessons: Array<LessonDraft> = [
         prompt: "Listen to Sanne's friend Tom. What does he do twice a week?",
         audioText: 'Ik hou van muziek. Ik speel twee keer per week piano.',
         listenOnly: true,
-        options: ['He plays the guitar.', 'He goes to concerts.', 'He plays the piano.', 'He listens to music.'],
+        options: [
+          'He plays the guitar.',
+          'He goes to concerts.',
+          'He plays the piano.',
+          'He listens to music.',
+        ],
         answer: 'He plays the piano.',
         explanation: 'Ik speel twee keer per week piano = I play the piano twice a week. He also says he loves music.',
+        items: ['spelen'],
       },
       {
         id: 'type',
@@ -313,6 +480,21 @@ export const lessons: Array<LessonDraft> = [
         prompt: 'Sanne asks: "Wat doe jij graag?" Say you like cooking, then ask her back ("And you?").',
         answers: ['Ik kook graag. En jij?', 'Ik kook graag. En jij dan?'],
         explanation: 'Ik kook graag. Then En jij? is the easiest way to pass the question back.',
+        items: ['en-jij-wat-doe-jij-graag', 's1-free-graag/ik-fiets-graag'],
+      },
+      {
+        id: 'reply',
+        stage: 'transfer',
+        kind: 'choice',
+        prompt: 'What do you reply?',
+        context: [
+          { speaker: 'You', dutch: 'En jij? Wat doe jij graag?', english: 'And you? What do you like doing?' },
+          { speaker: 'Tom', dutch: 'Ik hou van muziek. Ik speel piano.', english: 'I love music. I play the piano.' },
+        ],
+        options: ['Leuk! Speel je vaak?', 'En jij? Wat doe jij graag?', 'Ik werk van negen tot vijf.'],
+        answer: 'Leuk! Speel je vaak?',
+        explanation: 'Tom has just told you his hobby, so react and ask a follow-up question: Leuk! Speel je vaak? Asking En jij? again repeats a question he has already answered, and your working hours are off-topic.',
+        items: ['spelen'],
       },
       {
         id: 'transfer',
@@ -321,6 +503,7 @@ export const lessons: Array<LessonDraft> = [
         prompt: 'Now you meet Tom. Ask him (informally) whether he also likes cycling.',
         answers: ['Fiets jij ook graag?', 'Fiets je ook graag?'],
         explanation: 'Verb first for a yes/no question, then jij or je, then ook graag. No -t: Fiets je, not Fietst je.',
+        items: ['s1-free-graag/ik-fiets-graag'],
       },
     ],
   },

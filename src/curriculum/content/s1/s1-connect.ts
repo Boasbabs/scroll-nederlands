@@ -9,25 +9,41 @@ export const lessons: Array<LessonDraft> = [
     situation: 'A new colleague asks where you live. You work in Amsterdam, but you live in Utrecht.',
     targetPhrase: 'Ik werk in Amsterdam, maar ik woon in Utrecht.',
     meaningEn: 'I work in Amsterdam, but I live in Utrecht.',
+    items: [
+      {
+        key: 'ik-werk-in-amsterdam-maar-ik',
+        dutch: 'Ik werk in Amsterdam, maar ik woon in Utrecht.',
+        english: 'I work in Amsterdam, but I live in Utrecht.',
+        kind: 'phrase',
+      },
+      { key: 'en', dutch: 'en', english: 'and', kind: 'word' },
+    ],
     wordBreakdown: [
       { dutch: 'en', english: 'and' },
       { dutch: 'maar', english: 'but' },
       { dutch: 'ik werk in', english: 'I work in' },
       { dutch: 'ik woon in', english: 'I live in' },
     ],
-    patternExplanation:
-      'En and maar join two sentences without changing the word order of the second one: Ik drink koffie, maar mijn man drinkt thee. Put a comma before maar; before en you usually do not need one.',
-    pronunciationTip:
-      'Maar has a long aa, like "ah", and a light r at the end. En sounds like the "en" in "pen".',
+    patternExplanation: 'En and maar join two sentences without changing the word order of the second one: Ik drink koffie, maar mijn man drinkt thee. Put a comma before maar; before en you usually do not need one.',
+    pronunciationTip: 'Maar has a long aa, like "ah", and a light r at the end. En sounds like the "en" in "pen".',
     examples: [
-      { dutch: 'Ik heb een broer en hij woont in Londen.', english: 'I have a brother and he lives in London.' },
-      { dutch: 'Het is koud, maar het regent niet.', english: "It's cold, but it isn't raining." },
-      { dutch: 'Ik drink koffie, maar mijn man drinkt thee.', english: 'I drink coffee, but my husband drinks tea.' },
+      {
+        dutch: 'Ik heb een broer en hij woont in Londen.',
+        english: 'I have a brother and he lives in London.',
+      },
+      {
+        dutch: 'Het is koud, maar het regent niet.',
+        english: "It's cold, but it isn't raining.",
+      },
+      {
+        dutch: 'Ik drink koffie, maar mijn man drinkt thee.',
+        english: 'I drink coffee, but my husband drinks tea.',
+      },
     ],
     speakingPrompt: 'Say where you work and where you live in one sentence: Ik werk in …, maar ik woon in …',
+    revisits: ['s1-verbs-regular', 's1-weather-people'],
     skills: ['speaking', 'reading', 'writing'],
     covers: ['connectors-basic'],
-    revisits: ['s1-verbs-regular', 's1-weather-people'],
     exercises: [
       {
         id: 'rec',
@@ -100,25 +116,44 @@ export const lessons: Array<LessonDraft> = [
     situation: 'A friend invites you to a party on Saturday, but you cannot go because you have to work.',
     targetPhrase: 'Ik kom niet, want ik moet werken.',
     meaningEn: "I'm not coming, because I have to work.",
+    items: [
+      {
+        key: 'ik-kom-niet-want-ik-moet',
+        dutch: 'Ik kom niet, want ik moet werken.',
+        english: "I'm not coming, because I have to work.",
+        kind: 'phrase',
+      },
+      {
+        key: 'want',
+        dutch: 'want',
+        english: 'because',
+        kind: 'word',
+        note: 'not "to want": that is willen',
+      },
+    ],
     wordBreakdown: [
       { dutch: 'of', english: 'or' },
       { dutch: 'want', english: 'because (not the verb "want"!)' },
       { dutch: 'ik kom niet', english: "I'm not coming" },
       { dutch: 'ik moet werken', english: 'I have to work' },
     ],
-    patternExplanation:
-      'Of offers a choice: Koffie of thee? Want gives a reason and, like en and maar, it does not change the word order: …, want ik ben moe. Do not mix it up with ik wil (I want).',
-    pronunciationTip:
-      'Want sounds like "vant" with a soft w, not like English "want". Of sounds like English "off".',
+    patternExplanation: 'Of offers a choice: Koffie of thee? Want gives a reason and, like en and maar, it does not change the word order: …, want ik ben moe. Do not mix it up with ik wil (I want).',
+    pronunciationTip: 'Want sounds like "vant" with a soft w, not like English "want". Of sounds like English "off".',
     examples: [
       { dutch: 'Wil je koffie of thee?', english: 'Would you like coffee or tea?' },
-      { dutch: 'Ik neem de fiets, want het is mooi weer.', english: "I'm taking the bike, because the weather is nice." },
-      { dutch: 'Werk je vandaag thuis of op kantoor?', english: 'Are you working at home or at the office today?' },
+      {
+        dutch: 'Ik neem de fiets, want het is mooi weer.',
+        english: "I'm taking the bike, because the weather is nice.",
+      },
+      {
+        dutch: 'Werk je vandaag thuis of op kantoor?',
+        english: 'Are you working at home or at the office today?',
+      },
     ],
     speakingPrompt: 'Turn down an invitation with a reason: Ik kom niet, want ik moet werken.',
+    revisits: ['s1-modals-moeten', 's1-transport-modes'],
     skills: ['speaking', 'listening', 'reading', 'writing'],
     covers: ['connectors-basic'],
-    revisits: ['s1-modals-moeten', 's1-transport-modes'],
     exercises: [
       {
         id: 'rec',
@@ -132,6 +167,7 @@ export const lessons: Array<LessonDraft> = [
         ],
         answer: "I'm taking the bus, because it's raining.",
         explanation: 'Here want means "because". The verb "to want" is willen: ik wil.',
+        items: ['want'],
       },
       {
         id: 'cloze',
@@ -157,6 +193,7 @@ export const lessons: Array<LessonDraft> = [
         ],
         answer: 'Ik ga naar bed, want ik ben moe.',
         explanation: 'After want the order is normal: ik ben moe. Want does not move the verb.',
+        items: ['ik-kom-niet-want-ik-moet', 'want'],
       },
       {
         id: 'type',
@@ -176,6 +213,32 @@ export const lessons: Array<LessonDraft> = [
         explanation: 'Ik kom niet + want + ik moet werken. After want: ik moet, not moet ik.',
       },
       {
+        id: 'reply',
+        stage: 'transfer',
+        kind: 'choice',
+        prompt: 'What do you reply?',
+        context: [
+          {
+            speaker: 'Joris',
+            dutch: 'Ik geef zaterdag een feestje. Kom je ook?',
+            english: "I'm having a party on Saturday. Are you coming too?",
+          },
+          {
+            speaker: 'You',
+            dutch: 'Zaterdag? O nee, ik moet zaterdag werken.',
+            english: 'Saturday? Oh no, I have to work on Saturday.',
+          },
+          { speaker: 'Joris', dutch: 'Jammer! Dus je komt niet?', english: "What a shame! So you're not coming?" },
+        ],
+        options: [
+          'Nee, sorry. Ik kom niet, want ik moet werken.',
+          'Ja, leuk! Hoe laat begint het?',
+          'Ik kom niet, maar ik moet werken.',
+        ],
+        answer: 'Nee, sorry. Ik kom niet, want ik moet werken.',
+        explanation: 'You have to work, so you are not coming. Say so and give the reason with want. Ja, leuk! accepts the invitation, and maar makes no sense here: work is the reason, not a contrast.',
+      },
+      {
         id: 'transfer',
         stage: 'transfer',
         kind: 'type',
@@ -186,6 +249,7 @@ export const lessons: Array<LessonDraft> = [
           'Ik reis met de trein, want ik heb geen auto.',
         ],
         explanation: 'Ik neem de trein + want + ik heb geen auto. Geen, because auto is a noun.',
+        items: ['want'],
       },
     ],
   },
@@ -197,6 +261,23 @@ export const lessons: Array<LessonDraft> = [
     situation: 'In your Dutch class the teacher asks everyone what they are doing this week.',
     targetPhrase: 'Op maandag werk ik thuis, maar op dinsdag ga ik naar kantoor.',
     meaningEn: 'On Monday I work at home, but on Tuesday I go to the office.',
+    items: [
+      {
+        key: 'op-maandag-werk-ik-thuis-maar',
+        dutch: 'Op maandag werk ik thuis, maar op dinsdag ga ik naar kantoor.',
+        english: 'On Monday I work at home, but on Tuesday I go to the office.',
+        kind: 'phrase',
+        accept: ['Maandag werk ik thuis, maar dinsdag ga ik naar kantoor.'],
+      },
+      {
+        key: 'bezoeken',
+        dutch: 'bezoeken',
+        english: 'to visit',
+        kind: 'word',
+        note: 'a person or a place: Ik bezoek mijn ouders.',
+      },
+      { key: 'het-strand', dutch: 'het strand', english: 'the beach', kind: 'word' },
+    ],
     wordBreakdown: [
       { dutch: 'deze week', english: 'this week' },
       { dutch: 'de Nederlandse les', english: 'Dutch lesson' },
@@ -206,22 +287,49 @@ export const lessons: Array<LessonDraft> = [
       { dutch: 'het dorp', english: 'village' },
       { dutch: 'het strand', english: 'beach' },
     ],
-    patternExplanation:
-      'En adds, maar contrasts, of gives a choice and want gives a reason. None of them changes the word order of the next sentence. If that sentence starts with a time phrase, the verb still comes straight after it: …, maar op dinsdag ga ik naar kantoor.',
+    patternExplanation: 'En adds, maar contrasts, of gives a choice and want gives a reason. None of them changes the word order of the next sentence. If that sentence starts with a time phrase, the verb still comes straight after it: …, maar op dinsdag ga ik naar kantoor.',
     dialogue: [
-      { speaker: 'Docent', dutch: 'Wat doe je deze week?', english: 'What are you doing this week?' },
-      { speaker: 'You', dutch: 'Op maandag werk ik thuis, maar op dinsdag ga ik naar kantoor.', english: 'On Monday I work at home, but on Tuesday I go to the office.' },
+      {
+        speaker: 'Docent',
+        dutch: 'Wat doe je deze week?',
+        english: 'What are you doing this week?',
+      },
+      {
+        speaker: 'You',
+        dutch: 'Op maandag werk ik thuis, maar op dinsdag ga ik naar kantoor.',
+        english: 'On Monday I work at home, but on Tuesday I go to the office.',
+      },
       { speaker: 'Docent', dutch: 'En op woensdag?', english: 'And on Wednesday?' },
-      { speaker: 'You', dutch: "Op woensdag heb ik Nederlandse les en 's avonds sport ik.", english: 'On Wednesday I have a Dutch lesson and in the evening I do sport.' },
-      { speaker: 'Docent', dutch: 'Wat doe je in het weekend?', english: 'What are you doing at the weekend?' },
-      { speaker: 'You', dutch: 'Ik bezoek mijn ouders of ik ga naar het strand.', english: 'I am visiting my parents or I am going to the beach.' },
-      { speaker: 'Docent', dutch: 'Leuk! Ga je met de trein naar je ouders?', english: 'Nice! Are you going to your parents by train?' },
-      { speaker: 'You', dutch: 'Nee, met de auto, want ze wonen in een klein dorp.', english: 'No, by car, because they live in a small village.' },
+      {
+        speaker: 'You',
+        dutch: "Op woensdag heb ik Nederlandse les en 's avonds sport ik.",
+        english: 'On Wednesday I have a Dutch lesson and in the evening I do sport.',
+      },
+      {
+        speaker: 'Docent',
+        dutch: 'Wat doe je in het weekend?',
+        english: 'What are you doing at the weekend?',
+      },
+      {
+        speaker: 'You',
+        dutch: 'Ik bezoek mijn ouders of ik ga naar het strand.',
+        english: 'I am visiting my parents or I am going to the beach.',
+      },
+      {
+        speaker: 'Docent',
+        dutch: 'Leuk! Ga je met de trein naar je ouders?',
+        english: 'Nice! Are you going to your parents by train?',
+      },
+      {
+        speaker: 'You',
+        dutch: 'Nee, met de auto, want ze wonen in een klein dorp.',
+        english: 'No, by car, because they live in a small village.',
+      },
     ],
     speakingPrompt: 'Tell the class about your own week in three sentences, using maar, of and want once each.',
+    revisits: ['s1-connect-en-maar', 's1-connect-of-want', 's1-order-verb-second', 's1-routine-weekend'],
     skills: ['speaking', 'listening', 'reading', 'writing'],
     covers: ['connectors-basic'],
-    revisits: ['s1-connect-en-maar', 's1-connect-of-want', 's1-order-verb-second', 's1-routine-weekend'],
     exercises: [
       {
         id: 'rec',
@@ -252,6 +360,7 @@ export const lessons: Array<LessonDraft> = [
         words: ['Ik', 'neem', 'de', 'auto,', 'want', 'het', 'regent.'],
         english: "I'm taking the car, because it's raining.",
         explanation: 'After want comes a normal sentence: het regent (not regent het).',
+        items: ['s1-connect-of-want/want'],
       },
       {
         id: 'listen',
@@ -263,6 +372,29 @@ export const lessons: Array<LessonDraft> = [
         options: ['She is ill.', 'She has a day off.', 'She works at home.', 'She works in Haarlem.'],
         answer: 'She has a day off.',
         explanation: 'Want ik heb een vrije dag = because I have a day off. Then she goes to Haarlem or Amsterdam.',
+        items: ['s1-connect-of-want/want'],
+      },
+      {
+        id: 'reply',
+        stage: 'transfer',
+        kind: 'choice',
+        prompt: 'What do you reply?',
+        context: [
+          { speaker: 'Docent', dutch: 'Wat doe je deze week?', english: 'What are you doing this week?' },
+          {
+            speaker: 'You',
+            dutch: 'Ik werk en op woensdag heb ik Nederlandse les.',
+            english: 'I am working, and on Wednesday I have my Dutch lesson.',
+          },
+          { speaker: 'Docent', dutch: 'Werk je thuis of op kantoor?', english: 'Do you work at home or at the office?' },
+        ],
+        options: [
+          'Op maandag werk ik thuis, maar op dinsdag ga ik naar kantoor.',
+          'Ja, ik werk deze week.',
+          'Ik bezoek mijn ouders of ik ga naar het strand.',
+        ],
+        answer: 'Op maandag werk ik thuis, maar op dinsdag ga ik naar kantoor.',
+        explanation: 'The teacher offers a choice with of (thuis of op kantoor), so say where you work, or both with maar. Ja does not answer an either/or question, and the weekend plans answer something else.',
       },
       {
         id: 'transfer',
@@ -274,6 +406,7 @@ export const lessons: Array<LessonDraft> = [
           'Ik wil graag een thee, want ik drink geen koffie.',
         ],
         explanation: 'Ik wil graag thee + want + ik drink geen koffie: normal order after want, and geen before the noun.',
+        items: ['s1-connect-of-want/want'],
       },
       {
         id: 'write',
@@ -285,6 +418,7 @@ export const lessons: Array<LessonDraft> = [
         modelAnswer: 'Op maandag werk ik thuis, maar op dinsdag ga ik naar kantoor. Op vrijdag sport ik, want ik heb dan tijd.',
         focusedOnly: true,
         explanation: 'Check: after maar and want the sentence has normal order, and a time word at the start is followed by the verb.',
+        items: ['op-maandag-werk-ik-thuis-maar', 's1-connect-of-want/want'],
       },
     ],
   },

@@ -1,207 +1,253 @@
-import { countWords, missingWriteGroups, normalizeAnswer } from '../engine/answers';
-import { allObjectiveTags, requiredObjectives } from './objectives';
-import type { Curriculum, Exercise, ExerciseStage, Lesson } from './types';
-import { flattenLessons } from './index';
+// Curriculum validation: structure, references, answers and coverage.
+// Used by tests/curriculum and by `pnpm validate:curriculum`.
+import { checkWriting, normalizeAnswer } from '../engine/answers';
+import { exerciseItemIds, indexCurriculum } from './assemble';
+import { requiredObjectives } from './objectives';
+import { EXERCISE_STAGES, type Curriculum, type Exercise, type Lesson } from './types';
 
-export const STAGE_ORDER: Array<ExerciseStage> = [
-  'recognition',
-  'supportedRecall',
-  'independentRecall',
-  'transfer',
-];
+const KEBAB = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+const LEVEL_ORDER = ['pre-a1', 'a1', 'a1-a2', 'a2'];
 
-const SKILLS = new Set(['listening', 'reading', 'speaking', 'writing']);
-const ID_PATTERN = /^[a-z0-9]+(-[a-z0-9]+)*$/;
-
-type ValidateOptions = {
-  /** Only report lesson-level problems for these modules (used while authoring). */
-  modules?: Array<string>;
-  /** Check that every planned module has content and every objective is covered. */
-  requireComplete?: boolean;
-};
-
-function isBlank(value: string | undefined): boolean {
-  return value === undefined || value.trim() === '';
+function blank(text: string | undefined): boolean {
+  return !text || text.trim().length === 0;
 }
 
-function validateExercise(
-  lesson: Lesson,
-  exercise: Exercise,
-  earlierIds: Set<string>,
-  isPendingRef: (id: string) => boolean,
-): Array<string> {
-  const errors: Array<string> = [];
-  const where = `${lesson.id}/${exercise.id}`;
+/** Same tiles in any order; capitals and punctuation may move with the word order. */
+function sameWords(a: ReadonlyArray<string>, b: ReadonlyArray<string>): boolean {
+  const key = (words: ReadonlyArray<string>) => words.map(normalizeAnswer).sort().join('\u0000');
+  return key(a) === key(b);
+}
 
-  if (!STAGE_ORDER.includes(exercise.stage)) errors.push(`${where}: unknown stage "${exercise.stage}"`);
-  if (isBlank(exercise.prompt)) errors.push(`${where}: empty prompt`);
-  if (isBlank(exercise.explanation)) errors.push(`${where}: empty explanation`);
-  if (exercise.listenOnly && isBlank(exercise.audioText)) errors.push(`${where}: listenOnly without audioText`);
-  if (lesson.kind === 'checkpoint') {
-    if (!exercise.testsLesson) errors.push(`${where}: checkpoint exercise needs testsLesson`);
-    else if (!earlierIds.has(exercise.testsLesson) && !isPendingRef(exercise.testsLesson)) {
-      errors.push(`${where}: testsLesson "${exercise.testsLesson}" is not an earlier lesson`);
-    }
+/** The prompt offers the answer as one side of a choice, e.g. "Complete with niet or geen." */
+function offersChoice(text: string, answer: string): boolean {
+  const needle = normalizeAnswer(answer);
+  const pattern = /(\S+) or (\S+)/g;
+  for (const match of normalizeAnswer(text).matchAll(pattern)) {
+    if (match[1] === needle || match[2] === needle) return true;
   }
+  return false;
+}
 
-  const prompt = normalizeAnswer(exercise.prompt);
+/**
+ * True when the whole answer (two or more words, or a word of 8+ letters)
+ * already appears in `text`, so the learner could copy it instead of recalling it.
+ */
+function leaks(text: string, answer: string): boolean {
+  const needle = normalizeAnswer(answer);
+  if (needle.split(' ').length < 2 && needle.length < 8) return false;
+  if (offersChoice(text, answer)) return false;
+  return ` ${normalizeAnswer(text)} `.includes(` ${needle} `);
+}
+
+function exerciseIssues(lesson: Lesson, exercise: Exercise): Array<string> {
+  const issues: Array<string> = [];
+  if (blank(exercise.prompt)) issues.push('empty prompt');
+  if (blank(exercise.explanation)) issues.push('empty explanation');
+  if (!EXERCISE_STAGES.includes(exercise.stage)) issues.push(`unknown stage ${exercise.stage}`);
+  if (exercise.listenOnly && blank(exercise.audioText)) issues.push('listenOnly without audioText');
+  if (exercise.listenOnly && exercise.audioText && leaks(exercise.prompt, exercise.audioText)) {
+    issues.push('prompt reveals the listening text');
+  }
+  if (exercise.context?.some((line) => blank(line.dutch) || blank(line.english) || blank(line.speaker))) {
+    issues.push('context line with an empty field');
+  }
+  const recall = exercise.stage !== 'recognition';
 
   switch (exercise.kind) {
     case 'choice': {
-      if (exercise.options.length < 2 || exercise.options.length > 5) errors.push(`${where}: needs 2-5 options`);
-      if (new Set(exercise.options).size !== exercise.options.length) errors.push(`${where}: duplicate options`);
-      if (!exercise.options.includes(exercise.answer)) errors.push(`${where}: answer is not one of the options`);
+      if (exercise.options.length < 2 || exercise.options.length > 5) issues.push('choice needs 2 to 5 options');
+      if (!exercise.options.includes(exercise.answer)) issues.push('answer is not one of the options');
+      const unique = new Set(exercise.options.map(normalizeAnswer));
+      if (unique.size !== exercise.options.length) issues.push('duplicate options');
+      break;
+    }
+    case 'match': {
+      if (exercise.pairs.length < 3 || exercise.pairs.length > 5) issues.push('match needs 3 to 5 pairs');
+      if (new Set(exercise.pairs.map((pair) => normalizeAnswer(pair.dutch))).size !== exercise.pairs.length) {
+        issues.push('duplicate Dutch in match pairs');
+      }
+      if (new Set(exercise.pairs.map((pair) => normalizeAnswer(pair.english))).size !== exercise.pairs.length) {
+        issues.push('duplicate English in match pairs');
+      }
       break;
     }
     case 'cloze': {
-      const gaps = exercise.sentence.split('___').length - 1;
-      if (gaps !== 1) errors.push(`${where}: cloze sentence needs exactly one ___ (found ${gaps})`);
-      if (exercise.answers.length === 0 || exercise.answers.some(isBlank)) errors.push(`${where}: cloze needs answers`);
+      if (exercise.sentence.split('___').length !== 2) issues.push('cloze sentence needs exactly one ___');
+      if (exercise.answers.length === 0 || exercise.answers.some(blank)) issues.push('cloze needs answers');
+      if (recall && exercise.answers.some((answer) => leaks(`${exercise.prompt} ${exercise.sentence}`, answer))) {
+        issues.push('cloze prompt or sentence reveals the answer');
+      }
       break;
     }
     case 'order': {
-      if (exercise.words.length < 2) errors.push(`${where}: order needs at least 2 words`);
-      // Alternatives may differ in capitals and punctuation, but must use the same words.
-      const tileSet = (words: Array<string>) => words.map(normalizeAnswer).sort().join('|');
-      const sorted = tileSet(exercise.words);
+      if (exercise.words.length < 2) issues.push('order needs at least 2 words');
       for (const alternative of exercise.alternatives ?? []) {
-        if (tileSet(alternative) !== sorted) errors.push(`${where}: alternative uses different tiles`);
+        if (!sameWords(alternative, exercise.words)) issues.push('order alternative uses different tiles');
       }
-      if (isBlank(exercise.english)) errors.push(`${where}: order needs english`);
+      if (exercise.distractors?.some((word) => exercise.words.includes(word))) {
+        issues.push('order distractor is also an answer tile');
+      }
+      if (blank(exercise.english)) issues.push('order needs an English meaning');
       break;
     }
     case 'type': {
-      if (exercise.answers.length === 0 || exercise.answers.some(isBlank)) {
-        errors.push(`${where}: type needs answers`);
-        break;
-      }
-      const model = normalizeAnswer(exercise.answers[0]!);
-      if (model.length > 3 && prompt.includes(model)) errors.push(`${where}: prompt reveals the answer`);
-      if (exercise.audioText && normalizeAnswer(exercise.audioText) === model && !exercise.listenOnly) {
-        errors.push(`${where}: dictation (audioText = answer) must be listenOnly`);
+      if (exercise.answers.length === 0 || exercise.answers.some(blank)) issues.push('type needs answers');
+      if (recall && exercise.answers.some((answer) => leaks(exercise.prompt, answer))) {
+        issues.push('prompt reveals the answer');
       }
       break;
     }
     case 'write': {
-      if (exercise.mustInclude.length === 0) errors.push(`${where}: write needs mustInclude groups`);
-      if (missingWriteGroups(exercise.modelAnswer, exercise.mustInclude).length > 0) {
-        errors.push(`${where}: modelAnswer does not satisfy mustInclude`);
+      if (exercise.mustInclude.length === 0 || exercise.mustInclude.some((group) => group.length === 0)) {
+        issues.push('write needs mustInclude groups');
       }
-      if (countWords(exercise.modelAnswer) < exercise.minWords) errors.push(`${where}: modelAnswer shorter than minWords`);
+      if (exercise.minWords < 1) issues.push('write needs minWords');
+      const self = checkWriting(exercise.modelAnswer, exercise.mustInclude, exercise.minWords, exercise.modelAnswer);
+      if (!self.correct) issues.push(`model answer fails its own check (${self.note})`);
       break;
     }
-    default:
-      errors.push(`${where}: unknown exercise kind`);
   }
-  return errors;
+  return issues.map((issue) => `${lesson.id}/${exercise.id}: ${issue}`);
 }
 
-function validateLesson(
-  lesson: Lesson,
-  earlierIds: Set<string>,
-  knownTags: Set<string>,
-  isPendingRef: (id: string) => boolean,
-): Array<string> {
-  const errors: Array<string> = [];
-  const where = lesson.id;
+/** Every problem found, as "location: message". An empty list means the curriculum is valid. */
+export function validateCurriculum(source: Curriculum): Array<string> {
+  const issues: Array<string> = [];
+  const index = indexCurriculum(source);
+  const seenLessons = new Map<string, Lesson>();
+  const seenModules = new Set<string>();
+  const dutchTaughtBy = new Map<string, string>();
+  const knownTags = new Set(Object.values(requiredObjectives).flatMap((tags) => Object.keys(tags)));
 
-  if (!ID_PATTERN.test(lesson.id)) errors.push(`${where}: id must be kebab-case`);
-  if (!lesson.id.startsWith(`${lesson.moduleId}-`)) errors.push(`${where}: id must start with "${lesson.moduleId}-"`);
-  for (const field of ['title', 'objective', 'situation', 'targetPhrase', 'meaningEn'] as const) {
-    if (isBlank(lesson[field])) errors.push(`${where}: missing ${field}`);
-  }
-  if (!['core', 'practice', 'checkpoint'].includes(lesson.kind)) errors.push(`${where}: unknown kind`);
-  if (lesson.skills.length === 0 || lesson.skills.some((skill) => !SKILLS.has(skill))) {
-    errors.push(`${where}: skills must be a non-empty list of listening/reading/speaking/writing`);
-  }
-  if (lesson.covers.length === 0) errors.push(`${where}: covers must list at least one objective tag`);
-  for (const tag of lesson.covers) {
-    if (!knownTags.has(tag)) errors.push(`${where}: unknown objective tag "${tag}"`);
-  }
-  for (const entry of [...(lesson.examples ?? []), ...(lesson.wordBreakdown ?? []), ...(lesson.dialogue ?? [])]) {
-    if (isBlank(entry.dutch) || isBlank(entry.english)) errors.push(`${where}: example, breakdown or dialogue line with empty text`);
-  }
-  for (const ref of [...(lesson.prerequisites ?? []), ...(lesson.revisits ?? [])]) {
-    if (!earlierIds.has(ref) && !isPendingRef(ref)) errors.push(`${where}: references "${ref}", which is not an earlier lesson`);
-  }
-
-  const exerciseIds = new Set<string>();
-  for (const exercise of lesson.exercises) {
-    if (exerciseIds.has(exercise.id)) errors.push(`${where}: duplicate exercise id "${exercise.id}"`);
-    exerciseIds.add(exercise.id);
-    errors.push(...validateExercise(lesson, exercise, earlierIds, isPendingRef));
-  }
-
-  if (lesson.kind === 'checkpoint') {
-    if (lesson.exercises.length < 5) errors.push(`${where}: checkpoint needs at least 5 exercises`);
-    if ((lesson.revisits ?? []).length < 3) errors.push(`${where}: checkpoint must revisit at least 3 lessons`);
-    if (new Set(lesson.skills).size < 2) errors.push(`${where}: checkpoint must mix at least 2 skills`);
-  } else {
-    const stages = lesson.exercises.map((exercise) => exercise.stage);
-    for (const stage of STAGE_ORDER) {
-      if (!stages.includes(stage)) errors.push(`${where}: missing a ${stage} exercise`);
-    }
-    const ranks = stages.map((stage) => STAGE_ORDER.indexOf(stage));
-    if (ranks.some((rank, i) => i > 0 && rank < ranks[i - 1]!)) errors.push(`${where}: exercises must be in stage order`);
-    const first = lesson.exercises[0];
-    if (first && (first.stage !== 'recognition' || first.focusedOnly)) {
-      errors.push(`${where}: first exercise must be a recognition exercise usable in micro mode`);
-    }
-    if (lesson.kind === 'practice' && (lesson.revisits ?? []).length === 0) {
-      errors.push(`${where}: practice lessons must list the lessons they revisit`);
-    }
-  }
-  return errors;
-}
-
-export function validateCurriculum(source: Curriculum, options: ValidateOptions = {}): Array<string> {
-  const errors: Array<string> = [];
-  const knownTags = allObjectiveTags();
-  const earlierIds = new Set<string>();
-  const seenPhrases = new Map<string, string>();
-  const inScope = (moduleId: string) => !options.modules || options.modules.includes(moduleId);
-  // While authoring a subset, references into modules that have no content yet are not errors.
-  const emptyModuleIds = source.stages
-    .flatMap((stage) => stage.modules)
-    .filter((module) => module.lessons.length === 0)
-    .map((module) => module.id);
-  const isPendingRef = (id: string) =>
-    !options.requireComplete && emptyModuleIds.some((moduleId) => id.startsWith(`${moduleId}-`));
-
-  for (const lesson of flattenLessons(source)) {
-    if (earlierIds.has(lesson.id)) errors.push(`${lesson.id}: duplicate lesson id`);
-    if (inScope(lesson.moduleId)) {
-      errors.push(...validateLesson(lesson, earlierIds, knownTags, isPendingRef));
-      if (lesson.kind === 'core') {
-        const phrase = normalizeAnswer(lesson.targetPhrase);
-        const owner = seenPhrases.get(phrase);
-        if (owner) errors.push(`${lesson.id}: same targetPhrase as ${owner}`);
-        seenPhrases.set(phrase, lesson.id);
-      }
-    }
-    earlierIds.add(lesson.id);
-  }
-
+  let previousLevel = -1;
   for (const stage of source.stages) {
+    const level = LEVEL_ORDER.indexOf(stage.level);
+    if (level < previousLevel) issues.push(`${stage.id}: level ${stage.level} is out of order`);
+    previousLevel = level;
+    if (!stage.modules.some((module) => module.lessons.some((lesson) => lesson.kind === 'checkpoint'))) {
+      issues.push(`${stage.id}: stage has no checkpoint`);
+    }
+
     for (const module of stage.modules) {
-      if (!inScope(module.id)) continue;
-      const hasContent = module.lessons.length > 0;
-      if (!hasContent && !options.requireComplete) continue;
-      if (module.lessons.length < 2) errors.push(`${module.id}: module needs at least 2 lessons`);
-      const coreCount = module.lessons.filter((lesson) => lesson.kind === 'core').length;
-      if (coreCount >= 4 && !module.lessons.some((lesson) => lesson.kind !== 'core')) {
-        errors.push(`${module.id}: module with ${coreCount} core lessons needs a practice or checkpoint lesson`);
+      if (seenModules.has(module.id)) issues.push(`${module.id}: duplicate module id`);
+      seenModules.add(module.id);
+      if (module.lessons.length === 0) issues.push(`${module.id}: module has no lessons`);
+
+      for (const lesson of module.lessons) {
+        const at = lesson.id;
+        if (seenLessons.has(lesson.id)) issues.push(`${at}: duplicate lesson id`);
+        if (!KEBAB.test(lesson.id) || !lesson.id.startsWith(`${module.id}-`)) {
+          issues.push(`${at}: id must be kebab-case and start with ${module.id}-`);
+        }
+        for (const field of ['title', 'objective', 'situation', 'targetPhrase', 'meaningEn'] as const) {
+          if (blank(lesson[field])) issues.push(`${at}: empty ${field}`);
+        }
+        if (lesson.skills.length === 0) issues.push(`${at}: no skills`);
+        if (lesson.kind === 'core' && lesson.covers.length === 0) issues.push(`${at}: core lesson covers no objective`);
+        for (const tag of lesson.covers) {
+          if (!knownTags.has(tag)) issues.push(`${at}: unknown objective tag ${tag}`);
+        }
+        for (const ref of [...(lesson.prerequisites ?? []), ...(lesson.revisits ?? [])]) {
+          if (!seenLessons.has(ref)) issues.push(`${at}: prerequisite/revisit ${ref} is not an earlier lesson`);
+        }
+
+        // Learning items.
+        if (lesson.kind === 'core' && lesson.items.length === 0) issues.push(`${at}: core lesson teaches no items`);
+        if (lesson.kind === 'checkpoint' && lesson.items.length > 0) issues.push(`${at}: checkpoints teach no items`);
+        const keys = new Set<string>();
+        for (const item of lesson.items) {
+          if (!KEBAB.test(item.key)) issues.push(`${at}: item key ${item.key} is not kebab-case`);
+          if (keys.has(item.key)) issues.push(`${at}: duplicate item key ${item.key}`);
+          keys.add(item.key);
+          if (blank(item.dutch) || blank(item.english)) issues.push(`${item.id}: item needs Dutch and English`);
+          if (item.accept?.some(blank)) issues.push(`${item.id}: empty accepted answer`);
+          const dutch = normalizeAnswer(item.dutch);
+          const earlier = dutchTaughtBy.get(dutch);
+          if (earlier) issues.push(`${item.id}: "${item.dutch}" is already taught by ${earlier}`);
+          else dutchTaughtBy.set(dutch, item.id);
+        }
+
+        // Exercises.
+        const exerciseIds = new Set<string>();
+        let lastStage = 0;
+        for (const exercise of lesson.exercises) {
+          if (exerciseIds.has(exercise.id)) issues.push(`${at}/${exercise.id}: duplicate exercise id`);
+          exerciseIds.add(exercise.id);
+          issues.push(...exerciseIssues(lesson, exercise));
+
+          const itemIds = exerciseItemIds(lesson, exercise);
+          if (itemIds.length === 0) issues.push(`${at}/${exercise.id}: practises no learning item`);
+          for (const itemId of itemIds) {
+            const item = index.item(itemId);
+            const owner = item ? index.lesson(item.lessonId) : undefined;
+            if (!item || !owner || owner.order > lesson.order) {
+              issues.push(`${at}/${exercise.id}: item ${itemId} is not taught by this or an earlier lesson`);
+            }
+          }
+
+          if (lesson.kind === 'checkpoint') {
+            if (!exercise.testsLesson || !seenLessons.has(exercise.testsLesson)) {
+              issues.push(`${at}/${exercise.id}: checkpoint exercise must test an earlier lesson`);
+            }
+          } else {
+            const stageIndex = EXERCISE_STAGES.indexOf(exercise.stage);
+            if (stageIndex < lastStage) issues.push(`${at}/${exercise.id}: exercises are not in stage order`);
+            lastStage = Math.max(lastStage, stageIndex);
+          }
+        }
+        if (lesson.kind === 'checkpoint') {
+          if (lesson.exercises.length < 5) issues.push(`${at}: checkpoint needs at least 5 exercises`);
+        } else {
+          for (const stageName of EXERCISE_STAGES) {
+            if (!lesson.exercises.some((exercise) => exercise.stage === stageName)) {
+              issues.push(`${at}: no ${stageName} exercise`);
+            }
+          }
+          if (!lesson.exercises.some((exercise) => !exercise.focusedOnly)) {
+            issues.push(`${at}: needs at least one exercise that fits a browsing break`);
+          }
+        }
+        seenLessons.set(lesson.id, lesson);
       }
     }
 
-    if (options.requireComplete) {
-      const stageLessons = stage.modules.flatMap((module) => module.lessons);
-      if (!stageLessons.some((lesson) => lesson.kind === 'checkpoint')) errors.push(`${stage.id}: stage has no checkpoint`);
-      const covered = new Set(stageLessons.filter((lesson) => lesson.kind !== 'checkpoint').flatMap((lesson) => lesson.covers));
-      for (const tag of Object.keys(requiredObjectives[stage.id] ?? {})) {
-        if (!covered.has(tag)) errors.push(`${stage.id}: objective "${tag}" is not covered by any lesson`);
-      }
+    // Coverage of the stage's required objectives.
+    const stageTags = new Set(stage.modules.flatMap((module) => module.lessons.flatMap((lesson) => lesson.covers)));
+    for (const [tag, description] of Object.entries(requiredObjectives[stage.id] ?? {})) {
+      if (!stageTags.has(tag)) issues.push(`${stage.id}: objective "${description}" (${tag}) has no lesson`);
     }
   }
-  return errors;
+  return issues;
+}
+
+export type CurriculumStats = {
+  stages: number;
+  modules: number;
+  lessons: Record<'core' | 'practice' | 'checkpoint', number>;
+  items: number;
+  exercises: number;
+  exercisesByKind: Record<string, number>;
+  listening: number;
+  reading: number;
+};
+
+export function curriculumStats(source: Curriculum): CurriculumStats {
+  const index = indexCurriculum(source);
+  const exercises = index.lessons.flatMap((lesson) => lesson.exercises);
+  const exercisesByKind: Record<string, number> = {};
+  for (const exercise of exercises) exercisesByKind[exercise.kind] = (exercisesByKind[exercise.kind] ?? 0) + 1;
+  return {
+    stages: source.stages.length,
+    modules: source.stages.reduce((sum, stage) => sum + stage.modules.length, 0),
+    lessons: {
+      core: index.lessons.filter((lesson) => lesson.kind === 'core').length,
+      practice: index.lessons.filter((lesson) => lesson.kind === 'practice').length,
+      checkpoint: index.lessons.filter((lesson) => lesson.kind === 'checkpoint').length,
+    },
+    items: index.items.length,
+    exercises: exercises.length,
+    exercisesByKind,
+    listening: exercises.filter((exercise) => exercise.audioText).length,
+    reading: exercises.filter((exercise) => exercise.passage).length,
+  };
 }

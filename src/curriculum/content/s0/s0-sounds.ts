@@ -6,22 +6,48 @@ export const lessons: Array<LessonDraft> = [
     kind: 'core',
     title: 'The Dutch alphabet',
     objective: 'Ask how something is spelled and follow a name spelled out with Dutch letter names.',
-    situation:
-      'A new colleague in Utrecht is adding you to the team list. She hears your name and asks how to spell it.',
+    situation: 'A new colleague in Utrecht is adding you to the team list. She hears your name and asks how to spell it.',
     targetPhrase: 'Hoe schrijf je dat?',
     meaningEn: 'How do you spell that?',
+    items: [
+      {
+        key: 'hoe-schrijf-je-dat',
+        dutch: 'Hoe schrijf je dat?',
+        english: 'How do you spell that?',
+        kind: 'phrase',
+        accept: ['Hoe spel je dat?'],
+      },
+      { key: 'dat', dutch: 'dat', english: 'that', kind: 'word' },
+      {
+        key: 'lange-ij',
+        dutch: 'lange ij',
+        english: 'the letter ij (when spelling)',
+        kind: 'sound',
+        recognitionOnly: true,
+        note: 'literally "long ij"; written i + j, as in Meijer',
+      },
+      {
+        key: 'griekse-ij',
+        dutch: 'Griekse ij',
+        english: 'the letter y (when spelling)',
+        kind: 'sound',
+        recognitionOnly: true,
+        note: 'literally "Greek ij", as in Meyer',
+      },
+    ],
     wordBreakdown: [
       { dutch: 'hoe', english: 'how' },
       { dutch: 'schrijf', english: 'write' },
       { dutch: 'je', english: 'you' },
       { dutch: 'dat', english: 'that' },
-      { dutch: 'lange ij', english: 'the letters ij, said as one letter when spelling ("long ij")' },
+      {
+        dutch: 'lange ij',
+        english: 'the letters ij, said as one letter when spelling ("long ij")',
+      },
       { dutch: 'Griekse ij', english: 'the letter y ("Greek ij")' },
     ],
-    patternExplanation:
-      'To spell a word, Dutch people say the letter names. Watch the vowels: a is "ah", e is "ay" and i is "ee", so they are easy to mix up with English. The pair ij counts as one letter, the lange ij; the letter y is called Griekse ij.',
-    pronunciationTip:
-      'Letter names to practise: g is "khay" (from the throat, like the ch in Scottish "loch"), h is "hah", j is "yay", v is "vay", w is "way", and u is "ee" said with rounded lips. In schrijf, say s, then that throaty ch, then r; the ij sounds between the "ay" in "day" and the word "eye".',
+    patternExplanation: 'To spell a word, Dutch people say the letter names. Watch the vowels: a is "ah", e is "ay" and i is "ee", so they are easy to mix up with English. The pair ij counts as one letter, the lange ij; the letter y is called Griekse ij.',
+    pronunciationTip: 'Letter names to practise: g is "khay" (from the throat, like the ch in Scottish "loch"), h is "hah", j is "yay", v is "vay", w is "way", and u is "ee" said with rounded lips. In schrijf, say s, then that throaty ch, then r; the ij sounds between the "ay" in "day" and the word "eye".',
     examples: [
       { dutch: 'Jan: J, A, N.', english: 'Jan, spelled "yay, ah, en".' },
       { dutch: 'Wim: W, I, M.', english: 'Wim, spelled "way, ee, em".' },
@@ -36,10 +62,14 @@ export const lessons: Array<LessonDraft> = [
         stage: 'recognition',
         kind: 'choice',
         prompt: 'You tell a colleague your name and she asks: "Hoe schrijf je dat?" What is she asking?',
-        options: ['How do you spell that?', 'How do you say that?', 'What is your name?', 'Where is that?'],
+        options: [
+          'How do you spell that?',
+          'How do you say that?',
+          'What is your name?',
+          'Where is that?',
+        ],
         answer: 'How do you spell that?',
-        explanation:
-          'Schrijf means "write", so Hoe schrijf je dat? asks how a word is written. "How do you say that?" would be Hoe zeg je dat?',
+        explanation: 'Schrijf means "write", so Hoe schrijf je dat? asks how a word is written. "How do you say that?" would be Hoe zeg je dat?',
       },
       {
         id: 'listen',
@@ -50,8 +80,7 @@ export const lessons: Array<LessonDraft> = [
         listenOnly: true,
         options: ['Eva', 'Ava', 'Iva'],
         answer: 'Eva',
-        explanation:
-          'The Dutch e is said "ay", which sounds like the English letter A. The Dutch a is "ah". So "ay, vay, ah" spells Eva.',
+        explanation: 'The Dutch e is said "ay", which sounds like the English letter A. The Dutch a is "ah". So "ay, vay, ah" spells Eva.',
       },
       {
         id: 'cloze',
@@ -77,8 +106,7 @@ export const lessons: Array<LessonDraft> = [
           'Hoe schrijft u dat?',
           'Hoe spelt u dat?',
         ],
-        explanation:
-          'Question word first, then the verb, then je: Hoe schrijf je dat? With someone you call u, it is Hoe schrijft u dat?',
+        explanation: 'Question word first, then the verb, then je: Hoe schrijf je dat? With someone you call u, it is Hoe schrijft u dat?',
       },
       {
         id: 'transfer',
@@ -87,9 +115,9 @@ export const lessons: Array<LessonDraft> = [
         prompt: 'Listen. A colleague spells his surname for you. Type the name.',
         audioText: 'Ik spel het: M, E, lange ij, E, R.',
         listenOnly: true,
+        items: ['lange-ij'],
         answers: ['Meijer'],
-        explanation:
-          'Lange ij is written as two letters, i and j: Meijer. If he had said Griekse ij, the name would be Meyer.',
+        explanation: 'Lange ij is written as two letters, i and j: Meijer. If he had said Griekse ij, the name would be Meyer.',
       },
     ],
   },
@@ -98,19 +126,27 @@ export const lessons: Array<LessonDraft> = [
     kind: 'core',
     title: 'Short and long vowels',
     objective: 'Hear the difference between short and long vowels and spell them correctly.',
-    situation:
-      'You are at a friend\'s birthday party. It is nearly midnight and you want to go home, so you look at the clock.',
+    situation: "You are at a friend's birthday party. It is nearly midnight and you want to go home, so you look at the clock.",
     targetPhrase: 'Het is al laat.',
     meaningEn: "It's late already.",
+    items: [
+      {
+        key: 'het-is-al-laat',
+        dutch: 'Het is al laat.',
+        english: "It's late already.",
+        kind: 'phrase',
+      },
+      { key: 'al', dutch: 'al', english: 'already', kind: 'word', note: 'short a' },
+      { key: 'laat', dutch: 'laat', english: 'late', kind: 'word', note: 'long aa' },
+      { key: 'veel', dutch: 'veel', english: 'a lot, many', kind: 'word', note: 'long ee; vel (short e) is a sheet of paper' },
+    ],
     wordBreakdown: [
       { dutch: 'het is', english: 'it is' },
       { dutch: 'al', english: 'already (short a)' },
       { dutch: 'laat', english: 'late (long aa)' },
     ],
-    patternExplanation:
-      'One vowel letter before a consonant is short (al, man); a double vowel is long (laat, maan). Swapping them changes the word: man is "man", maan is "moon". When a long vowel ends a syllable, one letter is enough: boot (boat) becomes bo-ten (boats).',
-    pronunciationTip:
-      'Short vowels are quick: the a in al and man is close to the o in American "hot". Long vowels are held: aa is a long, open "aah", as at the doctor. The long oo in boot is "oh" and the long ee in veel is "ay"; keep them steadier than in English "boat" and "day", without a strong w or y glide at the end.',
+    patternExplanation: 'One vowel letter before a consonant is short (al, man); a double vowel is long (laat, maan). Swapping them changes the word: man is "man", maan is "moon". When a long vowel ends a syllable, one letter is enough: boot (boat) becomes bo-ten (boats).',
+    pronunciationTip: 'Short vowels are quick: the a in al and man is close to the o in American "hot". Long vowels are held: aa is a long, open "aah", as at the doctor. The long oo in boot is "oh" and the long ee in veel is "ay"; keep them steadier than in English "boat" and "day", without a strong w or y glide at the end.',
     examples: [
       { dutch: 'man, maan', english: 'man, moon' },
       { dutch: 'bot, boot', english: 'bone, boat' },
@@ -177,16 +213,20 @@ export const lessons: Array<LessonDraft> = [
     situation: 'A colleague tells you she is going to Paris for the weekend. You react with a short, friendly phrase.',
     targetPhrase: 'Wat leuk!',
     meaningEn: 'How nice!',
+    items: [
+      { key: 'wat-leuk', dutch: 'Wat leuk!', english: 'How nice!', kind: 'phrase' },
+      { key: 'leuk', dutch: 'leuk', english: 'nice, fun', kind: 'word', note: 'eu: "ay" with rounded lips' },
+      { key: 'goed', dutch: 'goed', english: 'good', kind: 'word', note: 'oe as in "food"; the d sounds like t' },
+      { key: 'lief', dutch: 'lief', english: 'sweet, kind', kind: 'word', note: 'ie as in "see"' },
+    ],
     wordBreakdown: [
       { dutch: 'wat', english: 'what; before a describing word: how …!' },
       { dutch: 'leuk', english: 'nice, fun' },
       { dutch: 'goed', english: 'good' },
       { dutch: 'lief', english: 'sweet, kind' },
     ],
-    patternExplanation:
-      'Each of these letter pairs is one sound: oe (goed), ie (lief), eu (leuk). Wat + a describing word means "How …!": Wat leuk! Wat lief! Wat goed!',
-    pronunciationTip:
-      'oe sounds like the "oo" in "food", never "oh". ie sounds like the "ee" in "see", never "eye". eu has no English twin: say "ay" as in "day" while rounding your lips as if to whistle, and hold it steady. The d at the end of goed sounds like a t.',
+    patternExplanation: 'Each of these letter pairs is one sound: oe (goed), ie (lief), eu (leuk). Wat + a describing word means "How …!": Wat leuk! Wat lief! Wat goed!',
+    pronunciationTip: 'oe sounds like the "oo" in "food", never "oh". ie sounds like the "ee" in "see", never "eye". eu has no English twin: say "ay" as in "day" while rounding your lips as if to whistle, and hold it steady. The d at the end of goed sounds like a t.',
     examples: [
       { dutch: 'Wat goed!', english: 'Well done! / How great!' },
       { dutch: 'Wat lief!', english: 'How sweet!' },
@@ -214,8 +254,7 @@ export const lessons: Array<LessonDraft> = [
         listenOnly: true,
         options: ['deur', 'dier', 'door'],
         answer: 'deur',
-        explanation:
-          'You heard eu, the rounded "ay": deur (door). Dier (animal) has ie, a clear "ee". Door is a different Dutch word, meaning "through".',
+        explanation: 'You heard eu, the rounded "ay": deur (door). Dier (animal) has ie, a clear "ee". Door is a different Dutch word, meaning "through".',
       },
       {
         id: 'cloze',
@@ -223,6 +262,7 @@ export const lessons: Array<LessonDraft> = [
         kind: 'cloze',
         prompt: 'A friend tells you she passed her driving test. Complete your reaction.',
         sentence: 'Wat ___!',
+        items: ['goed'],
         answers: ['goed', 'leuk'],
         hint: 'g___',
         english: 'Well done! (literally: how good!)',
@@ -241,6 +281,7 @@ export const lessons: Array<LessonDraft> = [
         stage: 'transfer',
         kind: 'type',
         prompt: 'Your neighbour shows you a photo of her new baby. React in Dutch: how sweet!',
+        items: ['wat-leuk', 'lief'],
         answers: ['Wat lief!', 'Wat schattig!'],
         explanation: 'Same pattern with lief (sweet). It is spelled ie, like "ee"; leif would be wrong. Wat schattig! (how cute!) is also very common.',
       },
@@ -254,16 +295,25 @@ export const lessons: Array<LessonDraft> = [
     situation: 'You live in an old house near a canal. A new friend asks about your home.',
     targetPhrase: 'Mijn huis is oud.',
     meaningEn: 'My house is old.',
+    items: [
+      {
+        key: 'mijn-huis-is-oud',
+        dutch: 'Mijn huis is oud.',
+        english: 'My house is old.',
+        kind: 'phrase',
+      },
+      { key: 'mijn', dutch: 'mijn', english: 'my', kind: 'word', note: 'spelled ij; klein has the same sound with ei' },
+      { key: 'huis', dutch: 'huis', english: 'house', kind: 'word', note: 'ui: lips rounded, no English twin' },
+      { key: 'oud', dutch: 'oud', english: 'old', kind: 'word', note: 'ou like "ow" in "how"; the d sounds like t' },
+    ],
     wordBreakdown: [
       { dutch: 'mijn', english: 'my' },
       { dutch: 'huis', english: 'house, home' },
       { dutch: 'is', english: 'is' },
       { dutch: 'oud', english: 'old' },
     ],
-    patternExplanation:
-      'ij and ei are one sound with two spellings (mijn, klein), and so are ou and au (oud, blauw). Learn each word\'s spelling as you meet it. ui is a separate sound: huis, tuin, uit.',
-    pronunciationTip:
-      'ui has no English twin: start with the vowel of "hurt" (without the r), keep your lips rounded and glide towards "ee". ij and ei sound between the "ay" in "day" and the word "eye". ou and au sound like the "ow" in "how". The d at the end of oud sounds like a t.',
+    patternExplanation: "ij and ei are one sound with two spellings (mijn, klein), and so are ou and au (oud, blauw). Learn each word's spelling as you meet it. ui is a separate sound: huis, tuin, uit.",
+    pronunciationTip: 'ui has no English twin: start with the vowel of "hurt" (without the r), keep your lips rounded and glide towards "ee". ij and ei sound between the "ay" in "day" and the word "eye". ou and au sound like the "ow" in "how". The d at the end of oud sounds like a t.',
     examples: [
       { dutch: 'Mijn tuin is klein.', english: 'My garden is small.' },
       { dutch: 'De deur is blauw.', english: 'The door is blue.' },
@@ -291,14 +341,14 @@ export const lessons: Array<LessonDraft> = [
         listenOnly: true,
         options: ['tuin', 'toen', 'tien'],
         answer: 'tuin',
-        explanation:
-          'Tuin (garden) has ui, the rounded sound from huis. Toen (then) has oe, like "oo", and tien (ten) has ie, like "ee".',
+        explanation: 'Tuin (garden) has ui, the rounded sound from huis. Toen (then) has oe, like "oo", and tien (ten) has ie, like "ee".',
       },
       {
         id: 'spelling',
         stage: 'supportedRecall',
         kind: 'choice',
         prompt: 'Which is the correct spelling of the Dutch word for "my"?',
+        items: ['mijn'],
         options: ['mijn', 'mein', 'muin'],
         answer: 'mijn',
         explanation: 'ij and ei sound exactly the same, so you have to learn which one a word uses. "My" is mijn, with ij.',
@@ -330,19 +380,28 @@ export const lessons: Array<LessonDraft> = [
     situation: 'It is half past eight and you walk into the office in Rotterdam. Your colleagues look up from their coffee.',
     targetPhrase: 'Goedemorgen!',
     meaningEn: 'Good morning!',
+    items: [
+      { key: 'goedemorgen', dutch: 'Goedemorgen!', english: 'Good morning!', kind: 'word' },
+      {
+        key: 'morgen',
+        dutch: 'morgen',
+        english: 'tomorrow',
+        kind: 'word',
+        note: 'also "morning", as in goedemorgen',
+      },
+      { key: 'acht', dutch: 'acht', english: '8', kind: 'word', note: 'eight; ch from the throat, as in "loch"' },
+    ],
     wordBreakdown: [
       { dutch: 'goede', english: 'good' },
       { dutch: 'morgen', english: 'morning (also: tomorrow)' },
     ],
-    patternExplanation:
-      'In most of the Netherlands, g and ch make the same sound, from the back of the throat. In Dutch words it is never the hard g of English "go". At the start of a word, sch is s + that sound: school, Scheveningen.',
-    pronunciationTip:
-      'Make the sound like the ch in Scottish "loch" or German "Bach": lift the back of your tongue and let air scrape through. Goedemorgen sounds roughly like "khoo-duh-MOR-khuh"; the -en at the end is often just "uh". School is "s-khohl", never "skool" or "shool".',
+    patternExplanation: 'In most of the Netherlands, g and ch make the same sound, from the back of the throat. In Dutch words it is never the hard g of English "go". At the start of a word, sch is s + that sound: school, Scheveningen.',
+    pronunciationTip: 'Make the sound like the ch in Scottish "loch" or German "Bach": lift the back of your tongue and let air scrape through. Goedemorgen sounds roughly like "khoo-duh-MOR-khuh"; the -en at the end is often just "uh". School is "s-khohl", never "skool" or "shool".',
     examples: [
       { dutch: 'acht', english: 'eight' },
       { dutch: 'de gracht', english: 'the canal' },
       { dutch: 'de school', english: 'the school' },
-      { dutch: 'Scheveningen', english: 'Scheveningen (the beach town next to The Hague)' },
+      { dutch: 'Scheveningen', english: 'Scheveningen (the seaside district of The Hague)' },
     ],
     speakingPrompt: 'Greet the room as you walk in: Goedemorgen! Then practise: acht, gracht, school.',
     skills: ['listening', 'speaking', 'reading'],
@@ -366,8 +425,7 @@ export const lessons: Array<LessonDraft> = [
         listenOnly: true,
         options: ['geel', 'keel', 'heel'],
         answer: 'geel',
-        explanation:
-          'Geel (yellow) starts with the throaty g. Keel (throat) starts with a hard k, and heel (very) with a light h, as in English.',
+        explanation: 'Geel (yellow) starts with the throaty g. Keel (throat) starts with a hard k, and heel (very) with a light h, as in English.',
       },
       {
         id: 'cloze',
@@ -407,15 +465,24 @@ export const lessons: Array<LessonDraft> = [
     situation: 'A colleague asks whether Friday works for lunch together. You check your calendar and agree.',
     targetPhrase: 'Ja, vrijdag is goed.',
     meaningEn: 'Yes, Friday is fine.',
+    items: [
+      {
+        key: 'ja-vrijdag-is-goed',
+        dutch: 'Ja, vrijdag is goed.',
+        english: 'Yes, Friday is fine.',
+        kind: 'phrase',
+      },
+      { key: 'ja', dutch: 'ja', english: 'yes', kind: 'word', note: 'j sounds like English y: "yah"' },
+      { key: 'vrijdag', dutch: 'vrijdag', english: 'Friday', kind: 'word', note: 'v almost like f: "FRAY-dakh"' },
+      { key: 'vier', dutch: 'vier', english: '4', kind: 'word', note: 'four; said "feer"' },
+    ],
     wordBreakdown: [
       { dutch: 'ja', english: 'yes' },
       { dutch: 'vrijdag', english: 'Friday' },
       { dutch: 'is goed', english: 'is fine (literally: is good)' },
     ],
-    patternExplanation:
-      'These letters look English but sound different. In Dutch words, j is the English y sound: ja is "yah". At the start of a word, v sounds almost like f, and w is softer than an English w.',
-    pronunciationTip:
-      'w: keep your lips relaxed, not rounded, and let your top teeth lightly touch your lower lip; it sits between English w and v. v: almost an f, so vrijdag sounds like "FRAY-dakh". r: never silent; many people tap it with the tip of the tongue, others make it in the throat, and at the end of a word it can sound close to an American r.',
+    patternExplanation: 'These letters look English but sound different. In Dutch words, j is the English y sound: ja is "yah". At the start of a word, v sounds almost like f, and w is softer than an English w.',
+    pronunciationTip: 'w: keep your lips relaxed, not rounded, and let your top teeth lightly touch your lower lip; it sits between English w and v. v: almost an f, so vrijdag sounds like "FRAY-dakh". r: never silent; many people tap it with the tip of the tongue, others make it in the throat, and at the end of a word it can sound close to an American r.',
     examples: [
       { dutch: 'Het water is warm.', english: 'The water is warm.' },
       { dutch: 'Wat wil je?', english: 'What do you want?' },
@@ -443,8 +510,7 @@ export const lessons: Array<LessonDraft> = [
         listenOnly: true,
         options: ['wel', 'vel', 'fel'],
         answer: 'wel',
-        explanation:
-          'Wel (well, indeed) starts with the soft Dutch w. Vel and fel both start with an f-like sound, because the Dutch v is close to f.',
+        explanation: 'Wel (well, indeed) starts with the soft Dutch w. Vel and fel both start with an f-like sound, because the Dutch v is close to f.',
       },
       {
         id: 'cloze',
@@ -452,6 +518,7 @@ export const lessons: Array<LessonDraft> = [
         kind: 'cloze',
         prompt: 'Your colleague asks about lunch on Friday. Complete your answer.',
         sentence: 'Ja, ___ is goed.',
+        items: ['vrijdag'],
         answers: ['vrijdag'],
         hint: 'Friday',
         english: 'Yes, Friday is fine.',
@@ -462,7 +529,12 @@ export const lessons: Array<LessonDraft> = [
         stage: 'independentRecall',
         kind: 'type',
         prompt: 'A colleague asks if Friday works for a meeting. Say yes, Friday is fine.',
-        answers: ['Ja, vrijdag is goed.', 'Vrijdag is goed.', 'Ja, vrijdag is prima.', 'Vrijdag is prima.'],
+        answers: [
+          'Ja, vrijdag is goed.',
+          'Vrijdag is goed.',
+          'Ja, vrijdag is prima.',
+          'Vrijdag is prima.',
+        ],
         explanation: 'Ja, vrijdag is goed. Remember: j sounds like y, and vrijdag is written with a v, not an f.',
       },
       {
@@ -472,6 +544,7 @@ export const lessons: Array<LessonDraft> = [
         prompt: 'Listen and type the word you hear. It means "four".',
         audioText: 'vier',
         listenOnly: true,
+        items: ['vier'],
         answers: ['vier'],
         explanation: 'Vier starts with a v that sounds almost like f, has ie (like "ee"), and ends in an r you can hear.',
       },
@@ -485,14 +558,18 @@ export const lessons: Array<LessonDraft> = [
     situation: 'A new friend is coming to visit and asks for your address. You live on the Lijnbaan and spell it for her.',
     targetPhrase: "Met twee a's.",
     meaningEn: "With two a's.",
+    items: [
+      { key: 'met-twee-as', dutch: "Met twee a's.", english: "With two a's.", kind: 'phrase' },
+      { key: 'met', dutch: 'met', english: 'with', kind: 'word', note: 'on the phone, Met Sam = Sam speaking' },
+      { key: 'twee', dutch: 'twee', english: '2', kind: 'word', note: 'two; between "tway" and "tvay"' },
+    ],
     wordBreakdown: [
       { dutch: 'Wat is je adres?', english: "What's your address?" },
       { dutch: 'met', english: 'with' },
       { dutch: 'twee', english: 'two' },
       { dutch: "a's", english: "a's (letters are made plural with 's)" },
     ],
-    patternExplanation:
-      "Spell with Dutch letter names and treat ij as one letter, the lange ij. For a double letter you can say met twee a's (with two a's). This works for any name or street.",
+    patternExplanation: "Spell with Dutch letter names and treat ij as one letter, the lange ij. For a double letter you can say met twee a's (with two a's). This works for any name or street.",
     pronunciationTip: 'Twee sounds between "tway" and "tvay", with the soft Dutch w and a long "ay". A\'s sounds like "ahs".',
     examples: [
       { dutch: 'Met een lange ij.', english: 'With ij.' },
@@ -502,7 +579,11 @@ export const lessons: Array<LessonDraft> = [
       { speaker: 'Lotte', dutch: 'Wat is je adres?', english: "What's your address?" },
       { speaker: 'You', dutch: 'Lijnbaan acht.', english: 'Lijnbaan 8.' },
       { speaker: 'Lotte', dutch: 'Hoe schrijf je dat?', english: 'How do you spell that?' },
-      { speaker: 'You', dutch: 'L, lange ij, N, B, A, A, N.', english: 'L, ij, N, B, A, A, N.' },
+      {
+        speaker: 'You',
+        dutch: 'L, lange ij, N, B, A, A, N.',
+        english: 'L, ij, N, B, A, A, N.',
+      },
       { speaker: 'Lotte', dutch: "Met twee a's?", english: "With two a's?" },
       { speaker: 'You', dutch: "Ja, met twee a's.", english: "Yes, with two a's." },
     ],
@@ -525,6 +606,7 @@ export const lessons: Array<LessonDraft> = [
         prompt: 'Listen. Which word did you hear?',
         audioText: 'leuk',
         listenOnly: true,
+        items: ['s0-sounds-oe-ie-eu/leuk'],
         options: ['leuk', 'luik', 'look'],
         answer: 'leuk',
         explanation: 'Leuk has eu, the rounded "ay". Luik (the Dutch name for Liège) has ui, and look (as in knoflook, garlic) has a long "oh".',
@@ -536,6 +618,7 @@ export const lessons: Array<LessonDraft> = [
         prompt: 'Listen. Which word did you hear?',
         audioText: 'veel',
         listenOnly: true,
+        items: ['s0-sounds-long-short/veel'],
         options: ['vel', 'veel', 'wel'],
         answer: 'veel',
         explanation: 'A long "ay" before a consonant needs ee: veel (a lot). Vel has a short e, and wel starts with the soft w.',
@@ -547,6 +630,7 @@ export const lessons: Array<LessonDraft> = [
         prompt: 'Listen to the street name being spelled, then fill in the missing letters.',
         audioText: 'Ik spel het: L, lange ij, N, B, A, A, N.',
         listenOnly: true,
+        items: ['s0-sounds-alphabet/lange-ij'],
         sentence: 'L___nbaan',
         answers: ['ij'],
         hint: 'one Dutch letter, written with two characters',
@@ -560,6 +644,7 @@ export const lessons: Array<LessonDraft> = [
         prompt: 'Listen. A friend spells the name of her street. Type it.',
         audioText: 'Ik spel het: H, A, V, E, N, W, E, G.',
         listenOnly: true,
+        items: ['s0-sounds-alphabet/hoe-schrijf-je-dat'],
         answers: ['Havenweg'],
         explanation: 'H ("hah"), A ("ah"), V ("vay"), E ("ay"), N, W ("way"), E, G ("khay"): Havenweg.',
       },
@@ -568,8 +653,29 @@ export const lessons: Array<LessonDraft> = [
         stage: 'transfer',
         kind: 'type',
         prompt: 'Your friend writes your street, Meerweg, as "Merweg". Tell her it is with two e\'s.',
-        answers: ["Met twee e's.", "Twee e's.", "Nee, met twee e's.", "Meerweg, met twee e's.", 'Met een dubbele e.'],
-        explanation: "Met twee e's: the plural of a letter takes 's. Meer has a long \"ay\", so it needs ee.",
+        answers: [
+          "Met twee e's.",
+          "Twee e's.",
+          "Nee, met twee e's.",
+          "Meerweg, met twee e's.",
+          'Met een dubbele e.',
+        ],
+        explanation: 'Met twee e\'s: the plural of a letter takes \'s. Meer has a long "ay", so it needs ee.',
+      },
+      {
+        id: 'reply',
+        stage: 'transfer',
+        kind: 'choice',
+        prompt: 'What do you reply?',
+        context: [
+          { speaker: 'Lotte', dutch: 'Wat is je adres?', english: "What's your address?" },
+          { speaker: 'You', dutch: 'Dijkstraat twee.', english: 'Dijkstraat 2.' },
+          { speaker: 'Lotte', dutch: 'Dijkstraat? Met een Griekse ij?', english: 'Dijkstraat? With a y?' },
+        ],
+        items: ['s0-sounds-alphabet/lange-ij', 's0-sounds-alphabet/griekse-ij'],
+        options: ['Nee, met een lange ij.', 'Ja, met een Griekse ij.', "Nee, met twee e's."],
+        answer: 'Nee, met een lange ij.',
+        explanation: "Dijkstraat is written with ij, the lange ij, so you correct her. A Griekse ij is the letter y, and Dijkstraat has no e at all.",
       },
     ],
   },

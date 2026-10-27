@@ -4,15 +4,15 @@ export type CurriculumLevel = 'pre-a1' | 'a1' | 'a1-a2' | 'a2';
 
 export type Skill = 'listening' | 'reading' | 'speaking' | 'writing';
 
-/**
- * The four exercise stages, ordered from most to least supported.
- * A learning item moves through them as the learner demonstrates recall.
- */
-export type ExerciseStage =
-  | 'recognition'
-  | 'supportedRecall'
-  | 'independentRecall'
-  | 'transfer';
+/** Exercise difficulty, ordered from most to least supported. */
+export type ExerciseStage = 'recognition' | 'supportedRecall' | 'independentRecall' | 'transfer';
+
+export const EXERCISE_STAGES: ReadonlyArray<ExerciseStage> = [
+  'recognition',
+  'supportedRecall',
+  'independentRecall',
+  'transfer',
+];
 
 export type DutchEnglish = {
   dutch: string;
@@ -25,29 +25,74 @@ export type DialogueLine = {
   english: string;
 };
 
+/**
+ * phrase: a reusable chunk ("Ik wil graag betalen.").
+ * word: a single word worth recalling on its own ("de rekening").
+ * pattern: a sentence frame with a slot ("Ik wil graag …").
+ * sound: a spelling or sound pattern ("ui as in huis"); recognised, never typed from English.
+ */
+export type ItemKind = 'phrase' | 'word' | 'pattern' | 'sound';
+
+/**
+ * Something the learner should be able to remember. The review engine tracks
+ * each item separately, so a lesson can teach a main phrase plus a few
+ * related chunks without them sharing one schedule.
+ */
+export type LearningItemDraft = {
+  /** Unique within its lesson, kebab-case, e.g. "goedemiddag". */
+  key: string;
+  /** The Dutch as the learner should recall it. */
+  dutch: string;
+  /** A short English meaning, usable as a recall prompt. */
+  english: string;
+  kind: ItemKind;
+  /** Other correct Dutch forms accepted when the learner types it. */
+  accept?: Array<string>;
+  /** One short usage note shown after answering, e.g. "until about 12 o'clock". */
+  note?: string;
+  /**
+   * Typing it from the English would be unfair (letters, sounds, grammar
+   * labels), so it is only practised by recognition and listening.
+   */
+  recognitionOnly?: boolean;
+};
+
+/** A learning item placed in the curriculum. */
+export type LearningItem = LearningItemDraft & {
+  /** Globally unique: `${lessonId}/${key}`. */
+  id: string;
+  lessonId: string;
+  moduleId: string;
+  stageId: string;
+  /** The lesson's main item (its first). */
+  primary: boolean;
+};
+
 type ExerciseBase = {
-  /** Unique within its lesson, e.g. "rec", "cloze", "type", "transfer". */
+  /** Unique within its lesson, e.g. "rec", "listen", "type", "transfer". */
   id: string;
   stage: ExerciseStage;
   /** Instruction or question shown to the learner, in English (may quote Dutch). */
   prompt: string;
-  /** Dutch text played as audio before answering (listening tasks). */
-  audioText?: string;
-  /**
-   * When true the audioText is the only way to get the content (the text is
-   * hidden until after answering). Use for genuine listening comprehension.
-   */
-  listenOnly?: boolean;
-  /** Dutch text the learner reads before answering (notice, message, dialogue). */
-  passage?: string;
   /** Shown after answering, whether right or wrong. */
   explanation: string;
+  /**
+   * The learning items this exercise practises: item keys of this lesson, or
+   * full item ids ("lesson-id/key") of earlier lessons. Defaults to the
+   * lesson's main item.
+   */
+  items?: Array<string>;
+  /** Dutch text played as audio before answering. */
+  audioText?: string;
+  /** The audio is the only source: the Dutch text stays hidden until after answering. */
+  listenOnly?: boolean;
+  /** Dutch text the learner reads before answering (a notice, message or timetable). */
+  passage?: string;
+  /** A conversation shown before the question; the learner supplies or picks the next line. */
+  context?: Array<DialogueLine>;
   /** Too long for a browsing break; only offered in focused practice. */
   focusedOnly?: boolean;
-  /**
-   * Checkpoints only: the earlier lesson this exercise assesses. A wrong
-   * answer sends that lesson back into review.
-   */
+  /** Checkpoints only: the earlier lesson this exercise assesses. */
   testsLesson?: string;
 };
 
@@ -58,6 +103,12 @@ export type ChoiceExercise = ExerciseBase & {
   answer: string;
 };
 
+/** Match each Dutch phrase with its English meaning. */
+export type MatchExercise = ExerciseBase & {
+  kind: 'match';
+  pairs: Array<DutchEnglish>;
+};
+
 /** Fill the gap marked "___" in `sentence`. Any entry of `answers` is accepted. */
 export type ClozeExercise = ExerciseBase & {
   kind: 'cloze';
@@ -66,6 +117,8 @@ export type ClozeExercise = ExerciseBase & {
   /** English meaning of the full sentence. */
   english?: string;
   hint?: string;
+  /** Spelling is the point: no typo tolerance. */
+  strict?: boolean;
 };
 
 /** Arrange word tiles into a sentence. `words` is the correct order. */
@@ -84,11 +137,13 @@ export type TypeExercise = ExerciseBase & {
   kind: 'type';
   answers: Array<string>;
   hint?: string;
+  /** Spelling is the point: no typo tolerance. */
+  strict?: boolean;
 };
 
 /**
- * Short free writing. Checked leniently: every group in `mustInclude` needs
- * at least one of its words, and the text needs `minWords` words.
+ * Short free writing, checked leniently: every group in `mustInclude` needs at
+ * least one of its words, and the text needs `minWords` words.
  */
 export type WriteExercise = ExerciseBase & {
   kind: 'write';
@@ -99,6 +154,7 @@ export type WriteExercise = ExerciseBase & {
 
 export type Exercise =
   | ChoiceExercise
+  | MatchExercise
   | ClozeExercise
   | OrderExercise
   | TypeExercise
@@ -109,7 +165,7 @@ export type ExerciseKind = Exercise['kind'];
 /**
  * core: introduces one new phrase, pattern or concept.
  * practice: recombines earlier lessons in a new situation (planned reinforcement).
- * checkpoint: cumulative assessment at the end of a module or stage.
+ * checkpoint: cumulative, scored assessment at the end of a module or stage.
  */
 export type LessonKind = 'core' | 'practice' | 'checkpoint';
 
@@ -126,10 +182,15 @@ export type LessonDraft = {
   /** The main Dutch phrase, sentence or pattern. */
   targetPhrase: string;
   meaningEn: string;
+  /**
+   * What the learner should remember, main item first. Core lessons teach at
+   * least one; practice lessons may add a few; checkpoints add none.
+   */
+  items: Array<LearningItemDraft>;
   wordBreakdown?: Array<DutchEnglish>;
-  /** Short grammar or usage note. Only what is needed for this pattern. */
+  /** Short grammar or usage note: only what is needed to reuse this pattern. */
   patternExplanation?: string;
-  /** How to say it, in plain English comparisons (no IPA-only notes). */
+  /** How to say it, in plain English comparisons. */
   pronunciationTip?: string;
   examples?: Array<DutchEnglish>;
   dialogue?: Array<DialogueLine>;
@@ -144,16 +205,19 @@ export type LessonDraft = {
   covers: Array<string>;
   /**
    * core/practice: at least one exercise per stage, in stage order.
-   * checkpoint: 5+ exercises mixing skills; all are scored together.
+   * checkpoint: 5+ exercises mixing skills, scored together.
    */
   exercises: Array<Exercise>;
 };
 
 /** A lesson placed in the curriculum (module and stage filled in on assembly). */
-export type Lesson = LessonDraft & {
+export type Lesson = Omit<LessonDraft, 'items'> & {
   moduleId: string;
   stageId: string;
   level: CurriculumLevel;
+  /** Position in teaching order across the whole course. */
+  order: number;
+  items: Array<LearningItem>;
 };
 
 export type CurriculumModule = {

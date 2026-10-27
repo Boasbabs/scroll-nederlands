@@ -9,14 +9,39 @@ export const lessons: Array<LessonDraft> = [
     situation: 'A friend asks about your trip to Utrecht last weekend.',
     targetPhrase: 'Het was leuk.',
     meaningEn: 'It was nice. / It was fun.',
+    items: [
+      {
+        key: 'het-was-leuk',
+        dutch: 'Het was leuk.',
+        english: 'It was fun.',
+        kind: 'phrase',
+        note: 'leuk = nice, fun; was is the past of is',
+      },
+      {
+        key: 'hoe-was-je-weekend',
+        dutch: 'Hoe was je weekend?',
+        english: 'How was your weekend?',
+        kind: 'phrase',
+        accept: ['Hoe was jouw weekend?'],
+      },
+      {
+        key: 'we-waren',
+        dutch: 'we waren',
+        english: 'we were',
+        kind: 'phrase',
+        note: 'was for one person or thing, waren for more',
+      },
+    ],
     wordBreakdown: [
       { dutch: 'het was', english: 'it was' },
       { dutch: 'ik was, jij was, hij was', english: 'I was, you were, he was' },
-      { dutch: 'we waren, jullie waren, zij waren', english: 'we were, you (all) were, they were' },
+      {
+        dutch: 'we waren, jullie waren, zij waren',
+        english: 'we were, you (all) were, they were',
+      },
       { dutch: 'Hoe was …?', english: 'How was …?' },
     ],
-    patternExplanation:
-      'For zijn, Dutch usually uses the short past form: was for one person or thing, waren for more. Het was leuk is how you say how something went. Hoe was …? asks how it was.',
+    patternExplanation: 'For zijn, Dutch usually uses the short past form: was for one person or thing, waren for more. Het was leuk is how you say how something went. Hoe was …? asks how it was.',
     pronunciationTip: 'Was sounds like "vas" with a short "ah": the Dutch w is soft, close to a v. Waren has a long "aa": VAA-ruh.',
     examples: [
       { dutch: 'We waren in Utrecht.', english: 'We were in Utrecht.' },
@@ -41,7 +66,8 @@ export const lessons: Array<LessonDraft> = [
           'Whether you are free this weekend',
         ],
         answer: 'How your weekend was',
-        explanation: 'Hoe was … ? = How was … ? Was is the past of is.',
+        explanation: 'Hoe was …? = How was …? Was is the past of is.',
+        items: ['hoe-was-je-weekend'],
       },
       {
         id: 'cloze',
@@ -52,6 +78,7 @@ export const lessons: Array<LessonDraft> = [
         answers: ['waren'],
         english: 'We were in The Hague on Saturday.',
         explanation: 'With we (more than one person) use waren. Was is for ik, jij, hij, zij and het.',
+        items: ['we-waren'],
       },
       {
         id: 'order',
@@ -62,6 +89,7 @@ export const lessons: Array<LessonDraft> = [
         distractors: ['waren'],
         english: 'How was the party?',
         explanation: 'One party, so was. Question word first, then the verb, then the subject.',
+        items: ['s2-perfect-practice/hoe-was-het'],
       },
       {
         id: 'type',
@@ -98,6 +126,7 @@ export const lessons: Array<LessonDraft> = [
           'Vorige week zijn we naar Spanje geweest.',
         ],
         explanation: 'More than one person: we waren. We zijn in Spanje geweest means the same.',
+        items: ['we-waren'],
       },
     ],
   },
@@ -109,6 +138,36 @@ export const lessons: Array<LessonDraft> = [
     situation: 'You explain to a colleague why you were late this morning.',
     targetPhrase: 'Ik had haast, maar de bus kwam niet.',
     meaningEn: "I was in a hurry, but the bus didn't come.",
+    items: [
+      {
+        key: 'ik-had-haast-maar-de-bus',
+        dutch: 'Ik had haast, maar de bus kwam niet.',
+        english: "I was in a hurry, but the bus didn't come.",
+        kind: 'phrase',
+      },
+      {
+        key: 'ik-ging',
+        dutch: 'ik ging',
+        english: 'I went (past form of gaan)',
+        kind: 'phrase',
+        note: 'more than one: we gingen',
+      },
+      {
+        key: 'zij-zei',
+        dutch: 'zij zei',
+        english: 'she said (past form of zeggen)',
+        kind: 'phrase',
+        accept: ['ze zei'],
+        note: 'more than one: ze zeiden',
+      },
+      {
+        key: 'haast-hebben',
+        dutch: 'haast hebben',
+        english: 'to be in a hurry',
+        kind: 'phrase',
+        note: 'Ik heb haast. (I am in a hurry.)',
+      },
+    ],
     wordBreakdown: [
       { dutch: 'ik had', english: 'I had (hebben)' },
       { dutch: 'ik ging', english: 'I went (gaan)' },
@@ -116,10 +175,8 @@ export const lessons: Array<LessonDraft> = [
       { dutch: 'zij zei', english: 'she said (zeggen)' },
       { dutch: 'haast hebben', english: 'to be in a hurry' },
     ],
-    patternExplanation:
-      'When you tell what happened, Dutch often uses these short past forms: had, ging, kwam, zei. For more than one person the form ends in -en: we hadden, we gingen, we kwamen, ze zeiden. Learn them as words; they are irregular.',
-    pronunciationTip:
-      'Ging has the ng of English "sing" and a short i as in "sit". Zei uses the ei sound, somewhere between English "say" and "sigh".',
+    patternExplanation: 'When you tell what happened, Dutch often uses these short past forms: had, ging, kwam, zei. For more than one person the form ends in -en: we hadden, we gingen, we kwamen, ze zeiden. Learn them as words; they are irregular.',
+    pronunciationTip: 'Ging has the ng of English "sing" and a short i as in "sit". Zei uses the ei sound, somewhere between English "say" and "sigh".',
     examples: [
       { dutch: 'We gingen om acht uur naar huis.', english: 'We went home at eight.' },
       { dutch: 'Mijn collega kwam ook.', english: 'My colleague came too.' },
@@ -139,6 +196,7 @@ export const lessons: Array<LessonDraft> = [
         options: ['I was in a hurry.', 'I am in a hurry.', 'I was hungry.', 'I had time.'],
         answer: 'I was in a hurry.',
         explanation: 'Had is the past of heb, and haast hebben = to be in a hurry. Hungry would be honger.',
+        items: ['ik-had-haast-maar-de-bus', 'haast-hebben'],
       },
       {
         id: 'choice',
@@ -148,6 +206,7 @@ export const lessons: Array<LessonDraft> = [
         options: ['gingen', 'ging', 'gaan', 'gegaan'],
         answer: 'gingen',
         explanation: 'Gisteren is in the past and we is plural, so gingen. Ging is for one person.',
+        items: ['ik-ging'],
       },
       {
         id: 'cloze',
@@ -167,6 +226,20 @@ export const lessons: Array<LessonDraft> = [
         prompt: 'Tell your colleague that you were in a hurry yesterday.',
         answers: ['Ik had gisteren haast.', 'Gisteren had ik haast.'],
         explanation: 'Haast hebben in the past: ik had haast. The time word goes after had, or first with had second.',
+        items: ['ik-had-haast-maar-de-bus', 'haast-hebben'],
+      },
+      {
+        id: 'reply',
+        stage: 'independentRecall',
+        kind: 'choice',
+        prompt: 'What do you reply?',
+        context: [
+          { speaker: 'Manager', dutch: 'Goedemorgen! Je bent laat vandaag.', english: "Good morning! You're late today." },
+          { speaker: 'Manager', dutch: 'Wat is er gebeurd?', english: 'What happened?' },
+        ],
+        options: ['Sorry, de bus kwam niet.', 'Sorry, ik had geen haast.', 'Ja, het was heel leuk.'],
+        answer: 'Sorry, de bus kwam niet.',
+        explanation: 'Your manager wants to know why you are late, so say what went wrong: de bus kwam niet. Saying you were not in a hurry sounds careless, and Het was heel leuk does not answer the question.',
       },
       {
         id: 'transfer',
@@ -182,6 +255,7 @@ export const lessons: Array<LessonDraft> = [
           'Ik ben met de fiets naar het feestje gegaan.',
         ],
         explanation: 'Ging is the past of gaan. Met de fiets and op de fiets both mean "by bike".',
+        items: ['ik-ging'],
       },
     ],
   },
@@ -193,6 +267,28 @@ export const lessons: Array<LessonDraft> = [
     situation: 'Your friend Emma calls the morning after the concert you went to.',
     targetPhrase: 'Het was een heel leuke avond.',
     meaningEn: 'It was a really fun evening.',
+    items: [
+      {
+        key: 'het-was-een-heel-leuke-avond',
+        dutch: 'Het was een heel leuke avond.',
+        english: 'It was a really fun evening.',
+        kind: 'phrase',
+      },
+      {
+        key: 'met-wie',
+        dutch: 'met wie',
+        english: 'with whom, who … with',
+        kind: 'phrase',
+        note: 'Met wie ging je? (Who did you go with?)',
+      },
+      {
+        key: 'het-kaartje',
+        dutch: 'het kaartje',
+        english: 'the ticket',
+        kind: 'word',
+        note: 'for a train, a concert or the cinema',
+      },
+    ],
     wordBreakdown: [
       { dutch: 'het concert', english: 'the concert' },
       { dutch: 'met wie', english: 'with whom, who … with' },
@@ -200,14 +296,34 @@ export const lessons: Array<LessonDraft> = [
       { dutch: 'gisteravond', english: 'last night, yesterday evening' },
     ],
     dialogue: [
-      { speaker: 'Emma', dutch: 'Hoi! Hoe was het concert gisteravond?', english: 'Hi! How was the concert last night?' },
-      { speaker: 'You', dutch: 'Het was een heel leuke avond, maar ook heel druk.', english: 'It was a really fun evening, but very busy too.' },
+      {
+        speaker: 'Emma',
+        dutch: 'Hoi! Hoe was het concert gisteravond?',
+        english: 'Hi! How was the concert last night?',
+      },
+      {
+        speaker: 'You',
+        dutch: 'Het was een heel leuke avond, maar ook heel druk.',
+        english: 'It was a really fun evening, but very busy too.',
+      },
       { speaker: 'Emma', dutch: 'Met wie ging je?', english: 'Who did you go with?' },
-      { speaker: 'You', dutch: 'Met Joris. Hij had kaartjes.', english: 'With Joris. He had tickets.' },
-      { speaker: 'Emma', dutch: 'Hoe laat waren jullie thuis?', english: 'What time did you get home?' },
-      { speaker: 'You', dutch: 'Om één uur. We zijn met de fiets naar huis gegaan. Ik ben vandaag heel moe!', english: "At one o'clock. We cycled home. I'm really tired today!" },
+      {
+        speaker: 'You',
+        dutch: 'Met Joris. Hij had kaartjes.',
+        english: 'With Joris. He had tickets.',
+      },
+      {
+        speaker: 'Emma',
+        dutch: 'Hoe laat waren jullie thuis?',
+        english: 'What time did you get home?',
+      },
+      {
+        speaker: 'You',
+        dutch: 'Om één uur. We zijn met de fiets naar huis gegaan. Ik ben vandaag heel moe!',
+        english: "At one o'clock. We cycled home. I'm really tired today!",
+      },
     ],
-    speakingPrompt: 'Tell Emma about your own last evening out: Het was … . Ik ging met … . We waren om … thuis.',
+    speakingPrompt: 'Tell Emma about your own last evening out: Het was …. Ik ging met …. We waren om … thuis.',
     revisits: [
       's2-simplepast-was',
       's2-simplepast-had-ging',
@@ -226,7 +342,8 @@ export const lessons: Array<LessonDraft> = [
         prompt: 'Emma asks: "Hoe was het concert?" Which answer fits?',
         options: ['Het was heel leuk.', 'Ik ga met Joris.', 'Om acht uur.', 'Ja, ik heb kaartjes.'],
         answer: 'Het was heel leuk.',
-        explanation: 'Hoe was …? asks how something was, so answer with Het was … .',
+        explanation: 'Hoe was …? asks how something was, so answer with Het was ….',
+        items: ['s2-simplepast-was/het-was-leuk'],
       },
       {
         id: 'order',
@@ -237,6 +354,7 @@ export const lessons: Array<LessonDraft> = [
         distractors: ['was'],
         english: 'What time did you get home?',
         explanation: 'Jullie is plural, so waren. Dutch says "what time were you home?"',
+        items: ['s2-simplepast-was/we-waren'],
       },
       {
         id: 'listen',
@@ -256,16 +374,41 @@ export const lessons: Array<LessonDraft> = [
         prompt: 'Emma asks who had the tickets. Say that Joris had the tickets.',
         answers: ['Joris had de kaartjes.', 'Joris had kaartjes.', 'Joris had ze.', 'Die had Joris.'],
         explanation: 'Had is the past of heeft: Joris had de kaartjes.',
+        items: ['het-kaartje'],
+      },
+      {
+        id: 'reply',
+        stage: 'independentRecall',
+        kind: 'choice',
+        prompt: 'What do you reply?',
+        context: [
+          { speaker: 'Emma', dutch: 'Je ziet er moe uit!', english: 'You look tired!' },
+          { speaker: 'Emma', dutch: 'Hoe laat was je thuis?', english: 'What time did you get home?' },
+        ],
+        options: ['Om twee uur. Het concert was heel lang.', 'Ik ga om twee uur naar huis.', 'Met Joris.'],
+        answer: 'Om twee uur. Het concert was heel lang.',
+        explanation: 'Emma asks what time you got home, so give a time and say what happened: Het concert was heel lang. Ik ga om twee uur naar huis is about later today, and Met Joris answers Met wie?',
       },
       {
         id: 'write',
         stage: 'transfer',
         kind: 'write',
-        prompt:
-          'Write a short message to a friend about an evening out last week (at least 12 words). Say where you were, who came, and how it was.',
+        prompt: 'Write a short message to a friend about an evening out last week (at least 12 words). Say where you were, who came, and how it was.',
         mustInclude: [
           ['was', 'waren'],
-          ['ging', 'gingen', 'kwam', 'kwamen', 'had', 'hadden', 'ben', 'heb', 'zijn', 'hebben', 'is'],
+          [
+            'ging',
+            'gingen',
+            'kwam',
+            'kwamen',
+            'had',
+            'hadden',
+            'ben',
+            'heb',
+            'zijn',
+            'hebben',
+            'is',
+          ],
         ],
         minWords: 12,
         modelAnswer: 'Vorige week was ik in een café in Utrecht. Mijn collega kwam ook. Het was heel gezellig!',

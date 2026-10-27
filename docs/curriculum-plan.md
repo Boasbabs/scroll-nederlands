@@ -9,6 +9,12 @@ Kinds: **C** = core (one new phrase/pattern), **P** = practice (recombines
 earlier lessons in a new situation), **K** = checkpoint (cumulative, scored,
 focused practice only).
 
+Totals (from `curriculumStats`, 2026-10-27): 4 stages, 56 modules, 272 lessons
+(206 core, 52 practice, 14 checkpoints), 1,024 learning items and 1,524
+exercises (688 choice, 497 type, 173 cloze, 112 order, 54 write; 204 listening,
+66 with a reading passage). Per stage: Stage 0 · 8 modules · 49 lessons;
+Stage 1 · 20 · 100; Stage 2 · 17 · 71; Stage 3 · 11 · 52.
+
 ## Assumptions
 
 - Target variety: standard Netherlands Dutch (nl-NL). Vocabulary and customs

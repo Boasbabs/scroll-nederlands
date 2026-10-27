@@ -9,17 +9,54 @@ export const lessons: Array<LessonDraft> = [
     situation: 'You arrive at work soaked after cycling in. A colleague says hello and you comment on the weather.',
     targetPhrase: 'Het regent en het waait.',
     meaningEn: "It's raining and it's windy.",
+    items: [
+      {
+        key: 'het-regent-en-het-waait',
+        dutch: 'Het regent en het waait.',
+        english: "It's raining and it's windy.",
+        kind: 'phrase',
+      },
+      {
+        key: 'het-regent',
+        dutch: 'het regent',
+        english: "it's raining",
+        kind: 'phrase',
+        note: 'from regenen',
+      },
+      {
+        key: 'het-waait',
+        dutch: 'het waait',
+        english: "it's windy",
+        kind: 'phrase',
+        note: 'from waaien, literally: it blows',
+      },
+      {
+        key: 'het-is-mooi-weer',
+        dutch: 'het is mooi weer',
+        english: 'the weather is nice',
+        kind: 'phrase',
+        accept: ['het is lekker weer', 'het weer is mooi'],
+        note: 'literally: it is nice weather',
+      },
+      {
+        key: 'de-zon-schijnt',
+        dutch: 'de zon schijnt',
+        english: 'the sun is shining',
+        kind: 'phrase',
+      },
+    ],
     wordBreakdown: [
       { dutch: 'het regent', english: "it's raining (regenen)" },
       { dutch: 'het waait', english: "it's windy (waaien, literally: it blows)" },
       { dutch: 'het is koud / warm', english: "it's cold / warm" },
-      { dutch: 'het is mooi weer', english: 'the weather is nice (literally: it is nice weather)' },
+      {
+        dutch: 'het is mooi weer',
+        english: 'the weather is nice (literally: it is nice weather)',
+      },
       { dutch: 'de zon schijnt', english: 'the sun is shining' },
     ],
-    patternExplanation:
-      'Weather sentences start with het, like English "it": Het regent. For good or bad weather Dutch says Het is mooi weer, with no article before weer. Ask Hoe is het weer? for "What is the weather like?"',
-    pronunciationTip:
-      'Waait is roughly "why-t": a long aa gliding into ee. Regent is "RAY-khunt", with the throat g.',
+    patternExplanation: 'Weather sentences start with het, like English "it": Het regent. For good or bad weather Dutch says Het is mooi weer, with no article before weer. Ask Hoe is het weer? for "What is the weather like?"',
+    pronunciationTip: 'Waait is roughly "why-t": a long aa gliding into ee. Regent is "RAY-khunt", with the throat g.',
     examples: [
       { dutch: 'Het is koud vandaag.', english: "It's cold today." },
       { dutch: 'Het is mooi weer!', english: "It's lovely weather!" },
@@ -39,6 +76,7 @@ export const lessons: Array<LessonDraft> = [
         options: ["It's windy.", "It's raining.", "It's warm.", "It's snowing."],
         answer: "It's windy.",
         explanation: 'Waaien = to blow (wind). Raining is het regent.',
+        items: ['het-waait'],
       },
       {
         id: 'cloze',
@@ -50,13 +88,19 @@ export const lessons: Array<LessonDraft> = [
         hint: 'r_____',
         english: "Take an umbrella, it's raining.",
         explanation: 'Regenen → het regent. Weather verbs take het, like English "it".',
+        items: ['het-regent'],
       },
       {
         id: 'type',
         stage: 'independentRecall',
         kind: 'type',
         prompt: 'A friend in Spain asks how the weather is in the Netherlands today. It is cold. Tell her.',
-        answers: ['Het is koud.', 'Het is koud vandaag.', 'Vandaag is het koud.', 'Het is vandaag koud.'],
+        answers: [
+          'Het is koud.',
+          'Het is koud vandaag.',
+          'Vandaag is het koud.',
+          'Het is vandaag koud.',
+        ],
         explanation: 'Het is koud. If you start with vandaag, the verb comes next: Vandaag is het koud.',
       },
       {
@@ -69,6 +113,7 @@ export const lessons: Array<LessonDraft> = [
         options: ['Rain', 'Sunny and nice', 'Windy', 'Cold and dry'],
         answer: 'Rain',
         explanation: 'Morgen regent het = tomorrow it will rain. Today (vandaag) is nice.',
+        items: ['het-regent', 'het-is-mooi-weer'],
       },
       {
         id: 'transfer',
@@ -85,6 +130,7 @@ export const lessons: Array<LessonDraft> = [
           'Wat is het mooi weer!',
         ],
         explanation: 'Het is mooi weer, with no article before weer. Lekker weer is just as common.',
+        items: ['het-is-mooi-weer'],
       },
     ],
   },
@@ -96,16 +142,31 @@ export const lessons: Array<LessonDraft> = [
     situation: 'A friend asks what your new home in the Netherlands is like.',
     targetPhrase: 'Het huis is groot.',
     meaningEn: 'The house is big.',
+    items: [
+      {
+        key: 'het-huis-is-groot',
+        dutch: 'Het huis is groot.',
+        english: 'The house is big.',
+        kind: 'phrase',
+      },
+      { key: 'mooi', dutch: 'mooi', english: 'beautiful, nice', kind: 'word' },
+      {
+        key: 'klein',
+        dutch: 'klein',
+        english: 'small',
+        kind: 'word',
+        note: 'for a person: short. Not "clean" (schoon)',
+      },
+      { key: 'goedkoop', dutch: 'goedkoop', english: 'cheap', kind: 'word', note: 'the opposite: duur' },
+    ],
     wordBreakdown: [
       { dutch: 'groot / klein', english: 'big / small' },
       { dutch: 'oud / nieuw', english: 'old / new' },
       { dutch: 'mooi', english: 'beautiful, nice' },
       { dutch: 'duur / goedkoop', english: 'expensive / cheap' },
     ],
-    patternExplanation:
-      'After is, ben or zijn, the adjective never changes: Het huis is groot. De stad is mooi. (Before a noun it can get an -e; that is the next lesson.)',
-    pronunciationTip:
-      'Groot has a long oo: "khroht". Klein is not "clean": the ei sounds like the ij in fijn. Nieuw is "neew", ending in a soft w.',
+    patternExplanation: 'After is, ben or zijn, the adjective never changes: Het huis is groot. De stad is mooi. (Before a noun it can get an -e; that is the next lesson.)',
+    pronunciationTip: 'Groot has a long oo: "khroht". Klein is not "clean": the ei sounds like the ij in fijn. Nieuw is "neew", ending in a soft w.',
     examples: [
       { dutch: 'Mijn appartement is klein.', english: 'My apartment is small.' },
       { dutch: 'De fiets is nieuw.', english: 'The bike is new.' },
@@ -122,9 +183,15 @@ export const lessons: Array<LessonDraft> = [
         stage: 'recognition',
         kind: 'choice',
         prompt: 'What does "Mijn appartement is klein." mean?',
-        options: ['My apartment is small.', 'My apartment is clean.', 'My apartment is new.', 'My apartment is big.'],
+        options: [
+          'My apartment is small.',
+          'My apartment is clean.',
+          'My apartment is new.',
+          'My apartment is big.',
+        ],
         answer: 'My apartment is small.',
         explanation: 'Klein = small, a classic false friend. "Clean" is schoon.',
+        items: ['klein'],
       },
       {
         id: 'order',
@@ -141,7 +208,12 @@ export const lessons: Array<LessonDraft> = [
         stage: 'independentRecall',
         kind: 'type',
         prompt: 'A friend asks about your new apartment. Say it is big.',
-        answers: ['Het is groot.', 'Mijn appartement is groot.', 'Het appartement is groot.', 'Het is heel groot.'],
+        answers: [
+          'Het is groot.',
+          'Mijn appartement is groot.',
+          'Het appartement is groot.',
+          'Het is heel groot.',
+        ],
         explanation: 'Het is groot. After is the adjective stays as it is.',
       },
       {
@@ -154,6 +226,7 @@ export const lessons: Array<LessonDraft> = [
         options: ['Old and small', 'New and small', 'Old and big', 'Nice and cheap'],
         answer: 'Old and small',
         explanation: 'Oud = old, klein = small.',
+        items: ['het-huis-is-groot', 'klein'],
       },
       {
         id: 'transfer',
@@ -168,6 +241,7 @@ export const lessons: Array<LessonDraft> = [
           'Het is goed en goedkoop.',
         ],
         explanation: 'De koffie is goed en goedkoop: no endings after is.',
+        items: ['het-huis-is-groot', 'goedkoop'],
       },
     ],
   },
@@ -179,19 +253,42 @@ export const lessons: Array<LessonDraft> = [
     situation: 'You are telling a colleague about the house you are renting outside the city.',
     targetPhrase: 'We hebben een groot huis met een mooie tuin.',
     meaningEn: 'We have a big house with a beautiful garden.',
+    items: [
+      {
+        key: 'we-hebben-een-groot-huis-met',
+        dutch: 'We hebben een groot huis met een mooie tuin.',
+        english: 'We have a big house with a beautiful garden.',
+        kind: 'phrase',
+      },
+      {
+        key: 'het-grote-huis',
+        dutch: 'het grote huis',
+        english: 'the big house',
+        kind: 'phrase',
+        note: 'after het or de the adjective always gets -e',
+      },
+      {
+        key: 'een-grote-stad',
+        dutch: 'een grote stad',
+        english: 'a big city',
+        kind: 'phrase',
+        note: 'de stad is a de-word, so -e even after een',
+      },
+    ],
     wordBreakdown: [
       { dutch: 'een groot huis', english: 'a big house (het huis + een: no -e)' },
       { dutch: 'het grote huis', english: 'the big house (-e)' },
       { dutch: 'een mooie tuin', english: 'a beautiful garden (de tuin: -e)' },
       { dutch: 'een grote stad', english: 'a big city (de stad: -e)' },
     ],
-    patternExplanation:
-      'Before a noun, an adjective usually gets -e: een grote stad, de grote stad, het grote huis. The exception: a singular het-word after een (or with no article) gets no -e: een groot huis. Watch the spelling: groot → grote, like the vowel rules from Stage 0.',
-    pronunciationTip:
-      'The added -e is a short "uh": grote is "KHROH-tuh", mooie is "MOH-yuh".',
+    patternExplanation: 'Before a noun, an adjective usually gets -e: een grote stad, de grote stad, het grote huis. The exception: a singular het-word after een (or with no article) gets no -e: een groot huis. Watch the spelling: groot → grote, like the vowel rules from Stage 0.',
+    pronunciationTip: 'The added -e is a short "uh": grote is "KHROH-tuh", mooie is "MOH-yuh".',
     examples: [
       { dutch: 'Utrecht is een grote stad.', english: 'Utrecht is a big city.' },
-      { dutch: 'Het grote huis is van mijn buren.', english: 'The big house belongs to my neighbours.' },
+      {
+        dutch: 'Het grote huis is van mijn buren.',
+        english: 'The big house belongs to my neighbours.',
+      },
       { dutch: 'Ik heb een klein appartement.', english: 'I have a small apartment.' },
       { dutch: 'De nieuwe fiets is van mij.', english: 'The new bike is mine.' },
     ],
@@ -219,6 +316,7 @@ export const lessons: Array<LessonDraft> = [
         hint: 'nieuw or nieuwe?',
         english: 'I have a new bike.',
         explanation: 'De fiets is a de-word, so the adjective gets -e: een nieuwe fiets.',
+        items: ['een-grote-stad'],
       },
       {
         id: 'cloze-no-e',
@@ -238,6 +336,7 @@ export const lessons: Array<LessonDraft> = [
         prompt: 'A colleague asks where you live. Say you live in a small city (de stad).',
         answers: ['Ik woon in een kleine stad.'],
         explanation: 'Stad is a de-word, so klein gets -e: een kleine stad.',
+        items: ['een-grote-stad'],
       },
       {
         id: 'transfer',
@@ -257,6 +356,30 @@ export const lessons: Array<LessonDraft> = [
     situation: 'Your friend is picking up your sister from the station and asks what she looks like.',
     targetPhrase: 'Zij heeft bruin haar en blauwe ogen.',
     meaningEn: 'She has brown hair and blue eyes.',
+    items: [
+      {
+        key: 'zij-heeft-bruin-haar-en-blauwe',
+        dutch: 'Zij heeft bruin haar en blauwe ogen.',
+        english: 'She has brown hair and blue eyes.',
+        kind: 'phrase',
+        accept: ['Ze heeft bruin haar en blauwe ogen.'],
+      },
+      {
+        key: 'lang',
+        dutch: 'lang',
+        english: 'tall',
+        kind: 'word',
+        note: 'for a person; for hair or things: long',
+      },
+      { key: 'het-haar', dutch: 'het haar', english: 'the hair', kind: 'word' },
+      {
+        key: 'de-bril',
+        dutch: 'de bril',
+        english: 'the glasses',
+        kind: 'word',
+        note: 'one bril in Dutch: Hij heeft een bril.',
+      },
+    ],
     wordBreakdown: [
       { dutch: 'lang', english: 'tall (for a person); long (for hair)' },
       { dutch: 'klein', english: 'short (for a person)' },
@@ -265,10 +388,8 @@ export const lessons: Array<LessonDraft> = [
       { dutch: 'blauwe ogen', english: 'blue eyes (het oog → de ogen)' },
       { dutch: 'een bril', english: 'glasses (Hij heeft een bril = he wears glasses)' },
     ],
-    patternExplanation:
-      'Use zijn for build: Hij is lang. Use hebben for hair, eyes and glasses: Zij heeft bruin haar. Haar is a het-word without an article, so no -e (bruin haar); plurals get -e (blauwe ogen).',
-    pronunciationTip:
-      'Haar is "hahr" with a long aa. Ogen is "OH-khun", with the throat g. Bruin has the Dutch ui from huis.',
+    patternExplanation: 'Use zijn for build: Hij is lang. Use hebben for hair, eyes and glasses: Zij heeft bruin haar. Haar is a het-word without an article, so no -e (bruin haar); plurals get -e (blauwe ogen).',
+    pronunciationTip: 'Haar is "hahr" with a long aa. Ogen is "OH-khun", with the throat g. Bruin has the Dutch ui from huis.',
     examples: [
       { dutch: 'Mijn broer is lang.', english: 'My brother is tall.' },
       { dutch: 'Hij heeft een bril.', english: 'He wears glasses.' },
@@ -287,6 +408,7 @@ export const lessons: Array<LessonDraft> = [
         options: ["He's tall.", 'He has long hair.', "He's late.", "He's slow."],
         answer: "He's tall.",
         explanation: 'For a person, lang = tall. Long hair would be lang haar; late is laat.',
+        items: ['lang'],
       },
       {
         id: 'cloze',
@@ -298,6 +420,7 @@ export const lessons: Array<LessonDraft> = [
         hint: 'is or heeft?',
         english: 'My sister has blond hair.',
         explanation: 'Hair, eyes and glasses go with hebben: zij heeft blond haar.',
+        items: ['zij-heeft-bruin-haar-en-blauwe', 'het-haar'],
       },
       {
         id: 'type',
@@ -312,6 +435,7 @@ export const lessons: Array<LessonDraft> = [
           'Mijn broer is lang en heeft bruin haar.',
         ],
         explanation: 'Hij is lang (zijn for build) + hij heeft bruin haar (hebben for hair, no -e).',
+        items: ['lang', 'het-haar'],
       },
       {
         id: 'listen',
@@ -320,9 +444,15 @@ export const lessons: Array<LessonDraft> = [
         prompt: 'Listen. What does the colleague look like?',
         audioText: 'Mijn collega is klein en ze heeft een bril.',
         listenOnly: true,
-        options: ['Short, with glasses', 'Tall, with glasses', 'Short, with blond hair', 'Tall, with brown hair'],
+        options: [
+          'Short, with glasses',
+          'Tall, with glasses',
+          'Short, with blond hair',
+          'Tall, with brown hair',
+        ],
         answer: 'Short, with glasses',
         explanation: 'Klein = short (for a person); een bril = glasses.',
+        items: ['de-bril', 's1-weather-adjectives/klein'],
       },
       {
         id: 'transfer',
@@ -333,8 +463,10 @@ export const lessons: Array<LessonDraft> = [
           'Hij heeft grijs haar en een bril.',
           'Hij heeft grijs haar en hij heeft een bril.',
           'Mijn manager heeft grijs haar en een bril.',
+          'Hij heeft een bril en grijs haar.',
         ],
         explanation: 'Hebben for both: Hij heeft grijs haar en een bril. Grijs haar has no -e.',
+        items: ['het-haar', 'de-bril'],
       },
     ],
   },
@@ -346,6 +478,17 @@ export const lessons: Array<LessonDraft> = [
     situation: 'A visiting friend asks what Amsterdam is like compared with where you live.',
     targetPhrase: 'Amsterdam is een drukke stad.',
     meaningEn: 'Amsterdam is a busy city.',
+    items: [
+      {
+        key: 'amsterdam-is-een-drukke-stad',
+        dutch: 'Amsterdam is een drukke stad.',
+        english: 'Amsterdam is a busy city.',
+        kind: 'phrase',
+      },
+      { key: 'druk', dutch: 'druk', english: 'busy', kind: 'word' },
+      { key: 'rustig', dutch: 'rustig', english: 'quiet, calm', kind: 'word' },
+      { key: 'het-dorp', dutch: 'het dorp', english: 'the village', kind: 'word' },
+    ],
     wordBreakdown: [
       { dutch: 'druk', english: 'busy' },
       { dutch: 'rustig', english: 'quiet, calm' },
@@ -353,10 +496,8 @@ export const lessons: Array<LessonDraft> = [
       { dutch: 'het dorp', english: 'the village' },
       { dutch: 'heel', english: 'very' },
     ],
-    patternExplanation:
-      'Same rules as before: De stad is druk, but een drukke stad. Druk doubles the k (drukke) to keep the u short. A het-word with een gets no -e: een rustig dorp.',
-    pronunciationTip:
-      'Gezellig is "khuh-ZEL-ukh": both g sounds come from the throat, and -ig is a weak "ukh". Druk has a short u, close to the "u" in "hurt" said quickly.',
+    patternExplanation: 'Same rules as before: De stad is druk, but een drukke stad. Druk doubles the k (drukke) to keep the u short. A het-word with een gets no -e: een rustig dorp.',
+    pronunciationTip: 'Gezellig is "khuh-ZEL-ukh": both g sounds come from the throat, and -ig is a weak "ukh". Druk has a short u, close to the "u" in "hurt" said quickly.',
     examples: [
       { dutch: 'Mijn dorp is klein en rustig.', english: 'My village is small and quiet.' },
       { dutch: 'Utrecht is een gezellige stad.', english: 'Utrecht is a lovely, lively city.' },
@@ -372,9 +513,15 @@ export const lessons: Array<LessonDraft> = [
         stage: 'recognition',
         kind: 'choice',
         prompt: 'What does "Mijn dorp is rustig." mean?',
-        options: ['My village is quiet.', 'My village is busy.', 'My village is rusty.', 'My village is old.'],
+        options: [
+          'My village is quiet.',
+          'My village is busy.',
+          'My village is rusty.',
+          'My village is old.',
+        ],
         answer: 'My village is quiet.',
         explanation: 'Rustig = quiet, calm (it has nothing to do with rust). Busy is druk.',
+        items: ['rustig', 'het-dorp'],
       },
       {
         id: 'cloze',
@@ -386,6 +533,7 @@ export const lessons: Array<LessonDraft> = [
         hint: 'druk → ?',
         english: 'I live on a busy street.',
         explanation: 'De straat → een drukke straat. The k doubles to keep the u short.',
+        items: ['amsterdam-is-een-drukke-stad', 'druk'],
       },
       {
         id: 'type',
@@ -400,6 +548,7 @@ export const lessons: Array<LessonDraft> = [
           'Het is een klein, rustig dorp.',
         ],
         explanation: 'After is no -e: Het is klein en rustig. Before stad you would add -e: een kleine, rustige stad.',
+        items: ['rustig'],
       },
       {
         id: 'listen',
@@ -408,9 +557,15 @@ export const lessons: Array<LessonDraft> = [
         prompt: 'Listen. Where does she live?',
         audioText: 'Ik woon in een klein dorp. Het is mooi en heel rustig.',
         listenOnly: true,
-        options: ['In a small, quiet village', 'In a busy city', 'In a small, busy village', 'In a big, quiet town'],
+        options: [
+          'In a small, quiet village',
+          'In a busy city',
+          'In a small, busy village',
+          'In a big, quiet town',
+        ],
         answer: 'In a small, quiet village',
         explanation: 'Een klein dorp = a small village (no -e: het-word with een); heel rustig = very quiet.',
+        items: ['het-dorp', 'rustig'],
       },
       {
         id: 'transfer',
@@ -430,6 +585,23 @@ export const lessons: Array<LessonDraft> = [
     situation: 'Monday morning at the coffee machine. Your colleague Ana, who is from Lisbon, starts with the weather.',
     targetPhrase: 'Lissabon is een mooie, oude stad.',
     meaningEn: 'Lisbon is a beautiful old city.',
+    items: [
+      {
+        key: 'lissabon-is-een-mooie-oude-stad',
+        dutch: 'Lissabon is een mooie, oude stad.',
+        english: 'Lisbon is a beautiful old city.',
+        kind: 'phrase',
+      },
+      {
+        key: 'typisch-nederlands-weer',
+        dutch: 'typisch Nederlands weer',
+        english: 'typical Dutch weather',
+        kind: 'phrase',
+      },
+      { key: 'daar', dutch: 'daar', english: 'there', kind: 'word' },
+      { key: 'zonnig', dutch: 'zonnig', english: 'sunny', kind: 'word' },
+      { key: 'ja-zeker', dutch: 'Ja, zeker!', english: 'Yes, definitely!', kind: 'phrase' },
+    ],
     wordBreakdown: [
       { dutch: 'typisch Nederlands weer', english: 'typical Dutch weather' },
       { dutch: 'daar', english: 'there' },
@@ -439,15 +611,37 @@ export const lessons: Array<LessonDraft> = [
     ],
     dialogue: [
       { speaker: 'Ana', dutch: 'Brr, het is koud vandaag!', english: "Brr, it's cold today!" },
-      { speaker: 'Jij', dutch: 'Ja, en het waait ook. Typisch Nederlands weer! Hoe is het weer in Lissabon?', english: "Yes, and it's windy too. Typical Dutch weather! What's the weather like in Lisbon?" },
-      { speaker: 'Ana', dutch: 'Daar is het nu warm en zonnig.', english: "It's warm and sunny there now." },
+      {
+        speaker: 'Jij',
+        dutch: 'Ja, en het waait ook. Typisch Nederlands weer! Hoe is het weer in Lissabon?',
+        english: "Yes, and it's windy too. Typical Dutch weather! What's the weather like in Lisbon?",
+      },
+      {
+        speaker: 'Ana',
+        dutch: 'Daar is het nu warm en zonnig.',
+        english: "It's warm and sunny there now.",
+      },
       { speaker: 'Jij', dutch: 'Is Lissabon mooi?', english: 'Is Lisbon beautiful?' },
-      { speaker: 'Ana', dutch: 'Ja, het is een mooie, oude stad. En heel gezellig!', english: "Yes, it's a beautiful old city. And really lively!" },
-      { speaker: 'Jij', dutch: 'Utrecht is ook een leuke stad.', english: 'Utrecht is a nice city too.' },
+      {
+        speaker: 'Ana',
+        dutch: 'Ja, het is een mooie, oude stad. En heel gezellig!',
+        english: "Yes, it's a beautiful old city. And really lively!",
+      },
+      {
+        speaker: 'Jij',
+        dutch: 'Utrecht is ook een leuke stad.',
+        english: 'Utrecht is a nice city too.',
+      },
       { speaker: 'Ana', dutch: 'Ja, zeker!', english: 'Yes, definitely!' },
     ],
     speakingPrompt: 'Play your part, then describe the weather today and your own city to Ana.',
-    revisits: ['s1-weather-weather', 's1-weather-adjectives', 's1-weather-adjective-e', 's1-weather-places', 's0-intro-ik-kom-uit'],
+    revisits: [
+      's1-weather-weather',
+      's1-weather-adjectives',
+      's1-weather-adjective-e',
+      's1-weather-places',
+      's0-intro-ik-kom-uit',
+    ],
     skills: ['listening', 'speaking', 'reading'],
     covers: ['weather', 'describe-places'],
     exercises: [
@@ -464,6 +658,7 @@ export const lessons: Array<LessonDraft> = [
         ],
         answer: "It's warm and sunny there now.",
         explanation: 'Daar = there (in Lisbon), nu = now, zonnig = sunny.',
+        items: ['daar', 'zonnig'],
       },
       {
         id: 'cloze',
@@ -489,17 +684,41 @@ export const lessons: Array<LessonDraft> = [
           'Het is koud en het waait hard.',
         ],
         explanation: 'Het is koud + het waait. Winderig (windy) is also correct: Het is koud en winderig.',
+        items: ['s1-weather-weather/het-regent-en-het-waait'],
       },
       {
         id: 'read',
         stage: 'independentRecall',
         kind: 'choice',
         prompt: 'Read the message from your friend on holiday. What is the weather like?',
-        passage:
-          'Hoi! Groeten uit Kopenhagen. Het is een mooie, oude stad. Het weer is niet zo mooi: het regent elke dag. Het hotel is klein en gezellig. Tot snel!',
-        options: ['It rains every day.', "It's sunny and warm.", "It's windy but dry.", "It's cold and snowy."],
+        passage: 'Hoi! Groeten uit Kopenhagen. Het is een mooie, oude stad. Het weer is niet zo mooi: het regent elke dag. Het hotel is klein en gezellig. Tot snel!',
+        options: [
+          'It rains every day.',
+          "It's sunny and warm.",
+          "It's windy but dry.",
+          "It's cold and snowy.",
+        ],
         answer: 'It rains every day.',
         explanation: 'Het regent elke dag = it rains every day. The city is beautiful, the weather is not.',
+        items: ['s1-weather-weather/het-regent'],
+      },
+      {
+        id: 'reply',
+        stage: 'transfer',
+        kind: 'choice',
+        prompt: 'What do you reply?',
+        context: [
+          { speaker: 'Ana', dutch: 'Jij woont in Utrecht, toch?', english: 'You live in Utrecht, right?' },
+          { speaker: 'Jij', dutch: 'Ja, al twee jaar.', english: 'Yes, for two years now.' },
+          { speaker: 'Ana', dutch: 'Wat voor stad is Utrecht?', english: 'What kind of city is Utrecht?' },
+        ],
+        options: [
+          'Het is een gezellige, oude stad.',
+          'Het regent en het waait.',
+          'Ja, ik woon in Utrecht.',
+        ],
+        answer: 'Het is een gezellige, oude stad.',
+        explanation: 'Ana wants a description of the city: een gezellige, oude stad (de stad, so both adjectives get -e). Het regent en het waait describes the weather, and she already knows you live in Utrecht.',
       },
       {
         id: 'transfer',
@@ -509,8 +728,11 @@ export const lessons: Array<LessonDraft> = [
         answers: [
           'Het is een oude, rustige stad.',
           'Het is een rustige, oude stad.',
+          'Het is een oude en rustige stad.',
+          'Het is een rustige en oude stad.',
         ],
         explanation: 'De stad, so both adjectives get -e: een oude, rustige stad.',
+        items: ['lissabon-is-een-mooie-oude-stad', 's1-weather-places/rustig'],
       },
     ],
   },

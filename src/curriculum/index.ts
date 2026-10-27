@@ -1,5 +1,6 @@
+import { assembleCurriculum, indexCurriculum, type CurriculumIndex } from './assemble';
 import { curriculumStructure } from './structure';
-import type { Curriculum, Lesson, LessonDraft } from './types';
+import type { Curriculum, LessonDraft } from './types';
 
 type ContentModule = { lessons: Array<LessonDraft> };
 
@@ -10,39 +11,8 @@ function lessonsForModule(stageId: string, moduleId: string): Array<LessonDraft>
   return contentFiles[`./content/${stageId}/${moduleId}.ts`]?.lessons ?? [];
 }
 
-function buildCurriculum(): Curriculum {
-  return {
-    stages: curriculumStructure.map((stage) => ({
-      id: stage.id,
-      level: stage.level,
-      title: stage.title,
-      objective: stage.objective,
-      modules: stage.modules.map((module) => ({
-        id: module.id,
-        stageId: stage.id,
-        title: module.title,
-        description: module.description,
-        lessons: lessonsForModule(stage.id, module.id).map(
-          (draft): Lesson => ({ ...draft, moduleId: module.id, stageId: stage.id, level: stage.level }),
-        ),
-      })),
-    })),
-  };
-}
+export const curriculum: Curriculum = assembleCurriculum(curriculumStructure, lessonsForModule);
+export const course: CurriculumIndex = indexCurriculum(curriculum);
 
-export const curriculum: Curriculum = buildCurriculum();
-
-/** Every lesson in teaching order. */
-export function flattenLessons(source: Curriculum): Array<Lesson> {
-  return source.stages.flatMap((stage) => stage.modules.flatMap((module) => module.lessons));
-}
-
-export const allLessons: Array<Lesson> = flattenLessons(curriculum);
-
-const lessonIndex = new Map(allLessons.map((lesson) => [lesson.id, lesson]));
-
-export function getLesson(id: string): Lesson | undefined {
-  return lessonIndex.get(id);
-}
-
-export type { Curriculum, Lesson } from './types';
+export { exerciseItemIds, flattenLessons, indexCurriculum, type CurriculumIndex } from './assemble';
+export type { Curriculum, Exercise, LearningItem, Lesson } from './types';

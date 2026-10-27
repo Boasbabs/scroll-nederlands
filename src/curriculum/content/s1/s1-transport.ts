@@ -9,6 +9,25 @@ export const lessons: Array<LessonDraft> = [
     situation: 'A colleague asks how you get to the office. Like most people here, you cycle.',
     targetPhrase: 'Ik ga met de fiets naar mijn werk.',
     meaningEn: 'I cycle to work.',
+    items: [
+      {
+        key: 'ik-ga-met-de-fiets-naar',
+        dutch: 'Ik ga met de fiets naar mijn werk.',
+        english: 'I cycle to work.',
+        kind: 'phrase',
+        accept: ['Met de fiets ga ik naar mijn werk.', 'Ik fiets naar mijn werk.'],
+      },
+      {
+        key: 'met-de-trein',
+        dutch: 'met de trein',
+        english: 'by train',
+        kind: 'phrase',
+        note: 'literally: with the train',
+      },
+      { key: 'met-de-bus', dutch: 'met de bus', english: 'by bus', kind: 'phrase' },
+      { key: 'met-de-auto', dutch: 'met de auto', english: 'by car', kind: 'phrase' },
+      { key: 'lopend', dutch: 'lopend', english: 'on foot', kind: 'word', note: 'from lopen = to walk' },
+    ],
     wordBreakdown: [
       { dutch: 'met de fiets', english: 'by bike (literally: with the bike)' },
       { dutch: 'met de trein', english: 'by train' },
@@ -16,13 +35,14 @@ export const lessons: Array<LessonDraft> = [
       { dutch: 'met de auto', english: 'by car' },
       { dutch: 'lopend', english: 'on foot' },
     ],
-    patternExplanation:
-      'Met de + vehicle = by …: met de trein, met de bus. Dutch keeps de here, unlike English "by train". The order is how, then where: met de fiets naar mijn werk.',
-    pronunciationTip:
-      'Fiets sounds like "feets". Trein has the ei of klein, roughly "train" with a flatter vowel.',
+    patternExplanation: 'Met de + vehicle = by …: met de trein, met de bus. Dutch keeps de here, unlike English "by train". The order is how, then where: met de fiets naar mijn werk.',
+    pronunciationTip: 'Fiets sounds like "feets". Trein has the ei of klein, roughly "train" with a flatter vowel.',
     examples: [
       { dutch: 'Ik ga met de trein naar Utrecht.', english: "I'm going to Utrecht by train." },
-      { dutch: 'Hoe ga je naar je werk? Met de bus.', english: 'How do you get to work? By bus.' },
+      {
+        dutch: 'Hoe ga je naar je werk? Met de bus.',
+        english: 'How do you get to work? By bus.',
+      },
       { dutch: 'Ik ga lopend naar de supermarkt.', english: 'I walk to the supermarket.' },
     ],
     speakingPrompt: 'Say how you really get to work or to class: Ik ga met de … naar …',
@@ -38,6 +58,7 @@ export const lessons: Array<LessonDraft> = [
         options: ["I'm walking.", "I'm running late.", "I'm going by bike.", "I'm going by bus."],
         answer: "I'm walking.",
         explanation: 'Lopend = on foot, walking. Lopen means to walk, not to run.',
+        items: ['lopend'],
       },
       {
         id: 'cloze',
@@ -49,14 +70,20 @@ export const lessons: Array<LessonDraft> = [
         hint: 'm__',
         english: "I'm going to The Hague by train.",
         explanation: 'Met de trein = by train. Dutch uses met (with) and keeps de.',
+        items: ['met-de-trein'],
       },
       {
         id: 'type',
         stage: 'independentRecall',
         kind: 'type',
         prompt: 'A colleague asks how you get to work. You go by bus. Answer with a full sentence.',
-        answers: ['Ik ga met de bus naar mijn werk.', 'Ik ga met de bus.', 'Ik ga naar mijn werk met de bus.'],
+        answers: [
+          'Ik ga met de bus naar mijn werk.',
+          'Ik ga met de bus.',
+          'Ik ga naar mijn werk met de bus.',
+        ],
         explanation: 'Ik ga met de bus (naar mijn werk). How comes before where.',
+        items: ['ik-ga-met-de-fiets-naar', 'met-de-bus'],
       },
       {
         id: 'listen',
@@ -68,6 +95,7 @@ export const lessons: Array<LessonDraft> = [
         options: ['By bike', 'By car', 'On foot', 'By train'],
         answer: 'By bike',
         explanation: 'Ik ga met de fiets = I go by bike. His wife takes the car (met de auto).',
+        items: ['ik-ga-met-de-fiets-naar', 'met-de-auto'],
       },
       {
         id: 'transfer',
@@ -76,6 +104,7 @@ export const lessons: Array<LessonDraft> = [
         prompt: 'Your friend asks how you are getting to her party tonight. It is close by. Say you are coming on foot.',
         answers: ['Ik kom lopend.', 'Ik ga lopend.', 'Ik kom lopend naar het feest.', 'Lopend.'],
         explanation: 'Ik kom lopend: when you travel towards the person you are talking to, Dutch uses komen.',
+        items: ['lopend'],
       },
     ],
   },
@@ -87,6 +116,29 @@ export const lessons: Array<LessonDraft> = [
     situation: 'You have just arrived in a town you do not know and need to find the train station.',
     targetPhrase: 'Pardon, waar is het station?',
     meaningEn: 'Excuse me, where is the station?',
+    items: [
+      {
+        key: 'pardon-waar-is-het-station',
+        dutch: 'Pardon, waar is het station?',
+        english: 'Excuse me, where is the station?',
+        kind: 'phrase',
+        accept: ['Sorry, waar is het station?'],
+      },
+      {
+        key: 'het-station',
+        dutch: 'het station',
+        english: 'the (train) station',
+        kind: 'word',
+      },
+      { key: 'is-het-ver', dutch: 'Is het ver?', english: 'Is it far?', kind: 'phrase' },
+      { key: 'dichtbij', dutch: 'dichtbij', english: 'close by, nearby', kind: 'word' },
+      {
+        key: 'vijf-minuten-lopen',
+        dutch: 'vijf minuten lopen',
+        english: 'a five-minute walk',
+        kind: 'phrase',
+      },
+    ],
     wordBreakdown: [
       { dutch: 'pardon', english: 'excuse me' },
       { dutch: 'waar is', english: 'where is' },
@@ -95,13 +147,14 @@ export const lessons: Array<LessonDraft> = [
       { dutch: 'dichtbij', english: 'close by' },
       { dutch: 'vijf minuten lopen', english: 'a five-minute walk' },
     ],
-    patternExplanation:
-      'Waar is + de/het + place? Then Is het ver? You will often hear the answer in minutes: Het is vijf minuten lopen, or Het is dichtbij.',
-    pronunciationTip:
-      'Station is "sta-SHON", stress at the end. Ver has a short e, like "fair" said quickly.',
+    patternExplanation: 'Waar is + de/het + place? Then Is het ver? You will often hear the answer in minutes: Het is vijf minuten lopen, or Het is dichtbij.',
+    pronunciationTip: 'Station is "sta-SHON", stress at the end. Ver has a short e, like "fair" said quickly.',
     examples: [
       { dutch: 'Waar is de bushalte?', english: 'Where is the bus stop?' },
-      { dutch: 'Is het ver? Nee, het is vijf minuten lopen.', english: "Is it far? No, it's a five-minute walk." },
+      {
+        dutch: 'Is het ver? Nee, het is vijf minuten lopen.',
+        english: "Is it far? No, it's a five-minute walk.",
+      },
       { dutch: 'Het station is dichtbij.', english: 'The station is close by.' },
     ],
     speakingPrompt: 'Practise stopping a passer-by: Pardon, waar is het station? Is het ver?',
@@ -117,6 +170,7 @@ export const lessons: Array<LessonDraft> = [
         options: ["It's a five-minute walk.", "It's five minutes by bus.", "It's five kilometres away."],
         answer: "It's a five-minute walk.",
         explanation: 'Lopen = to walk. Vijf minuten lopen = five minutes on foot.',
+        items: ['vijf-minuten-lopen'],
       },
       {
         id: 'cloze',
@@ -128,6 +182,7 @@ export const lessons: Array<LessonDraft> = [
         hint: 'de or het?',
         english: 'Excuse me, where is the station?',
         explanation: 'Station is a het-word: het station.',
+        items: ['het-station'],
       },
       {
         id: 'type',
@@ -147,6 +202,25 @@ export const lessons: Array<LessonDraft> = [
         options: ['A ten-minute walk', 'Very far', 'Two minutes by bike', 'A ten-minute bus ride'],
         answer: 'A ten-minute walk',
         explanation: 'Niet ver = not far; tien minuten lopen = ten minutes on foot.',
+        items: ['vijf-minuten-lopen', 'is-het-ver'],
+      },
+      {
+        id: 'reply',
+        stage: 'transfer',
+        kind: 'choice',
+        prompt: 'What do you reply?',
+        context: [
+          { speaker: 'You', dutch: 'Pardon, waar is het station?', english: 'Excuse me, where is the station?' },
+          {
+            speaker: 'Passer-by',
+            dutch: 'Het station? Dat is hier dichtbij, twee minuten lopen.',
+            english: "The station? It's close by, a two-minute walk.",
+          },
+        ],
+        options: ['O, fijn. Dank u wel!', 'Is het ver?', 'Waar is het station?'],
+        answer: 'O, fijn. Dank u wel!',
+        explanation: 'She has already answered: it is close by (dichtbij), two minutes on foot. So just thank her. Is het ver? and Waar is het station? ask again what she has just told you.',
+        items: ['dichtbij', 'vijf-minuten-lopen'],
       },
       {
         id: 'transfer',
@@ -162,6 +236,7 @@ export const lessons: Array<LessonDraft> = [
           'Is het ver?',
         ],
         explanation: 'Yes/no question with the verb first: Is het museum ver?',
+        items: ['is-het-ver'],
       },
     ],
   },
@@ -173,6 +248,24 @@ export const lessons: Array<LessonDraft> = [
     situation: 'A tourist with a map stops you on the street and asks for directions.',
     targetPhrase: 'Ga hier links.',
     meaningEn: 'Turn left here.',
+    items: [
+      {
+        key: 'ga-hier-links',
+        dutch: 'Ga hier links.',
+        english: 'Turn left here.',
+        kind: 'phrase',
+        accept: ['Ga hier linksaf.', 'Gaat u hier links.'],
+      },
+      { key: 'links', dutch: 'links', english: 'left (direction)', kind: 'word', note: 'also: on the left' },
+      { key: 'rechts', dutch: 'rechts', english: 'right (direction)', kind: 'word', note: 'also: on the right' },
+      { key: 'rechtdoor', dutch: 'rechtdoor', english: 'straight on', kind: 'word' },
+      {
+        key: 'bij-het-stoplicht',
+        dutch: 'bij het stoplicht',
+        english: 'at the traffic lights',
+        kind: 'phrase',
+      },
+    ],
     wordBreakdown: [
       { dutch: 'ga', english: 'go (an instruction)' },
       { dutch: 'hier', english: 'here' },
@@ -182,10 +275,8 @@ export const lessons: Array<LessonDraft> = [
       { dutch: 'bij het stoplicht', english: 'at the traffic lights' },
       { dutch: 'dan', english: 'then' },
     ],
-    patternExplanation:
-      'An instruction is just the verb stem: Ga links. Ga rechtdoor. To be extra polite, add u: Gaat u hier links. You will also hear linksaf and rechtsaf, which mean the same as links and rechts here.',
-    pronunciationTip:
-      'Rechts has the throat ch: "rekhts". Rechtdoor is "rekht-DOHR", with the stress on door.',
+    patternExplanation: 'An instruction is just the verb stem: Ga links. Ga rechtdoor. To be extra polite, add u: Gaat u hier links. You will also hear linksaf and rechtsaf, which mean the same as links and rechts here.',
+    pronunciationTip: 'Rechts has the throat ch: "rekhts". Rechtdoor is "rekht-DOHR", with the stress on door.',
     examples: [
       { dutch: 'Ga rechtdoor.', english: 'Go straight on.' },
       { dutch: 'Ga bij het stoplicht rechts.', english: 'Turn right at the traffic lights.' },
@@ -204,6 +295,7 @@ export const lessons: Array<LessonDraft> = [
         options: ['Go straight on.', 'Turn right.', 'Go back.', 'Turn left.'],
         answer: 'Go straight on.',
         explanation: 'Rechtdoor = straight on. Careful: rechts on its own means right.',
+        items: ['rechtdoor'],
       },
       {
         id: 'order',
@@ -213,14 +305,22 @@ export const lessons: Array<LessonDraft> = [
         words: ['Ga', 'bij', 'het', 'stoplicht', 'links.'],
         english: 'Turn left at the traffic lights.',
         explanation: 'Ga first (the instruction), then where (bij het stoplicht), then the direction.',
+        items: ['ga-hier-links', 'bij-het-stoplicht'],
       },
       {
         id: 'type',
         stage: 'independentRecall',
         kind: 'type',
         prompt: 'A tourist asks you the way. Tell her to go straight on.',
-        answers: ['Ga rechtdoor.', 'Ga hier rechtdoor.', 'Gaat u rechtdoor.', 'Gaat u hier rechtdoor.', 'Rechtdoor.'],
+        answers: [
+          'Ga rechtdoor.',
+          'Ga hier rechtdoor.',
+          'Gaat u rechtdoor.',
+          'Gaat u hier rechtdoor.',
+          'Rechtdoor.',
+        ],
         explanation: 'Ga rechtdoor: the instruction is just the verb stem ga.',
+        items: ['rechtdoor'],
       },
       {
         id: 'listen',
@@ -237,6 +337,7 @@ export const lessons: Array<LessonDraft> = [
         ],
         answer: 'Right here, then left at the traffic lights',
         explanation: 'Hier rechts = right here; dan bij het stoplicht links = then left at the lights.',
+        items: ['rechts', 'bij-het-stoplicht'],
       },
       {
         id: 'transfer',
@@ -245,6 +346,7 @@ export const lessons: Array<LessonDraft> = [
         prompt: 'Your friend is driving and is about to miss the turn. Tell him to turn right here.',
         answers: ['Ga hier rechts!', 'Hier rechts!', 'Ga hier rechtsaf!', 'Hier rechtsaf!', 'Rechts!'],
         explanation: 'Same pattern, other direction: Ga hier rechts! In a hurry, Hier rechts! is enough.',
+        items: ['ga-hier-links', 'rechts'],
       },
     ],
   },
@@ -256,20 +358,40 @@ export const lessons: Array<LessonDraft> = [
     situation: 'You are walking in a part of the city you do not know and need to get to the station.',
     targetPhrase: 'Hoe kom ik bij het station?',
     meaningEn: 'How do I get to the station?',
+    items: [
+      {
+        key: 'hoe-kom-ik-bij-het-station',
+        dutch: 'Hoe kom ik bij het station?',
+        english: 'How do I get to the station?',
+        kind: 'phrase',
+        accept: ['Hoe kom ik naar het station?'],
+      },
+      {
+        key: 'neem-de-eerste-straat-links',
+        dutch: 'Neem de eerste straat links.',
+        english: 'Take the first street on the left.',
+        kind: 'phrase',
+        accept: ['Neemt u de eerste straat links.'],
+      },
+    ],
     wordBreakdown: [
       { dutch: 'hoe kom ik', english: 'how do I get (literally: how come I)' },
       { dutch: 'bij', english: 'to, at' },
       { dutch: 'neem', english: 'take (an instruction)' },
-      { dutch: 'de eerste / tweede / derde straat', english: 'the first / second / third street' },
+      {
+        dutch: 'de eerste / tweede / derde straat',
+        english: 'the first / second / third street',
+      },
     ],
-    patternExplanation:
-      'Ask with Hoe kom ik bij + place? (Hoe kom ik naar … ? is also heard.) The answer often uses neem: Neem de tweede straat links.',
-    pronunciationTip:
-      'Neem sounds like "name" without the glide. Derde is "DER-duh".',
+    patternExplanation: 'Ask with Hoe kom ik bij + place? (Hoe kom ik naar … ? is also heard.) The answer often uses neem: Neem de tweede straat links.',
+    pronunciationTip: 'Neem sounds like "name" without the glide. Derde is "DER-duh".',
     examples: [
       { dutch: 'Hoe kom ik bij het ziekenhuis?', english: 'How do I get to the hospital?' },
       { dutch: 'Neem de eerste straat links.', english: 'Take the first street on the left.' },
-      { dutch: 'Neem de derde straat rechts en ga dan rechtdoor.', english: 'Take the third street on the right and then go straight on.' },
+      {
+        dutch: 'Neem de derde straat rechts en ga dan rechtdoor.',
+        english: 'Take the third street on the right and then go straight on.',
+      },
     ],
     speakingPrompt: 'Ask aloud: Hoe kom ik bij het station? Then answer: Neem de tweede straat rechts.',
     revisits: ['s1-transport-directions', 's0-numbers-months-dates'],
@@ -288,6 +410,7 @@ export const lessons: Array<LessonDraft> = [
         ],
         answer: 'Take the second street on the left.',
         explanation: 'Tweede = second, links = left. Rechts would be right.',
+        items: ['neem-de-eerste-straat-links'],
       },
       {
         id: 'cloze',
@@ -299,6 +422,7 @@ export const lessons: Array<LessonDraft> = [
         hint: 'd____ (third)',
         english: 'Take the third street on the right.',
         explanation: 'Eerste, tweede, derde = first, second, third.',
+        items: ['neem-de-eerste-straat-links'],
       },
       {
         id: 'type',
@@ -328,14 +452,20 @@ export const lessons: Array<LessonDraft> = [
         ],
         answer: 'First right, then second left',
         explanation: 'De eerste straat rechts = first right; dan de tweede links = then second left.',
+        items: ['neem-de-eerste-straat-links'],
       },
       {
         id: 'transfer',
         stage: 'transfer',
         kind: 'type',
         prompt: 'Now a tourist asks you the way to the market. Tell her to take the first street on the left.',
-        answers: ['Neem de eerste straat links.', 'Neemt u de eerste straat links.', 'De eerste straat links.'],
+        answers: [
+          'Neem de eerste straat links.',
+          'Neemt u de eerste straat links.',
+          'De eerste straat links.',
+        ],
         explanation: 'Neem de eerste straat links. With u it is Neemt u … .',
+        items: ['neem-de-eerste-straat-links'],
       },
     ],
   },
@@ -347,21 +477,61 @@ export const lessons: Array<LessonDraft> = [
     situation: 'You are at the station in Amsterdam and want to take the train to Utrecht.',
     targetPhrase: 'Van welk spoor vertrekt de trein naar Utrecht?',
     meaningEn: 'Which platform does the train to Utrecht leave from?',
+    items: [
+      {
+        key: 'van-welk-spoor-vertrekt-de-trein',
+        dutch: 'Van welk spoor vertrekt de trein naar Utrecht?',
+        english: 'Which platform does the train to Utrecht leave from?',
+        kind: 'phrase',
+      },
+      {
+        key: 'het-spoor',
+        dutch: 'het spoor',
+        english: 'the platform',
+        kind: 'word',
+        note: 'also: the track. Spoor 5 = platform 5',
+      },
+      {
+        key: 'vertrekken',
+        dutch: 'vertrekken',
+        english: 'to leave, to depart',
+        kind: 'word',
+        note: 'De trein vertrekt om tien uur.',
+      },
+      {
+        key: 'een-enkeltje',
+        dutch: 'een enkeltje',
+        english: 'a single ticket',
+        kind: 'word',
+        note: 'het enkeltje: words ending in -tje are het-words',
+      },
+      {
+        key: 'een-retourtje',
+        dutch: 'een retourtje',
+        english: 'a return ticket',
+        kind: 'word',
+        note: 'het retourtje',
+      },
+    ],
     wordBreakdown: [
       { dutch: 'van welk spoor', english: 'from which platform (het spoor)' },
       { dutch: 'vertrekt', english: 'leaves (vertrekken)' },
       { dutch: 'een enkeltje', english: 'a single ticket' },
       { dutch: 'een retourtje', english: 'a return ticket' },
-      { dutch: 'inchecken / uitchecken', english: 'to tap in / tap out with your card at the gate' },
+      {
+        dutch: 'inchecken / uitchecken',
+        english: 'to tap in / tap out with your card at the gate',
+      },
     ],
-    patternExplanation:
-      'Welk goes with het-words (welk spoor), welke with de-words and plurals (welke trein, welke bus). At the ticket desk you can simply say Een enkeltje Utrecht, alstublieft. Many people skip the ticket and check in with an OV-chipkaart or bank card.',
-    pronunciationTip:
-      'Spoor rhymes with "door" with a long oo. Enkeltje is "EN-kul-chuh": the tj sounds like the ch in "church".',
+    patternExplanation: 'Welk goes with het-words (welk spoor), welke with de-words and plurals (welke trein, welke bus). At the ticket desk you can simply say Een enkeltje Utrecht, alstublieft. Many people skip the ticket and check in with an OV-chipkaart or bank card.',
+    pronunciationTip: 'Spoor rhymes with "door" with a long oo. Enkeltje is "EN-kul-chuh": the tj sounds like the ch in "church".',
     examples: [
       { dutch: 'Een enkeltje Utrecht, alstublieft.', english: 'A single to Utrecht, please.' },
       { dutch: 'Een retourtje Amsterdam.', english: 'A return to Amsterdam.' },
-      { dutch: 'De trein vertrekt van spoor vijf.', english: 'The train leaves from platform five.' },
+      {
+        dutch: 'De trein vertrekt van spoor vijf.',
+        english: 'The train leaves from platform five.',
+      },
     ],
     speakingPrompt: 'Ask at an imaginary information desk: Van welk spoor vertrekt de trein naar Utrecht?',
     revisits: ['s0-questions-hoeveel-welke', 's1-articles-de-het', 's1-transport-modes'],
@@ -373,9 +543,15 @@ export const lessons: Array<LessonDraft> = [
         stage: 'recognition',
         kind: 'choice',
         prompt: 'At the ticket desk you hear "Een retourtje Leiden, alstublieft." What is the customer buying?',
-        options: ['A return ticket to Leiden', 'A single ticket to Leiden', 'A ticket from Leiden', 'Two tickets to Leiden'],
+        options: [
+          'A return ticket to Leiden',
+          'A single ticket to Leiden',
+          'A ticket from Leiden',
+          'Two tickets to Leiden',
+        ],
         answer: 'A return ticket to Leiden',
         explanation: 'Een retourtje = a return ticket. A single is een enkeltje.',
+        items: ['een-retourtje'],
       },
       {
         id: 'cloze',
@@ -387,6 +563,7 @@ export const lessons: Array<LessonDraft> = [
         hint: 'welk or welke?',
         english: 'Which platform does the train leave from?',
         explanation: 'Het spoor → welk spoor. With a de-word you would say welke: welke trein.',
+        items: ['van-welk-spoor-vertrekt-de-trein', 'het-spoor'],
       },
       {
         id: 'type',
@@ -406,6 +583,7 @@ export const lessons: Array<LessonDraft> = [
           'Mag ik een enkeltje naar Utrecht?',
         ],
         explanation: 'Een enkeltje + place, plus alstublieft. Naar is optional here.',
+        items: ['een-enkeltje'],
       },
       {
         id: 'listen',
@@ -417,16 +595,14 @@ export const lessons: Array<LessonDraft> = [
         options: ['Platform 7', 'Platform 3', 'Platform 11', 'Platform 17'],
         answer: 'Platform 7',
         explanation: 'Van spoor zeven = from platform 7. Kwart over drie is the time (3:15).',
+        items: ['het-spoor', 'vertrekken'],
       },
       {
         id: 'transfer',
         stage: 'transfer',
         kind: 'type',
         prompt: 'You are at the bus station and need to get to the hospital (het ziekenhuis). Ask which bus goes there.',
-        answers: [
-          'Welke bus gaat naar het ziekenhuis?',
-          'Pardon, welke bus gaat naar het ziekenhuis?',
-        ],
+        answers: ['Welke bus gaat naar het ziekenhuis?', 'Pardon, welke bus gaat naar het ziekenhuis?'],
         explanation: 'Bus is a de-word, so welke: Welke bus gaat naar het ziekenhuis?',
       },
     ],
@@ -439,18 +615,58 @@ export const lessons: Array<LessonDraft> = [
     situation: 'You get off the bus for an appointment at a new dentist and cannot find the street.',
     targetPhrase: 'Is het ver? Ik heb om tien uur een afspraak.',
     meaningEn: 'Is it far? I have an appointment at ten.',
+    items: [
+      {
+        key: 'is-het-ver-ik-heb-om',
+        dutch: 'Is het ver? Ik heb om tien uur een afspraak.',
+        english: 'Is it far? I have an appointment at ten.',
+        kind: 'phrase',
+        accept: [
+          'Is het ver? Ik heb een afspraak om tien uur.',
+          'Is het ver? Om tien uur heb ik een afspraak.',
+        ],
+      },
+      {
+        key: 'nee-hoor',
+        dutch: 'Nee hoor.',
+        english: 'No, not at all.',
+        kind: 'phrase',
+        note: 'hoor makes it friendly',
+      },
+      { key: 'succes', dutch: 'Succes!', english: 'Good luck!', kind: 'word' },
+    ],
     wordBreakdown: [
       { dutch: 'de voorbijganger', english: 'the passer-by' },
       { dutch: 'Nee hoor.', english: 'No, not at all. (hoor makes it friendly)' },
       { dutch: 'Succes!', english: 'Good luck!' },
     ],
     dialogue: [
-      { speaker: 'Jij', dutch: 'Pardon, hoe kom ik bij de Molenstraat?', english: 'Excuse me, how do I get to Molenstraat?' },
-      { speaker: 'Voorbijganger', dutch: 'De Molenstraat? Ga hier rechtdoor en neem de tweede straat links.', english: 'Molenstraat? Go straight on here and take the second street on the left.' },
-      { speaker: 'Jij', dutch: 'Is het ver? Ik heb om tien uur een afspraak.', english: 'Is it far? I have an appointment at ten.' },
-      { speaker: 'Voorbijganger', dutch: 'Nee hoor, het is vijf minuten lopen.', english: "No, not at all, it's a five-minute walk." },
+      {
+        speaker: 'Jij',
+        dutch: 'Pardon, hoe kom ik bij de Molenstraat?',
+        english: 'Excuse me, how do I get to Molenstraat?',
+      },
+      {
+        speaker: 'Voorbijganger',
+        dutch: 'De Molenstraat? Ga hier rechtdoor en neem de tweede straat links.',
+        english: 'Molenstraat? Go straight on here and take the second street on the left.',
+      },
+      {
+        speaker: 'Jij',
+        dutch: 'Is het ver? Ik heb om tien uur een afspraak.',
+        english: 'Is it far? I have an appointment at ten.',
+      },
+      {
+        speaker: 'Voorbijganger',
+        dutch: 'Nee hoor, het is vijf minuten lopen.',
+        english: "No, not at all, it's a five-minute walk.",
+      },
       { speaker: 'Jij', dutch: 'Dank u wel!', english: 'Thank you!' },
-      { speaker: 'Voorbijganger', dutch: 'Graag gedaan. Succes!', english: "You're welcome. Good luck!" },
+      {
+        speaker: 'Voorbijganger',
+        dutch: 'Graag gedaan. Succes!',
+        english: "You're welcome. Good luck!",
+      },
     ],
     speakingPrompt: 'Read your lines aloud, then ask the way to a street near your own home.',
     revisits: [
@@ -476,6 +692,7 @@ export const lessons: Array<LessonDraft> = [
         ],
         answer: 'How do I get to Molenstraat?',
         explanation: 'Hoe kom ik bij …? = How do I get to …? "Is it far?" is Is het ver?',
+        items: ['s1-transport-how-do-i-get/hoe-kom-ik-bij-het-station'],
       },
       {
         id: 'order',
@@ -485,6 +702,7 @@ export const lessons: Array<LessonDraft> = [
         words: ['Ga', 'hier', 'rechtdoor', 'en', 'neem', 'de', 'tweede', 'straat', 'links.'],
         english: 'Go straight on here and take the second street on the left.',
         explanation: 'Two instructions joined with en: Ga hier rechtdoor + neem de tweede straat links.',
+        items: ['s1-transport-directions/rechtdoor', 's1-transport-how-do-i-get/neem-de-eerste-straat-links'],
       },
       {
         id: 'type',
@@ -500,6 +718,7 @@ export const lessons: Array<LessonDraft> = [
           'Waar is de Kerkstraat?',
         ],
         explanation: 'Hoe kom ik bij de Kerkstraat? Street names take de.',
+        items: ['s1-transport-how-do-i-get/hoe-kom-ik-bij-het-station'],
       },
       {
         id: 'listen',
@@ -516,6 +735,28 @@ export const lessons: Array<LessonDraft> = [
         ],
         answer: 'Left at the traffic lights, then first right',
         explanation: 'Bij het stoplicht links = left at the lights; de eerste straat rechts = the first street on the right.',
+        items: ['s1-transport-directions/bij-het-stoplicht'],
+      },
+      {
+        id: 'reply',
+        stage: 'transfer',
+        kind: 'choice',
+        prompt: 'What do you reply?',
+        context: [
+          { speaker: 'Jij', dutch: 'Pardon, hoe kom ik bij de Kerkstraat?', english: 'Excuse me, how do I get to Kerkstraat?' },
+          {
+            speaker: 'Voorbijganger',
+            dutch: 'De Kerkstraat? Neem de derde straat rechts.',
+            english: 'Kerkstraat? Take the third street on the right.',
+          },
+        ],
+        options: [
+          'Is het ver? Ik heb om tien uur een afspraak.',
+          'Nee hoor, het is vijf minuten lopen.',
+          'Graag gedaan. Succes!',
+        ],
+        answer: 'Is het ver? Ik heb om tien uur een afspraak.',
+        explanation: 'You have the directions, so check the distance and say why you are in a hurry. Nee hoor, het is vijf minuten lopen answers a question nobody asked, and Graag gedaan. Succes! is what the helper says, not you.',
       },
       {
         id: 'transfer',

@@ -1,0 +1,92 @@
+# Dutch audio: ElevenLabs voice, model and settings
+
+Research for TaalNudge's pre-generated Dutch clips (A0 to A2, standard Netherlands Dutch, nl-NL). Date: 27 October 2026.
+
+**Status: decided; generation 41% done (stopped by the monthly quota).** Main voice: Serge de Beer. Dialogue voice: Roos. Model: `eleven_v4` with `language_code: "nl"`. The choice rests on a measured speech-to-text (STT) round trip, measured cost, and library metadata. `scripts/generate-audio.ts` produces the clips; `docs/audio-qa.md` lists the clips it flags.
+
+## Method
+
+1. **API access.** The working `sk_` key may call Text to Speech and Speech to Text. Voices read, Models read and User read return `401 missing_permissions`. As a result, quota and tier come only from response headers: `maximum-concurrent-requests` is 3 for TTS (6 for Flash, 12 for STT), which matches the Starter tier. Library voices work by id without being added to My Voices.
+2. **Voice discovery.** The public `GET /v1/shared-voices?language=nl` endpoint returns at most 3 voices per anonymous request. Sorting by usage, clones, trending and newest found 10 Dutch voices. For each one I recorded the `locale`, `accent` and the `verified_languages` entries for `nl`, plus use case, usage, `notice_period` and the `character-cost` of a 2-character request. The premade voices were checked too: they are all English-native.
+3. **Test set (205 clips, 4,780 characters billed).** The set:
+   - the brief's 8 stress sentences;
+   - "De ui in huis, de eu in neus, de ij in tijd." and "De g van goed, de sch van school.";
+   - "ui", "Ik spel het: S, A, N, N, E." and "Het is kwart over drie.";
+   - the course's risky short items "deur", "wel", "Pardon?" and "man, maan".
+
+   Models and settings:
+   - `eleven_multilingual_v2`: stability 0.6, similarity 0.75, style 0, speaker boost, speed 0.9;
+   - `eleven_v4`: stability 0.5, similarity 0.75, `language_code: "nl"`;
+   - A/B checks: v4 and Flash with and without `language_code`; v2 with a Dutch `previous_text` context ("Luister en herhaal:", which is neither spoken nor billed); v2 at speed 0.75.
+4. **Verification.** Every clip went through Scribe v2 twice: once with the language auto-detected, then the short and sound items again with Dutch forced (`language_code=nld`). Scoring uses a normalised WER: lower case, no punctuation or accents, Dutch number words, so "€18,50" equals "achttien euro vijftig". `ffprobe` and `ffmpeg` measured duration, silence, loudness and pace. The same check ran on 8 seeded random v1 clips and 5 suspect ones.
+
+## Results
+
+| Voice id | Name | Gender, age | Locale evidence | Cost | Notice | 8 sentences exact (v2 / v4) | Short words, forced Dutch (v2 / v2 + context / v4) | Pace v2 0.9 / v4 (letters/s) |
+|---|---|---|---|---|---|---|---|---|
+| `UNBIyLbtFB9k7FKW8wJv` | **Serge de Beer** | M, middle-aged | nl-NL / standard; instructional voice-over | 1× | 730 d | 8/8 / 8/8 | 2/4 / 2/4 / **3/4** | 16.4 / 14.1 |
+| `7qdUFMklKPaaAVMsBTBt` | **Roos** | F, young | nl-NL / standard; educational; v4 only | 1× | 730 d | – / 8/8 | – / – / 2/4 | – / 13.9 |
+| `SXBL9NbvTrjsJQYay2kT` | Melanie | F, young | nl-NL / standard; narrator | 1× | 30 d | 8/8 / 8/8 | 2/4 / 3/4 / 3/4 | 15.7 / 15.2 |
+| `60CwgZt94Yf7yYIXMDDe` | Peter | M, middle-aged | nl-NL / standard; narrator; v4 only | 1× | 730 d | – / 8/8 | – / – / 3/4 | – / 13.8 |
+| `YUdpWWny7k5yb4QCeweX` | Ruth | F, young | nl-NL / standard; educational | **2×** (custom rate) | 730 d | 8/8 / – | 1/4 / **4/4** / – | 16.1 / – |
+| `jfwdd64Nlhnj6vcFqRHZ` | Koen (v1 voice) | M, young | nl-NL / standard (`nl-standard`); conversational | 1× | none | 8/8 / 8/8 | 3/4 / 3/4 / 3/4 | 18.7 / 14.8 |
+
+The short words are "deur", "wel", "Pardon?" and "man, maan". The 4/4 for Ruth is with context. "ui" on its own never round-trips for any voice or model: STT hears "Oui", "Why?" or "Ei", so it measures nothing.
+
+- **Sentences do not separate the voices.** Every voice and both models round-trip all 8 stress sentences with no word error, and every one spells "S A N N E" back.
+- **Remaining STT differences are STT conventions, not voice errors.** "ij" comes back as "ei" (they sound the same), letter names are written as "G" or "sh", and "kwart over drie" comes back as "3.15 uur". The scorer now accepts all three.
+- **"eu" heard as "ui"** in "neus": Melanie and Serge on v2, but not on v4.
+- **`language_code` matters on v4.** Without it, v4 read "ui" as the letters "Ü, I" (1.0 s instead of 0.4 s). v2 accepts the parameter without an error.
+- **Flash is out.** Its "ui" came back silent (-70 LUFS), with and without `language_code`.
+- **Pace.** v4 at its default speed is slower (13.8–15.2 letters/s) than v2 at speed 0.9 (15.7–18.7). Koen is the fastest voice.
+- **Loudness varies by voice:** raw output ranges from -13 (Ruth) to -32 LUFS (Roos), so loudness normalisation is required.
+- **v1 clips (Koen, v2, default settings):** 8/8 random sentences exact. Of the 5 suspects, "Pardon?" and "Wim: W, I, M." were exact; with auto-detect, "deur" came back as "There", "wel" as "Well" and "man, maan" as "Mom. Mom". The v1 clips are not reused: the new set has another voice, model and post-processing. They were moved out of `public/audio/`.
+
+## Decision
+
+- **Main voice (a): Serge de Beer, `UNBIyLbtFB9k7FKW8wJv`.** Among the 1×-cost voices he has the strongest v4 results: 3/4 short words, the g/sch sentence exact, and "eu"/"ui" kept apart. His use case is instructional voice-over, and the 2-year notice period protects a course that will be extended.
+- **Dialogue voice (b): Roos, `7qdUFMklKPaaAVMsBTBt`.** She is female for contrast and has a 2-year notice period. Voice b only reads the second speaker's sentences, where Roos is exact. Her isolated-word score (2/4) does not matter there. Melanie scored better on isolated words but has only a 30-day notice period.
+- **Ruth is out.** She bills 2× per character, and her 4/4 short-word score with context does not justify doubling a course that already exceeds a Starter month.
+- **Model: `eleven_v4`, `language_code: "nl"`, `voice_settings: { stability: 0.5, similarity_boost: 0.75 }`.** It costs the same as v2. It enforces Dutch on short items and matches or beats v2 on the short words. It speaks at a learner-friendly pace without a speed control (v4 has none, and no Style or SSML either).
+- **Output:** source `mp3_44100_128`, then ffmpeg:
+  - trim silence to 50 ms before and 150 ms after;
+  - two-pass `loudnorm` to -18 LUFS, -1.5 dBTP;
+  - encode mono MP3 at 64 kbps and 44.1 kHz (about 10 KB per second).
+- **Slow replay:** `playbackRate` (`SLOW_RATE` 0.7 in `src/audio/speech.ts`, pitch preserved). There are no separate slow clips, since v4 has no speed setting and they would double the cost.
+
+## Generation pipeline (`scripts/generate-audio.ts`)
+
+1. **Texts.** The script builds the course from `structure.ts` and `content/**`, in this priority order: lesson `targetPhrase`, `items`, exercise `audioText`, exercise `context`, lesson `dialogue`, `examples`, then model answers. Model answers are the cloze sentence with `answers[0]` filled in, the `order` words joined, the `type` `answers[0]`, the `write` `modelAnswer`, and the Dutch side of `match` pairs. A text used in several places belongs to its first group. In a conversation, the second speaker reads with voice b (`clipsB`); further speakers alternate.
+2. **Cache key and file name.** The key is `sha1(text, voice, model, settings, post-processing version)`, and the file is `audio/<16 hex>.mp3`. The manifest `src/audio/clips.json` holds `{ voices, model, settings, clips, clipsB }`, keyed by `clipKey(text)`. It is rebuilt from the current course on every run, so stale entries drop out, and it is saved after every clip.
+3. **Requests.**
+   - Three in parallel, with a `seed` derived from the key.
+   - 429 and 5xx: retried with `retry-after` or exponential backoff and jitter.
+   - 401, 402, 403, quota and permission errors: stop the run cleanly. Running the same command again resumes.
+   - `--plan` counts texts and characters without calling the API; `--until <group>` and `--max-chars N` cap a run; `--prune` deletes unused files.
+4. **Verification, group by group.** Scribe v2 (Dutch forced) checks every text of up to 3 words plus a fixed 10% sample of longer ones. A clip is flagged when a short text is not exact, when a longer one has WER > 0.2, or when its length does not fit the text. A flagged clip is regenerated once with another seed and checked again. Clips still flagged go to `docs/audio-qa.md` as a listening list.
+
+## Quota and generation status
+
+- **Quota.** The plan allows 90,000 credits a month; that figure comes from the quota error, because the key cannot read `/v1/user/subscription`. STT costs about 0.6 credits per second of audio, with a minimum of 1 per request.
+- **Course.** 3,115 clips (2,818 voice a, 297 voice b), 94,398 characters.
+- **First run (27 October)** billed 30,309 characters, retakes included, then stopped cleanly on `quota_exceeded` (0 credits left). The research before it cost about 5k.
+
+  | Group | Clips done | Of | Characters left |
+  |---|---|---|---|
+  | target | 272 | 272 | 0 |
+  | items | 766 | 766 | 0 |
+  | audio | 193 | 193 | 0 |
+  | context | 25 a + 14 b | 266 | 7,850 |
+  | dialogue | 0 | 424 | 16,490 |
+  | examples | 0 | 612 | 17,782 |
+  | answers | 0 | 582 | 22,351 |
+
+  The manifest holds 1,256 clips for voice a and 14 for voice b.
+- **To finish:** 1,845 clips and 64,473 characters, plus about 1k for STT and retakes. That fits one month. After the reset, run `pnpm audio:generate`; it resumes and skips existing clips.
+- **v1 clips:** the 463 v1 files were moved out of `public/audio/`, to the session scratchpad next to the v1 manifest.
+
+## Limitations
+
+- **STT measures intelligibility, not accent.** It cannot tell nl-NL from nl-BE, and it mishears isolated sounds and one-syllable words, so the QA list is a listening list. The Netherlands accent rests on library metadata (all 6 voices are labelled nl-NL, standard), not on a native listener. A Dutch speaker should spot-check about 20 clips per voice: the hard g/sch, ui/eu/ij, w, v/z devoicing and r.
+- **Limited voice search:** without Voices read, only the top 3 library voices per sort could be compared.
+- **`eleven_v4` is new (September 2026):** clips made in later months may differ slightly in delivery.

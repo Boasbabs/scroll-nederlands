@@ -12,3 +12,8 @@ export const ALL_SITE_ORIGINS: Array<string> = SITES.flatMap((site) => [...site.
 export function siteForHost(hostname: string): SiteId | undefined {
   return SITES.find((site) => site.origins.some((origin) => new URL(origin.replace('/*', '/')).hostname === hostname))?.id;
 }
+
+/** The match patterns for the given sites. */
+export function originsFor(sites: ReadonlyArray<SiteId>): Array<string> {
+  return SITES.filter((site) => sites.includes(site.id)).flatMap((site) => [...site.origins]);
+}

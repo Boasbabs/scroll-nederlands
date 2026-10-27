@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "taalnudge-preview",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["vite", "--config", "preview/vite.config.ts"],
+      "port": 5199
+    }
+  ]
+}

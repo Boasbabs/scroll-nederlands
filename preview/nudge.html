@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TaalNudge preview · in-page card</title>
+    <style>
+      body { margin: 0; font: 15px system-ui, sans-serif; background: #fff; color: #0f1419; }
+      .layout { display: grid; grid-template-columns: 1fr 600px 1fr; min-height: 200vh; }
+      .feed { border-inline: 1px solid #eff3f4; }
+      .post { padding: 16px; border-bottom: 1px solid #eff3f4; height: 140px; }
+      .post div { height: 12px; margin: 8px 0; border-radius: 6px; background: #eff3f4; }
+      #msg-overlay { position: fixed; right: 16px; bottom: 0; width: 288px; height: 48px; border: 1px solid #ccc; border-bottom: 0; border-radius: 8px 8px 0 0; background: #fff; display: grid; place-items: center; }
+    </style>
+  </head>
+  <body>
+    <div class="layout"><aside></aside><main class="feed" id="feed"></main><aside></aside></div>
+    <div id="msg-overlay">Messaging (stand-in dock)</div>
+    <script type="module" src="./nudge-main.tsx"></script>
+  </body>
+</html>

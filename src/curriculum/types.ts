@@ -94,6 +94,12 @@ type ExerciseBase = {
   focusedOnly?: boolean;
   /** Checkpoints only: the earlier lesson this exercise assesses. */
   testsLesson?: string;
+  /** Generated recall drills: the scene to answer from, in place of the English meaning. */
+  situation?: string;
+  /** Generated drills: the item whose picture is the cue (the learner's own, else a bundled one). */
+  picture?: string;
+  /** Generated recall drills: the learner's own line about the item, shown as a cue. */
+  note?: string;
 };
 
 /** Pick one option. `answer` must be one of `options`. */
@@ -101,6 +107,14 @@ export type ChoiceExercise = ExerciseBase & {
   kind: 'choice';
   options: Array<string>;
   answer: string;
+  /** Picture options: the item whose picture stands for each option; the text shows after answering. */
+  optionPictures?: Record<string, string>;
+  /**
+   * Article drills: the noun without its article ("mes"), shown as the
+   * question with no audio, since hearing it would give the article away.
+   * The options keep their order (de, then het).
+   */
+  noun?: string;
 };
 
 /** Match each Dutch phrase with its English meaning. */

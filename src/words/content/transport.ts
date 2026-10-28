@@ -1,0 +1,35 @@
+import { course, noun } from '../build';
+import type { WordTheme } from '../types';
+
+export const transport: WordTheme = {
+  id: 'transport',
+  title: 'Transport and travel',
+  words: [
+    course('de fiets'),
+    noun('de trein', 'the train'),
+    course('de auto'),
+    noun('de bus', 'the bus'),
+    noun('de tram', 'the tram'),
+    noun('de metro', 'the metro, the underground'),
+    noun('de boot', 'the boat'),
+    noun('het vliegtuig', 'the plane'),
+    noun('het vliegveld', 'the airport'),
+    noun('de taxi', 'the taxi'),
+    course('het kaartje'),
+    noun('de OV-chipkaart', 'the public transport card'),
+    course('het spoor'),
+    noun('de reis', 'the trip, the journey'),
+    noun('de vakantie', 'the holiday'),
+    noun('de koffer', 'the suitcase'),
+    noun('het paspoort', 'the passport'),
+    noun('de kaart', 'the map; the card'),
+    noun('de rugzak', 'the backpack'),
+    noun('het verkeer', 'the traffic'),
+    noun('het stoplicht', 'the traffic light'),
+    noun('de snelweg', 'the motorway'),
+    noun('de parkeerplaats', 'the car park, the parking space'),
+    noun('de fietsenstalling', 'the bike park'),
+    noun('de motor', 'the motorbike; the engine'),
+    noun('de vrachtwagen', 'the lorry'),
+  ],
+};

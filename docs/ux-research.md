@@ -13,6 +13,7 @@ Product rule: we do not invent UI/UX. Every decision here cites Mobbin screens o
 ### 1.1 Shell, type, spacing, keyboard
 - Design at 360px: 16px gutters give a 328px column. Spacing steps are 4/8/12/16/24px. At 420px the column widens; there is never a second column.
 - Shell: a 48px app bar (screen title on the left; streak chip and settings gear on the right), then the scroll area, then a 56px bottom tab bar with four tabs: **Today · Course · Review · Progress**. The Review tab shows a due-count badge. Lessons, reviews, checkpoints and onboarding take over the whole panel, with no tab bar and `×` at top-left.
+- Icons (§11): Phosphor, bold weight at rest. The tabs are a house, an open book, a target and a bar chart; the selected tab switches to the fill weight in Warm Blue. Settings is an eight-tooth gear, and the streak and combo flames are filled.
 - Flow screens (onboarding, lesson, review) have one primary button: full width (328×48px) and pinned in a bottom action zone with 16px padding. A secondary action goes directly beneath it as a 44px outline or text button. Cards on Today can each carry their own button.
 - Type: a chunky, rounded display face, used only for screen titles (22px), the target Dutch phrase (28px) and large numbers. Body text is 16px, secondary text 14px, and labels are 12px caps.
 - Tactile controls: buttons have a 12px radius and a 4px bottom edge in a darker tone. Option rows and tiles have a 2–3px edge. When pressed, the face drops by the height of the edge. Disabled controls are flat.
@@ -37,14 +38,14 @@ Product rule: we do not invent UI/UX. Every decision here cites Mobbin screens o
 - The last CTA is `Start lesson 1`.
 
 ### 1.4 Today, Review tab, caught-up state
-- Today, from top to bottom:
+- Today, from top to bottom (redesigned in §12):
   1. App bar: "Today", streak chip, gear.
-  2. **Review card**: Golden Yellow fill; "12 reviews due" in 20px ink display type; the ink button `Review now` (white label).
-  3. **Continue card**: white with a 1px light grey border. Shows "Stage 1 · Food, drinks and cafés", the lesson title, a progress bar and the primary `Continue`.
-  4. **Quick practice** row: outline button "Quick practice · 2 min".
+  2. **Review card**, only while reviews are due: Golden Yellow fill; "12 reviews due" in 20px ink display type; the ink button `Review now` (white label).
+  3. **Continue card**: white with a 1px light grey border. Shows "Stage 1 · Food, drinks and cafés", the lesson title, a progress bar and the primary `Continue`. With nothing due, it is the first card.
+  4. **To do today**: one white card with a caps label and a list of 64px lines. Each line has a 40px tile, a bold title that says what to do, a muted count, a thin bar where there is a count, and a chevron: `Learn 5 words` (Basic words · 8 of 625 met), `Hear a or aa` (Ear training · 0 of 12 sound pairs), `Quick practice` (2 min). A finished line swaps the tile for a ✓ in a Seaweed Green disc and has no chevron: `All caught up` heads the list when nothing is due, and `New words` reads "Done for today" once the day's batch is learned.
   5. Stats row: two cells in one bordered row, "Lessons 14/270" and "Strong words 86".
 - Review tab: a due count in 40px display type, `Start review (12)` and the secondary `Practice anyway`.
-- Caught up (no reviews due): replaces the review card on Today and the body of the Review tab. Shows a 48px ink ✓ in a Seaweed Green disc, "All caught up" (18px), "Next review in 3 h · 8 items" in muted text, and the secondary `Continue course`.
+- Caught up (no reviews due): on Today, the ✓ line at the top of To do today ("Next review in 3 h · 8 items"); a learner with nothing in review yet gets no line. The body of the Review tab shows a 48px ink ✓ in a Seaweed Green disc, "All caught up" (18px), "Next review in 3 h · 8 items" in muted text, and the secondary `Continue course`.
 
 ### 1.5 Course path (4 stages → ~56 modules → ~270 lessons)
 - The Course tab is a vertical list of four **stage cards**, each headed by a band in its stage colour (§1.2): "Stage 0 · Foundations" plus a white CEFR chip, a progress bar and "5/8 modules". The current stage is expanded and the others collapsed. Future stages carry a `Jump here` link that opens that stage's checkpoint.
@@ -357,7 +358,7 @@ Mobbin shows still sequences, so each entry records only *where* a before→afte
 - **Short writing** self-rating, after the model answer and the checklist: `Not yet` / `Looks right` *(composed: the binary self-rating of the Babbel recall card)*. The counter shows words against the minimum (the checker counts words), in place of a character count.
 - **Speaking** stays learner-led: `Not yet` / `Sounds right` continue the lesson and are not sent to the schedule (the engine does not grade speaking). §1.6 "(feeds scheduling)" is not built.
 - **Match pairs** are graded per pair: a mismatch marks only the items involved, so one slip does not send every pair back into review.
-- **Today's caught-up block** has no `Continue course` button, because the Continue card directly beneath it starts the course; the Review tab's caught-up block keeps it.
+- **Today's caught-up block** has no `Continue course` button, because the Continue card directly beneath it starts the course; the Review tab's caught-up block keeps it. *Replaced in §12: on Today, caught up is now a ✓ line in To do today.*
 - **Quiet mode toast**: "Quiet mode is on · Undo · ×", the same toast as snooze (§1.11).
 - **Audio speed** chips map to playback rates: Slow 0.85×, Normal 1×. The turtle button stays at 0.7×.
 
@@ -398,5 +399,60 @@ The owner replaced the brand board with the Makuteam palette (Golden Yellow, Sea
 - **Celebration fields**: [Tolan's "Level 2!" on indigo](https://mobbin.com/screens/434afe5a-4578-4531-a329-54663d478fcc); sparks in palette colours as in [Grab](https://mobbin.com/screens/9174df43-a3fd-4587-9f11-348d9e3609f9).
 - *(rule)* Focus rings are Dodger Blue (3.6:1 on white) and white on bands.
 - The toolbar icon and the in-page brand mark are Warm Blue; the wordmark is two-tone ("Taal" in the type colour, "Nudge" in Warm Blue, or Golden Yellow on a band).
+
+These searches returned the `ai_usage_notice` again (Mobbin AI usage is high this month); it was shown to the owner.
+
+## 11. Icons (sixth session, 2026-10-28)
+
+The owner found the hand-drawn set weak: the settings gear read as a sun, Course was a `>`-like curve and Review looked like a reload arrow. This round checked how learning and habit apps draw their tab bars, the settings button and the streak, both at rest and selected. The tab bars and headers below were opened at full size and compared side by side. Busuu again returned no Busuu screens, so it is not cited.
+
+### 11.1 Tab bars
+- [Babbel – Home](https://mobbin.com/screens/acf4f27b-af64-4076-b5b9-d763f3449846): Home is a house with a door, Review a target with an arrow (orange count badge at its top right), Explore a pair of binoculars. The selected tab turns orange, glyph and label, in the same outline; the others are grey.
+- [Duolingo – Learn](https://mobbin.com/screens/56f6a8cb-cd70-4bec-aab7-96ccbd976fdc): six full-colour illustrations without labels; the selected one sits in a pale blue tile with a blue border.
+- [Memrise – Learn](https://mobbin.com/screens/750e896b-3cbc-48a3-b3f6-1dc4a5072809): Home is a filled house; the selected Learn tab puts its glyph on a yellow disc.
+- [Speak – Home](https://mobbin.com/screens/f8b0ff0c-4292-4d31-bd59-37fb95f7a1bc): filled glyphs, the selected one blue and the rest grey. Its Review tab is a lightning bolt.
+- [Quizlet – Home](https://mobbin.com/screens/2d3bf1c9-33a9-4c85-9fe7-237d44bada63): an outline house with a door; the selected tab is blue on a grey pill.
+- [Mimo – Practice](https://mobbin.com/screens/b33e7987-1a4c-4fef-a965-db3eb7359297): the selected Practice tab is a filled bolt; Learn (a graduation cap), Build, Leaderboard and Profile are outlines.
+- [Brilliant – Courses](https://mobbin.com/screens/8137c15c-de9a-45b4-be9b-d0528a67bf9f): outline Home (a house with a door), Courses (cards with a tick) and You; the selected tab sits on a grey pill.
+- [Liven – Journey](https://mobbin.com/screens/c9d2fcaf-4346-4ec2-86d7-7ea56f9bd04f): the course path, Journey, is an open book, filled when selected. Today, Explore, Companion and Profile (a bar chart) are outlines.
+- [Ahead – Journey](https://mobbin.com/screens/1ae37391-2ea3-4ad8-89dc-e146f731fce7): the selected Journey tab is a filled purple flag on a pill; the others are outlines.
+- Habit apps: [Insight Timer – Home](https://mobbin.com/screens/69ec4729-d290-4b2a-9522-2dee95b4dcb9) fills the selected house and keeps Activity, Library and Teachers (an open book) as outlines. [Atoms – Home](https://mobbin.com/screens/aa924898-11d9-405d-876a-1d2ba12d7ab1) draws Progress as filled bars; the selected tab is dark and the rest light grey. [Me+ – Routine](https://mobbin.com/screens/be193477-7417-4785-aa1b-3912902f4c8f) uses filled glyphs, black when selected and light grey otherwise.
+- Also: [Moonly – Learning](https://mobbin.com/screens/1329e4d1-7a9a-470c-bc4d-a12e9702a3da) draws a book for the tab that holds its courses, and [Bloom – today](https://mobbin.com/screens/8732dec7-21e2-4f1f-9a32-67bae72d76b2) draws its stats tab as vertical bars.
+
+**What they share:** a label under every glyph (all of them except Duolingo). The selected tab changes colour, to the brand colour or to full ink, and the rest are muted. Most draw line glyphs at rest; Mimo, Liven, Ahead and Insight Timer also switch the selected glyph to its filled form. The home tab is a house with a door. The course is a book (Liven, Moonly), Babbel's Review is a target, and progress is a bar chart (Liven, Atoms, Bloom). A pill behind the selected tab (Quizlet, Brilliant, Ahead) is the less common treatment.
+
+### 11.2 Settings and the streak
+- Settings: [Quizlet – Learn](https://mobbin.com/screens/731be357-54a2-4384-b7d1-043e7b132d87) shows a cog, top right, whose eight teeth are joined to a ring around a hole. Uxcel Go and Headspace put their gear in the same place (§2.2). The old gear had eight separate rays around a dot, which is how a sun is drawn.
+- Streak, active: [Duolingo](https://mobbin.com/screens/56f6a8cb-cd70-4bec-aab7-96ccbd976fdc) shows a filled orange flame with a lighter inner flame beside the count. [Speak](https://mobbin.com/screens/f8b0ff0c-4292-4d31-bd59-37fb95f7a1bc), [Ahead](https://mobbin.com/screens/1ae37391-2ea3-4ad8-89dc-e146f731fce7) and [Me+](https://mobbin.com/screens/be193477-7417-4785-aa1b-3912902f4c8f) put a filled flame in a pill with an ink count. [Babbel](https://mobbin.com/screens/acf4f27b-af64-4076-b5b9-d763f3449846) is the exception: an outline flame on a peach pill, like the old chip.
+- Streak, inactive: [Duolingo – not yet practised today](https://mobbin.com/screens/755e4280-a36a-4b17-899b-0e8f5a644074) shows the same flame and count in grey. [Babbel – streak 0](https://mobbin.com/screens/af715e9f-3b74-4de5-b014-55fa6748aa34) greys the pill, the flame and the count.
+
+### 11.3 Decisions
+- **Family: Phosphor Icons 2.1.1 (MIT)** for every icon in the panel, the player and the in-page card. Phosphor draws each glyph in matching outline and fill weights, which the selected-tab pattern needs, and its bold weight (24 of 256 units, 2.25px at 24px) matches the old set's 2.2px rounded stroke. The paths are copied into `src/ui/components/phosphor.ts` and bundled inline, so nothing is fetched; the licence ships as `public/licenses/phosphor-icons.txt`, which the build copies. Phosphor has no turtle, so the slow-audio button uses Lucide's (lucide-static 1.63.0, ISC, `public/licenses/lucide.txt`), stroked at the same weight. Duolingo's slow button is a turtle (§2.4).
+- **Tabs.** Today is the house with a door (Babbel, Quizlet, Brilliant, Insight Timer; Babbel's Home tab also opens on "Today"). Course is the open book (Liven's Journey, Moonly). Review is the target with an arrow (Babbel's Review: the same label in the same kind of app). Progress is the bar chart (Liven, Atoms). The flag (Ahead's Journey) is left out because it marks checkpoints (§1.5), and the bolt (Speak's Review) because it is Quick practice on Today.
+- **Selected and not.** The selected tab draws the fill weight in Warm Blue with a Warm Blue label: the fill comes from Mimo, Liven, Ahead and Insight Timer, the colour from Babbel, Quizlet and Speak. The other tabs draw the bold outline in muted ink. Because of the fill, selection is not shown by colour alone (`docs/colour-system.md`, rule 4). There is no pill. The Review badge keeps its place at the glyph's top right, as on Babbel. On Settings no tab is selected, so all four are outlines.
+- **Settings** is Phosphor's eight-tooth gear, bold, in muted ink like the app bar's other buttons.
+- **Streak and combo chips** use the filled flame in Mango Orange on the Mango tint, with the ink count. The tint shows through the inner flame, the way Duolingo's centre is lighter.
+- **Not built:** Duolingo's grey flame until today's practice is done, and Babbel's grey chip at 0. The chip still hides at 0 and stays orange, because this change keeps the colours. `summary.week` already records whether today was practised, if the owner wants it later.
+- **The rest of the set** moves to the Phosphor glyph with the same meaning: speaker-high, check, x (both ✕ and ×), caret-right and caret-left, lock (the one with a keyhole, which reads better than lock-simple at 16px), star, microphone, play, pause, stop, dots-three, moon, flag, arrow-counter-clockwise (Record again), lightning, lightbulb, translate, backspace, arrow-up and keyboard. The brand mark and the level signal bars stay as drawn.
+
+These searches returned the `ai_usage_notice` again (Mobbin AI usage is high this month); it was shown to the owner.
+
+## 12. Today tab redesign (sixth session, 2026-10-28)
+
+The owner asked for a better home page. Before this change, Today stacked five cards of the same weight: the review card or an "All caught up" card, then the Continue card, a New words card and an Ear training card (each with a caps label, a title, a bar and a full-width button), then a full-width `Quick practice · 2 min` button and the stats row. Four buttons of similar size competed. Whenever reviews were done, the top slot went to a card with nothing to press. A brand-new learner was told "All caught up", and a finished word batch showed a disabled `Done for today` button.
+
+### 12.1 What home screens do
+- **One main card with one button.** [Babbel – Today](https://mobbin.com/screens/0fed600b-7bf0-4fe7-bcfd-d614d8a27c51) shows a large card for the next lesson with `Start lesson`, and smaller lesson cards in a row beneath it. When reviews are due, the same slot becomes ["Time to review"](https://mobbin.com/screens/acf4f27b-af64-4076-b5b9-d763f3449846) with `Review now`. [Mimo – Practice](https://mobbin.com/screens/b33e7987-1a4c-4fef-a965-db3eb7359297) leads with its Daily Review card and `Start now`, [Duolingo – Up next](https://mobbin.com/screens/345a05d1-9d96-4467-9746-8e87b752f691) with one `Continue`, and [Memrise – Home](https://mobbin.com/screens/0be6671d-056d-49ae-a380-f69c15dab136) with its current-level card and `Continue learning`.
+- **The other tasks as a list of short lines.** [Duolingo – Daily quests](https://mobbin.com/screens/0b1b367c-1d8c-493f-8d77-d1d895ae613d) puts a caps "DAILY QUESTS" label over one line per quest: a title that names the task ("Complete your next 2 lessons"), a thin bar with the count, and an icon. [Headway – Your daily mission](https://mobbin.com/screens/e069ee13-99bd-49bd-8d19-4cf8efbf466b) has three lines, each an icon, a title ("Finish 1 summary"), a thin bar and "0/1". [Babbel – Learning plan](https://mobbin.com/screens/832f5742-a189-409a-8bb1-06f5ed82bb60) gives each row a tile, a title and a line of text, with the action at the end. [Atoms – Mindset](https://mobbin.com/screens/709913b3-cb23-4aa0-96b8-26dd73a932c7) uses an icon, a title and a chevron per line. Memrise groups the day's items under "TO DO TODAY" (above).
+- **Done is a tick, not a disabled button.** [Duolingo – All daily quests complete](https://mobbin.com/screens/d530dada-6595-4901-8541-1895451c7863) keeps the finished lines with full bars, and habit apps tick them where they stand: [Me+](https://mobbin.com/screens/138585b7-ea1e-43d1-9bdf-3a90118dcaff), [Numo](https://mobbin.com/screens/ce69ef20-ae7a-4f09-85e7-cb7e621f5aae), [QUITTR](https://mobbin.com/screens/ab3e657b-050d-473c-9b85-6fc11a68e364). [Paired – Home](https://mobbin.com/screens/465bdf7a-087e-4a5b-995f-9d18864b66aa) ticks each finished activity and puts "You've completed your first Paired session" after them, not above.
+
+**What they share:** the next step gets the one large card and the one strong button. The rest of the day is a list of short lines, each with a title that says what to do, a count and often a thin bar. A finished line is ticked where it stands.
+
+### 12.2 Decisions
+- **Main card first.** The review card (while reviews are due) and the Continue card keep their look. With nothing due, the Continue card is now the first thing on the tab, as Babbel's lesson card is.
+- **To do today.** New words, Ear training and Quick practice move from three cards and a full-width button into one white card labelled "To do today" (Memrise's label), built like the Progress tab's cards: a caps label over lines with 1px rules. Each line has a 40px tile on the Denim Blue tint with an ink glyph (Phosphor's Aa, ear and bolt), the action as a bold title (`Learn 5 words`, `Hear a or aa`, `Quick practice`, worded as Duolingo and Headway word their tasks), the count in muted text, a thin bar where there is a count, and a chevron. The whole line is the button; its name is the title and the muted line is its description.
+- **Caught up** is a ✓ line at the top of the list ("All caught up · Next review in 4 h · 3 items"), not a card above the course. A learner with nothing in review yet gets no such line. The Review tab keeps its caught-up block with `Continue course`.
+- **A finished batch** gets the same tick: `New words` with "Done for today · 8 of 625 met" (or "You have met every basic word.") replaces the disabled `Done for today` button.
+- **Kept:** the streak chip and gear in the app bar, the review card, the Continue card and the two-cell stats row (Mimo, §2.2). The colours keep their Makuteam roles: the tick disc is the caught-up block's Seaweed Green with an ink ✓, and the tiles use the soft Denim tint.
 
 These searches returned the `ai_usage_notice` again (Mobbin AI usage is high this month); it was shown to the owner.

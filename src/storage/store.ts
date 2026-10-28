@@ -1,5 +1,6 @@
 // Local persistence in chrome.storage.local. Every value is parsed with
 // defaults, so a missing or older shape never breaks the extension.
+import type { Correction, Draft } from '../corrections/types';
 import { mergeProgress } from '../engine/progress';
 import { emptyProgress, type ItemProgress, type LearnerProgress } from '../engine/types';
 import type { SiteId } from '../sites';
@@ -15,6 +16,16 @@ export const STORAGE_KEYS = {
   progress: 'tn.progress',
   prefs: 'tn.prefs',
   trigger: 'tn.trigger',
+  /** Which items have the learner's own picture (the pictures themselves are in IndexedDB). */
+  pictures: 'tn.pictures',
+  /** The learner's own lines about items ("Make it yours"). */
+  notes: 'tn.notes',
+  /** When each slipping item was last offered "Make it yours", so it is offered once. */
+  leeches: 'tn.leeches',
+  /** Writing sent for correction, waiting for the corrected version. */
+  drafts: 'tn.drafts',
+  /** Corrections of the learner's writing, practised as items (`c-…`). */
+  custom: 'tn.custom',
 } as const;
 
 export type LearnerPreferences = {
@@ -33,9 +44,27 @@ export type LearnerPreferences = {
   /** Playback speed for normal audio; slow replay is always available. */
   speechRate: number;
   soundEffects: boolean;
+  /** New basic words a day (src/words); 0 turns the word track off. */
+  newWordsPerDay: number;
+  /** Show the English on learn, phrase and word cards straight away; off, it waits behind "Show meaning". */
+  showTranslations: boolean;
+  /**
+   * How the learner pictures every het-word ("made of gold"), finishing
+   * "Picture it …". Unset until they pick one, on the first het-noun or in Settings.
+   */
+  hetImage?: string;
 };
 
 export const PROMPT_MINUTES_RANGE = { min: 3, max: 60 } as const;
+
+/** The daily new-word limits offered in Settings. */
+export const NEW_WORDS_CHOICES = [0, 3, 5, 10] as const;
+
+/** Ready-made images for het-words; the learner may write their own instead. The first is used until they pick. */
+export const HET_IMAGES = ['made of gold', 'frozen in ice', 'glowing hot'] as const;
+
+/** Own words for the het image are kept short: they finish one line. */
+export const HET_IMAGE_MAX = 40;
 
 export function defaultPreferences(): LearnerPreferences {
   return {
@@ -46,6 +75,8 @@ export function defaultPreferences(): LearnerPreferences {
     autoplayAudio: true,
     speechRate: 1,
     soundEffects: true,
+    newWordsPerDay: 5,
+    showTranslations: false,
   };
 }
 
@@ -71,7 +102,71 @@ export function parsePreferences(raw: unknown): LearnerPreferences {
     autoplayAudio: raw.autoplayAudio !== false,
     speechRate: Math.min(1.2, Math.max(0.6, finite(raw.speechRate, 1))),
     soundEffects: raw.soundEffects !== false,
+    newWordsPerDay: Math.min(20, Math.max(0, Math.round(finite(raw.newWordsPerDay, defaults.newWordsPerDay)))),
+    showTranslations: raw.showTranslations === true,
+    hetImage: typeof raw.hetImage === 'string' && raw.hetImage.trim() ? raw.hetImage.trim().slice(0, HET_IMAGE_MAX) : undefined,
   };
+}
+
+/** Item id → when the learner added their own picture. */
+export type PictureIndex = Record<string, number>;
+
+export function parsePictures(raw: unknown): PictureIndex {
+  if (!isRecord(raw)) return {};
+  return Object.fromEntries(Object.entries(raw).filter((entry): entry is [string, number] => typeof entry[1] === 'number' && Number.isFinite(entry[1])));
+}
+
+/** A note is one line: longer text is cut here. */
+export const NOTE_MAX = 160;
+
+/** The learner's line about an item, and when they wrote it (the newest copy wins a merge). */
+export type Note = { text: string; at: number };
+
+/** Item id → the learner's note. */
+export type NoteIndex = Record<string, Note>;
+
+export function parseNotes(raw: unknown): NoteIndex {
+  if (!isRecord(raw)) return {};
+  const notes: NoteIndex = {};
+  for (const [id, value] of Object.entries(raw)) {
+    if (!isRecord(value) || typeof value.text !== 'string' || typeof value.at !== 'number' || !Number.isFinite(value.at)) continue;
+    const text = value.text.trim().slice(0, NOTE_MAX);
+    if (text) notes[id] = { text, at: value.at };
+  }
+  return notes;
+}
+
+/** Item id → when the learner was offered "Make it yours" for it. */
+export type LeechIndex = Record<string, number>;
+
+export const parseLeeches: (raw: unknown) => LeechIndex = parsePictures;
+
+function strings(raw: unknown): Array<string> | undefined {
+  return Array.isArray(raw) && raw.every((value) => typeof value === 'string') ? raw : undefined;
+}
+
+/** Draft id → the text waiting for correction. */
+export function parseDrafts(raw: unknown): Record<string, Draft> {
+  if (!isRecord(raw)) return {};
+  const drafts: Record<string, Draft> = {};
+  for (const [id, value] of Object.entries(raw)) {
+    if (!isRecord(value) || typeof value.text !== 'string' || !value.text.trim() || typeof value.at !== 'number') continue;
+    drafts[id] = { id, text: value.text, prompt: typeof value.prompt === 'string' ? value.prompt : '', exerciseId: typeof value.exerciseId === 'string' ? value.exerciseId : '', at: value.at };
+  }
+  return drafts;
+}
+
+/** Correction item id → the correction. Entries without a gap or an answer are dropped. */
+export function parseCorrections(raw: unknown): Record<string, Correction> {
+  if (!isRecord(raw)) return {};
+  const corrections: Record<string, Correction> = {};
+  for (const [id, value] of Object.entries(raw)) {
+    if (!isRecord(value) || !/^c-[a-z0-9]+$/.test(id)) continue;
+    const answers = strings(value.answers);
+    if (typeof value.sentence !== 'string' || !value.sentence.includes('___') || !answers?.length || typeof value.dutch !== 'string') continue;
+    corrections[id] = { id, sentence: value.sentence, answers, wrote: typeof value.wrote === 'string' ? value.wrote : '', dutch: value.dutch, at: finite(value.at, 0) };
+  }
+  return corrections;
 }
 
 const ITEM_STAGE_NAMES = new Set(['introduced', 'recognition', 'supportedRecall', 'independentRecall', 'transfer']);
@@ -143,9 +238,97 @@ export function createStore(area: StorageAreaLike) {
     return parsePreferences(stored[STORAGE_KEYS.prefs]);
   }
 
+  async function readPictures(): Promise<PictureIndex> {
+    const stored = await area.get([STORAGE_KEYS.pictures]);
+    return parsePictures(stored[STORAGE_KEYS.pictures]);
+  }
+
+  async function readNotes(): Promise<NoteIndex> {
+    const stored = await area.get([STORAGE_KEYS.notes]);
+    return parseNotes(stored[STORAGE_KEYS.notes]);
+  }
+
+  async function readLeeches(): Promise<LeechIndex> {
+    const stored = await area.get([STORAGE_KEYS.leeches]);
+    return parseLeeches(stored[STORAGE_KEYS.leeches]);
+  }
+
+  async function readDrafts(): Promise<Record<string, Draft>> {
+    const stored = await area.get([STORAGE_KEYS.drafts]);
+    return parseDrafts(stored[STORAGE_KEYS.drafts]);
+  }
+
+  async function readCorrections(): Promise<Record<string, Correction>> {
+    const stored = await area.get([STORAGE_KEYS.custom]);
+    return parseCorrections(stored[STORAGE_KEYS.custom]);
+  }
+
   return {
     readProgress,
     readPreferences,
+    readPictures,
+    readNotes,
+    readLeeches,
+    readDrafts,
+    readCorrections,
+
+    /** Keeps (or, with undefined, drops) a text waiting for correction. */
+    setDraft(id: string, draft: Draft | undefined): Promise<Record<string, Draft>> {
+      return enqueue(async () => {
+        const next = { ...(await readDrafts()) };
+        if (draft) next[id] = draft;
+        else delete next[id];
+        await area.set({ [STORAGE_KEYS.drafts]: next });
+        return next;
+      });
+    },
+
+    /** Adds corrections as items. Ids are permanent: an existing one is never replaced. */
+    addCorrections(added: ReadonlyArray<Correction>): Promise<Record<string, Correction>> {
+      return enqueue(async () => {
+        const next = { ...(await readCorrections()) };
+        for (const correction of added) next[correction.id] ??= correction;
+        await area.set({ [STORAGE_KEYS.custom]: next });
+        return next;
+      });
+    },
+
+    /**
+     * Writes (or, with empty text, removes) the learner's note on an item. A
+     * copy written later elsewhere (the other page) wins over this one.
+     */
+    setNote(itemId: string, text: string, at: number): Promise<NoteIndex> {
+      return enqueue(async () => {
+        const current = await readNotes();
+        if ((current[itemId]?.at ?? Number.NEGATIVE_INFINITY) > at) return current;
+        const next = { ...current };
+        const line = text.trim().slice(0, NOTE_MAX);
+        if (line) next[itemId] = { text: line, at };
+        else delete next[itemId];
+        await area.set({ [STORAGE_KEYS.notes]: next });
+        return next;
+      });
+    },
+
+    /** Remembers that an item was offered "Make it yours". */
+    markLeech(itemId: string, at: number): Promise<LeechIndex> {
+      return enqueue(async () => {
+        const next = { ...(await readLeeches()), [itemId]: at };
+        await area.set({ [STORAGE_KEYS.leeches]: next });
+        return next;
+      });
+    },
+
+    /** Records that an item has (a time) or no longer has (undefined) the learner's own picture. */
+    setPicture(itemId: string, at: number | undefined): Promise<PictureIndex> {
+      return enqueue(async () => {
+        const next = { ...(await readPictures()) };
+        if (at === undefined) delete next[itemId];
+        else next[itemId] = at;
+        await area.set({ [STORAGE_KEYS.pictures]: next });
+        return next;
+      });
+    },
 
     /** Applies `change` to the latest stored progress and saves the result. */
     updateProgress(change: (progress: LearnerProgress) => LearnerProgress): Promise<LearnerProgress> {

@@ -4,6 +4,7 @@
  * correct: matches an accepted answer.
  * accent: right apart from accents (één → een); counts as correct.
  * typo: one slip in a longer answer; counts as correct, the spelling is shown.
+ *   A different determiner (de for het, een for geen) is never a typo.
  * incorrect: anything else.
  */
 export type Verdict = 'correct' | 'accent' | 'typo' | 'incorrect';
@@ -61,6 +62,21 @@ function typoAllowance(answer: string): number {
 }
 
 /**
+ * Swapping one of these for another changes the gender or the meaning
+ * (het kopje, die/dat, een/geen), so it is a mistake even when the edit
+ * distance is small enough for a typo.
+ */
+const DETERMINERS: ReadonlySet<string> = new Set(['de', 'het', 'die', 'dat', 'deze', 'dit', 'een', 'geen']);
+
+/** The determiner the learner wrote in place of a different one, if any. */
+function swappedDeterminer(expected: string, given: string): string | undefined {
+  const want = wordsOf(expected).map(stripAccents);
+  const got = wordsOf(given).map(stripAccents);
+  if (want.length !== got.length) return undefined;
+  return got.find((word, i) => word !== want[i] && DETERMINERS.has(word) && DETERMINERS.has(want[i]!));
+}
+
+/**
  * Checks a typed answer against the accepted answers (the first is the model
  * answer). With `strict`, spelling is the point and typos are not tolerated.
  */
@@ -88,6 +104,8 @@ export function checkTyped(given: string, accepted: ReadonlyArray<string>, stric
     }
   }
   if (!strict && nearestDistance <= typoAllowance(normalizeAnswer(nearest))) {
+    const swapped = swappedDeterminer(nearest, answer);
+    if (swapped) return { verdict: 'incorrect', correct: false, expected: nearest, note: `Check the word "${swapped}".` };
     return { verdict: 'typo', correct: true, expected: nearest, note: `Nearly perfect. It is spelled: ${nearest}` };
   }
   return { verdict: 'incorrect', correct: false, expected: closestByWords(answer, accepted) };

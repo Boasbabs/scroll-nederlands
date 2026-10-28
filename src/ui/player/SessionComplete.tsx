@@ -4,6 +4,7 @@ import type { SessionPlan } from '../../engine/plan';
 import { CHECKPOINT_PASS } from '../../engine/progress';
 import { stageCheckpointId } from '../../engine/selection';
 import type { SessionOutcome } from '../../learning/actions';
+import { contrastLabel } from '../../sounds/assemble';
 import { AudioButton } from '../components/AudioButton';
 import { Button } from '../components/Button';
 import { SquigglePattern, Sparks } from '../components/Decor';
@@ -199,6 +200,19 @@ export function SessionComplete({ plan, outcome, stats, onAction }: SessionCompl
   }
 
   const newCount = outcome.newItemIds.length;
+  const words = plan.kind === 'words';
+  const sounds = plan.kind === 'sounds';
+  const contrastStep = plan.steps.find((step) => step.type === 'contrast');
+  const contrast = contrastStep?.type === 'contrast' ? course.contrast(contrastStep.itemId) : undefined;
+  let title = 'Lesson complete!';
+  let subtitle = `${newCount > 0 ? `${plural(newCount, 'new phrase')} · ` : ''}${lesson?.title ?? ''}`;
+  if (words) {
+    title = 'New words learned!';
+    subtitle = plural(newCount, 'new word');
+  } else if (sounds) {
+    title = 'Ear training done!';
+    subtitle = contrast ? `New sound pair: ${contrastLabel(contrast)}` : '';
+  }
   return (
     <div className="tn-complete">
       <div className="tn-player__body">
@@ -208,11 +222,8 @@ export function SessionComplete({ plan, outcome, stats, onAction }: SessionCompl
             <Icon name="star" size={34} />
             <Sparks count={10} reach={44} />
           </span>
-          <h2 className="tn-title tn-complete__title">Lesson complete!</h2>
-          <p className="tn-complete__subtitle">
-            {newCount > 0 ? `${plural(newCount, 'new phrase')} · ` : ''}
-            {lesson?.title}
-          </p>
+          <h2 className="tn-title tn-complete__title">{title}</h2>
+          <p className="tn-complete__subtitle">{subtitle}</p>
         </header>
         <div className="tn-player__content">
           <dl className="tn-stats tn-settle-in">
@@ -238,9 +249,15 @@ export function SessionComplete({ plan, outcome, stats, onAction }: SessionCompl
         <Button block onClick={() => onAction('next')} data-primary disabled={outcome.next.type === 'finished'}>
           Continue
         </Button>
-        <Button block variant="secondary" onClick={() => onAction('course')}>
-          Back to course
-        </Button>
+        {words || sounds ? (
+          <Button block variant="secondary" onClick={() => onAction('done')}>
+            Done
+          </Button>
+        ) : (
+          <Button block variant="secondary" onClick={() => onAction('course')}>
+            Back to course
+          </Button>
+        )}
       </div>
     </div>
   );

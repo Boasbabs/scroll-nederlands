@@ -6,6 +6,7 @@ import { countWords, includedGroups } from '../../engine/answers';
 import { seededRandom, shuffle, type PlannedExercise } from '../../engine/exercises';
 import { useSpeech } from '../components/AudioButton';
 import { Icon } from '../components/Icon';
+import { PictureFrame } from '../components/Picture';
 import { useEnv } from '../env';
 import { useAutoFocus, useStepKeys } from './context';
 import type { Answer } from './grade';
@@ -27,8 +28,13 @@ function stagger(i: number): CSSProperties {
 
 export function ChoiceView({ exercise, planned, locked, judged, answer, onAnswer }: ViewProps<ChoiceExercise>) {
   // Authored options often list the answer first, so the order is shuffled (stable per exercise).
-  const options = useMemo(() => shuffle(exercise.options, seededRandom(planned.key)), [exercise.options, planned.key]);
+  // De or het keeps its order, so 1 is always de and 2 always het.
+  const options = useMemo(
+    () => (exercise.noun ? exercise.options : shuffle(exercise.options, seededRandom(planned.key))),
+    [exercise.options, exercise.noun, planned.key],
+  );
   const chosen = answer?.kind === 'choice' ? answer.option : undefined;
+  const pictures = exercise.optionPictures;
   useStepKeys({
     digit: (n) => {
       const option = options[n - 1];
@@ -36,7 +42,7 @@ export function ChoiceView({ exercise, planned, locked, judged, answer, onAnswer
     },
   });
   return (
-    <div className="tn-options" role="radiogroup" aria-label="Answers">
+    <div className={`tn-options${pictures ? ' tn-options--pictures' : ''}`} role="radiogroup" aria-label="Answers">
       {options.map((option, i) => {
         const isChosen = option === chosen;
         const state = !locked
@@ -58,12 +64,21 @@ export function ChoiceView({ exercise, planned, locked, judged, answer, onAnswer
             style={stagger(i)}
             data-state={state}
             disabled={locked}
+            aria-label={pictures?.[option] ? option : undefined}
             onClick={() => onAnswer({ kind: 'choice', option })}
           >
             <span className="tn-option__key" aria-hidden="true">
               {state === 'correct' || state === 'answer' ? <Icon name="check" size={14} /> : state === 'wrong' ? <Icon name="cross" size={14} /> : i + 1}
             </span>
-            <span>{option}</span>
+            {pictures?.[option] ? (
+              <span className="tn-option__picture">
+                <PictureFrame itemId={pictures[option]} alt="" placeholder fallback={<span>{option}</span>} />
+                {/* The words show once answered: before, the picture is the answer. */}
+                {locked ? <span className="tn-option__caption">{option}</span> : null}
+              </span>
+            ) : (
+              <span>{option}</span>
+            )}
           </button>
         );
       })}

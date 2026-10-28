@@ -41,6 +41,22 @@ function gradeAll(
   return next;
 }
 
+/** Starts the schedule of items met for the first time, from how they went in the session. */
+function introduceAll(
+  items: LearnerProgress['items'],
+  itemIds: ReadonlyArray<string>,
+  results: ReadonlyArray<ExerciseResult>,
+  now: number,
+): LearnerProgress['items'] {
+  const next = { ...items };
+  for (const itemId of itemIds) {
+    const mine = results.filter((result) => result.itemIds.includes(itemId));
+    const correctStages: Array<ExerciseStage> = mine.filter((result) => result.correct).map((result) => result.stage);
+    next[itemId] = introduceItem({ correctStages, mistakes: mine.filter((result) => !result.correct).length }, now);
+  }
+  return next;
+}
+
 export function markLessonStarted(progress: LearnerProgress, lessonId: string, now: number): LearnerProgress {
   const previous = progress.lessons[lessonId];
   if (previous?.startedAt) return progress;
@@ -62,16 +78,9 @@ export function completeLesson(
 ): LearnerProgress {
   const lesson = index.lesson(lessonId);
   if (!lesson) throw new Error(`Unknown lesson ${lessonId}`);
-  const ownItems = new Set(lesson.items.map((item) => item.id));
-  const isNew = (itemId: string) => ownItems.has(itemId) && !progress.items[itemId];
-
-  let items = gradeAll(progress.items, results, mode, now, (itemId) => !isNew(itemId));
-  for (const item of lesson.items) {
-    if (progress.items[item.id]) continue;
-    const mine = results.filter((result) => result.itemIds.includes(item.id));
-    const correctStages: Array<ExerciseStage> = mine.filter((result) => result.correct).map((result) => result.stage);
-    items = { ...items, [item.id]: introduceItem({ correctStages, mistakes: mine.filter((result) => !result.correct).length }, now) };
-  }
+  const fresh = new Set(lesson.items.filter((item) => !progress.items[item.id]).map((item) => item.id));
+  const graded = gradeAll(progress.items, results, mode, now, (itemId) => !fresh.has(itemId));
+  const items = introduceAll(graded, [...fresh], results, now);
 
   const previous: LessonProgress = progress.lessons[lessonId] ?? { timesCompleted: 0 };
   return {
@@ -88,6 +97,23 @@ export function completeLesson(
     },
     days: countAnswers(progress, results.length, now),
   };
+}
+
+/**
+ * Finishes a session of new items (basic words, a sound contrast). Each starts
+ * its schedule from what the learner showed, like a lesson's own items; one
+ * met before is graded like a review.
+ */
+export function completeNewItems(
+  progress: LearnerProgress,
+  itemIds: ReadonlyArray<string>,
+  results: ReadonlyArray<ExerciseResult>,
+  mode: PracticeMode,
+  now: number,
+): LearnerProgress {
+  const fresh = new Set(itemIds.filter((itemId) => !progress.items[itemId]));
+  const graded = gradeAll(progress.items, results, mode, now, (itemId) => !fresh.has(itemId));
+  return { ...progress, items: introduceAll(graded, [...fresh], results, now), days: countAnswers(progress, results.length, now) };
 }
 
 /** Grades review answers; each item gets its own new schedule. */

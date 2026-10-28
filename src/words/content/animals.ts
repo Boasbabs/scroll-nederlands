@@ -1,0 +1,35 @@
+import { noun } from '../build';
+import type { WordTheme } from '../types';
+
+export const animals: WordTheme = {
+  id: 'animals',
+  title: 'Animals',
+  words: [
+    noun('de hond', 'the dog'),
+    noun('de kat', 'the cat'),
+    noun('de vogel', 'the bird'),
+    noun('het paard', 'the horse'),
+    noun('de koe', 'the cow'),
+    noun('het dier', 'the animal'),
+    noun('de eend', 'the duck'),
+    noun('het varken', 'the pig'),
+    noun('het schaap', 'the sheep'),
+    noun('de muis', 'the mouse'),
+    noun('het konijn', 'the rabbit'),
+    noun('de meeuw', 'the seagull'),
+    noun('de duif', 'the pigeon'),
+    noun('de geit', 'the goat'),
+    noun('de vlinder', 'the butterfly'),
+    noun('de bij', 'the bee'),
+    noun('de mug', 'the mosquito'),
+    noun('de spin', 'the spider'),
+    noun('de rat', 'the rat'),
+    noun('de kikker', 'the frog'),
+    noun('de vos', 'the fox'),
+    noun('de slang', 'the snake'),
+    noun('de olifant', 'the elephant'),
+    noun('de leeuw', 'the lion'),
+    noun('de beer', 'the bear'),
+    noun('de aap', 'the monkey'),
+  ],
+};

@@ -33,7 +33,7 @@ export function setupLearning(course: CurriculumIndex = makeCourse()) {
 
 export function makeEnv(
   setup: ReturnType<typeof setupLearning>,
-  overrides: Partial<UiEnv> & { prefs?: Partial<LearnerPreferences>; surface?: Surface } = {},
+  overrides: Omit<Partial<UiEnv>, 'prefs'> & { prefs?: Partial<LearnerPreferences>; surface?: Surface } = {},
 ): UiEnv {
   const { prefs, ...rest } = overrides;
   return {

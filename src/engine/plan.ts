@@ -1,8 +1,18 @@
 // Session plans: the ordered steps of a lesson, review or checkpoint.
 import type { CurriculumIndex } from '../curriculum/assemble';
 import { exerciseItemIds } from '../curriculum/assemble';
-import type { Exercise, Lesson } from '../curriculum/types';
-import { chooseReviewExercise, exerciseKey, generateMatch, seededRandom, type PlannedExercise } from './exercises';
+import type { Exercise, ExerciseStage, Lesson } from '../curriculum/types';
+import {
+  chooseReviewExercise,
+  exerciseKey,
+  generateExercise,
+  generateMatch,
+  pairDrill,
+  seededRandom,
+  shuffle,
+  type DrillContext,
+  type PlannedExercise,
+} from './exercises';
 import type { LearnerProgress, PracticeMode } from './types';
 
 export type SessionStep =
@@ -14,9 +24,13 @@ export type SessionStep =
   | { type: 'dialogue'; lessonId: string }
   /** Listen, say it aloud, optionally record and compare. Not assessed. */
   | { type: 'speak'; lessonId: string }
+  /** A new basic word: the Dutch with its article, audio and meaning. */
+  | { type: 'word'; itemId: string }
+  /** A new sound contrast: the two sounds, how they differ, and the word pairs to play. */
+  | { type: 'contrast'; itemId: string }
   | { type: 'exercise'; planned: PlannedExercise };
 
-export type SessionKind = 'lesson' | 'review' | 'checkpoint';
+export type SessionKind = 'lesson' | 'review' | 'checkpoint' | 'words' | 'sounds';
 
 export type SessionPlan = {
   kind: SessionKind;
@@ -84,6 +98,69 @@ export function planLesson(index: CurriculumIndex, lessonId: string, mode: Pract
   return { kind: 'lesson', mode, lessonId, steps };
 }
 
+/**
+ * New basic words: meet each one, then recognise each, then (focused) type
+ * each with a letter hint. Meeting them all first puts a short gap before
+ * each word is recalled.
+ */
+export function planWords(
+  index: CurriculumIndex,
+  itemIds: ReadonlyArray<string>,
+  mode: PracticeMode,
+  seed: string,
+  context: DrillContext = {},
+): SessionPlan {
+  const random = seededRandom(`${seed}:${itemIds.join(',')}`);
+  const items = itemIds.flatMap((id) => index.item(id) ?? []);
+  const stages: Array<ExerciseStage> = mode === 'micro' ? ['recognition'] : ['recognition', 'supportedRecall'];
+  const drills = stages.flatMap((stage) =>
+    items.map((item, i): SessionStep => {
+      const exercise = generateExercise(index, item, stage, i, random, context);
+      return {
+        type: 'exercise',
+        planned: {
+          key: `words:${item.id}:${stage}`,
+          exerciseId: `gen:${item.id}:${exercise.id}`,
+          lessonId: item.lessonId,
+          exercise,
+          itemIds: [item.id],
+          generated: true,
+        },
+      };
+    }),
+  );
+  return { kind: 'words', mode, steps: [...items.map((item): SessionStep => ({ type: 'word', itemId: item.id })), ...drills] };
+}
+
+/** Listening trials after a new contrast's intro card. */
+export const CONTRAST_TRIALS = 6;
+
+/**
+ * Ear training for one new contrast: its intro card, then six trials. The
+ * pairs take turns and each sound is heard equally often, in random order.
+ */
+export function planSounds(index: CurriculumIndex, itemId: string, seed: string): SessionPlan {
+  const item = index.item(itemId);
+  const contrast = index.contrast(itemId);
+  if (!item || !contrast) throw new Error(`${itemId} is not a sound contrast`);
+  const random = seededRandom(`${seed}:${itemId}`);
+  const pairs = shuffle(contrast.pairs.map((_, i) => i), random);
+  const members = shuffle(Array.from({ length: CONTRAST_TRIALS }, (_, i): 0 | 1 => (i % 2 === 0 ? 0 : 1)), random);
+  const trials = members.map((member, i): SessionStep => {
+    const exercise = pairDrill(item, contrast, 'recognition', pairs[i % pairs.length]!, member);
+    return {
+      type: 'exercise',
+      planned: { key: `sounds:${itemId}:${i}`, exerciseId: `gen:${itemId}:${exercise.id}`, lessonId: item.lessonId, exercise, itemIds: [itemId], generated: true },
+    };
+  });
+  return { kind: 'sounds', mode: 'focused', steps: [{ type: 'contrast', itemId }, ...trials] };
+}
+
+/** The new items a word or ear-training session introduces. */
+export function introStepIds(plan: SessionPlan): Array<string> {
+  return plan.steps.flatMap((step) => (step.type === 'word' || step.type === 'contrast' ? [step.itemId] : []));
+}
+
 /** One exercise per due item, at the stage each item needs. */
 export function planReview(
   index: CurriculumIndex,
@@ -91,15 +168,16 @@ export function planReview(
   itemIds: ReadonlyArray<string>,
   mode: PracticeMode,
   seed: string,
+  context: DrillContext = {},
 ): SessionPlan {
   const random = seededRandom(`${seed}:${itemIds.join(',')}`);
   return {
     kind: 'review',
     mode,
-    steps: itemIds.map((itemId) => ({
-      type: 'exercise',
-      planned: chooseReviewExercise(index, itemId, progress.items[itemId], mode, random),
-    })),
+    steps: itemIds.map((itemId): SessionStep => {
+      const planned = chooseReviewExercise(index, itemId, progress.items[itemId], mode, random, context);
+      return { type: 'exercise', planned: context.leech?.(itemId) ? { ...planned, leech: true } : planned };
+    }),
   };
 }
 

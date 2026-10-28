@@ -1,7 +1,10 @@
+import { ARTICLES_STAGE } from '../../src/articles/assemble';
 import { course, curriculum } from '../../src/curriculum';
 import { requiredObjectives } from '../../src/curriculum/objectives';
 import { EXERCISE_STAGES } from '../../src/curriculum/types';
 import { curriculumStats, validateCurriculum } from '../../src/curriculum/validate';
+import { SOUNDS_STAGE } from '../../src/sounds/assemble';
+import { WORDS_STAGE } from '../../src/words/assemble';
 import { makeCourse } from '../fixtures/curriculum';
 
 describe('the bundled curriculum', () => {
@@ -61,10 +64,14 @@ describe('the bundled curriculum', () => {
     expect(course.lessons.filter((lesson) => lesson.speakingPrompt).length).toBeGreaterThan(150);
   });
 
-  it('gives every learning item a globally unique id and an owning lesson', () => {
+  it('gives every learning item a globally unique id, and every course item an owning lesson', () => {
     const ids = course.items.map((item) => item.id);
     expect(new Set(ids).size).toBe(ids.length);
-    for (const item of course.items) expect(course.lesson(item.lessonId)?.items).toContain(item);
+    for (const item of course.items) {
+      // Basic words the course does not teach, sound contrasts and article items live beside the course.
+      if ([WORDS_STAGE, SOUNDS_STAGE, ARTICLES_STAGE].includes(item.stageId)) expect(course.lesson(item.lessonId)).toBeUndefined();
+      else expect(course.lesson(item.lessonId)?.items).toContain(item);
+    }
   });
 });
 

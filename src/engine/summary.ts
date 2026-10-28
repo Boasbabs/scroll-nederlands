@@ -8,14 +8,33 @@ import type { LearnerProgress } from './types';
 
 export type CountOf = { completed: number; total: number };
 
+export type StrengthCount = Record<ItemStrength, number> & { total: number };
+
+function countStrength(items: ReadonlyArray<LearningItem>, progress: LearnerProgress): StrengthCount {
+  const counts = { new: 0, learning: 0, strong: 0, total: items.length };
+  for (const item of items) counts[itemStrength(progress.items[item.id])]++;
+  return counts;
+}
+
+/** The course's own items: those its lessons teach (not the basic words or sound contrasts beside it). */
+function courseItems(index: CurriculumIndex): Array<LearningItem> {
+  return index.lessons.flatMap((lesson) => lesson.items);
+}
+
 export type ProgressSummary = {
   lessons: CountOf;
   stages: Array<{ id: string; title: string; level: string } & CountOf>;
   modules: Record<string, CountOf>;
   /** Where the learner is on the path (undefined once the course is finished). */
   current?: { stageId: string; moduleId: string; lessonId: string };
-  /** Learning items by strength. Completing lessons alone never makes an item strong. */
-  items: { new: number; learning: number; strong: number; total: number };
+  /** The course's learning items by strength. Completing lessons alone never makes an item strong. */
+  items: StrengthCount;
+  /** The basic-word list by strength, course words included. */
+  words: StrengthCount;
+  /** The sound contrasts (ear training) by strength. */
+  sounds: StrengthCount;
+  /** The nouns' de/het items by strength. */
+  articles: StrengthCount;
   dueNow: number;
   /** Due within the next 7 days, per day, starting today. */
   forecast: Array<number>;
@@ -47,8 +66,10 @@ export function summarizeProgress(index: CurriculumIndex, progress: LearnerProgr
     return { id: stage.id, title: stage.title, level: stage.level, completed, total };
   });
 
-  const items = { new: 0, learning: 0, strong: 0, total: index.items.length };
-  for (const item of index.items) items[itemStrength(progress.items[item.id])]++;
+  const items = countStrength(courseItems(index), progress);
+  const words = countStrength(index.words, progress);
+  const sounds = countStrength(index.sounds, progress);
+  const articles = countStrength(index.articles, progress);
 
   const startOfToday = new Date(now);
   startOfToday.setHours(0, 0, 0, 0);
@@ -85,6 +106,9 @@ export function summarizeProgress(index: CurriculumIndex, progress: LearnerProgr
     modules,
     current: next ? { stageId: next.stageId, moduleId: next.moduleId, lessonId: next.id } : undefined,
     items,
+    words,
+    sounds,
+    articles,
     dueNow,
     forecast,
     accuracy: { correct, answered },
@@ -99,6 +123,6 @@ export function summarizeProgress(index: CurriculumIndex, progress: LearnerProgr
 /** Course items grouped by how well they are known (the Progress screen's lists). */
 export function itemsByStrength(index: CurriculumIndex, progress: LearnerProgress): Record<ItemStrength, Array<LearningItem>> {
   const groups: Record<ItemStrength, Array<LearningItem>> = { new: [], learning: [], strong: [] };
-  for (const item of index.items) groups[itemStrength(progress.items[item.id])].push(item);
+  for (const item of courseItems(index)) groups[itemStrength(progress.items[item.id])].push(item);
   return groups;
 }

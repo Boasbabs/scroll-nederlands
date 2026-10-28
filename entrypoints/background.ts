@@ -1,8 +1,12 @@
 // The background worker: opens the side panel, keeps the in-page script registered
-// for the granted sites, and plays clips for the in-page card in an offscreen document.
+// for the granted sites, plays clips for the in-page card in an offscreen document,
+// and hands the card its pictures as data URLs.
+import type { PublicPath } from 'wxt/browser';
 import { isExtensionMessage } from '../src/extension/messages';
 import { createOffscreenRelay } from '../src/extension/offscreen';
 import { CONTENT_SCRIPT_FILE, CONTENT_SCRIPT_ID, createRegistrationSync } from '../src/extension/registration';
+import { createIndexedDbPictures } from '../src/images/own';
+import { answerPicture } from '../src/images/pictures';
 
 const OFFSCREEN_PATH = '/offscreen.html';
 
@@ -44,8 +48,15 @@ export default defineBackground(() => {
     send: (message) => browser.runtime.sendMessage(message),
   });
 
+  const ownPictures = createIndexedDbPictures(indexedDB);
+  const readImage = async (file: string) => (await fetch(browser.runtime.getURL(`/images/${file}` as PublicPath))).blob();
+
   browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (!isExtensionMessage(message)) return;
+    if (message.type === 'tn:picture') {
+      void answerPicture(ownPictures, readImage, message.itemId, message.file).then(sendResponse);
+      return true;
+    }
     if (message.type === 'tn:open-side-panel') {
       const tabId = sender.tab?.id;
       if (tabId === undefined) return;

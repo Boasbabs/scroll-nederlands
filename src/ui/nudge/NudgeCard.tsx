@@ -15,7 +15,8 @@ export function BrandMark({ size = 20 }: { size?: number }) {
   );
 }
 
-export type NudgePreview = { dutch: string; english: string };
+/** A new lesson's phrase and meaning, or a line that gives nothing away (reviews, new words). */
+export type NudgePreview = { dutch: string; english: string } | { text: string };
 
 type NudgeCardProps = {
   preview?: NudgePreview;
@@ -42,7 +43,13 @@ export function NudgeCard({ preview, onLearn, onNotNow, onSnooze, onQuiet, now, 
       <p className="tn-nudge__title">Ready for a 2-minute Dutch break?</p>
       {preview ? (
         <p className="tn-nudge__preview">
-          <em lang="nl">{preview.dutch}</em> · {preview.english}
+          {'text' in preview ? (
+            preview.text
+          ) : (
+            <>
+              <em lang="nl">{preview.dutch}</em> · {preview.english}
+            </>
+          )}
         </p>
       ) : null}
       <div className="tn-nudge__actions">

@@ -11,13 +11,25 @@ import { createSpeaker } from '../../src/audio/speech';
 import { course } from '../../src/curriculum';
 import { createClipPlayer } from '../../src/extension/clip-player';
 import { clipManifest } from '../../src/extension/clips';
+import { downscaleToWebp } from '../../src/images/downscale';
+import { bundledImages } from '../../src/images/manifest';
+import { createIndexedDbPictures } from '../../src/images/own';
+import { createPictureSource } from '../../src/images/pictures';
 import { createLearning } from '../../src/learning/actions';
 import { originsFor, SITES } from '../../src/sites';
 import { createStore, STORAGE_KEYS } from '../../src/storage/store';
 import type { SitePermissions } from '../../src/ui/env';
 import { PanelApp } from '../../src/ui/panel/PanelApp';
 
-const learning = createLearning({ store: createStore(browser.storage.local), course });
+const store = createStore(browser.storage.local);
+const learning = createLearning({ store, course, images: bundledImages });
+const pictures = createPictureSource({
+  course,
+  images: bundledImages,
+  blobs: createIndexedDbPictures(indexedDB),
+  record: store.setPicture,
+  downscale: downscaleToWebp,
+});
 
 const clips = createClipPlayer((path) => browser.runtime.getURL(`/${path}` as PublicPath));
 const speaker = createSpeaker({
@@ -52,5 +64,5 @@ function subscribe(onChange: () => void): () => void {
 }
 
 createRoot(document.getElementById('root')!).render(
-  <PanelApp deps={{ learning, course, speaker, permissions, subscribe, canRecord: true }} />,
+  <PanelApp deps={{ learning, course, speaker, permissions, subscribe, canRecord: true, pictures }} />,
 );

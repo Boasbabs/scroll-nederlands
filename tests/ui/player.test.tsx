@@ -1,5 +1,6 @@
 import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import type { Exercise } from '../../src/curriculum/types';
 import { SessionPlayer } from '../../src/ui/player/SessionPlayer';
 import { makeCourse, stageExercises } from '../fixtures/curriculum';
 import { makeEnv, renderUi, setupLearning } from './harness';
@@ -86,6 +87,25 @@ describe('lesson player', () => {
     await user.click(screen.getByRole('button', { name: 'Quit' }));
     expect(onExit).toHaveBeenCalled();
     expect((await setup.store.readProgress()).lessons['x0-a-hello']?.completedAt).toBeUndefined();
+  });
+
+  it('treats a swapped article as a mistake and says which word to check', async () => {
+    const user = userEvent.setup();
+    const exercise: Exercise = {
+      id: 'type',
+      stage: 'independentRecall',
+      kind: 'type',
+      prompt: 'Tell your guest the cup is in the kitchen.',
+      answers: ['Het kopje is in de keuken.'],
+      explanation: 'Kopje ends in -je, so it takes het.',
+    };
+    const setup = setupLearning(makeCourse({ 'x0-a-hello': { exercises: [exercise] } }));
+    await startLesson(setup);
+    await user.click(screen.getByRole('button', { name: 'Continue' }));
+    await user.type(screen.getByLabelText('Your answer in Dutch'), 'De kopje is in de keuken.');
+    await user.click(screen.getByRole('button', { name: 'Check' }));
+    expect(screen.getByText('Check the word "de".')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Try again' })).toBeInTheDocument();
   });
 
   it('marks only the words that differ from the option picked', async () => {

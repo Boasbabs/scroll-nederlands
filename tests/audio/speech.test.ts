@@ -75,6 +75,41 @@ describe('speaker', () => {
     expect(await result).toMatchObject({ ok: true, engine: 'synthesis' });
   });
 
+  it('prefers a human take, rotating speakers per text from one starting speaker', async () => {
+    const recorded = {
+      man: ['audio/recorded/anna/man.mp3', 'audio/recorded/bas/man.mp3'],
+      maan: ['audio/recorded/anna/maan.mp3', 'audio/recorded/bas/maan.mp3'],
+    };
+    const { speaker, played } = makeSpeaker([google], { manifest: { clips: { man: 'audio/m.mp3' }, recorded }, random: () => 0.5 });
+    expect(await speaker.speak('man')).toMatchObject({ ok: true, engine: 'recording' });
+    await speaker.speak('maan');
+    await speaker.speak('man', { rate: 0.7 });
+    // Both words of the pair start with the same speaker; a replay brings the next one.
+    expect(played).toEqual([
+      { path: 'audio/recorded/bas/man.mp3', rate: 1 },
+      { path: 'audio/recorded/bas/maan.mp3', rate: 1 },
+      { path: 'audio/recorded/anna/man.mp3', rate: 0.7 },
+    ]);
+    expect(speaker.hasClip('maan')).toBe(true);
+  });
+
+  it('falls back to the generated clip, then the browser voice, when a take cannot play', async () => {
+    const tried: Array<string> = [];
+    let clipsPlay = true;
+    const { speaker, fake } = makeSpeaker([google], {
+      manifest: { clips: { man: 'audio/m.mp3' }, recorded: { man: ['audio/recorded/anna/man.mp3'] } },
+      playClip: async (path) => {
+        tried.push(path);
+        if (path.startsWith('audio/recorded/') || !clipsPlay) throw new Error('blocked');
+      },
+    });
+    expect(await speaker.speak('man')).toMatchObject({ ok: true, engine: 'clip' });
+    expect(tried).toEqual(['audio/recorded/anna/man.mp3', 'audio/m.mp3']);
+    clipsPlay = false;
+    expect(await speaker.speak('man')).toMatchObject({ ok: true, engine: 'synthesis' });
+    expect(fake.spoken.map((line) => line.text)).toEqual(['man']);
+  });
+
   it('falls back to synthesis when a clip cannot play', async () => {
     const { speaker } = makeSpeaker([google], {
       manifest: { clips: { Hallo: 'audio/h.mp3' } },

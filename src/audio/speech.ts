@@ -1,6 +1,6 @@
-// Dutch audio behind one small interface: a bundled ElevenLabs clip when one
-// exists for the sentence, otherwise the browser's nl-NL voice, otherwise
-// silence with an explanation. Nothing here talks to a server.
+// Dutch audio behind one small interface: a human recording when one exists
+// for the text, then a bundled ElevenLabs clip, otherwise the browser's nl-NL
+// voice, otherwise silence with an explanation. Nothing here talks to a server.
 
 export const DUTCH_LOCALE = 'nl-NL';
 
@@ -16,14 +16,19 @@ export type VoiceMatch = 'nl-NL' | 'nl-other' | 'none';
 export type ClipVoice = 'a' | 'b';
 
 export type SpeakResult =
-  | { ok: true; engine: 'clip' | 'synthesis'; match: VoiceMatch; voiceName?: string }
+  | { ok: true; engine: 'recording' | 'clip' | 'synthesis'; match: VoiceMatch; voiceName?: string }
   | { ok: false; reason: 'no-dutch-voice' | 'unsupported' | 'interrupted' };
 
 export type ClipManifest = {
   clips: Record<string, string>;
   /** Clips read by the second voice, for the other speaker in dialogues. */
   clipsB?: Record<string, string>;
+  /** Human takes by text, one per speaker; played before any generated clip. */
+  recorded?: Record<string, ReadonlyArray<string>>;
 };
+
+/** src/audio/recorded.json, written by `pnpm audio:generate --recorded` (scripts/recordings.ts). */
+export type RecordedManifest = { takes: Record<string, Array<string>> };
 
 function normalizeLang(lang: string): string {
   return lang.replace('_', '-').toLowerCase();
@@ -55,6 +60,8 @@ export type SpeakerDeps = {
   manifest: ClipManifest;
   /** How long to wait for voices that load asynchronously. */
   voiceTimeoutMs?: number;
+  /** Picks the speaker whose takes come first; tests pass a fixed one. */
+  random?: () => number;
 };
 
 export type SpeakOptions = { rate?: number; voice?: ClipVoice };
@@ -62,6 +69,10 @@ export type SpeakOptions = { rate?: number; voice?: ClipVoice };
 export function createSpeaker(deps: SpeakerDeps) {
   let voicesPromise: Promise<Array<SpeechSynthesisVoice>> | undefined;
   let generation = 0;
+  // Human takes rotate per text from one starting speaker, so both words of a
+  // pair start in the same voice and each replay brings the next speaker.
+  const start = (deps.random ?? Math.random)();
+  const plays = new Map<string, number>();
 
   function loadVoices(): Promise<Array<SpeechSynthesisVoice>> {
     const synth = deps.synth;
@@ -87,6 +98,15 @@ export function createSpeaker(deps: SpeakerDeps) {
     return deps.manifest.clips[key];
   }
 
+  function nextTake(text: string): string | undefined {
+    const key = clipKey(text);
+    const takes = deps.manifest.recorded?.[key];
+    if (!takes?.length) return undefined;
+    const played = plays.get(key) ?? 0;
+    plays.set(key, played + 1);
+    return takes[(Math.floor(start * takes.length) + played) % takes.length];
+  }
+
   function stop() {
     generation++;
     deps.stopClip();
@@ -98,14 +118,18 @@ export function createSpeaker(deps: SpeakerDeps) {
     stop();
     const mine = generation;
     const rate = options.rate ?? 1;
-    const clip = findClip(text, options.voice ?? 'a');
-    if (clip) {
+    const sources = [
+      [nextTake(text), 'recording'],
+      [findClip(text, options.voice ?? 'a'), 'clip'],
+    ] as const;
+    for (const [path, engine] of sources) {
+      if (!path) continue;
       try {
-        await deps.playClip(clip, rate);
-        return mine === generation ? { ok: true, engine: 'clip', match: 'nl-NL' } : { ok: false, reason: 'interrupted' };
+        await deps.playClip(path, rate);
+        return mine === generation ? { ok: true, engine, match: 'nl-NL' } : { ok: false, reason: 'interrupted' };
       } catch {
         if (mine !== generation) return { ok: false, reason: 'interrupted' };
-        // The clip could not play here; fall back to synthesis.
+        // It could not play here; try the next source, then synthesis.
       }
     }
 
@@ -148,7 +172,8 @@ export function createSpeaker(deps: SpeakerDeps) {
     return { match, voiceName: voice?.name, clipCount: Object.keys(deps.manifest.clips).length };
   }
 
-  return { speak, speakDialogue, stop, describeVoice, hasClip: (text: string) => Boolean(findClip(text, 'a')) };
+  const hasClip = (text: string) => Boolean(deps.manifest.recorded?.[clipKey(text)]?.length || findClip(text, 'a'));
+  return { speak, speakDialogue, stop, describeVoice, hasClip };
 }
 
 export type Speaker = ReturnType<typeof createSpeaker>;

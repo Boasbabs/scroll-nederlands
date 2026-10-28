@@ -1,6 +1,6 @@
 // The answer sheet that rises in place of Check (staging): a Seaweed Green tint
 // and a green button when right, a Flush Mahogany tint and a red button when not.
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState, type ReactNode } from 'react';
 import { diffTokens } from '../../engine/answers';
 import { Button } from '../components/Button';
 import { Sparks } from '../components/Decor';
@@ -11,7 +11,7 @@ import { DiffText } from './parts';
 export type Feedback =
   | { type: 'correct'; note?: string; meaning?: string; explanation?: string }
   /** First miss on a typed or tile answer: one more go before the answer is shown. */
-  | { type: 'retry' }
+  | { type: 'retry'; note?: string }
   | {
       type: 'wrong';
       expected: string;
@@ -28,9 +28,11 @@ type FeedbackSheetProps = {
   onContinue: () => void;
   onRetry?: () => void;
   onShowAnswer?: () => void;
+  /** Extra lines under the answer once it is shown (the het image). */
+  children?: ReactNode;
 };
 
-export function FeedbackSheet({ feedback, onContinue, onRetry, onShowAnswer }: FeedbackSheetProps) {
+export function FeedbackSheet({ feedback, onContinue, onRetry, onShowAnswer, children }: FeedbackSheetProps) {
   const [why, setWhy] = useState(false);
   const primary = useRef<HTMLButtonElement>(null);
   const player = useContext(PlayerContext);
@@ -57,6 +59,7 @@ export function FeedbackSheet({ feedback, onContinue, onRetry, onShowAnswer }: F
           </p>
         ) : null}
         {feedback.explanation ? <p className="tn-sheet__line tn-sheet__muted">{feedback.explanation}</p> : null}
+        {children}
         <Button ref={primary} block variant="correct" onClick={onContinue} data-primary>
           Continue
         </Button>
@@ -73,7 +76,7 @@ export function FeedbackSheet({ feedback, onContinue, onRetry, onShowAnswer }: F
           </span>
           Not quite
         </p>
-        <p className="tn-sheet__line">Have another look and try once more.</p>
+        <p className="tn-sheet__line">{feedback.note ?? 'Have another look and try once more.'}</p>
         <Button ref={primary} block variant="wrong" onClick={onRetry} data-primary>
           Try again
         </Button>
@@ -111,6 +114,7 @@ export function FeedbackSheet({ feedback, onContinue, onRetry, onShowAnswer }: F
         </p>
       ) : null}
       {why && feedback.explanation ? <p className="tn-sheet__why tn-rise-in">{feedback.explanation}</p> : null}
+      {children}
       <div className="tn-sheet__actions">
         {feedback.explanation ? (
           <Button variant="secondary" onClick={() => setWhy((value) => !value)} aria-expanded={why}>

@@ -12,7 +12,7 @@ import { useHotkeys, type KeyHandlers } from '../hotkeys';
 import { PlayerContext } from './context';
 import { ExerciseStep } from './ExerciseStep';
 import { SessionComplete, type CompleteAction, type SessionStats } from './SessionComplete';
-import { ChunksCard, DialogueCard, LearnCard, SpeakCard } from './steps';
+import { ChunksCard, ContrastCard, DialogueCard, LearnCard, SpeakCard, WordCard } from './steps';
 
 type Entry = { key: string; step: SessionStep; review: boolean };
 
@@ -144,7 +144,13 @@ export function SessionPlayer({ plan, onExit, onAction }: SessionPlayerProps) {
     if (step.type === 'learn' && lesson) body = <LearnCard key={entry.key} lesson={lesson} compact={compact} onContinue={next} />;
     else if (step.type === 'chunks') body = <ChunksCard key={entry.key} items={step.itemIds.flatMap((id) => course.item(id) ?? [])} onContinue={next} />;
     else if (step.type === 'dialogue' && lesson) body = <DialogueCard key={entry.key} lesson={lesson} onContinue={next} />;
-    else if (step.type === 'speak' && lesson) {
+    else if (step.type === 'word') {
+      const item = course.item(step.itemId);
+      if (item) body = <WordCard key={entry.key} item={item} onContinue={next} />;
+    } else if (step.type === 'contrast') {
+      const contrast = course.contrast(step.itemId);
+      if (contrast) body = <ContrastCard key={entry.key} contrast={contrast} onContinue={next} />;
+    } else if (step.type === 'speak' && lesson) {
       body = (
         <SpeakCard
           key={entry.key}
@@ -204,7 +210,7 @@ export function SessionPlayer({ plan, onExit, onAction }: SessionPlayerProps) {
             {compact ? null : <ProgressBar value={index} max={queue.length} label="Lesson progress" />}
             {combo >= 3 ? (
               <span className="tn-combo tn-pop" key={combo} aria-label={`${combo} correct in a row`}>
-                <Icon name="flame" size={16} />
+                <Icon name="flame" size={16} filled />
                 {combo}
               </span>
             ) : null}

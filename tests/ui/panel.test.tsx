@@ -6,6 +6,7 @@ import { DAY, HOUR } from '../../src/engine/schedule';
 import type { SiteId } from '../../src/sites';
 import type { SitePermissions } from '../../src/ui/env';
 import { PanelApp } from '../../src/ui/panel/PanelApp';
+import { makeCourse, testContrasts, testWordThemes } from '../fixtures/curriculum';
 import { setupLearning, silentSpeaker, T0 } from './harness';
 
 type Setup = ReturnType<typeof setupLearning>;
@@ -121,12 +122,12 @@ describe('side panel onboarding', () => {
 });
 
 describe('Today', () => {
-  it('shows the caught-up block until reviews are due, then the review card', async () => {
+  it('shows the caught-up line until reviews are due, then the review card', async () => {
     const user = userEvent.setup();
     const setup = await onboardedLearner(['x0-a-hello']);
     const { unmount } = renderPanel(setup);
 
-    expect(await screen.findByRole('heading', { name: 'All caught up' })).toBeInTheDocument();
+    expect(await screen.findByText('All caught up')).toBeInTheDocument();
     expect(screen.getByText('Next review tomorrow · 1 item')).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Review now' })).not.toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Thank you' })).toBeInTheDocument();
@@ -141,6 +142,14 @@ describe('Today', () => {
     expect(await screen.findByText('Review · 1 left')).toBeInTheDocument();
   });
 
+  it('leads with the course for a new learner, with no caught-up line before any reviews exist', async () => {
+    const setup = await onboardedLearner();
+    renderPanel(setup);
+    expect(await screen.findByRole('heading', { name: 'Hello there' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Quick practice' })).toHaveAccessibleDescription('2 min');
+    expect(screen.queryByText('All caught up')).not.toBeInTheDocument();
+  });
+
   it('continues the course from the Continue card', async () => {
     const user = userEvent.setup();
     const setup = await onboardedLearner(['x0-a-hello']);
@@ -148,6 +157,64 @@ describe('Today', () => {
     const card = (await screen.findByRole('heading', { name: 'Thank you' })).closest('section')!;
     await user.click(within(card).getByRole('button', { name: 'Start' }));
     expect(await screen.findByRole('heading', { name: /Dank je wel/ })).toBeInTheDocument();
+  });
+
+  it('starts today’s new words from the To do today list', async () => {
+    const user = userEvent.setup();
+    const setup = setupLearning(makeCourse({}, testWordThemes));
+    await setup.store.updatePreferences({ onboarded: true, newWordsPerDay: 3 });
+    renderPanel(setup);
+    const learn = await screen.findByRole('button', { name: 'Learn 3 words' });
+    expect(learn).toHaveAccessibleDescription('Basic words · 0 of 7 met');
+    await user.click(learn);
+    expect(await screen.findByRole('heading', { name: 'de vork' })).toBeInTheDocument();
+    // Dutch first: the English waits behind Show meaning.
+    expect(screen.queryByText('the fork')).not.toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Show meaning' }));
+    expect(screen.getByText('the fork')).toBeInTheDocument();
+  });
+
+  it('trains the ear from the To do today list: the contrast, six trials, then the end screen', async () => {
+    const user = userEvent.setup();
+    const setup = setupLearning(makeCourse({}, [], testContrasts));
+    await setup.store.updatePreferences({ onboarded: true });
+    renderPanel(setup);
+    const train = await screen.findByRole('button', { name: 'Hear a or aa' });
+    expect(train).toHaveAccessibleDescription('Ear training · 0 of 2 sound pairs');
+    await user.click(train);
+
+    expect(await screen.findByRole('heading', { name: 'a or aa' })).toBeInTheDocument();
+    expect(screen.getByText('Short a is clipped; long aa is held.')).toBeInTheDocument();
+    const pairs = screen.getByRole('list', { name: 'Word pairs' });
+    expect(within(pairs).getAllByRole('listitem')).toHaveLength(3);
+    expect(within(pairs).getByRole('button', { name: 'Play: maan' })).toBeInTheDocument();
+    expect(within(pairs).getByText('moon')).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Start listening' }));
+
+    for (let trial = 0; trial < 6; trial++) {
+      expect(screen.getByRole('heading', { name: 'Listen. Which word did you hear?' })).toBeInTheDocument();
+      const options = screen.getAllByRole('radio');
+      expect(options).toHaveLength(2);
+      await user.click(options[0]!);
+      await user.click(screen.getByRole('button', { name: 'Check' }));
+      await user.click(screen.getByRole('button', { name: /^(Continue|Got it)$/ }));
+    }
+    expect(await screen.findByText('Ear training done!')).toBeInTheDocument();
+    expect(screen.getByText('New sound pair: a or aa')).toBeInTheDocument();
+    expect((await setup.store.readProgress()).items['p-a-aa']).toBeDefined();
+
+    await user.click(screen.getByRole('button', { name: 'Done' }));
+    expect(await screen.findByRole('button', { name: 'Hear g or h' })).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Progress' }));
+    expect(screen.getByText('of 2 sound pairs · 0 strong')).toBeInTheDocument();
+  });
+
+  it('leaves new words out of the list when the track is off', async () => {
+    const setup = setupLearning(makeCourse({}, testWordThemes));
+    await setup.store.updatePreferences({ onboarded: true, newWordsPerDay: 0 });
+    renderPanel(setup);
+    expect(await screen.findByRole('button', { name: 'Quick practice' })).toBeInTheDocument();
+    expect(screen.queryByText(/Basic words/)).not.toBeInTheDocument();
   });
 });
 

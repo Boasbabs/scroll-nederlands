@@ -1,6 +1,9 @@
 // The one-line preview on the prompt card: what "Learn now" would start with.
+// A new lesson shows its phrase. Reviews and new words show only how many:
+// the item, or its meaning, would give away the drill that follows.
 import type { CurriculumIndex } from '../../curriculum/assemble';
 import type { NextActivity } from '../../engine/selection';
+import { plural } from '../format';
 import type { NudgePreview } from './NudgeCard';
 
 export function previewFor(course: CurriculumIndex, next: NextActivity): NudgePreview | undefined {
@@ -8,9 +11,7 @@ export function previewFor(course: CurriculumIndex, next: NextActivity): NudgePr
     const lesson = course.lesson(next.lessonId);
     return lesson && { dutch: lesson.targetPhrase, english: lesson.meaningEn };
   }
-  if (next.type === 'review') {
-    const item = course.item(next.itemIds[0] ?? '');
-    return item && { dutch: item.dutch, english: item.english };
-  }
+  if (next.type === 'review') return { text: plural(next.itemIds.length, 'quick review') };
+  if (next.type === 'words') return { text: plural(next.itemIds.length, 'new word') };
   return undefined;
 }

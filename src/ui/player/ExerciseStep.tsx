@@ -4,11 +4,16 @@ import { useRef, useState } from 'react';
 import type { Exercise } from '../../curriculum/types';
 import type { AnswerCheck } from '../../engine/answers';
 import type { PlannedExercise } from '../../engine/exercises';
+import { AudioButton } from '../components/AudioButton';
 import { Button } from '../components/Button';
+import { PictureFrame } from '../components/Picture';
 import { useEnv } from '../env';
 import { ChoiceView, ClozeView, MatchView, OrderView, TypeView, WriteView } from './exercises';
 import { FeedbackSheet, type Feedback } from './FeedbackSheet';
 import { allowsRetry, fillGap, givenText, gradeAnswer, isAnswered, type Answer } from './grade';
+import { HetLine, isHetNoun } from './het';
+import { GetItCorrected } from './corrections';
+import { LeechPrompt, NoteCue } from './notes';
 import { AudioHeader, Conversation, Instruction, Passage } from './parts';
 import { ActionZone, RecallCard, StepBody } from './steps';
 
@@ -37,7 +42,7 @@ function expectedText(exercise: Exercise, check: AnswerCheck): string {
 }
 
 export function ExerciseStep({ planned, review, recall, onGraded, onNext, onCantListen }: ExerciseStepProps) {
-  const { sfx, prefs, course } = useEnv();
+  const { sfx, prefs, course, surface } = useEnv();
   const exercise = planned.exercise;
   const [answer, setAnswer] = useState<Answer>();
   const [phase, setPhase] = useState<Phase>('answering');
@@ -77,10 +82,12 @@ export function ExerciseStep({ planned, review, recall, onGraded, onNext, onCant
       return (
         <RecallCard
           item={item}
-          onResult={(remembered) => {
-            grade(remembered);
-            onNext();
-          }}
+          situation={exercise.situation}
+          picture={exercise.picture}
+          note={exercise.note}
+          leech={planned.leech}
+          onGrade={grade}
+          onNext={onNext}
         />
       );
     }
@@ -171,7 +178,7 @@ export function ExerciseStep({ planned, review, recall, onGraded, onNext, onCant
             explanation: exercise.explanation,
           }
         : phase === 'retry'
-          ? { type: 'retry' }
+          ? { type: 'retry', note: check?.note }
           : {
               type: 'wrong',
               expected: check ? expectedText(exercise, check) : '',
@@ -180,6 +187,10 @@ export function ExerciseStep({ planned, review, recall, onGraded, onNext, onCant
               meaning: meaningOf(exercise),
               explanation: exercise.explanation,
             };
+    // One het-noun practised (its meaning or its article): the answer comes with the het image.
+    const het = phase !== 'retry' && planned.itemIds.length === 1 && isHetNoun(course, planned.itemIds[0]!);
+    // A miss on an item that keeps slipping offers "Make it yours" (once: the offer is remembered).
+    const slipping = phase === 'wrong' && planned.leech ? course.item(planned.itemIds[0] ?? '') : undefined;
     zone = (
       <FeedbackSheet
         feedback={feedback}
@@ -189,7 +200,10 @@ export function ExerciseStep({ planned, review, recall, onGraded, onNext, onCant
           setPhase('answering');
         }}
         onShowAnswer={() => setPhase('wrong')}
-      />
+      >
+        {het ? <HetLine /> : null}
+        {slipping ? <LeechPrompt item={slipping} /> : null}
+      </FeedbackSheet>
     );
   }
 
@@ -198,6 +212,28 @@ export function ExerciseStep({ planned, review, recall, onGraded, onNext, onCant
       <StepBody label="Exercise">
         {review ? <span className="tn-chip tn-chip--review">Review</span> : null}
         <Instruction>{exercise.prompt}</Instruction>
+        {exercise.situation ? <p className="tn-scene">{exercise.situation}</p> : null}
+        {exercise.note ? <NoteCue text={exercise.note} /> : null}
+        {exercise.picture ? (
+          <PictureFrame
+            itemId={exercise.picture}
+            alt={course.item(exercise.picture)?.english ?? ''}
+            placeholder
+            fallback={<p className="tn-translation">{course.item(exercise.picture)?.english}</p>}
+          />
+        ) : null}
+        {exercise.kind === 'choice' && exercise.noun ? (
+          <div className="tn-article-word">
+            <p className="tn-phrase" lang="nl">
+              <span className="tn-article-word__gap" data-filled={locked || undefined}>
+                {locked ? exercise.answer : '___'}
+              </span>{' '}
+              {exercise.noun}
+            </p>
+            {/* Heard only once answered: the article would give itself away. */}
+            {locked ? <AudioButton text={`${exercise.answer} ${exercise.noun}`} size="small" autoPlay={prefs.autoplayAudio} /> : null}
+          </div>
+        ) : null}
         {exercise.passage ? <Passage text={exercise.passage} /> : null}
         {exercise.context?.length ? (
           <Conversation
@@ -225,6 +261,9 @@ export function ExerciseStep({ planned, review, recall, onGraded, onNext, onCant
           )
         ) : null}
         {view}
+        {exercise.kind === 'write' && phase === 'rate' && surface === 'panel' ? (
+          <GetItCorrected input={{ text: givenText(answer) ?? '', prompt: exercise.prompt, exerciseId: planned.exerciseId }} />
+        ) : null}
         {exercise.listenOnly && !locked ? (
           <button type="button" className="tn-link" onClick={onCantListen}>
             Can’t listen now

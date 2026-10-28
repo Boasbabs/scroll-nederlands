@@ -13,6 +13,8 @@ import { clipManifest } from '../../src/extension/clips';
 import { isClipReply, type ExtensionMessage } from '../../src/extension/messages';
 import { CARD_INSET, isChatPage, measureHost, placeCard, type Placement } from '../../src/extension/placement';
 import { createPromptLoop } from '../../src/extension/prompt-loop';
+import { bundledImages } from '../../src/images/manifest';
+import { createRemotePictures } from '../../src/images/pictures';
 import { createLearning } from '../../src/learning/actions';
 import { siteForHost } from '../../src/sites';
 import { createStore, STORAGE_KEYS, type LearnerPreferences } from '../../src/storage/store';
@@ -50,7 +52,9 @@ export default defineContentScript({
 
     const area = browser.storage.local;
     const store = createStore(area);
-    const learning = createLearning({ store, course });
+    const learning = createLearning({ store, course, images: bundledImages });
+    // Pictures come from the background worker as data URLs: none of the extension's files are exposed to the site.
+    const pictures = createRemotePictures(course, bundledImages, send);
     const speaker = createSpeaker({
       synth: typeof speechSynthesis === 'undefined' ? undefined : speechSynthesis,
       createUtterance: (text) => new SpeechSynthesisUtterance(text),
@@ -112,6 +116,7 @@ export default defineContentScript({
               now: Date.now,
               // Sent straight from the click, so Chrome still sees the user gesture.
               openSidePanel: () => void send({ type: 'tn:open-side-panel' }).catch(() => undefined),
+              pictures,
             }}
           >
             <SpeechProvider speaker={speaker} rate={prefs.speechRate}>

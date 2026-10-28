@@ -7,6 +7,9 @@ import playerCss from '../src/ui/player/player.css?inline';
 import nudgeCss from '../src/ui/nudge/nudge.css?inline';
 import '../src/ui/theme.css'; // @font-face must live in the host document
 import { course } from '../src/curriculum';
+import { bundledImages } from '../src/images/manifest';
+import { createMemoryPictures } from '../src/images/own';
+import { answerPicture, createRemotePictures } from '../src/images/pictures';
 import { createLearning } from '../src/learning/actions';
 import { SpeechProvider } from '../src/ui/components/AudioButton';
 import { EnvProvider } from '../src/ui/env';
@@ -20,7 +23,11 @@ const { area } = createPreviewArea();
 const params = new URLSearchParams(location.search);
 await seed(area, params.get('state') ?? 'today', Date.now());
 const store = createStore(area);
-const learning = createLearning({ store, course });
+const learning = createLearning({ store, course, images: bundledImages });
+// As in the extension: the card asks for data URLs (here answered in the page, not by a background worker).
+const pictures = createRemotePictures(course, bundledImages, async (message) =>
+  message.type === 'tn:picture' ? answerPicture(createMemoryPictures(), async (file) => (await fetch(`/images/${file}`)).blob(), message.itemId, message.file) : undefined,
+);
 let prefs = await store.readPreferences();
 const preview = previewFor(course, (await learning.snapshot('micro')).next);
 
@@ -53,6 +60,7 @@ function render() {
         surface: 'card',
         now: Date.now,
         openSidePanel: () => console.info('[preview] open side panel'),
+        pictures,
       }}
     >
       <SpeechProvider speaker={previewSpeaker} rate={prefs.speechRate}>

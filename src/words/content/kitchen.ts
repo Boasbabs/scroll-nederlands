@@ -1,0 +1,35 @@
+import { course, noun } from '../build';
+import type { WordTheme } from '../types';
+
+export const kitchen: WordTheme = {
+  id: 'kitchen',
+  title: 'Kitchen',
+  words: [
+    course('het bord'),
+    noun('het glas', 'the glass'),
+    course('het kopje'),
+    noun('de vork', 'the fork'),
+    noun('het mes', 'the knife'),
+    noun('de lepel', 'the spoon'),
+    noun('de beker', 'the mug'),
+    noun('de fles', 'the bottle'),
+    noun('de pan', 'the pan'),
+    noun('de koelkast', 'the fridge'),
+    noun('de oven', 'the oven'),
+    noun('de magnetron', 'the microwave'),
+    course('de waterkoker'),
+    course('de vaatwasser'),
+    course('de wasmachine'),
+    noun('de vriezer', 'the freezer'),
+    noun('het fornuis', 'the cooker'),
+    noun('de schaal', 'the dish'),
+    noun('de kom', 'the bowl'),
+    noun('het blik', 'the tin, the can'),
+    noun('de pot', 'the jar, the pot'),
+    noun('het aanrecht', 'the worktop'),
+    noun('de theedoek', 'the tea towel'),
+    noun('de snijplank', 'the chopping board'),
+    noun('het servet', 'the napkin'),
+    noun('de schaar', 'the scissors'),
+  ],
+};

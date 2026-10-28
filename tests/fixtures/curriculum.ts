@@ -1,6 +1,8 @@
 import { assembleCurriculum, indexCurriculum, type CurriculumIndex } from '../../src/curriculum/assemble';
 import type { StagePlan } from '../../src/curriculum/structure';
 import type { Curriculum, Exercise, LessonDraft } from '../../src/curriculum/types';
+import type { SoundContrast } from '../../src/sounds/types';
+import type { WordTheme } from '../../src/words/types';
 
 /** Four exercises, one per stage, all practising the lesson's main item. */
 export function stageExercises(dutch: string, english: string): Array<Exercise> {
@@ -94,7 +96,11 @@ export function checkpointLesson(id: string, tests: Array<{ lessonId: string; it
  * (two core lessons and a checkpoint). Stage ids outside s0–s3 have no
  * required objectives, so coverage does not get in the way of unit tests.
  */
-export function makeCourse(overrides: Record<string, Partial<LessonDraft>> = {}): CurriculumIndex {
+export function makeCourse(
+  overrides: Record<string, Partial<LessonDraft>> = {},
+  wordThemes: Array<WordTheme> = [],
+  contrasts: Array<SoundContrast> = [],
+): CurriculumIndex {
   const drafts: Record<string, Array<LessonDraft>> = {
     'x0-a': [
       coreLesson('x0-a-hello', 'Hallo daar', 'Hello there'),
@@ -144,5 +150,55 @@ export function makeCourse(overrides: Record<string, Partial<LessonDraft>> = {})
     },
   ];
   const curriculum: Curriculum = assembleCurriculum(structure, (_stage, moduleId) => drafts[moduleId] ?? []);
-  return indexCurriculum(curriculum);
+  return indexCurriculum(curriculum, wordThemes, contrasts);
 }
+
+/**
+ * Two small basic-word themes. "Dank je wel" refers to a course item, so it
+ * counts as a basic word without becoming a second item.
+ */
+export const testWordThemes: Array<WordTheme> = [
+  {
+    id: 'kitchen',
+    title: 'Kitchen',
+    words: [
+      { key: 'vork', dutch: 'de vork', english: 'the fork', pos: 'noun' },
+      { key: 'mes', dutch: 'het mes', english: 'the knife', pos: 'noun' },
+      { key: 'lepel', dutch: 'de lepel', english: 'the spoon', pos: 'noun' },
+      { key: 'glas', dutch: 'het glas', english: 'the glass', pos: 'noun' },
+    ],
+  },
+  {
+    id: 'animals',
+    title: 'Animals',
+    words: [
+      { key: 'hond', dutch: 'de hond', english: 'the dog', pos: 'noun' },
+      { ref: 'Dank je wel' },
+      { key: 'kat', dutch: 'de kat', english: 'the cat', pos: 'noun' },
+    ],
+  },
+];
+
+/** Two sound contrasts for ear training, three pairs each. */
+export const testContrasts: Array<SoundContrast> = [
+  {
+    id: 'a-aa',
+    sounds: ['a', 'aa'],
+    tip: 'Short a is clipped; long aa is held.',
+    pairs: [
+      [{ dutch: 'man', english: 'man' }, { dutch: 'maan', english: 'moon' }],
+      [{ dutch: 'zak', english: 'bag' }, { dutch: 'zaak', english: 'shop' }],
+      [{ dutch: 'tak', english: 'branch' }, { dutch: 'taak', english: 'task' }],
+    ],
+  },
+  {
+    id: 'g-h',
+    sounds: ['g', 'h'],
+    tip: 'G is rough; h is breath.',
+    pairs: [
+      [{ dutch: 'goed', english: 'good' }, { dutch: 'hoed', english: 'hat' }],
+      [{ dutch: 'geel', english: 'yellow' }, { dutch: 'heel', english: 'whole' }],
+      [{ dutch: 'gaan', english: 'to go' }, { dutch: 'haan', english: 'rooster' }],
+    ],
+  },
+];

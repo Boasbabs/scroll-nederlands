@@ -10,6 +10,8 @@
 //   pnpm audio:generate --verify all      speech-to-text check: all | short (default) | none
 //   pnpm audio:generate --report          rewrite docs/audio-qa.md from stored checks; no API calls
 //   pnpm audio:generate --prune           delete files in public/audio/ the manifest no longer uses
+//   pnpm audio:generate --recorded        process human takes from recordings/ into src/audio/recorded.json
+//                                         (see scripts/recordings.ts); no API calls
 //
 // Needs ELEVENLABS_API_KEY in .env.local (Text to Speech, plus Speech to Text for
 // --verify) and ffmpeg on the PATH. The key is only sent in the request header.
@@ -23,6 +25,9 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { promisify } from 'node:util';
 import { clipKey, type ClipManifest, type ClipVoice } from '../src/audio/speech.ts';
 import type { DialogueLine, Exercise, LessonDraft } from '../src/curriculum/types.ts';
+import type { SoundContrast } from '../src/sounds/types.ts';
+import type { WordTheme } from '../src/words/types.ts';
+import { processRecordings, readRecorded, RECORDED_MANIFEST } from './recordings.ts';
 
 /** Both nl-NL library voices bill 1x per character and have a 2-year notice period (docs/audio-research.md). */
 export const VOICES: Record<ClipVoice, { id: string; name: string }> = {
@@ -41,15 +46,28 @@ const CONCURRENCY = 3;
 
 /**
  * Generation order by learning value, so a run stopped by the quota leaves the
- * most important groups complete: main phrases, learning items, listening
- * exercises (listen-only items depend on audio most), dialogue context of
- * exercises, lesson dialogues, examples, and last the model answers.
+ * most important groups complete: main phrases, learning items, the basic
+ * words beside the course, the minimal pairs of ear training (until human
+ * recordings replace them), listening exercises (listen-only items depend on
+ * audio most), dialogue context of exercises, lesson dialogues, examples, and
+ * last the model answers.
  */
-export const GROUPS = ['target', 'items', 'audio', 'context', 'dialogue', 'examples', 'answers'] as const;
+export const GROUPS = ['target', 'items', 'words', 'pairs', 'audio', 'context', 'dialogue', 'examples', 'answers'] as const;
 export type ClipGroup = (typeof GROUPS)[number];
 export type ClipText = { text: string; voice: ClipVoice; group: ClipGroup };
 
 type LessonLike = Pick<LessonDraft, 'targetPhrase' | 'items' | 'examples' | 'dialogue' | 'exercises'>;
+
+/** Texts played outside the lessons: the word track's new words ("de vork") and every word of the minimal pairs. */
+export type BesideTexts = { words: ReadonlyArray<string>; pairs: ReadonlyArray<string> };
+
+/** The word track's own words (course words it refers to are lesson items already) and the pairs' words. */
+export function besideTexts(themes: ReadonlyArray<WordTheme>, contrasts: ReadonlyArray<SoundContrast>): BesideTexts {
+  return {
+    words: themes.flatMap((theme) => theme.words.flatMap((entry) => ('ref' in entry ? [] : [entry.dutch]))),
+    pairs: contrasts.flatMap((contrast) => contrast.pairs.flatMap((pair) => pair.map((word) => word.dutch))),
+  };
+}
 
 /** The answer a learner sees after answering, read aloud. */
 function modelAnswers(exercise: Exercise): Array<string> {
@@ -74,7 +92,7 @@ function modelAnswers(exercise: Exercise): Array<string> {
  * In a conversation the first speaker reads with voice a, the second with
  * voice b, and further speakers alternate (as speakDialogue() expects).
  */
-export function collectClipTexts(lessons: ReadonlyArray<LessonLike>): Array<ClipText> {
+export function collectClipTexts(lessons: ReadonlyArray<LessonLike>, beside: BesideTexts = { words: [], pairs: [] }): Array<ClipText> {
   const seen: Record<ClipVoice, Set<string>> = { a: new Set(), b: new Set() };
   const out: Array<ClipText> = [];
   const add = (group: ClipGroup, raw: string, voice: ClipVoice = 'a') => {
@@ -91,7 +109,7 @@ export function collectClipTexts(lessons: ReadonlyArray<LessonLike>): Array<Clip
     }
   };
   // A text used in several places belongs to its most important group, so it is made early.
-  const collect: Record<ClipGroup, (lesson: LessonLike) => void> = {
+  const collect: Record<Exclude<ClipGroup, keyof BesideTexts>, (lesson: LessonLike) => void> = {
     target: (lesson) => add('target', lesson.targetPhrase),
     items: (lesson) => lesson.items.forEach((item) => add('items', item.dutch)),
     audio: (lesson) => lesson.exercises.forEach((exercise) => exercise.audioText && add('audio', exercise.audioText)),
@@ -100,7 +118,10 @@ export function collectClipTexts(lessons: ReadonlyArray<LessonLike>): Array<Clip
     examples: (lesson) => (lesson.examples ?? []).forEach((example) => add('examples', example.dutch)),
     answers: (lesson) => lesson.exercises.forEach((exercise) => modelAnswers(exercise).forEach((text) => add('answers', text))),
   };
-  for (const group of GROUPS) lessons.forEach(collect[group]);
+  for (const group of GROUPS) {
+    if (group === 'words' || group === 'pairs') beside[group].forEach((text) => add(group, text));
+    else lessons.forEach(collect[group]);
+  }
   return out;
 }
 
@@ -134,8 +155,15 @@ const run = promisify(execFile);
 
 class FatalApiError extends Error {}
 
+const load = (file: string) => import(pathToFileURL(path.join(root, file)).href);
+
+async function loadBeside(): Promise<BesideTexts> {
+  const { wordThemes } = (await load('src/words/content/index.ts')) as typeof import('../src/words/content/index.ts');
+  const { contrasts } = (await load('src/sounds/pairs.ts')) as typeof import('../src/sounds/pairs.ts');
+  return besideTexts(wordThemes, contrasts);
+}
+
 async function loadLessons(): Promise<Array<LessonDraft>> {
-  const load = (file: string) => import(pathToFileURL(path.join(root, file)).href);
   const { curriculumStructure } = (await load('src/curriculum/structure.ts')) as typeof import('../src/curriculum/structure.ts');
   const { assembleCurriculum, flattenLessons } = (await load('src/curriculum/assemble.ts')) as typeof import('../src/curriculum/assemble.ts');
   const drafts = new Map<string, Array<LessonDraft>>();
@@ -186,8 +214,11 @@ async function synthesize(clip: ClipText, seed: number): Promise<{ audio: Buffer
   return { audio: Buffer.from(await response.arrayBuffer()), cost };
 }
 
-/** Trims silence (keeps 50 ms before, 150 ms after), normalises to -18 LUFS, encodes mono MP3 64 kbps 44.1 kHz. */
-async function postProcess(raw: string, out: string): Promise<void> {
+/**
+ * Trims silence (keeps 50 ms before, 150 ms after), normalises to -18 LUFS, encodes mono MP3 64 kbps 44.1 kHz.
+ * Generated clips and human takes both go through it.
+ */
+export async function postProcess(raw: string, out: string): Promise<void> {
   const trim = [
     'silenceremove=start_periods=1:start_threshold=-50dB:start_silence=0.05',
     'areverse',
@@ -203,8 +234,21 @@ async function postProcess(raw: string, out: string): Promise<void> {
     ? `loudnorm=${target}:measured_I=${measured.input_i}:measured_TP=${measured.input_tp}:measured_LRA=${measured.input_lra}:measured_thresh=${measured.input_thresh}:offset=${measured.target_offset}:linear=true`
     : `loudnorm=${target}`;
   const tmp = `${out}.tmp.mp3`;
-  await run('ffmpeg', ['-hide_banner', '-nostats', '-y', '-i', raw, '-af', `${trim},${loudnorm}`, '-ar', '44100', '-ac', '1', '-c:a', 'libmp3lame', '-b:a', '64k', tmp]);
+  try {
+    await run('ffmpeg', ['-hide_banner', '-nostats', '-y', '-i', raw, '-af', `${trim},${loudnorm}`, '-ar', '44100', '-ac', '1', '-c:a', 'libmp3lame', '-b:a', '64k', tmp]);
+    // Audio entirely under the silence threshold comes out as an MP3 with no frames.
+    if (!((await duration(tmp).catch(() => 0)) > 0.05)) throw new Error('nothing is left after trimming the silence: the audio is empty or too quiet');
+  } catch (error) {
+    // A half-written or empty file must not replace a good one or ship: nothing prunes the takes folder.
+    await rm(tmp, { force: true });
+    throw error;
+  }
   await rename(tmp, out);
+}
+
+/** Generated clips the manifest no longer uses. Only files directly in public/audio/, so human takes in its recorded/ folder are never pruned. */
+export function unusedClips(entries: ReadonlyArray<{ name: string; isFile(): boolean }>, used: ReadonlySet<string>): Array<string> {
+  return entries.filter((entry) => entry.isFile() && entry.name.endsWith('.mp3') && !used.has(entry.name)).map((entry) => entry.name);
 }
 
 // Speech-to-text check -------------------------------------------------------
@@ -324,7 +368,10 @@ async function main() {
   const verify = option('--verify') ?? 'short';
   if (until && !GROUPS.includes(until)) throw new Error(`--until takes one of ${GROUPS.join(', ')}`);
 
-  const all = collectClipTexts(await loadLessons());
+  const beside = await loadBeside();
+  const all = collectClipTexts(await loadLessons(), beside);
+  const pairWords = new Set(beside.pairs.map(clipKey));
+  if (process.argv.includes('--recorded')) return processTakes(all, pairWords);
   const exists = (clip: ClipText) => existsSync(path.join(root, 'public', clipFile(clip)));
   const groups = until ? GROUPS.slice(0, GROUPS.indexOf(until)) : GROUPS;
   console.log(`${all.length} texts (${all.filter((c) => c.voice === 'b').length} for voice b), ${all.reduce((s, c) => s + c.text.length, 0)} characters in all.`);
@@ -333,6 +380,8 @@ async function main() {
     const todo = clips.filter((clip) => !exists(clip));
     console.log(`  ${group.padEnd(9)} ${String(clips.length).padStart(5)} texts ${String(clips.reduce((s, c) => s + c.text.length, 0)).padStart(7)} chars; to generate ${todo.length} (${todo.reduce((s, c) => s + c.text.length, 0)} chars)`);
   }
+  const recorded = (await readRecorded(root)).takes;
+  console.log(`Human takes (played before clips): ${[...pairWords].filter((word) => recorded[word]?.length).length} of ${pairWords.size} pair words.`);
   if (planOnly) return;
   const reportOnly = process.argv.includes('--report');
 
@@ -441,10 +490,25 @@ async function main() {
   }
   if (process.argv.includes('--prune') && !stopped) {
     const used = new Set([...Object.values(manifest.clips), ...Object.values(manifest.clipsB)].map((file) => path.basename(file)));
-    const orphans = (await readdir(path.join(root, 'public/audio'))).filter((name) => name.endsWith('.mp3') && !used.has(name));
+    const orphans = unusedClips(await readdir(path.join(root, 'public/audio'), { withFileTypes: true }), used);
     for (const name of orphans) await rm(path.join(root, 'public/audio', name));
     console.log(`Pruned ${orphans.length} unused clips.`);
   }
+}
+
+/** --recorded: human takes through the ffmpeg chain into src/audio/recorded.json. No API calls. */
+async function processTakes(all: ReadonlyArray<ClipText>, pairWords: ReadonlySet<string>) {
+  const report = await processRecordings({ root, texts: all.map((clip) => clip.text), convert: postProcess });
+  for (const take of report.unknown) console.error(`Skipped ${take}: its name is not a text the course plays.`);
+  for (const { take, error } of report.failed) console.error(`Could not process ${take}: ${error}`);
+  for (const text of report.stale) console.error(`Left out "${text}": the course no longer plays it.`);
+  const takes = report.manifest.takes;
+  const covered = [...pairWords].filter((word) => takes[word]?.length).length;
+  const count = (n: number, noun: string) => `${n} ${noun}${n === 1 ? '' : 's'}`;
+  console.log(
+    `Processed ${count(report.processed.length, 'take')}. ${RECORDED_MANIFEST}: ${count(Object.values(takes).flat().length, 'take')} of ${count(Object.keys(takes).length, 'text')}, covering ${covered} of ${pairWords.size} pair words.`,
+  );
+  if (report.unknown.length || report.failed.length) process.exitCode = 1;
 }
 
 async function writeQa(stored: Array<Check>, coverage: string) {

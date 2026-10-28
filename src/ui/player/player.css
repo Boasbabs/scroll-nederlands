@@ -984,3 +984,337 @@
 .tn-player--compact .tn-match {
   gap: 8px;
 }
+
+/* ---------- Ear training (sound contrasts) ---------- */
+.tn-contrast__title {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+.tn-contrast__or {
+  color: var(--ink-muted);
+  font-family: var(--font-body);
+  font-size: var(--text-lg);
+  font-weight: 700;
+}
+.tn-contrast {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.tn-contrast__pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.tn-contrast__word {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+}
+.tn-contrast__word > span {
+  display: grid;
+  min-width: 0;
+}
+.tn-contrast__dutch {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 600;
+}
+.tn-contrast__english {
+  overflow-wrap: anywhere;
+  color: var(--ink-muted);
+  font-size: var(--text-sm);
+}
+
+/* ---------- Pictures and cues ---------- */
+.tn-picture {
+  display: block;
+  width: 100%;
+  max-width: 320px;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--radius-md);
+  background: var(--track);
+  object-fit: cover;
+}
+.tn-picture--loading {
+  animation: tn-picture-pulse 1.2s ease-in-out infinite alternate;
+}
+@keyframes tn-picture-pulse {
+  from {
+    opacity: 0.55;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tn-picture--loading {
+    animation: none;
+  }
+}
+.tn-recall .tn-picture {
+  justify-self: center;
+  max-width: 240px;
+}
+.tn-recall__scene {
+  font-size: var(--text-md);
+  font-weight: 700;
+  line-height: 1.45;
+}
+/* A scene to answer from: a lesson's situation, in place of the English. */
+.tn-scene {
+  padding: 12px 14px;
+  border-left: 4px solid var(--primary);
+  border-radius: var(--radius-sm);
+  background: var(--selected-fill);
+  font-size: var(--text-sm);
+  line-height: 1.45;
+}
+.tn-show-meaning {
+  min-height: 32px;
+}
+.tn-options--pictures {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.tn-options--pictures .tn-option {
+  position: relative;
+  display: grid;
+  min-height: 0;
+  padding: 6px;
+  text-align: center;
+}
+.tn-options--pictures .tn-option__key {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 1;
+  background: var(--key-fill, var(--surface));
+}
+.tn-option__picture {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+.tn-option__picture .tn-picture {
+  max-width: none;
+  border-radius: 10px;
+}
+.tn-option__caption {
+  overflow-wrap: anywhere;
+  font-size: var(--text-xs);
+  line-height: 1.25;
+}
+.tn-picture-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+}
+.tn-picture-tools .tn-link {
+  min-height: 32px;
+}
+.tn-picker {
+  display: grid;
+  justify-items: start;
+  gap: 8px;
+  padding: 12px 14px;
+  border: 2px dashed var(--line-strong);
+  border-radius: var(--radius-md);
+}
+.tn-picker__drop {
+  color: var(--ink-muted);
+  font-size: var(--text-sm);
+}
+.tn-picker__file,
+.tn-picker .tn-link {
+  min-height: 32px;
+}
+.tn-picker__file {
+  cursor: pointer;
+}
+.tn-picker__error {
+  color: var(--wrong);
+  font-size: var(--text-sm);
+}
+
+/* ---------- de or het (the het image, the article drill) ---------- */
+/* Golden Yellow: a het-word is a "look here" (the tip role), and gold is the default image. */
+.tn-het {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: var(--text-sm);
+  font-weight: 700;
+  line-height: 1.4;
+}
+.tn-het__badge {
+  flex: none;
+  padding: 1px 8px 2px;
+  border-radius: var(--radius-pill);
+  background: var(--highlight);
+  color: var(--on-highlight);
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+.tn-het-pick {
+  display: grid;
+  gap: 10px;
+  padding: 12px 14px;
+  border-left: 4px solid var(--highlight);
+  border-radius: var(--radius-sm);
+  background: var(--highlight-fill);
+}
+.tn-het-choice {
+  display: grid;
+  gap: 8px;
+}
+.tn-het-choice__own {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+}
+.tn-het-choice__label {
+  display: grid;
+  flex: 1;
+  gap: 4px;
+  font-size: var(--text-sm);
+  font-weight: 800;
+}
+.tn-het-choice__own .tn-input {
+  min-height: 44px;
+  padding: 8px 12px;
+  font-size: var(--text-md);
+}
+.tn-sheet .tn-het {
+  margin-bottom: 4px;
+}
+.tn-article-word {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 0;
+}
+.tn-article-word__gap {
+  color: var(--ink-faint);
+}
+.tn-article-word__gap[data-filled] {
+  color: var(--primary);
+}
+
+/* ---------- Make it yours (notes) and slipping items ---------- */
+.tn-make-yours {
+  min-height: 32px;
+}
+/* Denim tint: the learner's own note (the soft role). */
+.tn-note {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 8px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  background: var(--soft-fill);
+  font-size: var(--text-sm);
+}
+.tn-note .tn-label {
+  flex-basis: 100%;
+}
+.tn-note__text {
+  overflow-wrap: anywhere;
+  font-weight: 700;
+}
+.tn-note .tn-link {
+  min-height: 0;
+}
+.tn-note-form {
+  display: grid;
+  gap: 6px;
+}
+.tn-note-form__label {
+  display: grid;
+  gap: 6px;
+  font-size: var(--text-sm);
+  font-weight: 800;
+}
+.tn-note-form .tn-input {
+  min-height: 44px;
+  padding: 8px 12px;
+  font-size: var(--text-md);
+}
+.tn-note-form__helper {
+  color: var(--ink-muted);
+  font-size: var(--text-xs);
+  font-weight: 700;
+}
+.tn-note-form__actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.tn-leech {
+  display: grid;
+  justify-items: start;
+  gap: 8px;
+  margin-bottom: 8px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: var(--text-sm);
+  font-weight: 700;
+}
+.tn-leech__text strong {
+  font-weight: 800;
+}
+.tn-leech .tn-note-form {
+  justify-self: stretch;
+}
+
+/* ---------- Corrections of the learner's writing ---------- */
+.tn-correction {
+  display: grid;
+  gap: 8px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+}
+.tn-correction__text {
+  font-size: var(--text-sm);
+}
+.tn-correction__done {
+  font-weight: 700;
+}
+.tn-correction__actions,
+.tn-correction-form__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+}
+.tn-correction__actions .tn-link,
+.tn-correction-form__actions .tn-link {
+  min-height: 32px;
+}
+.tn-correction-form {
+  display: grid;
+  gap: 8px;
+}
+.tn-correction-form__label {
+  display: grid;
+  gap: 6px;
+  font-size: var(--text-sm);
+  font-weight: 800;
+}
+.tn-copy-box {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: 500;
+}
+

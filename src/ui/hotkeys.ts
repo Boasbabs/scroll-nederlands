@@ -14,9 +14,9 @@ function isEditable(element: HTMLElement | null): boolean {
   return Boolean(element && (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA' || element.isContentEditable));
 }
 
-/** Option rows and tiles hand Enter to Check; every other button keeps its native Enter. */
+/** Option rows and tiles hand Enter to Check; every other button, and a field in its own form, keeps its native Enter. */
 function keepsNativeEnter(element: HTMLElement | null): boolean {
-  return Boolean(element?.closest('button, a, summary') && !element.closest('.tn-option, .tn-tile'));
+  return Boolean((element?.closest('button, a, summary') && !element.closest('.tn-option, .tn-tile')) || element?.closest('form'));
 }
 
 /**

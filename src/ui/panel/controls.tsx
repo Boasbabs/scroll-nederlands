@@ -91,7 +91,7 @@ export function ConfirmDialog({
 export function StreakChip({ days }: { days: number }) {
   return (
     <span className="tn-streak" aria-label={`${days}-day streak`}>
-      <Icon name="flame" size={18} />
+      <Icon name="flame" size={18} filled />
       {days}
     </span>
   );

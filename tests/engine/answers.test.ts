@@ -32,6 +32,29 @@ describe('checkTyped', () => {
     expect(checkTyped('Goedemidag', ['Goedemiddag']).correct).toBe(true);
   });
 
+  it('never counts a swapped article or determiner as a typo', () => {
+    const kopje = ['Het kopje is in de keuken.', 'Het kopje staat in de keuken.'];
+    expect(checkTyped('De kopje is in de keuken.', kopje)).toMatchObject({
+      verdict: 'incorrect',
+      correct: false,
+      expected: 'Het kopje is in de keuken.',
+      note: 'Check the word "de".',
+    });
+    expect(checkTyped('Het kopje is in het keuken.', kopje)).toMatchObject({ verdict: 'incorrect', note: 'Check the word "het".' });
+    expect(checkTyped('Die huis is groot.', ['Dat huis is groot.']).correct).toBe(false);
+    expect(checkTyped('Deze huis is groot.', ['Dit huis is groot.']).correct).toBe(false);
+    expect(checkTyped('Ik heb een auto.', ['Ik heb geen auto.']).correct).toBe(false);
+  });
+
+  it('still tolerates a slip elsewhere when the determiners are right', () => {
+    const kopje = ['Het kopje is in de keuken.'];
+    expect(checkTyped('Het kopje is in de keukne.', kopje)).toMatchObject({ verdict: 'typo', correct: true });
+    // A transposed letter inside "het" is a typo, not a different word.
+    expect(checkTyped('Hte kopje is in de keuken.', kopje)).toMatchObject({ verdict: 'typo', correct: true });
+    // één and een differ only by accents.
+    expect(checkTyped('Ik heb een kind.', ['Ik heb één kind.'])).toMatchObject({ verdict: 'accent', correct: true });
+  });
+
   it('marks a wrong or empty answer incorrect and returns the closest model answer', () => {
     expect(checkTyped('Ik wil koffie', accepted)).toMatchObject({ verdict: 'incorrect', expected: 'Ik wil graag betalen.' });
     expect(checkTyped('   ', accepted).correct).toBe(false);

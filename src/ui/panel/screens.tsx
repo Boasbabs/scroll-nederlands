@@ -1,11 +1,13 @@
 // Today, Review and Progress tabs.
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { DAY } from '../../engine/schedule';
-import { REVIEW_BATCH } from '../../engine/selection';
+import { REVIEW_BATCH, WORD_BATCH } from '../../engine/selection';
 import { itemsByStrength } from '../../engine/summary';
 import type { Snapshot } from '../../learning/actions';
+import { contrastLabel } from '../../sounds/assemble';
 import { Button } from '../components/Button';
-import { Icon } from '../components/Icon';
+import { WaitingForCorrection } from '../player/corrections';
+import { Icon, type IconName } from '../components/Icon';
 import { ProgressBar } from '../components/ProgressBar';
 import { useEnv } from '../env';
 import { formatIn, plural } from '../format';
@@ -38,8 +40,90 @@ function CaughtUp({ snap, onContinue }: { snap: Snapshot; onContinue?: () => voi
   );
 }
 
-export function TodayScreen({ snap, start }: ScreenProps) {
+type TodayRowProps = {
+  /** The tile's glyph, or `done` for a finished line: a tick and nothing to press. */
+  icon: IconName | 'done';
+  title: string;
+  meta: string;
+  bar?: { value: number; max: number };
+  onClick?: () => void;
+};
+
+/** A line of To do today: a tile, what to do, how far along. The whole line is the button. */
+function TodayRow({ icon, title, meta, bar, onClick }: TodayRowProps) {
+  const metaId = useId();
+  const content = (
+    <>
+      <span className="tn-today-row__tile" data-done={icon === 'done' || undefined}>
+        <Icon name={icon === 'done' ? 'check' : icon} size={20} />
+      </span>
+      <span className="tn-today-row__text">
+        <span className="tn-today-row__title">{title}</span>
+        <span className="tn-today-row__meta" id={metaId}>
+          {meta}
+        </span>
+        {bar ? (
+          // Spans, as a button holds only phrasing content; the meta line gives the same count in words.
+          <span className="tn-progress tn-progress--thin" aria-hidden="true">
+            <span className="tn-progress__fill" style={{ width: `${bar.max > 0 ? Math.min(100, (bar.value / bar.max) * 100) : 0}%` }} />
+          </span>
+        ) : null}
+      </span>
+      {onClick ? <Icon name="chevron" size={20} /> : null}
+    </>
+  );
+  return (
+    <li>
+      {onClick ? (
+        <button type="button" className="tn-today-row" aria-label={title} aria-describedby={metaId} onClick={onClick}>
+          {content}
+        </button>
+      ) : (
+        <div className="tn-today-row">{content}</div>
+      )}
+    </li>
+  );
+}
+
+/** The basic-word track: today's batch, or a tick once it is done. */
+function NewWordsRow({ snap, start }: ScreenProps) {
+  const { learning } = useEnv();
+  const { words } = snap.summary;
+  const met = words.total - words.new;
+  const batch = Math.min(WORD_BATCH.focused, snap.wordsLeftToday);
+  if (words.new === 0) return <TodayRow icon="done" title="New words" meta="You have met every basic word." />;
+  if (batch === 0) return <TodayRow icon="done" title="New words" meta={`Done for today · ${met} of ${words.total} met`} />;
+  return (
+    <TodayRow
+      icon="words"
+      title={`Learn ${plural(batch, 'word')}`}
+      meta={`Basic words · ${met} of ${words.total} met`}
+      bar={{ value: met, max: words.total }}
+      onClick={() => void start(() => learning.startWords('focused'))}
+    />
+  );
+}
+
+/** Ear training: one new sound contrast per session, then practice once all are met. */
+function EarTrainingRow({ snap, start }: ScreenProps) {
   const { learning, course } = useEnv();
+  const { sounds } = snap.summary;
+  const met = sounds.total - sounds.new;
+  const next = course.sounds.find((item) => !snap.progress.items[item.id]);
+  const contrast = next && course.contrast(next.id);
+  return (
+    <TodayRow
+      icon="ear"
+      title={contrast ? `Hear ${contrastLabel(contrast)}` : 'Practise the sounds'}
+      meta={`Ear training · ${met} of ${sounds.total} sound pairs`}
+      bar={{ value: met, max: sounds.total }}
+      onClick={() => void start(() => learning.startSounds())}
+    />
+  );
+}
+
+export function TodayScreen({ snap, start }: ScreenProps) {
+  const { learning, course, now } = useEnv();
   const { summary, progress } = snap;
   const current = summary.current && course.lesson(summary.current.lessonId);
   const stage = current && course.curriculum.stages.find((entry) => entry.id === current.stageId);
@@ -57,9 +141,7 @@ export function TodayScreen({ snap, start }: ScreenProps) {
             Review now
           </Button>
         </section>
-      ) : (
-        <CaughtUp snap={snap} />
-      )}
+      ) : null}
 
       {current && stage && module ? (
         <section className="tn-continue tn-settle-in" style={{ '--i': 1 } as React.CSSProperties}>
@@ -81,14 +163,26 @@ export function TodayScreen({ snap, start }: ScreenProps) {
         </section>
       )}
 
-      <Button
-        block
-        variant="secondary"
-        onClick={() => void start(async () => (await learning.startNext('micro')) ?? learning.startPractice('micro'))}
-      >
-        <Icon name="bolt" size={20} />
-        Quick practice · 2 min
-      </Button>
+      <section className="tn-panel-card tn-settle-in" style={{ '--i': 2 } as React.CSSProperties}>
+        <h2 className="tn-label">To do today</h2>
+        <ul className="tn-today-list">
+          {summary.dueNow === 0 && summary.nextReview ? (
+            <TodayRow
+              icon="done"
+              title="All caught up"
+              meta={`Next review ${formatIn(summary.nextReview.at, now())} · ${plural(summary.nextReview.count, 'item')}`}
+            />
+          ) : null}
+          {snap.prefs.newWordsPerDay > 0 && summary.words.total > 0 ? <NewWordsRow snap={snap} start={start} /> : null}
+          {summary.sounds.total > 0 ? <EarTrainingRow snap={snap} start={start} /> : null}
+          <TodayRow
+            icon="bolt"
+            title="Quick practice"
+            meta="2 min"
+            onClick={() => void start(async () => (await learning.startNext('micro')) ?? learning.startPractice('micro'))}
+          />
+        </ul>
+      </section>
 
       <dl className="tn-stats">
         <div>
@@ -106,7 +200,7 @@ export function TodayScreen({ snap, start }: ScreenProps) {
   );
 }
 
-export function ReviewScreen({ snap, start, onCourse }: ScreenProps & { onCourse: () => void }) {
+export function ReviewScreen({ snap, start, onCourse, onChange }: ScreenProps & { onCourse: () => void; onChange: () => void }) {
   const { learning } = useEnv();
   const due = snap.summary.dueNow;
   const hasItems = Object.keys(snap.progress.items).length > 0;
@@ -129,6 +223,7 @@ export function ReviewScreen({ snap, start, onCourse }: ScreenProps & { onCourse
           Practice anyway
         </Button>
       ) : null}
+      <WaitingForCorrection drafts={snap.drafts} onChange={onChange} />
     </div>
   );
 }
@@ -205,6 +300,36 @@ export function ProgressScreen({ snap }: { snap: Snapshot }) {
           </div>
         ))}
       </section>
+
+      {summary.words.total > 0 ? (
+        <section className="tn-panel-card">
+          <h2 className="tn-label">Basic words</h2>
+          <p className="tn-progress-line">
+            <strong className="tn-display">{summary.words.total - summary.words.new}</strong> of {summary.words.total} met · {summary.words.strong} strong
+          </p>
+          <ProgressBar value={summary.words.total - summary.words.new} max={summary.words.total} label="Basic words met" thin />
+        </section>
+      ) : null}
+
+      {summary.sounds.total > 0 ? (
+        <section className="tn-panel-card">
+          <h2 className="tn-label">Ear training</h2>
+          <p className="tn-progress-line">
+            <strong className="tn-display">{summary.sounds.total - summary.sounds.new}</strong> of {summary.sounds.total} sound pairs · {summary.sounds.strong} strong
+          </p>
+          <ProgressBar value={summary.sounds.total - summary.sounds.new} max={summary.sounds.total} label="Sound pairs met" thin />
+        </section>
+      ) : null}
+
+      {summary.articles.total > 0 ? (
+        <section className="tn-panel-card">
+          <h2 className="tn-label">Articles · de or het</h2>
+          <p className="tn-progress-line">
+            <strong className="tn-display">{summary.articles.total - summary.articles.new}</strong> of {summary.articles.total} nouns · {summary.articles.strong} strong
+          </p>
+          <ProgressBar value={summary.articles.total - summary.articles.new} max={summary.articles.total} label="Articles met" thin />
+        </section>
+      ) : null}
 
       <section className="tn-panel-card">
         <h2 className="tn-label">Lessons</h2>

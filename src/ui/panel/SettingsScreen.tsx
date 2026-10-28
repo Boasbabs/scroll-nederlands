@@ -1,11 +1,14 @@
 // Settings: grouped cards, label left, control right, changes apply at once.
 import { useState } from 'react';
+import { bundledImages, type ImageManifest } from '../../images/manifest';
 import { snoozeEnd, type SnoozeChoice } from '../../trigger/browsing';
 import { SITES, type SiteId } from '../../sites';
+import { NEW_WORDS_CHOICES } from '../../storage/store';
 import { Button } from '../components/Button';
 import { Icon } from '../components/Icon';
 import { useEnv } from '../env';
 import { formatClock } from '../format';
+import { HetImageChoice } from '../player/het';
 import { ChipGroup, ConfirmDialog, Group, Toggle } from './controls';
 
 export const PROMPT_INTERVALS = [5, 8, 15, 30] as const;
@@ -16,7 +19,50 @@ const SNOOZES: ReadonlyArray<{ choice: SnoozeChoice; label: string }> = [
   { choice: 'tomorrow', label: 'Until tomorrow' },
 ];
 
-export function SettingsScreen() {
+/** Who made the bundled pictures, under which license (CC BY asks for this). */
+function ImageCredits({ images }: { images: ImageManifest }) {
+  const [open, setOpen] = useState(false);
+  const entries = Object.entries(images);
+  if (entries.length === 0) return null;
+  return (
+    <Group title="Image credits">
+      <div className="tn-row tn-row--stack">
+        <button type="button" className="tn-row__button" aria-expanded={open} onClick={() => setOpen((value) => !value)}>
+          <span className="tn-row__label">Pictures in the lessons ({entries.length})</span>
+          <Icon name="chevron" size={20} />
+        </button>
+        {open ? (
+          <ul className="tn-credits tn-rise-in">
+            {entries.map(([dutch, credit]) => (
+              <li key={dutch}>
+                <span lang="nl">{dutch}</span>
+                <span className="tn-muted">
+                  {credit.source ? (
+                    <a href={credit.source} target="_blank" rel="noopener noreferrer">
+                      Photo
+                    </a>
+                  ) : (
+                    'Photo'
+                  )}{' '}
+                  by {credit.author} ·{' '}
+                  {credit.licenseUrl ? (
+                    <a href={credit.licenseUrl} target="_blank" rel="noopener noreferrer">
+                      {credit.license}
+                    </a>
+                  ) : (
+                    credit.license
+                  )}
+                </span>
+              </li>
+            ))}
+          </ul>
+        ) : null}
+      </div>
+    </Group>
+  );
+}
+
+export function SettingsScreen({ images = bundledImages }: { images?: ImageManifest }) {
   const { prefs, setPrefs, permissions, learning, now } = useEnv();
   const [confirmReset, setConfirmReset] = useState(false);
   const [snoozeOpen, setSnoozeOpen] = useState(false);
@@ -118,6 +164,39 @@ export function SettingsScreen() {
         </div>
         <Toggle label="Sound effects" checked={prefs.soundEffects} onChange={(on) => void setPrefs({ soundEffects: on })} />
       </Group>
+
+      <Group title="Learning">
+        <Toggle
+          label="Show translations"
+          helper="Off: cards show the Dutch first, with the English behind Show meaning"
+          checked={prefs.showTranslations}
+          onChange={(on) => void setPrefs({ showTranslations: on })}
+        />
+        <div className="tn-row tn-row--stack">
+          <div className="tn-row__text">
+            <span className="tn-row__label">Het-word image</span>
+            <span className="tn-row__helper">Picture every het-word this way (het mes, het huis), so the picture tells you het.</span>
+          </div>
+          <HetImageChoice label="Het-word image" />
+        </div>
+      </Group>
+
+      <Group title="Basic words">
+        <div className="tn-row tn-row--stack">
+          <div className="tn-row__text">
+            <span className="tn-row__label">New words a day</span>
+            <span className="tn-row__helper">Everyday words, learned beside the course.</span>
+          </div>
+          <ChipGroup<number>
+            label="New words a day"
+            options={NEW_WORDS_CHOICES.map((value) => ({ value, label: value === 0 ? 'Off' : String(value) }))}
+            value={prefs.newWordsPerDay}
+            onChange={(value) => void setPrefs({ newWordsPerDay: value })}
+          />
+        </div>
+      </Group>
+
+      <ImageCredits images={images} />
 
       <Group title="Progress">
         <Button variant="ghost" className="tn-row__danger" onClick={() => setConfirmReset(true)}>

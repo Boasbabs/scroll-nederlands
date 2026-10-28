@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { Speaker } from '../../audio/speech';
 import type { CurriculumIndex } from '../../curriculum/assemble';
 import type { SessionPlan } from '../../engine/plan';
+import type { PictureSource } from '../../images/pictures';
 import type { Learning, SessionOutcome, Snapshot } from '../../learning/actions';
 import { SpeechProvider } from '../components/AudioButton';
 import { Icon, type IconName } from '../components/Icon';
@@ -25,6 +26,7 @@ export type PanelDeps = {
   subscribe?: (onChange: () => void) => () => void;
   now?: () => number;
   canRecord?: boolean;
+  pictures?: PictureSource;
 };
 
 export type Tab = 'today' | 'course' | 'review' | 'progress';
@@ -32,8 +34,8 @@ type Screen = Tab | 'settings';
 
 const TABS: Array<{ id: Tab; label: string; icon: IconName }> = [
   { id: 'today', label: 'Today', icon: 'home' },
-  { id: 'course', label: 'Course', icon: 'path' },
-  { id: 'review', label: 'Review', icon: 'refresh' },
+  { id: 'course', label: 'Course', icon: 'book' },
+  { id: 'review', label: 'Review', icon: 'target' },
   { id: 'progress', label: 'Progress', icon: 'chart' },
 ];
 
@@ -41,7 +43,7 @@ const TABS: Array<{ id: Tab; label: string; icon: IconName }> = [
 export type StartSession = (start: () => Promise<SessionPlan | undefined> | SessionPlan | undefined) => Promise<void>;
 
 export function PanelApp({ deps }: { deps: PanelDeps }) {
-  const { learning, course, speaker, permissions, subscribe, canRecord } = deps;
+  const { learning, course, speaker, permissions, subscribe, canRecord, pictures } = deps;
   const now = deps.now ?? Date.now;
   const [snap, setSnap] = useState<Snapshot>();
   const [screen, setScreen] = useState<Screen>('today');
@@ -80,8 +82,9 @@ export function PanelApp({ deps }: { deps: PanelDeps }) {
         now,
         permissions,
         canRecord,
+        pictures,
       },
-    [snap, learning, course, sfx, now, permissions, canRecord, refresh],
+    [snap, learning, course, sfx, now, permissions, canRecord, pictures, refresh],
   );
 
   function closeSession(to?: Screen) {
@@ -124,30 +127,33 @@ export function PanelApp({ deps }: { deps: PanelDeps }) {
         <main className="tn-shell__main" key={screen}>
           {screen === 'today' ? <TodayScreen snap={snap} start={start} /> : null}
           {screen === 'course' ? <CourseScreen snap={snap} start={start} /> : null}
-          {screen === 'review' ? <ReviewScreen snap={snap} start={start} onCourse={() => setScreen('course')} /> : null}
+          {screen === 'review' ? <ReviewScreen snap={snap} start={start} onCourse={() => setScreen('course')} onChange={() => void refresh()} /> : null}
           {screen === 'progress' ? <ProgressScreen snap={snap} /> : null}
           {screen === 'settings' ? <SettingsScreen /> : null}
         </main>
         <nav className="tn-tabbar" aria-label="Sections">
-          {TABS.map((entry) => (
-            <button
-              key={entry.id}
-              type="button"
-              className="tn-tabbar__tab"
-              aria-current={screen !== 'settings' && tab === entry.id ? 'page' : undefined}
-              onClick={() => setScreen(entry.id)}
-            >
-              <span className="tn-tabbar__icon">
-                <Icon name={entry.icon} />
-                {entry.id === 'review' && snap.summary.dueNow > 0 ? (
-                  <span className="tn-badge" aria-label={`${snap.summary.dueNow} due`}>
-                    {snap.summary.dueNow > 99 ? '99+' : snap.summary.dueNow}
-                  </span>
-                ) : null}
-              </span>
-              {entry.label}
-            </button>
-          ))}
+          {TABS.map((entry) => {
+            const current = screen !== 'settings' && tab === entry.id;
+            return (
+              <button
+                key={entry.id}
+                type="button"
+                className="tn-tabbar__tab"
+                aria-current={current ? 'page' : undefined}
+                onClick={() => setScreen(entry.id)}
+              >
+                <span className="tn-tabbar__icon">
+                  <Icon name={entry.icon} filled={current} />
+                  {entry.id === 'review' && snap.summary.dueNow > 0 ? (
+                    <span className="tn-badge" aria-label={`${snap.summary.dueNow} due`}>
+                      {snap.summary.dueNow > 99 ? '99+' : snap.summary.dueNow}
+                    </span>
+                  ) : null}
+                </span>
+                {entry.label}
+              </button>
+            );
+          })}
         </nav>
       </div>
     );

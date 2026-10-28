@@ -2,6 +2,7 @@
 // in-page card provide real implementations; tests and the preview provide fakes.
 import { createContext, useContext, type ReactNode } from 'react';
 import type { CurriculumIndex } from '../curriculum/assemble';
+import type { PictureSource } from '../images/pictures';
 import type { Learning } from '../learning/actions';
 import type { SiteId } from '../sites';
 import type { LearnerPreferences } from '../storage/store';
@@ -31,6 +32,8 @@ export type UiEnv = {
   permissions?: SitePermissions;
   /** The speaking step may record the learner (side panel only; never on host pages). */
   canRecord?: boolean;
+  /** Item pictures. Saving one of the learner's own works in the side panel only. */
+  pictures?: PictureSource;
 };
 
 const EnvContext = createContext<UiEnv | null>(null);

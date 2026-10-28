@@ -5,6 +5,10 @@ export default defineConfig({
   modules: ['@wxt-dev/module-react'],
   // A visible folder, so Chrome's "Load unpacked" dialog can find it.
   outDir: 'dist',
+  // Chrome ignores <link rel="modulepreload"> in extension pages ("cross-world extension
+  // resource mismatch") and lists the warning under the extension's errors. Chunks load
+  // from disk, so the preload gains nothing.
+  vite: () => ({ build: { modulePreload: false } }),
   manifest: {
     name: 'TaalNudge — Dutch A0 to A2',
     short_name: 'TaalNudge',

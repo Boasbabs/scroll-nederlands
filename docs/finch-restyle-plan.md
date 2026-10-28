@@ -169,6 +169,8 @@ The owner chose **playful and quick**:
   - Panel seeds: `/panel.html?state=` `today`, `caughtup`, `fresh`, `path`, `recall`, `pictures`, `articles`, `notes`, `corrections`.
   - The in-page card is at `/nudge.html`.
 - **Screenshot scripts:** copied to the shared notes folder `…/side-session-notes/local_ef634bd7-f405-44ae-b78c-f8295d31cb18/tools/`. They drive headless Chrome through the DevTools protocol.
+  - Phases 1–4 used `…/side-session-notes/local_cce532ec-ccf7-4ff4-b7f9-068337dbba86/tools/finch-shots.mjs` (named sets: `tile`, `today`, `tabs`, `player`, `end`, `onboarding`, `settings`) and `pairs.py` for the sheets; the shots are in that folder's `shots/`, and its `handoff-after-phase-4.md` says what phases 5 and 6 can reuse.
+  - The end screens can be opened directly: `/complete.html?kind=` `lesson`, `words`, `sounds`, `review`, `checkpoint-pass`, `checkpoint-fail`, `card` (`preview/complete-main.tsx`).
   - `shoot.mjs`: every tab, Settings, a lesson, and the card, its menu and micro-lesson; pass `more` for a learn card and feedback.
   - `shoot-today.mjs`: Today in three states, full height and at 720px.
   - `compare.py` and `sheet.py`: before/after sheets.

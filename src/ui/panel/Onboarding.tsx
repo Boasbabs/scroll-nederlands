@@ -39,7 +39,8 @@ export function Onboarding({ start }: { start: StartSession }) {
     const ids = SITE_IDS.filter((id) => sites[id]);
     // Straight from the click: Chrome shows the permission dialog only for a user gesture.
     const asked = ids.length > 0 && permissions ? permissions.request(ids) : Promise.resolve(ids.length > 0);
-    void asked.then((granted) => {
+    // A request Chrome cannot make counts as a refusal, so the step still finishes.
+    void asked.catch(() => false).then((granted) => {
       setPrompts(granted ? 'on' : 'off');
       return setPrefs({
         promptAfterMinutes: minutes,

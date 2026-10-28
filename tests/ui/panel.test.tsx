@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { course as realCourse } from '../../src/curriculum';
 import { exerciseSteps } from '../../src/engine/plan';
@@ -11,10 +11,12 @@ import { setupLearning, silentSpeaker, T0 } from './harness';
 
 type Setup = ReturnType<typeof setupLearning>;
 
-function fakePermissions(answer = true) {
+/** `answer` is what the learner tells Chrome's dialog, or the error Chrome throws instead of asking. */
+function fakePermissions(answer: boolean | Error = true) {
   const granted = siteRecord();
   const permissions = {
     request: vi.fn(async (sites: ReadonlyArray<SiteId>) => {
+      if (answer instanceof Error) throw answer;
       if (answer) for (const site of sites) granted[site] = true;
       return answer;
     }),
@@ -93,6 +95,16 @@ describe('side panel onboarding', () => {
     expect(await screen.findByText('Prompts are off. You can turn them on in Settings.')).toBeInTheDocument();
     await waitFor(async () => expect((await denied.store.readPreferences()).sites).toEqual(siteRecord()));
     unmount();
+
+    // Chrome throws instead of asking (its manifest predates the sites): the same as a refusal.
+    const failed = setupLearning();
+    const second = renderPanel(failed, fakePermissions(new Error('Only permissions specified in the manifest may be requested.')));
+    await user.click(await screen.findByRole('button', { name: 'Get started' }));
+    await user.click(screen.getByRole('radio', { name: /I’m new to Dutch/ }));
+    await user.click(screen.getByRole('button', { name: 'Continue' }));
+    await user.click(screen.getByRole('button', { name: 'Turn on prompts' }));
+    expect(await screen.findByText('Prompts are off. You can turn them on in Settings.')).toBeInTheDocument();
+    second.unmount();
 
     const skipped = setupLearning();
     const unused = fakePermissions();
@@ -269,12 +281,15 @@ describe('Settings', () => {
     await waitFor(async () => expect(await prefs()).toMatchObject({ autoplayAudio: false, speechRate: 0.85, soundEffects: false }));
   });
 
-  it('keeps prompts off when Chrome refuses access', async () => {
-    const setup = await onboardedLearner();
-    const { user } = await openSettings(setup, fakePermissions(false));
-    await user.click(screen.getByRole('button', { name: 'Turn on' }));
-    expect(await screen.findByText('Chrome did not allow access, so prompts stay off.')).toBeInTheDocument();
-    expect((await setup.store.readPreferences()).sites).toEqual(siteRecord());
+  it('keeps prompts off when Chrome refuses access or cannot ask for it', async () => {
+    for (const answer of [false, new Error('Only permissions specified in the manifest may be requested.')]) {
+      const setup = await onboardedLearner();
+      const { user } = await openSettings(setup, fakePermissions(answer));
+      await user.click(screen.getByRole('button', { name: 'Turn on' }));
+      expect(await screen.findByText('Chrome did not allow access, so prompts stay off.')).toBeInTheDocument();
+      expect((await setup.store.readPreferences()).sites).toEqual(siteRecord());
+      cleanup();
+    }
   });
 
   it('switches a whole group of sites at once, asking only for the ones still off', async () => {

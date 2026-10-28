@@ -75,10 +75,13 @@ export function SettingsScreen({ images = bundledImages }: { images?: ImageManif
   // Chrome can take a site's access away (its site access menu); such a site shows as off.
   useEffect(() => {
     let live = true;
-    void permissions?.granted().then((granted) => {
-      const lost = SITE_IDS.filter((id) => prefs.sites[id] && !granted[id]);
-      if (live && lost.length > 0) void setPrefs({ sites: switchSites(prefs.sites, lost, false) });
-    });
+    void permissions
+      ?.granted()
+      .then((granted) => {
+        const lost = SITE_IDS.filter((id) => prefs.sites[id] && !granted[id]);
+        if (live && lost.length > 0) void setPrefs({ sites: switchSites(prefs.sites, lost, false) });
+      })
+      .catch(() => undefined);
     return () => {
       live = false;
     };
@@ -88,7 +91,8 @@ export function SettingsScreen({ images = bundledImages }: { images?: ImageManif
   // The permission request must run straight from the click, before any await.
   function enableSites(ids: ReadonlyArray<SiteId>) {
     const asked = permissions ? permissions.request(ids) : Promise.resolve(true);
-    void asked.then(async (granted) => {
+    // Chrome throws instead of asking when its copy of the manifest lacks a site (rebuilt, not reloaded): a refusal.
+    void asked.catch(() => false).then(async (granted) => {
       if (!granted) {
         setNotice('Chrome did not allow access, so prompts stay off.');
         return;
@@ -104,7 +108,7 @@ export function SettingsScreen({ images = bundledImages }: { images?: ImageManif
       enableSites(ids);
       return;
     }
-    void permissions?.revoke(ids);
+    void permissions?.revoke(ids).catch(() => undefined);
     void setPrefs({ sites: switchSites(prefs.sites, ids, false) });
   }
 

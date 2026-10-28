@@ -58,6 +58,7 @@
   --primary-edge: var(--warm-blue-edge);
   --on-primary: var(--white);
   --progress: var(--warm-blue);
+  --on-progress: var(--white); /* the count inside a bar, over the fill */
 
   /* Mid Blue on a Denim tint: the answer or choice you picked, before Check */
   --selected: var(--mid-blue);
@@ -109,6 +110,43 @@
   --stage-3: var(--denim-blue);
   --stage-4: var(--mango-orange);
 
+  /* Grounds: one light ground per surface, as Finch gives each tab its own (teal Home, mint Quests,
+     pale blue-grey Settings). Blues and greys only, so a ground never carries a state. Each keeps ink
+     at 15:1, muted text 5.5:1, Warm Blue text 4.6:1 and the focus ring 3:1 (docs/colour-system.md §6). */
+  --ground-today: color-mix(in srgb, var(--denim-blue) 24%, white);
+  --ground-course: color-mix(in srgb, var(--dark-cerulean) 10%, white);
+  --ground-review: color-mix(in srgb, var(--mid-blue) 12%, white);
+  --ground-progress: color-mix(in srgb, var(--dodger-blue) 14%, white);
+  --ground-settings: color-mix(in srgb, var(--mid-blue) 6%, color-mix(in srgb, var(--ink) 4%, white));
+  --ground-player: color-mix(in srgb, var(--mid-blue) 4%, color-mix(in srgb, var(--ink) 4%, white));
+
+  /* Activity tiles: one saturated colour per kind of activity, the same everywhere (Finch's quest
+     tiles). Never green or red, which mean correct and wrong. Glyphs are ink or white, as the type rule says. */
+  --tile-lessons: var(--warm-blue);
+  --on-tile-lessons: var(--white);
+  --tile-reviews: var(--golden-yellow);
+  --on-tile-reviews: var(--ink);
+  --tile-practice: var(--mango-orange);
+  --on-tile-practice: var(--ink);
+  --tile-words: var(--denim-blue);
+  --on-tile-words: var(--ink);
+  --tile-ear: var(--dark-cerulean);
+  --on-tile-ear: var(--white);
+  --tile-articles: var(--mid-blue);
+  --on-tile-articles: var(--white);
+  --tile-checkpoint: var(--butterfly-bush);
+  --on-tile-checkpoint: var(--white);
+
+  /* Soft parts: the grey face of secondary buttons and the round ×, mixed from ink like the other greys
+     (Finch's grey "Hint" and arrow buttons). Translucent, so on a ground they read as a deeper shade of it. */
+  --soft-face: color-mix(in srgb, var(--ink) 7%, white);
+  --soft-edge: color-mix(in srgb, var(--ink) 18%, white);
+  --raise-edge: rgba(22, 23, 29, 0.09);
+
+  /* Toasts: Dark Cerulean pills with white type (Finch's dark home toasts) */
+  --toast: var(--dark);
+  --on-toast: var(--on-dark);
+
   /* Type */
   --font-display: 'TN Fredoka', 'Fredoka', ui-rounded, 'SF Pro Rounded', 'Nunito', system-ui, sans-serif;
   --font-body: 'TN Nunito', 'Nunito', ui-rounded, system-ui, -apple-system, 'Segoe UI', sans-serif;
@@ -125,8 +163,13 @@
   --radius-md: 14px;
   --radius-lg: 20px;
   --radius-pill: 999px;
+  --radius-card: 22px; /* raised cards and dialogs (Finch's goal and quest rows) */
+  --radius-tile: 12px;
   --edge: 4px; /* depth of the tactile bottom edge on buttons, options and tiles */
-  --shadow-card: 0 1px 0 rgba(22, 23, 29, 0.04), 0 8px 24px -12px rgba(22, 23, 29, 0.22);
+  /* Raised: white cards sit on the ground on one soft edge, with no outline (Finch's rows). */
+  --raise: 0 3px 0 var(--raise-edge), 0 12px 20px -16px rgba(22, 23, 29, 0.3);
+  --raise-pressed: 0 1px 0 var(--raise-edge);
+  --shadow-card: var(--raise);
   --shadow-float: 0 2px 4px rgba(22, 23, 29, 0.08), 0 18px 40px -14px rgba(22, 23, 29, 0.38);
 
   /* Space */

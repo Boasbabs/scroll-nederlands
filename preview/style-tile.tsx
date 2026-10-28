@@ -8,10 +8,11 @@ import { AudioButton, SpeechProvider } from '../src/ui/components/AudioButton';
 import { Button } from '../src/ui/components/Button';
 import { SquigglePattern, Sparks, Wordmark } from '../src/ui/components/Decor';
 import { Icon } from '../src/ui/components/Icon';
+import { IconTile, type TileKind } from '../src/ui/components/IconTile';
 import { ProgressBar } from '../src/ui/components/ProgressBar';
 import { previewSpeaker } from './preview-speaker';
 
-const page: React.CSSProperties = { width: 380, margin: '24px auto', background: 'var(--bg)', borderRadius: 24, overflow: 'hidden', boxShadow: 'var(--shadow-float)' };
+const page: React.CSSProperties = { width: 380, margin: '24px auto', background: 'var(--ground-today)', borderRadius: 24, overflow: 'hidden', boxShadow: 'var(--shadow-float)' };
 const section: React.CSSProperties = { display: 'grid', gap: 12, padding: 'var(--gutter)' };
 const heading: React.CSSProperties = { fontSize: 'var(--text-xs)', fontWeight: 800, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--ink-muted)' };
 
@@ -27,6 +28,28 @@ const PALETTE = [
   { name: 'Butterfly Bush', token: '--butterfly-bush', role: 'Checkpoint', ink: 'var(--white)' },
   { name: 'Flush Mahogany', token: '--flush-mahogany', role: 'Wrong', ink: 'var(--white)' },
   { name: 'Dark Cerulean', token: '--dark-cerulean', role: 'Dark', ink: 'var(--white)' },
+];
+
+// One light ground per surface, blues and greys only (theme.css).
+const GROUNDS = [
+  ['Today', '--ground-today'],
+  ['Course', '--ground-course'],
+  ['Review', '--ground-review'],
+  ['Progress', '--ground-progress'],
+  ['Settings', '--ground-settings'],
+  ['Lesson', '--ground-player'],
+];
+
+// One tile colour per kind of activity, with its glyph.
+const TILES: [TileKind, Parameters<typeof Icon>[0]['name'], string][] = [
+  ['lessons', 'book', 'Lessons'],
+  ['reviews', 'target', 'Reviews'],
+  ['practice', 'bolt', 'Practice'],
+  ['words', 'words', 'New words'],
+  ['ear', 'ear', 'Ear'],
+  ['articles', 'translate', 'de/het'],
+  ['checkpoint', 'flag', 'Checkpoint'],
+  ['soft', 'speaker', 'Settings'],
 ];
 
 function StyleTile() {
@@ -60,8 +83,41 @@ function StyleTile() {
         </div>
 
         <div style={section}>
+          <span style={heading}>Grounds</span>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 6 }}>
+            {GROUNDS.map(([name, token]) => (
+              <div key={token} style={{ display: 'grid', alignContent: 'end', minHeight: 64, padding: 8, borderRadius: 12, background: `var(${token})`, boxShadow: 'inset 0 0 0 1px rgba(22, 23, 29, 0.06)', fontSize: 11, fontWeight: 800 }}>
+                <span>{name}</span>
+                <span className="tn-muted" style={{ fontWeight: 600 }}>Muted text</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div style={section}>
+          <span style={heading}>Raised card and tiles</span>
+          <button type="button" className="tn-card tn-press" style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 14, border: 0, textAlign: 'left' }}>
+            <IconTile kind="words" icon="words" />
+            <span style={{ flex: 1, display: 'grid', gap: 6 }}>
+              <strong>Learn 5 words</strong>
+              <ProgressBar value={3} max={5} label="Words" count />
+            </span>
+            <span className="tn-btn tn-btn--secondary tn-btn--sm">Hint</span>
+          </button>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
+            {TILES.map(([kind, icon, name]) => (
+              <span key={kind} style={{ display: 'grid', justifyItems: 'center', gap: 4, fontSize: 11, fontWeight: 700 }}>
+                <IconTile kind={kind} icon={icon} size={44} />
+                {name}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        <div style={section}>
           <span style={heading}>Progress</span>
           <ProgressBar value={step} max={8} label="Lesson progress" />
+          <ProgressBar value={step} max={8} label="Lesson progress" count />
           <div style={{ display: 'flex', gap: 8 }}>
             <Button size="sm" variant="secondary" onClick={() => setStep((value) => Math.max(0, value - 1))}>Back</Button>
             <Button size="sm" onClick={() => setStep((value) => Math.min(8, value + 1))}>Advance</Button>
@@ -118,7 +174,22 @@ function StyleTile() {
             <Button variant="ghost" size="sm">Snooze</Button>
             <button type="button" className="tn-icon-btn" aria-label="More"><Icon name="more" /></button>
             <button type="button" className="tn-icon-btn" aria-label="Close"><Icon name="close" /></button>
+            <button type="button" className="tn-round-btn" aria-label="Close"><Icon name="close" size={18} /></button>
           </div>
+        </div>
+
+        <div style={section}>
+          <span style={heading}>Dialog and toast</span>
+          <div className="tn-dialog-card">
+            <button type="button" className="tn-round-btn" aria-label="Close"><Icon name="close" size={18} /></button>
+            <h2 className="tn-dialog-card__title">Quit lesson?</h2>
+            <p className="tn-muted">Your answers in this session won’t be saved.</p>
+            <Button block>Keep learning</Button>
+            <Button block variant="secondary">Quit</Button>
+          </div>
+          <p style={{ justifySelf: 'center', display: 'flex', alignItems: 'center', gap: 12, padding: '10px 16px', borderRadius: 'var(--radius-pill)', background: 'var(--toast)', color: 'var(--on-toast)', fontWeight: 700 }}>
+            Snoozed until 15:30 <span style={{ textDecoration: 'underline' }}>Undo</span>
+          </p>
         </div>
 
         <div style={{ ...section, paddingBottom: 0 }}>

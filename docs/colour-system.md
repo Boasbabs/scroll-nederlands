@@ -42,7 +42,7 @@ What the UI takes from that:
 | One colour per character, never swapped | One colour per job (§1). A colour keeps its meaning on every surface. |
 | Full-bleed character bands | Full-bleed fields for the big moments: the welcome and lesson-complete heroes (Warm Blue, like the billboard), the review card (Golden Yellow), and one band per stage on the Course tab (the four light top-row colours, in board order). |
 | Yellow Lemo on the Warm Blue band; yellow type on Warm Blue posters | The lesson-complete badge, the main button and the "Nudge" half of the wordmark are Golden Yellow on Warm Blue heroes. |
-| Black type, black outlines, white ground | Ink type, ink outline on secondary buttons, white cards on a light grey ground. |
+| Black type, black outlines, white ground | Ink type; white raised cards on a light blue or grey ground per surface, and soft grey secondary buttons (the Finch restyle, `docs/ux-research.md` §13). |
 
 What the UI changes, and why:
 
@@ -69,8 +69,12 @@ Components use the role tokens, never the palette names. The only exceptions are
 | Checkpoint (Butterfly Bush) | `--checkpoint`, `--checkpoint-edge`, `--on-checkpoint` | Checkpoint nodes (white flag), the `CHECKPOINT` label (7.8:1) |
 | Dark (Dark Cerulean) | `--dark`, `--on-dark` | Word-hint tooltips, the `Start` bubble over the current lesson, the `Current lesson` pill, the dark band |
 | Stage identity | `--stage-1` … `--stage-4` | The head band of each stage card on the Course tab, with ink type and a white level chip |
+| Grounds (blues and greys) | `--ground-today`, `--ground-course`, `--ground-review`, `--ground-progress`, `--ground-settings`, `--ground-player` | One light ground per surface, as Finch gives each tab its own (Today light Denim Blue, Course light Dark Cerulean, Review light Mid Blue, Progress light Dodger Blue, Settings pale blue-grey, the lesson a neutral grey-blue; the in-page card takes Today's). Blues and greys only, so a ground never carries a state |
+| Activity tiles | `--tile-lessons`, `--tile-reviews`, `--tile-practice`, `--tile-words`, `--tile-ear`, `--tile-articles`, `--tile-checkpoint` and their `--on-tile-*` | One saturated tile per kind of activity, the same everywhere: Warm Blue lessons (white glyph), Golden Yellow reviews (ink), Mango Orange quick practice (ink), Denim Blue new words (ink), Dark Cerulean ear training (white), Mid Blue de/het (white), Butterfly Bush checkpoints (white). Never green or red. Settings rows take the soft Denim tint tile |
+| Soft parts | `--soft-face`, `--soft-edge`, `--raise-edge` | The grey face and edge of secondary buttons inside white cards and dialogs, the round grey ×, and the translucent edge under raised cards (a deeper shade of whatever ground is below) |
+| Toast | `--toast`, `--on-toast` | Dark Cerulean pills with white type and Undo |
 
-Button variants follow the roles: `primary` (Warm Blue), `secondary` (white, ink outline), `ink` (the dark button on a Golden Yellow card), `ghost` (Warm Blue text; ink in the in-page card and on sheets; Mahogany for destructive rows), `correct` (Seaweed Green, ink label), `wrong` (Flush Mahogany, white label). Inside a band, `primary` turns Golden Yellow with an ink label.
+Button variants follow the roles: `primary` (Warm Blue), `secondary` (a soft face on a grey edge with an ink label and no outline: white on a ground or tinted sheet, `--soft-face` inside white cards and dialogs), `ink` (the dark button on a Golden Yellow card), `ghost` (Warm Blue text; ink in the in-page card and on sheets; Mahogany for destructive rows), `correct` (Seaweed Green, ink label), `wrong` (Flush Mahogany, white label). Inside a band, `primary` turns Golden Yellow with an ink label.
 
 ## 4. Rules
 
@@ -115,6 +119,21 @@ Values are what `color-mix()` produces from the palette.
 | `--warm-blue-edge` | `#3346A4` | n/a | 8.2:1 | 8.2:1 |
 | `--butterfly-bush-edge` | `#482F7A` | n/a | 10.7:1 | 10.7:1 |
 
+Grounds and soft parts (ink, muted, Warm Blue text and the Dodger Blue focus ring on each; the last column is how far a white card stands out):
+
+| Token | Value | Ink | Muted | Warm Blue | Focus ring | White on it |
+|---|---|---|---|---|---|---|
+| `--ground-today` (Denim Blue 24%) | `#DDEEFF` | 15.1:1 | 5.5:1 | 4.6:1 | 3.0:1 | 1.18:1 |
+| `--ground-course` (Dark Cerulean 10%) | `#E6EDF1` | 15.2:1 | 5.6:1 | 4.6:1 | 3.0:1 | 1.18:1 |
+| `--ground-review` (Mid Blue 12%) | `#E7EDF7` | 15.2:1 | 5.6:1 | 4.7:1 | 3.0:1 | 1.17:1 |
+| `--ground-progress` (Dodger Blue 14%) | `#E5EEFF` | 15.3:1 | 5.6:1 | 4.7:1 | 3.0:1 | 1.17:1 |
+| `--ground-settings` (Mid Blue 6% on ink 4%) | `#EAEDF2` | 15.3:1 | 5.6:1 | 4.7:1 | 3.0:1 | 1.17:1 |
+| `--ground-player` (Mid Blue 4% on ink 4%) | `#EEF0F4` | 15.7:1 | 5.7:1 | 4.8:1 | 3.1:1 | 1.14:1 |
+| `--soft-face` (ink 7%) | `#EFEFEF` | 15.5:1 | 5.7:1 | n/a | n/a | 1.15:1 |
+| `--soft-edge` (ink 18%) | `#D5D5D6` | n/a | n/a | n/a | n/a | 1.46:1 (edge only) |
+
+The grounds are lighter than Finch's because Warm Blue text (4.5:1) and the focus ring (3:1) must still pass on them; Finch's mint and teal would take muted text under 4.5:1. Activity tiles use the palette's own pairs (§1): white on Warm Blue 5.5:1, Mid Blue 5.3:1, Butterfly Bush 7.8:1 and Dark Cerulean 8.9:1; ink on Golden Yellow 14.1:1, Mango Orange 7.1:1 and Denim Blue 8.6:1. The count inside a bar is white over the Warm Blue fill (5.5:1) and ink over the track.
+
 Other pairings in use: muted text on every tint 5.4:1 or more; Mid Blue on the Denim tint 4.5:1; Flush Mahogany on its tint 4.6:1; Warm Blue on the app ground 5.0:1; Dodger Blue focus ring 3.6:1 on white and 3.2:1 on the app ground.
 
 ## 7. Mobbin evidence
@@ -135,8 +154,10 @@ All screens were opened and checked by eye on 2026-10-27. Earlier citations from
 - **Confetti in the palette.** [Grab](https://mobbin.com/screens/9174df43-a3fd-4587-9f11-348d9e3609f9), [Google Pay](https://mobbin.com/screens/79da0eb5-7b45-4667-8534-6d6ba3169c48).
 - **Dark tooltip.** [Reddit – "Rule insights"](https://mobbin.com/screens/01dc9c61-113b-44a0-a934-ca154f39e82e).
 - **Red destructive text under a safe primary.** [Brilliant – "Are you sure?" with red `Quit`](https://mobbin.com/screens/d7d7f00a-f59b-4bf2-acfb-8cb35b147154), [Notion – red `Restore`](https://mobbin.com/screens/364a1fa7-332c-42bc-a5ab-fe686fbf82f2).
-- **Kept as before:** ink-outlined secondary ([Babbel](https://mobbin.com/screens/3f19cfed-6f89-46fc-b1af-188088273652)), flat grey disabled ([Duolingo](https://mobbin.com/screens/8199682b-96e6-4d64-be65-98e3dd309fc2), [Babbel](https://mobbin.com/screens/895e2965-01d5-4727-94b5-f5c67b855a82)), tactile bottom edges ([Duolingo](https://mobbin.com/screens/a93fa0d8-0b53-4cec-bb29-2e7838163ea0)), blue progress ([Speak](https://mobbin.com/screens/c785de2a-9f85-41b8-a093-f862f26fb035)), filled ✓ done nodes ([Noom](https://mobbin.com/screens/4928d8b8-548f-41b8-a673-e9a5af552657)).
+- **Kept as before:** flat grey disabled ([Duolingo](https://mobbin.com/screens/8199682b-96e6-4d64-be65-98e3dd309fc2), [Babbel](https://mobbin.com/screens/895e2965-01d5-4727-94b5-f5c67b855a82)), tactile bottom edges ([Duolingo](https://mobbin.com/screens/a93fa0d8-0b53-4cec-bb29-2e7838163ea0)). The ink-outlined secondary ([Babbel](https://mobbin.com/screens/3f19cfed-6f89-46fc-b1af-188088273652)) gave way to Finch's soft grey button in the restyle; blue progress ([Speak](https://mobbin.com/screens/c785de2a-9f85-41b8-a093-f862f26fb035)), filled ✓ done nodes ([Noom](https://mobbin.com/screens/4928d8b8-548f-41b8-a673-e9a5af552657)).
 - *(rule)* Focus rings are not visible in Mobbin captures; Dodger Blue at 3.6:1 meets WCAG's 3:1 for focus indicators, and white replaces it on bands.
+
+- **Finch restyle (2026-10-28, `docs/ux-research.md` §13).** One light ground per tab: teal [Home](https://mobbin.com/screens/9f5f5f5d-d475-403e-9aa0-902da053bc4b), mint [Quests](https://mobbin.com/screens/2180f7a4-b1a4-4615-8e1d-4d97d458de9b). Saturated quest tiles, grey 3D `Hint` buttons and thick bars with the count inside on [Quests](https://mobbin.com/screens/2180f7a4-b1a4-4615-8e1d-4d97d458de9b) and [Daily Quests](https://mobbin.com/screens/24390f69-5bd2-4f90-b2f9-eae6fa3acfdf). A white button on a coloured card: [pet card](https://mobbin.com/screens/9c762cfe-a65e-4ef8-beec-568ce9259d3e). Round grey × on a white dialog: [Quest detail](https://mobbin.com/screens/fc1239aa-1337-4395-bbe3-3a2525d86e52).
 
 Mobbin returned its `ai_usage_notice` (AI usage is high this month) with these searches; it was shown to the owner.
 

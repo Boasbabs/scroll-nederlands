@@ -7,7 +7,7 @@ Agreed with the owner on 2026-10-28, in an interview of 27 questions (the "Repla
 | Phase | What | Status |
 |---|---|---|
 | 0 | Commit the work already in the tree | Done (a826a3a) |
-| 1 | Shared parts: tokens and components | Not started |
+| 1 | Shared parts: tokens and components | Done |
 | 2 | Side panel shell and the four tabs | Not started |
 | 3 | Lesson player and end screens | Not started |
 | 4 | Onboarding and Settings | Not started |

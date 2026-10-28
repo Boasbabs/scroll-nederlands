@@ -55,6 +55,14 @@ body {
 .tn-streak svg {
   color: var(--now);
 }
+/* The streak grew: the chip bumps and the flame wobbles once (secondary action, follow-through). */
+.tn-streak[data-grew] {
+  animation: tn-bump var(--t-slow) var(--ease-spring) 400ms both;
+}
+.tn-streak[data-grew] svg {
+  transform-origin: 50% 85%;
+  animation: tn-wave 700ms var(--ease-in-out) 520ms both;
+}
 .tn-shell__main {
   overflow-y: auto;
   overscroll-behavior: contain;
@@ -76,17 +84,21 @@ body {
   left: 6px;
   width: calc((100% - 12px) / 4);
   transform: translateX(calc(var(--tab, 0) * 100%));
+  /* The slide starts after the tile's anticipation dip (arcs, slow in and out). */
   transition:
-    transform 260ms var(--ease-in-out),
+    transform 260ms var(--ease-in-out) 60ms,
     opacity var(--t-quick) var(--ease-out);
   pointer-events: none;
 }
-.tn-tabbar__tile::before {
-  content: '';
+.tn-tabbar__blob {
   position: absolute;
   inset: 0 8px;
   border-radius: 14px;
   background: var(--ground);
+}
+/* Each move: dip and squash, hop over the slide, land with a small stretch (TabTile). */
+.tn-tabbar__blob[data-hop] {
+  animation: tn-tab-hop 330ms var(--ease-in-out) both;
 }
 .tn-tabbar__tile[data-hidden] {
   opacity: 0;
@@ -109,10 +121,17 @@ body {
 .tn-tabbar__icon {
   position: relative;
   display: grid;
-  transition: transform var(--t-quick) var(--ease-spring);
+  transition: transform var(--t-release) var(--ease-spring);
 }
+/* Press: the glyph squashes down, then springs back. */
 .tn-tabbar__tab:active .tn-tabbar__icon {
-  transform: scale(0.88);
+  transform: translateY(2px) scale(1.08, 0.86);
+  transition-duration: var(--t-tap);
+  transition-timing-function: var(--ease-out);
+}
+/* The new tab's glyph pops as it fills, as the tile arrives (overlapping action). */
+.tn-tabbar__tab[aria-current='page'] .tn-tabbar__icon > svg {
+  animation: tn-glyph-pop 300ms var(--ease-spring) 140ms both;
 }
 .tn-badge {
   position: absolute;
@@ -135,6 +154,14 @@ body {
   align-content: start;
   padding: var(--gutter);
 }
+/* A new tab's cards settle in from below, a beat apart (staging, overlapping action). */
+.tn-shell__main > .tn-screen > * {
+  animation: tn-settle-in 220ms var(--ease-out) backwards;
+}
+.tn-shell__main > .tn-screen > :nth-child(2) { animation-delay: calc(1 * var(--stagger)); }
+.tn-shell__main > .tn-screen > :nth-child(3) { animation-delay: calc(2 * var(--stagger)); }
+.tn-shell__main > .tn-screen > :nth-child(4) { animation-delay: calc(3 * var(--stagger)); }
+.tn-shell__main > .tn-screen > :nth-child(n + 5) { animation-delay: calc(4 * var(--stagger)); }
 .tn-screen > .tn-stats {
   border: 0;
   border-radius: var(--radius-card);
@@ -259,8 +286,17 @@ body {
   background: var(--correct);
   color: var(--on-correct);
 }
+/* Press: the line squashes a little and springs back; its tile squashes more (squash and stretch). */
+button.tn-today-row {
+  transition: transform var(--t-release) var(--ease-spring);
+}
+button.tn-today-row:active {
+  transform: translateY(1px) scale(0.99, 0.97);
+  transition-duration: var(--t-tap);
+  transition-timing-function: var(--ease-out);
+}
 .tn-today-row .tn-icon-tile {
-  transition: transform var(--t-quick) var(--ease-spring);
+  transition: transform var(--t-release) var(--ease-spring);
 }
 button.tn-today-row:active .tn-icon-tile {
   transform: scale(0.9);

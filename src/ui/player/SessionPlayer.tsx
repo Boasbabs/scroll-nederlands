@@ -1,6 +1,6 @@
 // Runs a SessionPlan: top bar, one step at a time, feedback, then the end
 // screen. Results go to learning.finish, so both surfaces share one schedule.
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { SessionPlan, SessionStep } from '../../engine/plan';
 import type { ExerciseResult } from '../../engine/types';
 import type { SessionOutcome } from '../../learning/actions';
@@ -8,6 +8,7 @@ import { Button } from '../components/Button';
 import { Icon } from '../components/Icon';
 import { ProgressBar } from '../components/ProgressBar';
 import { useEnv } from '../env';
+import { useExit } from '../exit';
 import { useHotkeys, type KeyHandlers } from '../hotkeys';
 import { PlayerContext } from './context';
 import { ExerciseStep } from './ExerciseStep';
@@ -54,6 +55,14 @@ export function SessionPlayer({ plan, onExit, onAction }: SessionPlayerProps) {
   const startedAt = useRef(now());
   const [skip, setSkip] = useState({ listen: false, speak: false });
   const [overlay, setOverlay] = useState<'quit' | 'help' | null>(null);
+  // Sheets leave with their exit (falling back down) before they unmount.
+  const exit = useExit<HTMLDivElement>();
+  const closeOverlay = () => exit.leave(() => setOverlay(null));
+  // A sheet starts below the panel as it rises; focusing it must not scroll the panel up to meet it.
+  const sheetFirst = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    if (overlay) sheetFirst.current?.focus({ preventScroll: true });
+  }, [overlay]);
   const [finished, setFinished] = useState<Finished | 'saving' | 'failed'>();
 
   const canTakeFocus = useCallback(() => surface === 'panel' || performance.now() - lastUse.current < 4000, [surface]);
@@ -112,8 +121,8 @@ export function SessionPlayer({ plan, onExit, onAction }: SessionPlayerProps) {
       enter: clickPrimary,
       digit: (n) => (overlay ? undefined : stepKeys.current.digit?.(n)),
       backspace: () => (overlay ? undefined : stepKeys.current.backspace?.()),
-      escape: () => setOverlay((current) => (current ? null : finished ? null : 'quit')),
-      help: () => setOverlay((current) => (current === 'help' ? null : 'help')),
+      escape: () => (overlay ? closeOverlay() : finished ? undefined : setOverlay('quit')),
+      help: () => (overlay === 'help' ? closeOverlay() : setOverlay('help')),
     },
     compact ? root : undefined,
   );
@@ -221,16 +230,16 @@ export function SessionPlayer({ plan, onExit, onAction }: SessionPlayerProps) {
         {body}
         {/* Finch's sheets: a round grey × at the top left (the safe way out, as Esc), a centred title. */}
         {overlay === 'quit' ? (
-          <div className="tn-overlay" role="dialog" aria-modal="true" aria-labelledby="tn-quit-title">
+          <div ref={exit.ref} className="tn-overlay" role="dialog" aria-modal="true" aria-labelledby="tn-quit-title" data-leaving={exit.leaving || undefined}>
             <div className="tn-dialog-card tn-dialog-card--sheet tn-sheet-up">
-              <button type="button" className="tn-round-btn" aria-label="Close" onClick={() => setOverlay(null)}>
+              <button type="button" className="tn-round-btn" aria-label="Close" onClick={closeOverlay}>
                 <Icon name="close" size={18} />
               </button>
               <h2 id="tn-quit-title" className="tn-dialog-card__title">
                 Quit lesson?
               </h2>
               <p className="tn-muted">Your answers in this session won’t be saved.</p>
-              <Button block onClick={() => setOverlay(null)} data-primary autoFocus>
+              <Button ref={sheetFirst} block onClick={closeOverlay} data-primary>
                 Keep learning
               </Button>
               <Button block variant="ghost" className="tn-dialog__danger" onClick={onExit}>
@@ -240,9 +249,9 @@ export function SessionPlayer({ plan, onExit, onAction }: SessionPlayerProps) {
           </div>
         ) : null}
         {overlay === 'help' ? (
-          <div className="tn-overlay" role="dialog" aria-modal="true" aria-labelledby="tn-keys-title">
+          <div ref={exit.ref} className="tn-overlay" role="dialog" aria-modal="true" aria-labelledby="tn-keys-title" data-leaving={exit.leaving || undefined}>
             <div className="tn-dialog-card tn-dialog-card--sheet tn-sheet-up">
-              <button type="button" className="tn-round-btn" aria-label="Close" onClick={() => setOverlay(null)}>
+              <button type="button" className="tn-round-btn" aria-label="Close" onClick={closeOverlay}>
                 <Icon name="close" size={18} />
               </button>
               <h2 id="tn-keys-title" className="tn-dialog-card__title">
@@ -258,7 +267,7 @@ export function SessionPlayer({ plan, onExit, onAction }: SessionPlayerProps) {
                   </div>
                 ))}
               </dl>
-              <Button block variant="secondary" onClick={() => setOverlay(null)} data-primary autoFocus>
+              <Button ref={sheetFirst} block variant="secondary" onClick={closeOverlay} data-primary>
                 Close
               </Button>
             </div>

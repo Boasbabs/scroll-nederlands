@@ -158,6 +158,11 @@
   background: var(--toast);
   color: var(--on-toast);
   box-shadow: var(--shadow-float);
+  /* It rises from below past its place and settles; it leaves with a drop and a fade (slow in and out). */
+  animation: tn-toast-in var(--t-base) var(--ease-out) both;
+}
+.tn-toast[data-leaving] {
+  animation: tn-toast-out var(--t-quick) var(--ease-in) both;
 }
 .tn-toast__text {
   flex: 1;

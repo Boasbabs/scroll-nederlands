@@ -1,5 +1,5 @@
 // Today, Review and Progress tabs.
-import { useId, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 import { DAY } from '../../engine/schedule';
 import { REVIEW_BATCH, WORD_BATCH } from '../../engine/selection';
 import { itemsByStrength } from '../../engine/summary';
@@ -51,13 +51,21 @@ type TodayRowProps = {
   onClick?: () => void;
 };
 
+/** Lines seen still open on this page, so one that has turned done since pops its tick once. */
+const seenOpen = new Set<string>();
+
 /** A line of To do today: a tile, what to do, how far along. The whole line is the button. */
 function TodayRow({ icon, kind = 'soft', title, meta, bar, onClick }: TodayRowProps) {
   const metaId = useId();
+  const [justDone] = useState(() => icon === 'done' && seenOpen.has(title));
+  useEffect(() => {
+    if (icon === 'done') seenOpen.delete(title);
+    else seenOpen.add(title);
+  }, [icon, title]);
   const content = (
     <>
       {icon === 'done' ? (
-        <span className="tn-today-row__tile" data-done>
+        <span className={`tn-today-row__tile${justDone ? ' tn-tick' : ''}`} data-done>
           <Icon name="check" size={20} />
         </span>
       ) : (

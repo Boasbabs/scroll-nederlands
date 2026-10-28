@@ -48,7 +48,7 @@
 }
 /* Staging: each new step settles in from below, children a beat apart. */
 .tn-step-in > * {
-  animation: tn-settle-in var(--t-base) var(--ease-out) both;
+  animation: tn-settle-in var(--t-base) var(--ease-out) backwards;
 }
 .tn-step-in > :nth-child(2) { animation-delay: calc(1 * var(--stagger)); }
 .tn-step-in > :nth-child(3) { animation-delay: calc(2 * var(--stagger)); }
@@ -743,7 +743,23 @@
   display: flex;
   align-items: flex-end;
   background: rgba(22, 23, 29, 0.4);
-  animation: tn-fade-in var(--t-base) var(--ease-out) both;
+  animation: tn-fade-in var(--t-quick) var(--ease-out) both;
+}
+/* The sheet comes in just after the backdrop, rises past its place and settles (staging). */
+.tn-overlay > .tn-sheet-up {
+  animation-duration: 280ms;
+  animation-delay: 60ms;
+}
+/* Leaving (useExit) is quicker and eases in: the backdrop fades as the sheet falls back down or the
+   dialog drops away. */
+.tn-overlay[data-leaving] {
+  animation: tn-fade-out var(--t-exit) var(--ease-in) both;
+}
+.tn-overlay[data-leaving] > .tn-dialog-card {
+  animation: tn-dialog-out var(--t-exit) var(--ease-in) both;
+}
+.tn-overlay[data-leaving] > .tn-dialog-card--sheet {
+  animation: tn-sheet-down var(--t-exit) var(--ease-in) both;
 }
 @keyframes tn-fade-in {
   from { opacity: 0; }
@@ -788,7 +804,7 @@
   animation: tn-fade-in var(--t-base) var(--ease-out) both;
 }
 .tn-complete .tn-player__zone > .tn-btn {
-  animation: tn-settle-in var(--t-slow) var(--ease-spring) 640ms both;
+  animation: tn-settle-in var(--t-slow) var(--ease-spring) 640ms backwards;
 }
 
 /* ---------- Celebration field (Finch's goal completed, in Warm Blue) ---------- */

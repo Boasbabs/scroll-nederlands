@@ -144,7 +144,7 @@ export function MatchView({ exercise, planned, locked, onAnswer }: ViewProps<Mat
       >
         {side === 'dutch' ? pairs[pair]!.dutch : pairs[pair]!.english}
         {done ? (
-          <span className="tn-match__check tn-pop" aria-hidden="true">
+          <span className="tn-match__check tn-tick" aria-hidden="true">
             <Icon name="check" size={12} />
           </span>
         ) : null}

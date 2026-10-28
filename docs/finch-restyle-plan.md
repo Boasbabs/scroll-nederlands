@@ -12,7 +12,7 @@ Agreed with the owner on 2026-10-28, in an interview of 27 questions (the "Repla
 | 3 | Lesson player and end screens | Done |
 | 4 | Onboarding and Settings | Done (the reset dialog moved here from phase 5) |
 | 5 | In-page card, toasts and dialogs | Done |
-| 6 | Motion pass | Not started |
+| 6 | Motion pass | Done |
 
 ## Rules
 
@@ -176,4 +176,5 @@ The owner chose **playful and quick**:
   - `compare.py` and `sheet.py`: before/after sheets.
   - `gen-phosphor.mjs`: regenerates `src/ui/components/phosphor.ts` from `@phosphor-icons/core` 2.1.1. Download the npm tarball into a scratch folder and check its integrity first.
   - Earlier before/after shots are in that folder's `icon-screenshots/` and `today-screenshots/`.
+  - Phase 6 added `motion-shots.mjs` (records each motion moment as screencast frames, motion on or reduced), `strip.py` (frame strips) and `reel.py` (one video, real speed then 4× slower) to that tools folder; the recordings, strips, reel and the final before/after set of every page are in its `shots/p6/` and `shots/final/`.
 - **Mobbin tools are deferred** (`search_screens`, `search_flows`); load them with ToolSearch. When a result carries the `ai_usage_notice`, show its text to the owner word for word.

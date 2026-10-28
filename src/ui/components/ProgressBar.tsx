@@ -1,5 +1,34 @@
 import { useEffect, useRef, useState } from 'react';
 
+/** How long a bar takes to fill: --t-fill in motion.css. */
+const FILL_MS = 400;
+
+/**
+ * The count inside a bar ticks up with the fill (secondary action). It jumps where motion is reduced
+ * or there are no animation frames (tests).
+ */
+function useTicker(value: number, active: boolean): number {
+  const [shown, setShown] = useState(value);
+  const from = useRef(value);
+  useEffect(() => {
+    const start = from.current;
+    from.current = value;
+    const still = typeof requestAnimationFrame !== 'function' || window.matchMedia?.('(prefers-reduced-motion: reduce)').matches !== false;
+    if (start === value || still || !active) {
+      setShown(value);
+      return undefined;
+    }
+    const began = performance.now();
+    let frame = requestAnimationFrame(function tick(time) {
+      const t = Math.min(1, Math.max(0, (time - began) / FILL_MS));
+      setShown(Math.round(start + (value - start) * (1 - (1 - t) ** 3)));
+      if (t < 1) frame = requestAnimationFrame(tick);
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [value, active]);
+  return shown;
+}
+
 /**
  * A progress bar that springs forward and glints when it advances. With `count`, the bar is thick and
  * carries the count inside, as Finch's quest bars do: `true` shows "value / max", a string shows itself.
@@ -35,7 +64,8 @@ export function ProgressBar({
     return undefined;
   }, [value]);
 
-  const text = count === true ? `${value} / ${max}` : count || null;
+  const ticked = useTicker(value, count === true);
+  const text = count === true ? `${ticked} / ${max}` : count || null;
   const classes = ['tn-progress', thin && !text && 'tn-progress--thin', text && 'tn-progress--count'].filter(Boolean).join(' ');
   const Part = decorative ? 'span' : 'div';
   const semantics = decorative

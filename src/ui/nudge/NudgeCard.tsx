@@ -1,9 +1,10 @@
 // The in-page prompt: a small corner card on the Today ground, its ⋯ menu, and the snooze toast.
-import { useEffect, useId, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState, type RefObject } from 'react';
 import type { SnoozeChoice } from '../../trigger/browsing';
 import { Button } from '../components/Button';
 import { Icon } from '../components/Icon';
 import { IconTile } from '../components/IconTile';
+import { useExit } from '../exit';
 import { formatClock } from '../format';
 
 /** The brand mark: a Warm Blue tile with a white rounded T. It waves once on arrival (appeal). */
@@ -39,9 +40,12 @@ type NudgeCardProps = {
 export function NudgeCard({ preview, onLearn, onNotNow, onSnooze, onQuiet, now, demo = false }: NudgeCardProps) {
   const [menu, setMenu] = useState(false);
   const more = useRef<HTMLButtonElement>(null);
+  const menuExit = useExit<HTMLDivElement>();
   function closeMenu() {
-    setMenu(false);
-    more.current?.focus();
+    menuExit.leave(() => {
+      setMenu(false);
+      more.current?.focus();
+    });
   }
   return (
     <section className="tn-nudge tn-nudge--card tn-rise-in" aria-label="Dutch practice" inert={demo || undefined}>
@@ -84,12 +88,14 @@ export function NudgeCard({ preview, onLearn, onNotNow, onSnooze, onQuiet, now, 
             aria-label="More options"
             aria-haspopup="menu"
             aria-expanded={menu}
-            onClick={() => setMenu((open) => !open)}
+            onClick={() => (menu ? closeMenu() : setMenu(true))}
           >
             <Icon name="more" size={20} />
           </button>
           {menu ? (
             <NudgeMenu
+              box={menuExit.ref}
+              leaving={menuExit.leaving}
               now={now}
               onClose={closeMenu}
               onSnooze={(choice) => {
@@ -112,11 +118,25 @@ export function NudgeCard({ preview, onLearn, onNotNow, onSnooze, onQuiet, now, 
  * Finch's sheet as a white card over the prompt: a round grey × at the top left, the menu's name as a
  * centred title, and a small tile before each row, as on the Settings rows for the same choices.
  */
-function NudgeMenu({ now, onClose, onSnooze, onQuiet }: { now: number; onClose: () => void; onSnooze: (choice: SnoozeChoice) => void; onQuiet: () => void }) {
-  const box = useRef<HTMLDivElement>(null);
+function NudgeMenu({
+  box,
+  leaving,
+  now,
+  onClose,
+  onSnooze,
+  onQuiet,
+}: {
+  box: RefObject<HTMLDivElement | null>;
+  leaving: boolean;
+  now: number;
+  onClose: () => void;
+  onSnooze: (choice: SnoozeChoice) => void;
+  onQuiet: () => void;
+}) {
   const titleId = useId();
   useEffect(() => {
-    box.current?.querySelector<HTMLButtonElement>('[role="menuitem"]')?.focus();
+    // Never scroll the host page to reach it.
+    box.current?.querySelector<HTMLButtonElement>('[role="menuitem"]')?.focus({ preventScroll: true });
   }, []);
 
   function onKeyDown(event: React.KeyboardEvent) {
@@ -135,7 +155,7 @@ function NudgeMenu({ now, onClose, onSnooze, onQuiet }: { now: number; onClose: 
   }
 
   return (
-    <div ref={box} className="tn-menu tn-rise-in" onKeyDown={onKeyDown}>
+    <div ref={box} className="tn-menu tn-dialog-in" data-leaving={leaving || undefined} onKeyDown={onKeyDown}>
       <button type="button" className="tn-round-btn" aria-label="Close" onClick={onClose}>
         <Icon name="close" size={18} />
       </button>
@@ -171,17 +191,20 @@ export const TOAST_MS = 6000;
 
 /** One-line confirmation with Undo, as Finch's dark pill toast; leaves by itself after a few seconds. */
 export function SnoozeToast({ message, onUndo, onClose }: { message: string; onUndo: () => void; onClose: () => void }) {
+  // It drops away before it goes (slow in), whether closed or timed out.
+  const exit = useExit<HTMLDivElement>();
+  const { leave } = exit;
   useEffect(() => {
-    const timer = setTimeout(onClose, TOAST_MS);
+    const timer = setTimeout(() => leave(onClose), TOAST_MS);
     return () => clearTimeout(timer);
-  }, [onClose]);
+  }, [leave, onClose]);
   return (
-    <div className="tn-toast tn-rise-in" role="status">
+    <div ref={exit.ref} className="tn-toast" role="status" data-leaving={exit.leaving || undefined}>
       <span className="tn-toast__text">{message}</span>
       <Button size="sm" variant="ghost" onClick={onUndo}>
         Undo
       </Button>
-      <button type="button" className="tn-round-btn" aria-label="Close" onClick={onClose}>
+      <button type="button" className="tn-round-btn" aria-label="Close" onClick={() => leave(onClose)}>
         <Icon name="close" size={18} />
       </button>
       <span className="tn-toast__timer" style={{ animationDuration: `${TOAST_MS}ms` }} aria-hidden="true" />

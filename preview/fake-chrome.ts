@@ -34,7 +34,8 @@ export function createPreviewArea() {
 
 /**
  * Seeds a learner: `fresh` (onboarding), `today` (lessons done, reviews due),
- * `caughtup`, `path`, `recall`, `pictures`, `articles`, `notes` or `corrections`. With `lessonId`, every lesson before it is done, so
+ * `caughtup`, `streak` (as `today`, but studied yesterday, so a session today grows the streak),
+ * `path`, `recall`, `pictures`, `articles`, `notes` or `corrections`. With `lessonId`, every lesson before it is done, so
  * it is next on the path.
  */
 export async function seed(area: StorageAreaLike, state: string, now: number, lessonId?: string | null) {
@@ -42,7 +43,7 @@ export async function seed(area: StorageAreaLike, state: string, now: number, le
   const target = lessonId ? course.lesson(lessonId) : undefined;
   const lessonCount = target ? target.order : state === 'path' ? 40 : 9;
   let progress = emptyProgress();
-  const at = state === 'caughtup' ? now - 2 * 60 * 60_000 : now - 2 * DAY;
+  const at = state === 'caughtup' ? now - 2 * 60 * 60_000 : state === 'streak' ? now - DAY : now - 2 * DAY;
   for (const [i, lesson] of course.lessons.slice(0, lessonCount).entries()) {
     const results = exerciseSteps(planLesson(course, lesson.id, 'focused')).map((planned, j) => ({
       exerciseId: planned.exerciseId,

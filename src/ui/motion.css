@@ -11,6 +11,10 @@
   --t-base: 240ms;
   --t-slow: 380ms;
   --t-scene: 560ms;
+  --t-release: 180ms; /* a pressed part springs back */
+  --t-tick: 320ms; /* a tick disc pops */
+  --t-fill: 400ms; /* a bar fills */
+  --t-exit: 180ms; /* sheets, dialogs and toasts leave quicker than they came */
 
   /* Slow in and slow out: nothing moves linearly. */
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1); /* arrive and settle */
@@ -19,9 +23,11 @@
   /* Exaggeration and follow-through: overshoot, then settle. */
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
   --ease-bounce: cubic-bezier(0.68, -0.6, 0.32, 1.6);
+  /* Bars fill 4% past their mark, then settle back (follow-through without exaggeration). */
+  --ease-fill: cubic-bezier(0.3, 1.35, 0.55, 1);
 
   /* Overlapping action: children start a beat after their parent. */
-  --stagger: 45ms;
+  --stagger: 40ms;
 }
 
 /* Squash and stretch on press: the button compresses into its edge and springs back. */
@@ -56,6 +62,70 @@
 @keyframes tn-sheet-up {
   0% { transform: translateY(100%); }
   75% { transform: translateY(-4px); }
+  100% { transform: none; }
+}
+
+/* Squash and stretch, a little exaggeration: a tick disc pops 0.6 → 1.12 → 1 ... */
+@keyframes tn-tick-pop {
+  0% { transform: scale(0.6); }
+  55% { transform: scale(1.12, 1.08); }
+  80% { transform: scale(0.97, 1.02); }
+  100% { transform: none; }
+}
+/* ... and its ✓ draws in from the left just after it (overlapping action). */
+@keyframes tn-tick-draw {
+  from { clip-path: inset(0 100% 0 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+
+/* Tab switch: the tile dips and squashes (anticipation), hops over a shallow arc while it slides,
+   then lands with a small stretch and settles. The slide itself is the tile's transition. */
+@keyframes tn-tab-hop {
+  0% { transform: none; }
+  18% { transform: translateY(2px) scale(1.06, 0.9); }
+  55% { transform: translateY(-3px) scale(0.98, 1.03); }
+  82% { transform: translateY(0) scale(0.97, 1.05); }
+  100% { transform: none; }
+}
+/* The new tab's glyph pops as it turns from outline to fill. */
+@keyframes tn-glyph-pop {
+  0% { transform: scale(0.8); }
+  60% { transform: scale(1.15); }
+  100% { transform: none; }
+}
+
+/* Dialogs: a small dip first (anticipation), then up past their place and settle. */
+@keyframes tn-dialog-in {
+  0% { opacity: 0; transform: translateY(8px) scale(0.97); }
+  20% { opacity: 0.6; transform: translateY(12px) scale(0.96); }
+  70% { opacity: 1; transform: translateY(-3px) scale(1.01); }
+  100% { opacity: 1; transform: none; }
+}
+/* Leaving is quicker and eases in: a dialog drops away, a sheet falls back down, a backdrop fades. */
+@keyframes tn-dialog-out {
+  to { opacity: 0; transform: translateY(12px) scale(0.97); }
+}
+@keyframes tn-sheet-down {
+  to { transform: translateY(100%); }
+}
+@keyframes tn-fade-out {
+  to { opacity: 0; }
+}
+
+/* A toast rises from below past its place and settles; it leaves with a drop and a fade. */
+@keyframes tn-toast-in {
+  0% { opacity: 0; transform: translateY(18px); }
+  65% { opacity: 1; transform: translateY(-3px); }
+  100% { opacity: 1; transform: none; }
+}
+@keyframes tn-toast-out {
+  to { opacity: 0; transform: translateY(14px); }
+}
+
+/* A count that grows bumps once (secondary action). */
+@keyframes tn-bump {
+  0% { transform: none; }
+  40% { transform: scale(1.15); }
   100% { transform: none; }
 }
 
@@ -131,12 +201,19 @@
   100% { opacity: 0; transform: translateY(var(--fall)) rotate(var(--spin)); }
 }
 
-.tn-rise-in { animation: tn-rise-in var(--t-slow) var(--ease-out) both; }
+/* Entrances fill backwards only: once they end, a pressed part can still squash (an animation's
+   last frame, held, would outrank the :active transform). */
+.tn-rise-in { animation: tn-rise-in var(--t-slow) var(--ease-out) backwards; }
 .tn-drop-out { animation: tn-drop-out var(--t-base) var(--ease-in) both; }
-.tn-settle-in { animation: tn-settle-in var(--t-base) var(--ease-out) both; animation-delay: calc(var(--i, 0) * var(--stagger)); }
+.tn-settle-in { animation: tn-settle-in var(--t-base) var(--ease-out) backwards; animation-delay: calc(var(--i, 0) * var(--stagger)); }
 .tn-pop { animation: tn-pop var(--t-slow) var(--ease-spring) both; }
 .tn-shake { animation: tn-shake var(--t-slow) var(--ease-out); }
 .tn-land { animation: tn-land var(--t-scene) var(--ease-out) both; }
+.tn-dialog-in { animation: tn-dialog-in 280ms var(--ease-out) 60ms both; }
+.tn-tick { animation: tn-tick-pop var(--t-tick) var(--ease-out) both; }
+.tn-tick svg { animation: tn-tick-draw var(--t-quick) var(--ease-out) 140ms both; }
+/* A part that leaves (useExit) plays its exit, then goes. */
+.tn-dialog-in[data-leaving] { animation: tn-dialog-out var(--t-exit) var(--ease-in) both; }
 
 @media (prefers-reduced-motion: reduce) {
   :root,
@@ -146,6 +223,9 @@
     --t-base: 120ms;
     --t-slow: 120ms;
     --t-scene: 120ms;
+    --t-release: 1ms;
+    --t-tick: 120ms;
+    --t-exit: 120ms;
     --stagger: 0ms;
   }
   *,
@@ -159,8 +239,23 @@
     from { opacity: 0; }
     to { opacity: 1; }
   }
-  /* Confetti is hidden rather than left still. */
-  .tn-confetti {
+  /* A part that leaves fades out on its own; its children do not fade in again. */
+  [data-leaving] {
+    animation-name: tn-fade-out !important;
+  }
+  [data-leaving] * {
+    animation-name: none !important;
+  }
+  /* Loops stand still rather than turning into one long fade. */
+  .tn-node__bubble,
+  .tn-audio__bars i,
+  .tn-wave__bars i,
+  .tn-mic[data-recording]::after {
+    animation-name: none !important;
+  }
+  /* Confetti and sparks are hidden rather than left still. */
+  .tn-confetti,
+  .tn-sparks {
     display: none;
   }
 }

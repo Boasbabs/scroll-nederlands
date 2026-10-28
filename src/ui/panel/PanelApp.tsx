@@ -11,7 +11,7 @@ import { EnvProvider, type SitePermissions, type UiEnv } from '../env';
 import type { CompleteAction } from '../player/SessionComplete';
 import { SessionPlayer } from '../player/SessionPlayer';
 import { createSfx } from '../sfx';
-import { StreakChip } from './controls';
+import { StreakChip, TabTile } from './controls';
 import { CourseScreen } from './CourseScreen';
 import { Onboarding } from './Onboarding';
 import { ProgressScreen, ReviewScreen, TodayScreen } from './screens';
@@ -133,12 +133,7 @@ export function PanelApp({ deps }: { deps: PanelDeps }) {
         </main>
         <nav className="tn-tabbar" aria-label="Sections">
           {/* Finch's soft tile behind the selected tab; it slides to the new one. None is selected on Settings. */}
-          <span
-            className="tn-tabbar__tile"
-            aria-hidden="true"
-            data-hidden={screen === 'settings' || undefined}
-            style={{ '--tab': TABS.findIndex((entry) => entry.id === tab) } as React.CSSProperties}
-          />
+          <TabTile index={TABS.findIndex((entry) => entry.id === tab)} hidden={screen === 'settings'} />
           {TABS.map((entry) => {
             const current = screen !== 'settings' && tab === entry.id;
             return (

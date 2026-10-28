@@ -24,8 +24,8 @@
   transform: none;
   /* Release: spring back past rest and settle (follow-through). */
   transition:
-    transform var(--t-quick) var(--ease-spring),
-    box-shadow var(--t-quick) var(--ease-spring),
+    transform var(--t-release) var(--ease-spring),
+    box-shadow var(--t-release) var(--ease-spring),
     background-color var(--t-quick) var(--ease-out),
     filter var(--t-quick) var(--ease-out);
   user-select: none;
@@ -194,8 +194,8 @@ span.tn-progress__fill {
   overflow: hidden;
   border-radius: inherit;
   background: var(--progress);
-  /* Slow out with a little overshoot as the bar fills. */
-  transition: width var(--t-slow) var(--ease-spring);
+  /* Slow out, 4% past the mark and back, as the bar fills (follow-through). */
+  transition: width var(--t-fill) var(--ease-fill);
 }
 .tn-progress__fill::before {
   content: '';
@@ -242,7 +242,7 @@ span.tn-progress__fill {
 }
 .tn-progress__count--fill {
   color: var(--on-progress);
-  transition: clip-path var(--t-slow) var(--ease-spring);
+  transition: clip-path var(--t-fill) var(--ease-fill);
 }
 
 /* ---------- Chips and badges ---------- */
@@ -314,8 +314,8 @@ span.tn-progress__fill {
 /* Tappable raised parts press into their edge and spring back (squash and stretch, follow-through). */
 .tn-press {
   transition:
-    transform var(--t-quick) var(--ease-spring),
-    box-shadow var(--t-quick) var(--ease-spring);
+    transform var(--t-release) var(--ease-spring),
+    box-shadow var(--t-release) var(--ease-spring);
 }
 .tn-press:active:not(:disabled) {
   transform: translateY(2px) scale(1.006, 0.985);
@@ -444,15 +444,17 @@ span.tn-progress__fill {
   text-align: left;
   box-shadow: 0 3px 0 var(--opt-edge);
   transition:
-    transform var(--t-quick) var(--ease-spring),
-    box-shadow var(--t-quick) var(--ease-spring),
+    transform var(--t-release) var(--ease-spring),
+    box-shadow var(--t-release) var(--ease-spring),
     background-color var(--t-quick) var(--ease-out),
     border-color var(--t-quick) var(--ease-out);
 }
+/* Press: the option drops into its edge and squashes, then springs back (squash and stretch). */
 .tn-option:active:not(:disabled) {
-  transform: translateY(3px);
+  transform: translateY(3px) scale(1.01, 0.97);
   box-shadow: 0 0 0 var(--opt-edge);
   transition-duration: var(--t-tap);
+  transition-timing-function: var(--ease-out);
 }
 /* Selected before Check: Denim tint fill, Mid Blue border, the number badge filled Mid Blue. */
 .tn-option[aria-pressed='true'],
@@ -503,6 +505,13 @@ span.tn-progress__fill {
   font-weight: 800;
   transition: background-color var(--t-quick) var(--ease-out), color var(--t-quick) var(--ease-out);
 }
+/* An option turns correct: its disc pops and the ✓ draws in just after (squash and stretch, overlap). */
+.tn-option[data-state='correct'] .tn-option__key {
+  animation: tn-tick-pop var(--t-tick) var(--ease-out) both;
+}
+.tn-option[data-state='correct'] .tn-option__key svg {
+  animation: tn-tick-draw var(--t-quick) var(--ease-out) 140ms both;
+}
 
 .tn-tile {
   display: inline-flex;
@@ -517,7 +526,7 @@ span.tn-progress__fill {
   font-size: var(--text-lg);
   font-weight: 500;
   box-shadow: 0 3px 0 rgba(22, 23, 29, 0.13);
-  transition: transform var(--t-quick) var(--ease-spring), box-shadow var(--t-quick) var(--ease-spring);
+  transition: transform var(--t-release) var(--ease-spring), box-shadow var(--t-release) var(--ease-spring);
 }
 .tn-tile:active:not(:disabled) {
   transform: translateY(3px) scale(1.03, 0.95);
@@ -589,6 +598,13 @@ span.tn-progress__fill {
   background: var(--correct);
   color: var(--on-correct);
   animation: tn-pop var(--t-slow) var(--ease-spring) 120ms both; /* overlaps the sheet's arrival */
+}
+/* Correct: the disc pops and its ✓ draws in, as every tick does. */
+.tn-sheet--correct .tn-sheet__mark {
+  animation: tn-tick-pop var(--t-tick) var(--ease-out) 120ms both;
+}
+.tn-sheet--correct .tn-sheet__mark > svg {
+  animation: tn-tick-draw var(--t-quick) var(--ease-out) 260ms both;
 }
 .tn-sheet--wrong .tn-sheet__mark {
   background: var(--wrong);

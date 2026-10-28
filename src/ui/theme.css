@@ -48,8 +48,7 @@
   --warm-blue-edge: color-mix(in srgb, var(--warm-blue) 75%, black);
   --butterfly-bush-edge: color-mix(in srgb, var(--butterfly-bush) 75%, black);
 
-  /* Roles: components use these, not the palette names */
-  --bg: #f3f4f7;
+  /* Roles: components use these, not the palette names. The grounds under them are below. */
   --surface: var(--white);
   --surface-sunken: #eceef2;
 

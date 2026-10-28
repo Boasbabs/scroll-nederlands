@@ -23,7 +23,7 @@ The board has two rows. The top row (large swatches) is used for big fields; the
 | Flush Mahogany | `#C43136` | bottom | Wrong answers and destructive actions (`--wrong`) | white, 5.5:1 |
 | Dark Cerulean | `#064F70` | bottom | Dark surfaces: tooltips, label bubbles, the floating pill, the dark band (`--dark`) | white, 8.9:1 |
 
-Neutrals come from the board's black type on white: ink `#16171D` (17.9:1 on white), muted `#5A5D69` (6.5:1), faint `#8A8D98` (3.3:1, placeholders and chevrons only), lines `#E2E4EA` / `#CBCFD8`, app background `#F3F4F7`.
+Neutrals come from the board's black type on white: ink `#16171D` (17.9:1 on white), muted `#5A5D69` (6.5:1), faint `#8A8D98` (3.3:1, placeholders and chevrons only), lines `#E2E4EA` / `#CBCFD8`. The old app background `#F3F4F7` is gone: each surface has its own ground (§3).
 
 ## 2. How Makuteam applies it, and what the UI takes
 
@@ -57,7 +57,7 @@ Components use the role tokens, never the palette names. The only exceptions are
 | Role | Tokens | Used for |
 |---|---|---|
 | Text | `--ink`, `--ink-muted`, `--ink-faint`, `--ink-soft` | Body and titles; secondary text; placeholders, chevrons; disabled labels and locked glyphs |
-| Surfaces | `--bg`, `--surface`, `--surface-sunken`, `--line`, `--line-strong`, `--track` | Panel background, cards, hover and chips, borders, progress tracks and disabled fills |
+| Surfaces | `--surface`, `--surface-sunken`, `--line`, `--line-strong`, `--track` | Cards, hover and chips, borders, progress tracks and disabled fills (the grounds under them are below) |
 | Primary (Warm Blue) | `--primary`, `--primary-edge`, `--on-primary`, `--progress` | Main buttons, ghost and link text, audio and mic buttons, progress bars, switches and checkboxes, done lesson nodes, active tab, target words, passage rule, typed answers, toast timer, heroes, brand mark |
 | Selected (Mid Blue on Denim tint) | `--selected`, `--selected-fill`, `--on-selected` | Picked option (border, badge, fill), picked match tile, picked choice chip (Mid Blue text, 4.5:1), toggled icon buttons |
 | Focus (Dodger Blue) | `--focus` | 3px focus ring (3.6:1 on white), focused input border, focused gap underline. White on bands. |
@@ -94,8 +94,8 @@ Button variants follow the roles: `primary` (Warm Blue), `secondary` (a soft fac
 | Today | Light Denim Blue ground; Golden Yellow review card on an orange-yellow edge with the ink `Review now`; raised white Continue card with a Warm Blue count bar and `Start`; To do today lines with Denim Blue, Dark Cerulean and Mango Orange activity tiles; caught-up tick in a Seaweed disc |
 | Course | Light Dark Cerulean ground; one band per stage (Golden Yellow, Seaweed Green, Denim Blue, Mango Orange) on raised cards; Warm Blue count bars; a dashed grey connector; done nodes Warm Blue; current node Mango ring with a Dark Cerulean `Start` bubble; locked nodes grey; checkpoints Butterfly Bush; `Current lesson` pill Dark Cerulean |
 | Review, Progress | Light Mid Blue and light Dodger Blue grounds; Warm Blue `Start review` and a white `Practice anyway`; studied days Mango; New / Learning / Strong rings grey / Mango / Seaweed; Warm Blue count bars beside the words, ear, de/het and lessons tiles |
-| Settings | Warm Blue switches; Mid Blue chosen chips; `Reset progress` and `Reset everything` in Flush Mahogany under a Warm Blue `Keep my progress`; notice row Golden tint |
-| Onboarding | Warm Blue hero with Dodger Blue squiggles, two-tone wordmark and a Golden Yellow `Get started`; level and start rows turn Mid Blue on a Denim tint when chosen; `Recommended` chip Golden Yellow |
+| Settings | Pale blue-grey ground; raised group cards with a soft Denim tint tile and ink glyph before every row; a round grey × on the reset dialog; Warm Blue switches; Mid Blue chosen chips; `Reset progress` and `Reset everything` in Flush Mahogany under a Warm Blue `Keep my progress`; notice row Golden tint |
+| Onboarding | Warm Blue hero with Dodger Blue squiggles, two-tone wordmark and a Golden Yellow `Get started`; the steps on the neutral grey-blue ground with raised white level and start rows, which turn Mid Blue on a Denim tint when chosen; `Recommended` chip Golden Yellow |
 | Lesson player | A neutral grey-blue ground (`--ground-player`) under raised white options and cards; a round grey ×; Warm Blue progress, audio and mic; learn-card tips Golden tint; picked option Mid Blue; `REVIEW` chip Golden Yellow; combo chip Mango tint |
 | Answer feedback | Correct: Seaweed tint sheet, green disc with an ink tick, green `Continue`. Wrong: Mahogany tint sheet, red disc with a white cross, red `Got it` or `Try again`, red diff underline; the right answer outlined green |
 | End screens | Every end is a Warm Blue field: confetti in Golden Yellow, Mango Orange, Seaweed Green, Denim Blue and white; a Warm Blue bar on a white track capped by a Golden Yellow star (lessons, words, ear training), a Seaweed Green tick (reviews) or a Butterfly Bush flag (checkpoints); stat pills in white on Warm Blue darkened by 20% ink, with green ✓, red ✕ and Mango ↺ marks; the Golden Yellow main button and a white text button; lists in a white card |
@@ -134,7 +134,7 @@ Grounds and soft parts (ink, muted, Warm Blue text and the Dodger Blue focus rin
 
 The grounds are lighter than Finch's because Warm Blue text (4.5:1) and the focus ring (3:1) must still pass on them; Finch's mint and teal would take muted text under 4.5:1. Activity tiles use the palette's own pairs (§1): white on Warm Blue 5.5:1, Mid Blue 5.3:1, Butterfly Bush 7.8:1 and Dark Cerulean 8.9:1; ink on Golden Yellow 14.1:1, Mango Orange 7.1:1 and Denim Blue 8.6:1. The count inside a bar is white over the Warm Blue fill (5.5:1) and ink over the track.
 
-Other pairings in use: muted text on every tint 5.4:1 or more; Mid Blue on the Denim tint 4.5:1; Flush Mahogany on its tint 4.6:1; Warm Blue on the app ground 5.0:1; Dodger Blue focus ring 3.6:1 on white and 3.2:1 on the app ground.
+Other pairings in use: muted text on every tint 5.4:1 or more; Mid Blue on the Denim tint 4.5:1; Flush Mahogany on its tint 4.6:1; Warm Blue 4.6:1 or more and the Dodger Blue focus ring 3.0:1 or more on every ground (the table above); the focus ring is 3.6:1 on white.
 
 ## 7. Mobbin evidence
 

@@ -375,20 +375,21 @@ button.tn-today-row:active .tn-icon-tile {
   flex: 1;
   font-weight: 800;
 }
-.tn-state-row svg:last-child,
-.tn-stage__head svg:last-child,
-.tn-module__head svg:last-child,
-.tn-row__button svg:last-child {
+/* The chevron at the end of a row; glyphs inside tiles are not it. */
+.tn-state-row > svg:last-child,
+.tn-stage__head > svg:last-child,
+.tn-module__head > svg:last-child,
+.tn-row__button > svg:last-child {
   color: var(--ink-faint);
   transition: transform var(--t-base) var(--ease-spring);
 }
-.tn-stage__head svg:last-child {
+.tn-stage__head > svg:last-child {
   color: var(--ink);
 }
-.tn-state-row[aria-expanded='true'] svg:last-child,
-.tn-stage__head[aria-expanded='true'] svg:last-child,
-.tn-module__head[aria-expanded='true'] svg:last-child,
-.tn-row__button[aria-expanded='true'] svg:last-child {
+.tn-state-row[aria-expanded='true'] > svg:last-child,
+.tn-stage__head[aria-expanded='true'] > svg:last-child,
+.tn-module__head[aria-expanded='true'] > svg:last-child,
+.tn-row__button[aria-expanded='true'] > svg:last-child {
   transform: rotate(90deg);
 }
 .tn-item-list {
@@ -667,10 +668,14 @@ button.tn-today-row:active .tn-icon-tile {
   display: grid;
   gap: 8px;
 }
+/* Grouped raised cards under caps labels, each row led by a small soft tile (Finch Settings). */
 .tn-group__card {
+  --secondary-face: var(--soft-face);
+  --secondary-edge: var(--soft-edge);
   overflow: hidden;
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-card);
   background: var(--surface);
+  box-shadow: var(--raise);
 }
 .tn-row {
   display: flex;
@@ -697,7 +702,17 @@ button.tn-today-row:active .tn-icon-tile {
 }
 .tn-row__text {
   display: grid;
+  flex: 1;
   gap: 2px;
+}
+.tn-row > .tn-icon-tile + .tn-row__label {
+  flex: 1;
+}
+/* A stacked row's tile and text, with its chips underneath. */
+.tn-row__head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 .tn-row__label {
   font-weight: 800;
@@ -711,6 +726,7 @@ button.tn-today-row:active .tn-icon-tile {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 12px;
   min-height: 56px;
   margin: -10px -16px;
   padding: 10px 16px;
@@ -718,9 +734,15 @@ button.tn-today-row:active .tn-icon-tile {
   background: none;
   text-align: left;
 }
+.tn-row__button .tn-row__label {
+  flex: 1;
+}
 .tn-group__card > .tn-row__danger {
   justify-content: flex-start;
+  gap: 12px;
   width: 100%;
+  min-height: 56px;
+  padding: 10px 16px;
   border-radius: 0;
   --btn-ink: var(--wrong);
   font-family: var(--font-body);
@@ -761,26 +783,18 @@ button.tn-today-row:active .tn-icon-tile {
   justify-content: center;
   padding: var(--gutter);
 }
-.tn-dialog {
-  display: grid;
-  gap: 10px;
-  width: 100%;
-  padding: 22px 18px 14px;
-  border-radius: var(--radius-lg);
-  background: var(--surface);
-  box-shadow: var(--shadow-float);
-}
 /* Destructive text in Flush Mahogany, under a safe primary (Brilliant's red "Quit"). */
-.tn-dialog .tn-dialog__danger {
+.tn-dialog-card .tn-dialog__danger {
   --btn-ink: var(--wrong);
 }
 
 /* ---------- Onboarding ---------- */
+/* The steps sit on the lesson's neutral ground, under raised level rows and start cards. */
 .tn-onboarding {
   display: flex;
   flex-direction: column;
   height: 100%;
-  background: var(--surface);
+  background: var(--ground-player);
 }
 .tn-onboarding.tn-band--hero {
   background: var(--primary);
@@ -851,8 +865,9 @@ button.tn-today-row:active .tn-icon-tile {
   display: grid;
   justify-items: center;
   padding: 16px 0;
-  border-radius: var(--radius-lg);
-  background: var(--bg);
+  border-radius: var(--radius-card);
+  background: var(--surface);
+  box-shadow: var(--raise);
   pointer-events: none;
 }
 .tn-onboarding__result {

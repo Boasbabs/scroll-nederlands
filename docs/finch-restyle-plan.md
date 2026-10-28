@@ -10,7 +10,7 @@ Agreed with the owner on 2026-10-28, in an interview of 27 questions (the "Repla
 | 1 | Shared parts: tokens and components | Done |
 | 2 | Side panel shell and the four tabs | Done |
 | 3 | Lesson player and end screens | Done |
-| 4 | Onboarding and Settings | Not started |
+| 4 | Onboarding and Settings | Done (the reset dialog moved here from phase 5) |
 | 5 | In-page card, toasts and dialogs | Not started |
 | 6 | Motion pass | Not started |
 

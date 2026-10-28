@@ -1,11 +1,30 @@
 // Small panel controls: switches, chip groups, the confirm dialog, the streak chip.
 import { useEffect, useRef, type ReactNode } from 'react';
 import { Button } from '../components/Button';
-import { Icon } from '../components/Icon';
+import { Icon, type IconName } from '../components/Icon';
+import { IconTile } from '../components/IconTile';
 
-export function Toggle({ label, checked, onChange, helper }: { label: string; checked: boolean; onChange: (checked: boolean) => void; helper?: string }) {
+/** The small soft tile in front of a Settings row (Finch puts a small glyph before each row). */
+export function RowTile({ icon }: { icon: IconName }) {
+  return <IconTile icon={icon} kind="soft" size={32} />;
+}
+
+export function Toggle({
+  label,
+  checked,
+  onChange,
+  helper,
+  icon,
+}: {
+  label: string;
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+  helper?: string;
+  icon?: IconName;
+}) {
   return (
     <div className="tn-row">
+      {icon ? <RowTile icon={icon} /> : null}
       <div className="tn-row__text">
         <span className="tn-row__label">{label}</span>
         {helper ? <span className="tn-row__helper">{helper}</span> : null}
@@ -72,8 +91,12 @@ export function ConfirmDialog({
   }, [onKeep]);
   return (
     <div className="tn-overlay tn-overlay--center" role="dialog" aria-modal="true" aria-labelledby="tn-dialog-title">
-      <div className="tn-dialog tn-rise-in">
-        <h2 id="tn-dialog-title" className="tn-title">
+      {/* Finch's dialog: a white card, a round grey × at the top left (the safe way out), a centred title. */}
+      <div className="tn-dialog-card tn-rise-in">
+        <button type="button" className="tn-round-btn" aria-label="Close" onClick={onKeep}>
+          <Icon name="close" size={18} />
+        </button>
+        <h2 id="tn-dialog-title" className="tn-dialog-card__title">
           {title}
         </h2>
         <p className="tn-muted">{body}</p>

@@ -9,7 +9,7 @@ import { Icon } from '../components/Icon';
 import { useEnv } from '../env';
 import { formatClock } from '../format';
 import { HetImageChoice } from '../player/het';
-import { ChipGroup, ConfirmDialog, Group, Toggle } from './controls';
+import { ChipGroup, ConfirmDialog, Group, RowTile, Toggle } from './controls';
 
 export const PROMPT_INTERVALS = [5, 8, 15, 30] as const;
 
@@ -28,6 +28,7 @@ function ImageCredits({ images }: { images: ImageManifest }) {
     <Group title="Image credits">
       <div className="tn-row tn-row--stack">
         <button type="button" className="tn-row__button" aria-expanded={open} onClick={() => setOpen((value) => !value)}>
+          <RowTile icon="image" />
           <span className="tn-row__label">Pictures in the lessons ({entries.length})</span>
           <Icon name="chevron" size={20} />
         </button>
@@ -97,6 +98,7 @@ export function SettingsScreen({ images = bundledImages }: { images?: ImageManif
       <Group title="Browsing prompts">
         {anySite ? null : (
           <div className="tn-row tn-row--notice">
+            <RowTile icon="bellSlash" />
             <span className="tn-row__label">Prompts are off</span>
             <button type="button" className="tn-link" onClick={() => enableSites(SITES.map((site) => site.id))}>
               Turn on
@@ -105,12 +107,15 @@ export function SettingsScreen({ images = bundledImages }: { images?: ImageManif
         )}
         {notice ? <p className="tn-row__helper tn-row--pad">{notice}</p> : null}
         {SITES.map((site) => (
-          <Toggle key={site.id} label={`Prompts on ${site.label}`} checked={prefs.sites[site.id]} onChange={(on) => setSite(site.id, on)} />
+          <Toggle key={site.id} icon="browser" label={`Prompts on ${site.label}`} checked={prefs.sites[site.id]} onChange={(on) => setSite(site.id, on)} />
         ))}
         <div className="tn-row tn-row--stack">
-          <div className="tn-row__text">
-            <span className="tn-row__label">Prompt after</span>
-            <span className="tn-row__helper">Minutes of active browsing before a 2-minute break.</span>
+          <div className="tn-row__head">
+            <RowTile icon="timer" />
+            <div className="tn-row__text">
+              <span className="tn-row__label">Prompt after</span>
+              <span className="tn-row__helper">Minutes of active browsing before a 2-minute break.</span>
+            </div>
           </div>
           <ChipGroup
             label="Prompt after"
@@ -119,9 +124,10 @@ export function SettingsScreen({ images = bundledImages }: { images?: ImageManif
             onChange={(minutes) => void setPrefs({ promptAfterMinutes: minutes })}
           />
         </div>
-        <Toggle label="Quiet mode" helper="No prompts until you turn this off" checked={prefs.quietMode} onChange={(on) => void setPrefs({ quietMode: on })} />
+        <Toggle icon="moon" label="Quiet mode" helper="No prompts until you turn this off" checked={prefs.quietMode} onChange={(on) => void setPrefs({ quietMode: on })} />
         {snoozed ? (
           <div className="tn-row">
+            <RowTile icon="alarm" />
             <span className="tn-row__label">Snoozed until {formatClock(snoozed)}</span>
             <button type="button" className="tn-link" onClick={() => void setPrefs({ snoozeUntil: undefined })}>
               Resume
@@ -130,6 +136,7 @@ export function SettingsScreen({ images = bundledImages }: { images?: ImageManif
         ) : (
           <div className="tn-row tn-row--stack">
             <button type="button" className="tn-row__button" aria-expanded={snoozeOpen} onClick={() => setSnoozeOpen((open) => !open)}>
+              <RowTile icon="alarm" />
               <span className="tn-row__label">Snooze</span>
               <Icon name="chevron" size={20} />
             </button>
@@ -149,8 +156,9 @@ export function SettingsScreen({ images = bundledImages }: { images?: ImageManif
       </Group>
 
       <Group title="Audio">
-        <Toggle label="Autoplay audio" checked={prefs.autoplayAudio} onChange={(on) => void setPrefs({ autoplayAudio: on })} />
+        <Toggle icon="speaker" label="Autoplay audio" checked={prefs.autoplayAudio} onChange={(on) => void setPrefs({ autoplayAudio: on })} />
         <div className="tn-row">
+          <RowTile icon="gauge" />
           <span className="tn-row__label">Audio speed</span>
           <ChipGroup
             label="Audio speed"
@@ -162,20 +170,24 @@ export function SettingsScreen({ images = bundledImages }: { images?: ImageManif
             onChange={(speed) => void setPrefs({ speechRate: speed === 'slow' ? 0.85 : 1 })}
           />
         </div>
-        <Toggle label="Sound effects" checked={prefs.soundEffects} onChange={(on) => void setPrefs({ soundEffects: on })} />
+        <Toggle icon="music" label="Sound effects" checked={prefs.soundEffects} onChange={(on) => void setPrefs({ soundEffects: on })} />
       </Group>
 
       <Group title="Learning">
         <Toggle
+          icon="translate"
           label="Show translations"
           helper="Off: cards show the Dutch first, with the English behind Show meaning"
           checked={prefs.showTranslations}
           onChange={(on) => void setPrefs({ showTranslations: on })}
         />
         <div className="tn-row tn-row--stack">
-          <div className="tn-row__text">
-            <span className="tn-row__label">Het-word image</span>
-            <span className="tn-row__helper">Picture every het-word this way (het mes, het huis), so the picture tells you het.</span>
+          <div className="tn-row__head">
+            <RowTile icon="image" />
+            <div className="tn-row__text">
+              <span className="tn-row__label">Het-word image</span>
+              <span className="tn-row__helper">Picture every het-word this way (het mes, het huis), so the picture tells you het.</span>
+            </div>
           </div>
           <HetImageChoice label="Het-word image" />
         </div>
@@ -183,9 +195,12 @@ export function SettingsScreen({ images = bundledImages }: { images?: ImageManif
 
       <Group title="Basic words">
         <div className="tn-row tn-row--stack">
-          <div className="tn-row__text">
-            <span className="tn-row__label">New words a day</span>
-            <span className="tn-row__helper">Everyday words, learned beside the course.</span>
+          <div className="tn-row__head">
+            <RowTile icon="words" />
+            <div className="tn-row__text">
+              <span className="tn-row__label">New words a day</span>
+              <span className="tn-row__helper">Everyday words, learned beside the course.</span>
+            </div>
           </div>
           <ChipGroup<number>
             label="New words a day"
@@ -200,6 +215,7 @@ export function SettingsScreen({ images = bundledImages }: { images?: ImageManif
 
       <Group title="Progress">
         <Button variant="ghost" className="tn-row__danger" onClick={() => setConfirmReset(true)}>
+          <RowTile icon="refresh" />
           Reset progress
         </Button>
       </Group>

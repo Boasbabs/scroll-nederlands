@@ -493,4 +493,13 @@ The owner asked for every surface to take the look and feel of [Finch](https://m
 
 These searches returned the `ai_usage_notice` again (Mobbin AI usage is high this month); it was shown to the owner.
 
+### 13.4 Onboarding and Settings (phase 4)
+- **Settings** follows Finch's settings pages ([Settings](https://mobbin.com/screens/699a521c-9baa-44e8-b473-d431440c0560), [Your data](https://mobbin.com/screens/07d41300-f0eb-4082-8bbd-aa305eac4155), [Profile](https://mobbin.com/screens/ff6cc7d1-5257-48da-8101-4039b2152975)): a pale blue-grey ground with the back chevron and title on it, small grey caps labels over grouped white cards, helper lines under labels and controls on the right. The group cards are now raised (§13.1).
+- **A small tile on every row.** Finch puts a small full-colour glyph before each row. TaalNudge puts a 32px soft tile there (the Denim Blue tint with an ink Phosphor glyph), so the saturated tile colours stay with the activities: browser for the two prompt sites, timer for Prompt after, moon for Quiet mode, alarm for Snooze, speaker for Autoplay audio, gauge for Audio speed, music notes for Sound effects, translate for Show translations, image for the het-word image and the picture credits, `Aa` for New words a day, bell-slash for "Prompts are off" and the counter-clockwise arrow for Reset progress. Switches stay Warm Blue and `Reset progress` stays Flush Mahogany text.
+- **The reset dialog** is Finch's dialog card ([Quest detail](https://mobbin.com/screens/fc1239aa-1337-4395-bbe3-3a2525d86e52)): white and rounded, a round grey × at the top left that keeps the progress (as Esc does), a centred title and body, then `Keep my progress` and the red `Reset everything`. It moved here from phase 5 because it belongs to Settings; Quit and the ⋯ menu stay in phase 5.
+- **Onboarding** *(gap fill: Finch's onboarding has no level picker)*. The steps sit on the lesson's neutral ground, so a chosen row (the Denim tint with its Mid Blue border) still stands apart from the white rows around it, as on [Speak – Translate](https://mobbin.com/screens/1754842f-604f-46a5-b514-31c49bf645e9). The level rows and start cards are raised white options (§13.3), and the prompt preview sits on a white raised panel. The welcome stays a full Warm Blue field with the Golden Yellow `Get started`.
+- **Retired:** the old app background `#F3F4F7` (`--bg`); every surface now names its ground.
+
+These searches returned the `ai_usage_notice` again (Mobbin AI usage is high this month); it was shown to the owner.
+
 These searches returned the `ai_usage_notice` again (Mobbin AI usage is high this month); it was shown to the owner.

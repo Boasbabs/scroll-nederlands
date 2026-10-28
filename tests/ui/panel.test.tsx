@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { course as realCourse } from '../../src/curriculum';
 import { exerciseSteps } from '../../src/engine/plan';
 import { DAY, HOUR } from '../../src/engine/schedule';
-import type { SiteId } from '../../src/sites';
+import { SITE_IDS, SITES, siteRecord, type SiteId } from '../../src/sites';
 import type { SitePermissions } from '../../src/ui/env';
 import { PanelApp } from '../../src/ui/panel/PanelApp';
 import { makeCourse, testContrasts, testWordThemes } from '../fixtures/curriculum';
@@ -12,7 +12,7 @@ import { setupLearning, silentSpeaker, T0 } from './harness';
 type Setup = ReturnType<typeof setupLearning>;
 
 function fakePermissions(answer = true) {
-  const granted: Record<SiteId, boolean> = { x: false, linkedin: false };
+  const granted = siteRecord();
   const permissions = {
     request: vi.fn(async (sites: ReadonlyArray<SiteId>) => {
       if (answer) for (const site of sites) granted[site] = true;
@@ -63,10 +63,10 @@ describe('side panel onboarding', () => {
     await user.click(within(screen.getByRole('group', { name: 'Prompt after' })).getByRole('button', { name: '15 min' }));
     // Chrome only shows its dialog for a user gesture, so the request must happen inside the click.
     fireEvent.click(screen.getByRole('button', { name: 'Turn on prompts' }));
-    expect(permissions.request).toHaveBeenCalledWith(['x', 'linkedin']);
+    expect(permissions.request).toHaveBeenCalledWith(SITE_IDS);
 
     expect(await screen.findByText('Prompts are on. See you on your next scroll.')).toBeInTheDocument();
-    await waitFor(async () => expect((await setup.store.readPreferences()).sites).toEqual({ x: true, linkedin: true }));
+    await waitFor(async () => expect((await setup.store.readPreferences()).sites).toEqual(siteRecord(SITE_IDS)));
     expect((await setup.store.readPreferences()).promptAfterMinutes).toBe(15);
 
     await user.click(screen.getByRole('button', { name: 'Start lesson 1' }));
@@ -83,11 +83,15 @@ describe('side panel onboarding', () => {
     await user.click(await screen.findByRole('button', { name: 'Get started' }));
     await user.click(screen.getByRole('radio', { name: /I’m new to Dutch/ }));
     await user.click(screen.getByRole('button', { name: 'Continue' }));
-    await user.click(screen.getByRole('checkbox', { name: 'LinkedIn' }));
+    // Every site starts ticked: take away LinkedIn and all the news sites.
+    const social = screen.getByRole('group', { name: 'Social and video' });
+    await user.click(within(social).getByRole('button', { name: 'LinkedIn' }));
+    expect(within(social).getByRole('button', { name: 'LinkedIn' })).toHaveAttribute('aria-pressed', 'false');
+    await user.click(within(screen.getByRole('group', { name: 'News' })).getByRole('button', { name: 'None' }));
     await user.click(screen.getByRole('button', { name: 'Turn on prompts' }));
-    expect(permissions.request).toHaveBeenCalledWith(['x']);
+    expect(permissions.request).toHaveBeenCalledWith(['x', 'youtube', 'reddit', 'instagram', 'facebook']);
     expect(await screen.findByText('Prompts are off. You can turn them on in Settings.')).toBeInTheDocument();
-    await waitFor(async () => expect((await denied.store.readPreferences()).sites).toEqual({ x: false, linkedin: false }));
+    await waitFor(async () => expect((await denied.store.readPreferences()).sites).toEqual(siteRecord()));
     unmount();
 
     const skipped = setupLearning();
@@ -233,13 +237,14 @@ describe('Settings', () => {
     const prefs = () => setup.store.readPreferences();
 
     expect(screen.getByText('Prompts are off')).toBeInTheDocument();
-    await user.click(screen.getByRole('switch', { name: 'Prompts on X' }));
+    const siteX = () => within(screen.getByRole('group', { name: 'Social and video' })).getByRole('button', { name: 'X' });
+    await user.click(siteX());
     expect(permissions.request).toHaveBeenCalledWith(['x']);
-    await waitFor(() => expect(screen.getByRole('switch', { name: 'Prompts on X' })).toHaveAttribute('aria-checked', 'true'));
-    expect((await prefs()).sites).toEqual({ x: true, linkedin: false });
+    await waitFor(() => expect(siteX()).toHaveAttribute('aria-pressed', 'true'));
+    expect((await prefs()).sites).toEqual(siteRecord(['x']));
     expect(screen.queryByText('Prompts are off')).not.toBeInTheDocument();
 
-    await user.click(screen.getByRole('switch', { name: 'Prompts on X' }));
+    await user.click(siteX());
     expect(permissions.revoke).toHaveBeenCalledWith(['x']);
     await waitFor(async () => expect((await prefs()).sites.x).toBe(false));
 
@@ -269,7 +274,40 @@ describe('Settings', () => {
     const { user } = await openSettings(setup, fakePermissions(false));
     await user.click(screen.getByRole('button', { name: 'Turn on' }));
     expect(await screen.findByText('Chrome did not allow access, so prompts stay off.')).toBeInTheDocument();
-    expect((await setup.store.readPreferences()).sites).toEqual({ x: false, linkedin: false });
+    expect((await setup.store.readPreferences()).sites).toEqual(siteRecord());
+  });
+
+  it('switches a whole group of sites at once, asking only for the ones still off', async () => {
+    const setup = await onboardedLearner();
+    const { user, permissions } = await openSettings(setup);
+    const news = () => screen.getByRole('group', { name: 'News' });
+    const newsIds = SITES.filter((site) => site.group === 'news').map((site) => site.id);
+
+    await user.click(within(news()).getByRole('button', { name: 'NOS' }));
+    expect(permissions.request).toHaveBeenLastCalledWith(['nos']);
+    await waitFor(() => expect(within(news()).getByRole('button', { name: 'NOS' })).toHaveAttribute('aria-pressed', 'true'));
+
+    await user.click(within(news()).getByRole('button', { name: 'All' }));
+    expect(permissions.request).toHaveBeenLastCalledWith(newsIds.filter((id) => id !== 'nos'));
+    await waitFor(async () => expect((await setup.store.readPreferences()).sites).toEqual(siteRecord(newsIds)));
+
+    await user.click(await within(news()).findByRole('button', { name: 'None' }));
+    expect(permissions.revoke).toHaveBeenLastCalledWith(newsIds);
+    await waitFor(async () => expect((await setup.store.readPreferences()).sites).toEqual(siteRecord()));
+  });
+
+  it('shows a site as off once Chrome no longer allows it', async () => {
+    const setup = await onboardedLearner();
+    await setup.store.updatePreferences({ sites: siteRecord(['x', 'youtube']) });
+    // YouTube's access was taken away in Chrome's menu; X's is still there.
+    const permissions = fakePermissions();
+    await permissions.request(['x']);
+    await openSettings(setup, permissions);
+
+    const social = screen.getByRole('group', { name: 'Social and video' });
+    await waitFor(() => expect(within(social).getByRole('button', { name: 'YouTube' })).toHaveAttribute('aria-pressed', 'false'));
+    expect(within(social).getByRole('button', { name: 'X' })).toHaveAttribute('aria-pressed', 'true');
+    expect((await setup.store.readPreferences()).sites).toEqual(siteRecord(['x']));
   });
 
   it('asks before resetting, and only Reset everything clears progress', async () => {

@@ -1,6 +1,7 @@
 import { completeLesson, recordReviewResults } from '../../src/engine/progress';
 import { MINUTE } from '../../src/engine/schedule';
 import { emptyProgress } from '../../src/engine/types';
+import { SITE_IDS, siteRecord } from '../../src/sites';
 import { createStore, defaultPreferences, parsePreferences, parseProgress, STORAGE_KEYS } from '../../src/storage/store';
 import {
   MAX_PROMPTS_PER_SESSION,
@@ -64,10 +65,18 @@ describe('store', () => {
     expect(parsePreferences(null)).toEqual(defaultPreferences());
   });
 
+  it('keeps a switch for every site, off unless stored as on', () => {
+    expect(defaultPreferences().sites).toEqual(siteRecord());
+    expect(Object.keys(defaultPreferences().sites)).toEqual([...SITE_IDS]);
+    // Choices saved before the site list grew (X and LinkedIn only) keep their meaning; new sites start off.
+    expect(parsePreferences({ sites: { x: true, linkedin: false, myspace: true } }).sites).toEqual(siteRecord(['x']));
+    expect(parsePreferences({ sites: { youtube: true, nos: 'yes' } }).sites).toEqual(siteRecord(['youtube']));
+  });
+
   it('updates preferences and resets progress without touching preferences', async () => {
     const area = createMemoryArea();
     const store = createStore(area);
-    await store.updatePreferences({ quietMode: true, sites: { x: true, linkedin: false } });
+    await store.updatePreferences({ quietMode: true, sites: siteRecord(['x']) });
     await store.updateProgress((progress) => completeLesson(progress, index, 'x0-a-hello', [], 'focused', T0));
     await store.resetProgress();
     expect(await store.readProgress()).toEqual(emptyProgress());
@@ -76,8 +85,8 @@ describe('store', () => {
 });
 
 describe('browsing prompt rules', () => {
-  const prefs = { ...defaultPreferences(), sites: { x: true, linkedin: true } };
-  const context: PromptContext = { tab: 'tab-1', siteEnabled: true, typing: false };
+  const prefs = { ...defaultPreferences(), sites: siteRecord(['x', 'linkedin']) };
+  const context: PromptContext = { tab: 'tab-1', siteEnabled: true, typing: false, watching: false };
 
   function browse(minutes: number, start = newTriggerState(T0)) {
     let state = start;
@@ -104,6 +113,11 @@ describe('browsing prompt rules', () => {
   it('waits while the learner is typing', () => {
     const state = browse(9);
     expect(decidePrompt(state, prefs, state.lastActiveAt, { ...context, typing: true })).toEqual({ show: false, reason: 'typing' });
+  });
+
+  it('waits while the learner watches a video or the page is in full screen', () => {
+    const state = browse(9);
+    expect(decidePrompt(state, prefs, state.lastActiveAt, { ...context, watching: true })).toEqual({ show: false, reason: 'watching' });
   });
 
   it('respects quiet mode, snooze and sites that are switched off', () => {

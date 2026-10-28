@@ -43,7 +43,7 @@ export default defineBackground(() => {
       browser.offscreen.createDocument({
         url: OFFSCREEN_PATH,
         reasons: [browser.offscreen.Reason.AUDIO_PLAYBACK],
-        justification: 'Plays the Dutch audio clips for the practice card on X and LinkedIn.',
+        justification: 'Plays the Dutch audio clips for the practice card on the sites the learner picked.',
       }),
     send: (message) => browser.runtime.sendMessage(message),
   });

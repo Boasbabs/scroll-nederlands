@@ -1,7 +1,7 @@
 // First run: welcome, level and starting point, browsing prompts, then lesson 1.
 import { useState } from 'react';
 import { stageCheckpointId } from '../../engine/selection';
-import { SITES, type SiteId } from '../../sites';
+import { SITE_IDS, siteRecord, switchSites } from '../../sites';
 import { Button } from '../components/Button';
 import { SquigglePattern, Wordmark } from '../components/Decor';
 import { Icon } from '../components/Icon';
@@ -10,6 +10,7 @@ import { NudgeCard } from '../nudge/NudgeCard';
 import { ChipGroup, Segments, SignalBars } from './controls';
 import type { StartSession } from './PanelApp';
 import { PROMPT_INTERVALS } from './SettingsScreen';
+import { SitePicker } from './SitePicker';
 
 type Level = 'a0' | 'a1' | 'a2';
 
@@ -24,7 +25,8 @@ export function Onboarding({ start }: { start: StartSession }) {
   const [step, setStep] = useState(0);
   const [level, setLevel] = useState<Level>();
   const [from, setFrom] = useState<'scratch' | 'checkpoint'>();
-  const [sites, setSites] = useState<Record<SiteId, boolean>>({ x: true, linkedin: true });
+  // Every site starts ticked; the learner takes away the ones they do not want.
+  const [sites, setSites] = useState(() => siteRecord(SITE_IDS));
   const [minutes, setMinutes] = useState(8);
   const [prompts, setPrompts] = useState<'on' | 'off'>();
 
@@ -34,14 +36,14 @@ export function Onboarding({ start }: { start: StartSession }) {
   const first = course.lessons[0];
 
   function turnOn() {
-    const ids = SITES.map((site) => site.id).filter((id) => sites[id]);
+    const ids = SITE_IDS.filter((id) => sites[id]);
     // Straight from the click: Chrome shows the permission dialog only for a user gesture.
     const asked = ids.length > 0 && permissions ? permissions.request(ids) : Promise.resolve(ids.length > 0);
     void asked.then((granted) => {
       setPrompts(granted ? 'on' : 'off');
       return setPrefs({
         promptAfterMinutes: minutes,
-        sites: { x: granted && sites.x, linkedin: granted && sites.linkedin },
+        sites: siteRecord(granted ? ids : []),
       });
     });
   }
@@ -134,12 +136,7 @@ export function Onboarding({ start }: { start: StartSession }) {
             </div>
             <fieldset className="tn-fieldset" disabled={prompts !== undefined}>
               <legend className="tn-label">Show prompts on</legend>
-              {SITES.map((site) => (
-                <label key={site.id} className="tn-check">
-                  <input type="checkbox" checked={sites[site.id]} onChange={(event) => setSites({ ...sites, [site.id]: event.target.checked })} />
-                  {site.label}
-                </label>
-              ))}
+              <SitePicker value={sites} onChange={(ids, on) => setSites(switchSites(sites, ids, on))} />
               <span className="tn-label">After</span>
               <ChipGroup
                 label="Prompt after"
@@ -165,7 +162,7 @@ export function Onboarding({ start }: { start: StartSession }) {
           </Button>
         ) : (
           <>
-            <Button block onClick={turnOn} disabled={!SITES.some((site) => sites[site.id])}>
+            <Button block onClick={turnOn} disabled={!SITE_IDS.some((id) => sites[id])}>
               Turn on prompts
             </Button>
             <Button block variant="ghost" onClick={() => setPrompts('off')}>

@@ -9,7 +9,7 @@ import { emptyProgress, type ItemProgress } from '../src/engine/types';
 import { course } from '../src/curriculum';
 import { createStore, defaultPreferences, STORAGE_KEYS, type StorageAreaLike } from '../src/storage/store';
 import type { SitePermissions } from '../src/ui/env';
-import type { SiteId } from '../src/sites';
+import { siteRecord } from '../src/sites';
 
 export function createPreviewArea() {
   const data = new Map<string, string>();
@@ -111,7 +111,7 @@ export async function seed(area: StorageAreaLike, state: string, now: number, le
   progress.days[new Date(now - DAY).toISOString().slice(0, 10)] = 12;
   await area.set({
     [STORAGE_KEYS.progress]: progress,
-    [STORAGE_KEYS.prefs]: { ...defaultPreferences(), onboarded: true, sites: { x: true, linkedin: false } },
+    [STORAGE_KEYS.prefs]: { ...defaultPreferences(), onboarded: true, sites: siteRecord(['x', 'youtube']) },
     [STORAGE_KEYS.notes]: notes,
     [STORAGE_KEYS.drafts]: drafts,
     [STORAGE_KEYS.custom]: custom,
@@ -119,7 +119,7 @@ export async function seed(area: StorageAreaLike, state: string, now: number, le
 }
 
 export function fakePermissions(): SitePermissions {
-  const granted: Record<SiteId, boolean> = { x: true, linkedin: false };
+  const granted = siteRecord(['x', 'youtube']);
   return {
     async request(sites) {
       for (const site of sites) granted[site] = true;

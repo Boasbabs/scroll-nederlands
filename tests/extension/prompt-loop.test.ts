@@ -1,5 +1,6 @@
 import type { Placement } from '../../src/extension/placement';
 import { createPromptLoop, type PromptLoopDeps } from '../../src/extension/prompt-loop';
+import { siteRecord } from '../../src/sites';
 import { defaultPreferences, STORAGE_KEYS, type LearnerPreferences } from '../../src/storage/store';
 import { LEASE_MS, TICK_MS, type TriggerState } from '../../src/trigger/browsing';
 import type { NudgeController } from '../../src/ui/nudge/NudgeApp';
@@ -10,10 +11,11 @@ const T0 = new Date(2026, 9, 27, 9).getTime();
 
 /** One page with the prompt script: a controllable clock, focus, typing and placement. */
 function setup(prefs: Partial<LearnerPreferences> = {}, area = createMemoryArea(), clock = { now: T0 }) {
-  void area.set({ [STORAGE_KEYS.prefs]: { ...defaultPreferences(), onboarded: true, sites: { x: true, linkedin: false }, ...prefs } });
+  void area.set({ [STORAGE_KEYS.prefs]: { ...defaultPreferences(), onboarded: true, sites: siteRecord(['x']), ...prefs } });
   const page = {
     foreground: true,
     editing: false,
+    watching: false,
     placement: RIGHT as Placement | undefined,
     shown: [] as Array<Placement>,
     moved: [] as Array<Placement>,
@@ -27,6 +29,7 @@ function setup(prefs: Partial<LearnerPreferences> = {}, area = createMemoryArea(
     now: () => clock.now,
     isForeground: () => page.foreground,
     isEditing: () => page.editing,
+    isWatching: () => page.watching,
     place: () => page.placement,
     show: (placement, controller) => {
       page.shown.push(placement);
@@ -89,8 +92,19 @@ describe('in-page prompt loop', () => {
     expect(page.shown).toHaveLength(1);
   });
 
+  it('waits while the learner watches a long video or a page in full screen, and keeps the browsing time', async () => {
+    const { page, browse, trigger } = setup({ promptAfterMinutes: 5 });
+    page.watching = true;
+    await browse(6);
+    expect(page.shown).toEqual([]);
+    expect((await trigger()).activeMs).toBe(6 * 60_000);
+    page.watching = false;
+    await browse(0.25);
+    expect(page.shown).toEqual([RIGHT]);
+  });
+
   it('never prompts on a site that is switched off, in quiet mode or while snoozed', async () => {
-    for (const prefs of [{ sites: { x: false, linkedin: true } }, { quietMode: true }, { snoozeUntil: T0 + 60 * 60_000 }]) {
+    for (const prefs of [{ sites: siteRecord(['linkedin']) }, { quietMode: true }, { snoozeUntil: T0 + 60 * 60_000 }]) {
       const { page, browse } = setup({ promptAfterMinutes: 5, ...prefs });
       await browse(20);
       expect(page.shown).toEqual([]);
@@ -162,7 +176,7 @@ describe('in-page prompt loop', () => {
   it('takes an untouched card away when quiet mode is switched on elsewhere', async () => {
     const { loop, page, area, browse, trigger } = setup({ promptAfterMinutes: 5 });
     await browse(5.25);
-    await area.set({ [STORAGE_KEYS.prefs]: { ...defaultPreferences(), onboarded: true, sites: { x: true, linkedin: false }, quietMode: true } });
+    await area.set({ [STORAGE_KEYS.prefs]: { ...defaultPreferences(), onboarded: true, sites: siteRecord(['x']), quietMode: true } });
     await loop.recheck();
     expect(page.hidden).toBe(1);
     expect((await trigger()).lease).toBeUndefined();
@@ -172,7 +186,7 @@ describe('in-page prompt loop', () => {
     const { loop, page, area, browse } = setup({ promptAfterMinutes: 5 });
     await browse(5.25);
     loop.engage();
-    await area.set({ [STORAGE_KEYS.prefs]: { ...defaultPreferences(), sites: { x: true, linkedin: false }, snoozeUntil: T0 + 99 * 60_000 } });
+    await area.set({ [STORAGE_KEYS.prefs]: { ...defaultPreferences(), sites: siteRecord(['x']), snoozeUntil: T0 + 99 * 60_000 } });
     await loop.recheck();
     expect(page.hidden).toBe(0);
   });

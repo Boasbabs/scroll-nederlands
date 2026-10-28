@@ -1,5 +1,5 @@
-// The in-page prompt on X and LinkedIn. The background worker registers this script
-// at runtime, only for the sites the learner granted.
+// The in-page prompt on the learner's sites (src/sites.ts). The background worker
+// registers this script at runtime, only for the sites the learner granted.
 import { createRoot, type Root } from 'react-dom/client';
 import type { PublicPath } from 'wxt/browser';
 import componentsCss from '../../src/ui/components.css?inline';
@@ -11,7 +11,7 @@ import { createSpeaker } from '../../src/audio/speech';
 import { course } from '../../src/curriculum';
 import { clipManifest } from '../../src/extension/clips';
 import { isClipReply, type ExtensionMessage } from '../../src/extension/messages';
-import { CARD_INSET, isChatPage, measureHost, placeCard, type Placement } from '../../src/extension/placement';
+import { CARD_INSET, isChatPage, isWatching, measureHost, placeCard, type Placement } from '../../src/extension/placement';
 import { createPromptLoop } from '../../src/extension/prompt-loop';
 import { bundledImages } from '../../src/images/manifest';
 import { createRemotePictures } from '../../src/images/pictures';
@@ -135,6 +135,7 @@ export default defineContentScript({
       now: Date.now,
       isForeground: () => document.visibilityState === 'visible' && document.hasFocus(),
       isEditing: () => document.activeElement !== ui.shadowHost && isEditable(document.activeElement),
+      isWatching: () => isWatching(document),
       place: () => (isChatPage(site, location.pathname) ? undefined : placeCard(measureHost(document, site, ui.shadowHost))),
       show: (placement, controller) => void show(placement, controller),
       move: applyPlacement,
@@ -154,7 +155,7 @@ export default defineContentScript({
       { capture: true, passive: true },
     );
     ctx.addEventListener(window, 'resize', () => loop.relayout());
-    // X and LinkedIn change pages without reloading.
+    // Most of these sites change pages without reloading.
     ctx.addEventListener(window, 'wxt:locationchange', () => loop.relayout());
 
     const onChanged = (changes: Record<string, unknown>, areaName: string) => {

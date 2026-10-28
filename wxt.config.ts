@@ -12,7 +12,7 @@ export default defineConfig({
   manifest: {
     name: 'TaalNudge — Dutch A0 to A2',
     short_name: 'TaalNudge',
-    description: 'Short Dutch lessons and spaced reviews while you browse X and LinkedIn.',
+    description: 'Short Dutch lessons and spaced reviews while you browse X, LinkedIn, YouTube, Reddit, Instagram, Facebook and the news.',
     // sidePanel.open() and runtime.getContexts() need Chrome 116.
     minimum_chrome_version: '116',
     permissions: ['storage', 'sidePanel', 'scripting', 'offscreen'],

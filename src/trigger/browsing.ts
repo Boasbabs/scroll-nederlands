@@ -69,11 +69,13 @@ export type PromptContext = {
   siteEnabled: boolean;
   /** Focus is in a text field, or a key was pressed moments ago. */
   typing: boolean;
+  /** The page is in full screen, or a long video plays with sound. */
+  watching: boolean;
 };
 
 export type PromptDecision =
   | { show: true }
-  | { show: false; reason: 'site-off' | 'quiet' | 'snoozed' | 'shown-elsewhere' | 'session-cap' | 'too-soon' | 'typing' };
+  | { show: false; reason: 'site-off' | 'quiet' | 'snoozed' | 'shown-elsewhere' | 'session-cap' | 'too-soon' | 'typing' | 'watching' };
 
 export function decidePrompt(state: TriggerState, prefs: LearnerPreferences, now: number, context: PromptContext): PromptDecision {
   if (!context.siteEnabled) return { show: false, reason: 'site-off' };
@@ -84,6 +86,7 @@ export function decidePrompt(state: TriggerState, prefs: LearnerPreferences, now
   if (state.promptsShown >= MAX_PROMPTS_PER_SESSION) return { show: false, reason: 'session-cap' };
   if (state.activeMs < prefs.promptAfterMinutes * MINUTE) return { show: false, reason: 'too-soon' };
   if (context.typing) return { show: false, reason: 'typing' };
+  if (context.watching) return { show: false, reason: 'watching' };
   return { show: true };
 }
 

@@ -3,7 +3,7 @@
 import type { Correction, Draft } from '../corrections/types';
 import { mergeProgress } from '../engine/progress';
 import { emptyProgress, type ItemProgress, type LearnerProgress } from '../engine/types';
-import type { SiteId } from '../sites';
+import { SITE_IDS, siteRecord, type SiteId } from '../sites';
 
 /** The subset of chrome.storage.StorageArea the store needs. */
 export type StorageAreaLike = {
@@ -71,7 +71,7 @@ export function defaultPreferences(): LearnerPreferences {
     onboarded: false,
     promptAfterMinutes: 8,
     quietMode: false,
-    sites: { x: false, linkedin: false },
+    sites: siteRecord(),
     autoplayAudio: true,
     speechRate: 1,
     soundEffects: true,
@@ -98,7 +98,7 @@ export function parsePreferences(raw: unknown): LearnerPreferences {
     promptAfterMinutes: Math.min(PROMPT_MINUTES_RANGE.max, Math.max(PROMPT_MINUTES_RANGE.min, Math.round(minutes))),
     quietMode: raw.quietMode === true,
     snoozeUntil: typeof raw.snoozeUntil === 'number' ? raw.snoozeUntil : undefined,
-    sites: { x: sites.x === true, linkedin: sites.linkedin === true },
+    sites: siteRecord(SITE_IDS.filter((id) => sites[id] === true)),
     autoplayAudio: raw.autoplayAudio !== false,
     speechRate: Math.min(1.2, Math.max(0.6, finite(raw.speechRate, 1))),
     soundEffects: raw.soundEffects !== false,

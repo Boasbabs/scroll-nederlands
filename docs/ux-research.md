@@ -434,7 +434,7 @@ The owner found the hand-drawn set weak: the settings gear read as a sun, Course
 - **Settings** is Phosphor's eight-tooth gear, bold, in muted ink like the app bar's other buttons.
 - **Streak and combo chips** use the filled flame in Mango Orange on the Mango tint, with the ink count. The tint shows through the inner flame, the way Duolingo's centre is lighter.
 - **Not built:** Duolingo's grey flame until today's practice is done, and Babbel's grey chip at 0. The chip still hides at 0 and stays orange, because this change keeps the colours. `summary.week` already records whether today was practised, if the owner wants it later.
-- **The rest of the set** moves to the Phosphor glyph with the same meaning: speaker-high, check, x (both ✕ and ×), caret-right and caret-left, lock (the one with a keyhole, which reads better than lock-simple at 16px), star, microphone, play, pause, stop, dots-three, moon, flag, arrow-counter-clockwise (Record again), lightning, lightbulb, translate, backspace, arrow-up and keyboard. The brand mark and the level signal bars stay as drawn.
+- **The rest of the set** moves to the Phosphor glyph with the same meaning: speaker-high, check, x (both ✕ and ×), caret-right and caret-left, lock (the one with a keyhole, which reads better than lock-simple at 16px), star, microphone, play, pause, stop, dots-three, moon, flag, arrow-counter-clockwise (Record again), lightning, lightbulb, translate, backspace, arrow-up, keyboard and plus (a site chip that is off, §14.2). The brand mark and the level signal bars stay as drawn.
 
 These searches returned the `ai_usage_notice` again (Mobbin AI usage is high this month); it was shown to the owner.
 
@@ -529,3 +529,25 @@ Mobbin shows stills, so each moment cites the Finch screens whose before and aft
 - **Fixed while here.** Answer options never pressed down: their settle-in animation held its last frame (`transform: none`), which outranks `:active`. Entrances now fill backwards only, which looks the same while they play. The Quit and shortcuts sheets took focus while still below the panel, so the browser scrolled the whole panel up about 150px for the length of the rise; they now take focus without scrolling, as do the reset dialog and the ⋯ menu (which also keeps the host page still).
 - **Tokens** (`motion.css`): `--t-release` 180ms, `--t-tick` 320ms, `--t-fill` 400ms, `--t-exit` 180ms, `--ease-fill`, and `--stagger` is now 40ms.
 - **Preview:** `?state=streak` seeds a learner who studied yesterday, so a session today grows the streak.
+
+## 14. Prompts on more sites (eighth session, 2026-10-29)
+
+The owner asked for the card on more of the sites where browsing time goes: a fixed list, with each site switched on or off on its own. Time in desktop apps is out of reach for an extension and out of scope.
+
+### 14.1 The list
+- **Social and video:** X, LinkedIn, YouTube, Reddit (`www.` and `old.`), Instagram and Facebook. **News:** BBC (`.com` and `.co.uk`), The Guardian, CNN (`edition.` and `www.`), The New York Times, NOS, NU.nl, NL Times, DutchNews.nl and Hacker News. The news picks mix international news, Dutch news, the two English-language Dutch sites expats read, and Hacker News. Hosts were checked where the test browser could open them (`nu.nl` goes to `www.nu.nl`, `dutchnews.nl` to `www.dutchnews.nl`).
+- Each site is its own optional host permission, so access stays per site. Browsing time is one count across the sites that are on.
+
+### 14.2 Picking sites
+- **Chips, not switches.** Fifteen switch rows would fill a screen of Settings. The sites are tag chips in two groups, Social and video and News, each with **All** or **None**. A chip that is off shows +, one that is on shows ✓ in the selected style. Both glyphs are the same size, so a tap never reflows the rows. The chips keep their own width, as tags do; the single-choice chips elsewhere share a row's width.
+- **Onboarding** ticks every site. The learner takes away what they don't want, and **Turn on prompts** asks Chrome for the ticked sites in one dialog.
+- **Settings** asks for one site per tap, or for a group's sites that are off with **All**. **None** and unticking remove access. When Chrome's own site access menu has removed a site, Settings shows it as off when it opens.
+
+### 14.3 Where the card goes on other sites *(rule)*
+- **Feed column** by known selectors where a site has one: YouTube's watch page (`ytd-watch-flexy #primary`, so the card sits over the related videos), Reddit (`shreddit-feed`), Instagram (the posts on screen) and Facebook (`[role="feed"]`).
+- **Reading column** everywhere else. Paragraphs on screen that are at least two lines tall and 240px wide count as body text. When two or more of them span no more than two thirds of the viewport, that span is the column and stays clear. At 1440px, The Guardian's column measured 330–950 and NOS's 400–1040, so the card fits beside them. BBC's measured 359–1081, which leaves 5px too little, so on BBC articles the card waits. A wider spread is a page of stories, and the card may take the corner, as chat widgets do. Only boxes are measured, never text.
+- **Videos** on screen are never covered.
+- **Dialogs.** A fixed element that covers nine tenths of the viewport both ways is a dialog or a consent wall, such as YouTube's, or Sourcepoint's on BBC and The Guardian. Nothing fits beside it, so the card waits. A fixed element that holds the page's content is the page's own frame and may be covered.
+- **Watching.** No new card appears while a video longer than 3 minutes plays with sound, or while the page is in full screen. The browsing time is kept. Shorts and Reels are shorter, so a prompt can still come while scrolling through them.
+- **Whole-page chats** now include Instagram's `/direct`, Facebook's `/messages` and Reddit's `/chat`.
+- **Not checked live:** Reddit (blocked in the test browser), and Instagram and Facebook (sign-in walls).

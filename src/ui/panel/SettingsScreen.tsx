@@ -1,8 +1,8 @@
 // Settings: grouped cards, label left, control right, changes apply at once.
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { bundledImages, type ImageManifest } from '../../images/manifest';
 import { snoozeEnd, type SnoozeChoice } from '../../trigger/browsing';
-import { SITES, type SiteId } from '../../sites';
+import { SITE_IDS, switchSites, type SiteId } from '../../sites';
 import { NEW_WORDS_CHOICES } from '../../storage/store';
 import { Button } from '../components/Button';
 import { Icon } from '../components/Icon';
@@ -10,6 +10,7 @@ import { useEnv } from '../env';
 import { formatClock } from '../format';
 import { HetImageChoice } from '../player/het';
 import { ChipGroup, ConfirmDialog, Group, RowTile, Toggle } from './controls';
+import { SitePicker } from './SitePicker';
 
 export const PROMPT_INTERVALS = [5, 8, 15, 30] as const;
 
@@ -69,7 +70,20 @@ export function SettingsScreen({ images = bundledImages }: { images?: ImageManif
   const [snoozeOpen, setSnoozeOpen] = useState(false);
   const [notice, setNotice] = useState<string>();
   const snoozed = prefs.snoozeUntil && prefs.snoozeUntil > now() ? prefs.snoozeUntil : undefined;
-  const anySite = SITES.some((site) => prefs.sites[site.id]);
+  const anySite = SITE_IDS.some((id) => prefs.sites[id]);
+
+  // Chrome can take a site's access away (its site access menu); such a site shows as off.
+  useEffect(() => {
+    let live = true;
+    void permissions?.granted().then((granted) => {
+      const lost = SITE_IDS.filter((id) => prefs.sites[id] && !granted[id]);
+      if (live && lost.length > 0) void setPrefs({ sites: switchSites(prefs.sites, lost, false) });
+    });
+    return () => {
+      live = false;
+    };
+    // Checked once, when Settings opens.
+  }, []);
 
   // The permission request must run straight from the click, before any await.
   function enableSites(ids: ReadonlyArray<SiteId>) {
@@ -80,17 +94,18 @@ export function SettingsScreen({ images = bundledImages }: { images?: ImageManif
         return;
       }
       setNotice(undefined);
-      await setPrefs({ sites: { ...prefs.sites, ...Object.fromEntries(ids.map((id) => [id, true])) } });
+      await setPrefs({ sites: switchSites(prefs.sites, ids, true) });
     });
   }
 
-  function setSite(id: SiteId, on: boolean) {
+  function setSites(ids: ReadonlyArray<SiteId>, on: boolean) {
+    if (ids.length === 0) return;
     if (on) {
-      enableSites([id]);
+      enableSites(ids);
       return;
     }
-    void permissions?.revoke([id]);
-    void setPrefs({ sites: { ...prefs.sites, [id]: false } });
+    void permissions?.revoke(ids);
+    void setPrefs({ sites: switchSites(prefs.sites, ids, false) });
   }
 
   return (
@@ -100,15 +115,22 @@ export function SettingsScreen({ images = bundledImages }: { images?: ImageManif
           <div className="tn-row tn-row--notice">
             <RowTile icon="bellSlash" />
             <span className="tn-row__label">Prompts are off</span>
-            <button type="button" className="tn-link" onClick={() => enableSites(SITES.map((site) => site.id))}>
+            <button type="button" className="tn-link" onClick={() => enableSites(SITE_IDS)}>
               Turn on
             </button>
           </div>
         )}
         {notice ? <p className="tn-row__helper tn-row--pad">{notice}</p> : null}
-        {SITES.map((site) => (
-          <Toggle key={site.id} icon="browser" label={`Prompts on ${site.label}`} checked={prefs.sites[site.id]} onChange={(on) => setSite(site.id, on)} />
-        ))}
+        <div className="tn-row tn-row--stack">
+          <div className="tn-row__head">
+            <RowTile icon="browser" />
+            <div className="tn-row__text">
+              <span className="tn-row__label">Sites</span>
+              <span className="tn-row__helper">Prompts show only on the sites you pick.</span>
+            </div>
+          </div>
+          <SitePicker value={prefs.sites} onChange={setSites} />
+        </div>
         <div className="tn-row tn-row--stack">
           <div className="tn-row__head">
             <RowTile icon="timer" />

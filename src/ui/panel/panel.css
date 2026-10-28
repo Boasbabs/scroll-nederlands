@@ -947,17 +947,33 @@ button.tn-today-row:active .tn-icon-tile {
   padding: 0;
   border: 0;
 }
-.tn-check {
+/* ---------- Site picker (onboarding and Settings) ---------- */
+.tn-sites {
+  display: grid;
+  gap: 14px;
+}
+.tn-sites__group {
+  display: grid;
+  gap: 8px;
+}
+.tn-sites__head {
   display: flex;
   align-items: center;
-  gap: 10px;
-  min-height: 44px;
+  justify-content: space-between;
+  gap: 12px;
+}
+.tn-sites__label {
+  color: var(--ink-muted);
+  font-size: var(--text-sm);
   font-weight: 800;
 }
-.tn-check input {
-  width: 20px;
-  height: 20px;
-  accent-color: var(--primary);
+/* Site chips keep their own width, as tags do: a lone chip never stretches across a row. */
+.tn-site-chip {
+  flex: 0 1 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
 }
 .tn-signal {
   flex: none;

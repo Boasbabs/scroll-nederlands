@@ -8,7 +8,7 @@ import type { SiteId } from '../sites';
 import type { LearnerPreferences } from '../storage/store';
 import type { Sfx } from './sfx';
 
-/** panel: the side panel. card: the in-page card on X or LinkedIn. */
+/** panel: the side panel. card: the in-page card on one of the learner's sites. */
 export type Surface = 'panel' | 'card';
 
 /** Site access for in-page prompts: chrome.permissions in the extension. */

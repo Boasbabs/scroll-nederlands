@@ -1,4 +1,4 @@
-/* In-page prompt on X and LinkedIn, in Finch's look on the Today ground. Lives in a shadow root;
+/* In-page prompt on the learner's sites, in Finch's look on the Today ground. Lives in a shadow root;
    positioned by the content script. */
 
 .tn-nudge {

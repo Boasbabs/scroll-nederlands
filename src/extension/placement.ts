@@ -1,7 +1,8 @@
-// Where the in-page card goes (docs/ux-research.md §1.11): 24px from the right edge,
+// Where the in-page card goes (docs/ux-research.md §1.11, §14): 24px from the right edge,
 // its bottom 16px above the host's own bottom-right dock (20px with none); never over
-// the feed column, an open chat or X's Spaces dock; else bottom-left; else nowhere this
-// interval. Only element boxes are measured; no page text is read.
+// the feed or reading column, a video, an open chat, a dialog or X's Spaces dock; else
+// bottom-left; else nowhere this interval. Only element boxes and states are measured;
+// no page text is read.
 import type { SiteId } from '../sites';
 
 export type Box = { left: number; top: number; right: number; bottom: number };
@@ -12,10 +13,12 @@ export type Placement = { side: Side; bottom: number; maxHeight: number };
 export type HostLayout = {
   width: number;
   height: number;
-  /** The content column (the feed). */
+  /** The content column: the feed, or the text of an article. */
   feed?: Box;
-  /** Fixed elements near the bottom of the viewport: docks, chat windows, toasts. */
+  /** Fixed elements near the bottom of the viewport: docks, chat windows, toasts, dialogs. */
   floating: Array<Box>;
+  /** Videos on screen. */
+  media?: Array<Box>;
 };
 
 export const CARD_INSET = 24;
@@ -65,27 +68,59 @@ export function placeCard(layout: HostLayout, cardHeight = CARD_HEIGHT): Placeme
     if (maxHeight < cardHeight) continue;
     // Everything the card may grow into after "Learn now" must be clear, not just the collapsed card.
     const space = { left, right, top: layout.height - bottom - maxHeight, bottom: layout.height - bottom };
-    const blockers = [...(layout.feed ? [layout.feed] : []), ...layout.floating.filter((box) => !docks.includes(box))];
+    const blockers = [...(layout.feed ? [layout.feed] : []), ...(layout.media ?? []), ...layout.floating.filter((box) => !docks.includes(box))];
     if (blockers.some((box) => overlaps(space, box))) continue;
     return { side, bottom, maxHeight };
   }
   return undefined;
 }
 
-/** Pages that are a chat as a whole (X's messages, LinkedIn's messaging): the card would cover the conversation. */
-const CHAT_PAGES: Record<SiteId, RegExp> = {
+/** Pages that are a chat as a whole (messages and inboxes): the card would cover the conversation. */
+const CHAT_PAGES: Partial<Record<SiteId, RegExp>> = {
   x: /^\/(messages|i\/chat)(\/|$)/,
   linkedin: /^\/messaging(\/|$)/,
+  instagram: /^\/direct(\/|$)/,
+  facebook: /^\/messages(\/|$)/,
+  reddit: /^\/chat(\/|$)/,
 };
 
 export function isChatPage(site: SiteId, pathname: string): boolean {
-  return CHAT_PAGES[site].test(pathname);
+  return CHAT_PAGES[site]?.test(pathname) ?? false;
 }
 
-const FEED_SELECTORS: Record<SiteId, Array<string>> = {
+/** Videos up to this long (seconds) are clips and short-form feeds (Shorts, Reels): they do not hold the prompt. */
+const SHORT_VIDEO_MAX = 180;
+
+/** The learner is watching: the page is in full screen (the card would not show), or a long video plays with sound. */
+export function isWatching(doc: Document): boolean {
+  if (doc.fullscreenElement) return true;
+  for (const video of doc.querySelectorAll('video')) {
+    // A length not known yet (NaN) or a live stream (Infinity) counts as long.
+    if (!video.paused && !video.ended && !video.muted && video.volume > 0 && !(video.duration <= SHORT_VIDEO_MAX)) return true;
+  }
+  return false;
+}
+
+/**
+ * The feed column on sites that have one; all visible matches of the first selector
+ * that has any (Instagram's posts). Elsewhere the reading column stands in.
+ */
+const FEED_SELECTORS: Partial<Record<SiteId, Array<string>>> = {
   x: ['[data-testid="primaryColumn"]', 'main[role="main"]'],
   linkedin: ['main.scaffold-layout__main', 'main#main', 'main', '[role="main"]'],
+  youtube: ['ytd-watch-flexy #primary'],
+  reddit: ['shreddit-feed'],
+  instagram: ['main article'],
+  facebook: ['[role="feed"]'],
 };
+
+/** A paragraph this tall (two lines) and wide is body text, not a caption or a byline. */
+const BODY_TEXT_MIN_HEIGHT = 40;
+const BODY_TEXT_MIN_WIDTH = 240;
+/** Body text spread wider than this share of the viewport is a page of stories, not a column. */
+const COLUMN_MAX_SHARE = 2 / 3;
+/** A fixed element covering this share of the viewport both ways is a dialog, a consent wall or an app's frame. */
+const COVER_SHARE = 0.9;
 
 function toBox(rect: DOMRect | Box): Box {
   return { left: rect.left, top: rect.top, right: rect.right, bottom: rect.bottom };
@@ -95,11 +130,46 @@ function union(a: Box, b: Box): Box {
   return { left: Math.min(a.left, b.left), top: Math.min(a.top, b.top), right: Math.max(a.right, b.right), bottom: Math.max(a.bottom, b.bottom) };
 }
 
+function onScreen(rect: DOMRect, height: number): boolean {
+  return rect.width > 0 && rect.height > 0 && rect.bottom > 0 && rect.top < height;
+}
+
 /**
- * Measures the page: its feed column (known selectors per site) and the fixed
- * elements hit by probe points in both bottom corners. Fixed elements that reach
- * the top edge are the page's own frame (X's left navigation) and are left out:
- * covering the left column is the fallback the research allows.
+ * The column of body text being read (a news article), from paragraph boxes alone:
+ * at least two paragraphs of two lines or more, together no wider than a column.
+ */
+function readingColumn(doc: Document, width: number, height: number): Box | undefined {
+  let column: Box | undefined;
+  let count = 0;
+  for (const paragraph of doc.querySelectorAll('p')) {
+    const rect = paragraph.getBoundingClientRect();
+    if (!onScreen(rect, height) || rect.height < BODY_TEXT_MIN_HEIGHT || rect.width < BODY_TEXT_MIN_WIDTH) continue;
+    const box = { left: rect.left, right: rect.right, top: 0, bottom: height };
+    column = column ? union(column, box) : box;
+    count++;
+  }
+  if (!column || count < 2 || column.right - column.left > width * COLUMN_MAX_SHARE) return undefined;
+  return column;
+}
+
+/** Videos on screen, cut to the viewport. */
+function videoBoxes(doc: Document, width: number, height: number): Array<Box> {
+  const boxes: Array<Box> = [];
+  for (const video of doc.querySelectorAll('video')) {
+    const rect = video.getBoundingClientRect();
+    if (!onScreen(rect, height) || rect.right <= 0 || rect.left >= width) continue;
+    boxes.push({ left: Math.max(0, rect.left), top: Math.max(0, rect.top), right: Math.min(width, rect.right), bottom: Math.min(height, rect.bottom) });
+  }
+  return boxes;
+}
+
+/**
+ * Measures the page: its feed column (known selectors per site, else the column of
+ * body text), its videos, and the fixed elements hit by probe points in both bottom
+ * corners. Fixed elements that reach the top edge are the page's own frame (X's left
+ * navigation) and are left out: covering the left column is the fallback the research
+ * allows. So is a fixed element that holds the page's content. One that covers the
+ * viewport otherwise is a dialog or a consent wall, and nothing fits beside it.
  */
 export function measureHost(doc: Document, site: SiteId, ownHost?: Element): HostLayout {
   const view = doc.defaultView;
@@ -107,13 +177,19 @@ export function measureHost(doc: Document, site: SiteId, ownHost?: Element): Hos
   const height = doc.documentElement.clientHeight || view?.innerHeight || 0;
 
   let feed: Box | undefined;
-  for (const selector of FEED_SELECTORS[site]) {
-    const rect = doc.querySelector(selector)?.getBoundingClientRect();
-    if (rect && rect.width > 0 && rect.height > 0) {
-      feed = { left: rect.left, right: rect.right, top: Math.max(0, rect.top), bottom: Math.min(height, rect.bottom) };
-      break;
+  let feedElement: Element | undefined;
+  for (const selector of FEED_SELECTORS[site] ?? []) {
+    for (const element of doc.querySelectorAll(selector)) {
+      const rect = element.getBoundingClientRect();
+      if (!onScreen(rect, height)) continue;
+      const box = { left: rect.left, right: rect.right, top: Math.max(0, rect.top), bottom: Math.min(height, rect.bottom) };
+      feed = feed ? union(feed, box) : box;
+      feedElement ??= element;
     }
+    if (feed) break;
   }
+  feed ??= readingColumn(doc, width, height);
+  const content = [feedElement, doc.querySelector('main, [role="main"]')].filter((element) => element != null);
 
   const fixedCache = new Map<Element, boolean>();
   const isFixed = (element: Element) => {
@@ -149,6 +225,10 @@ export function measureHost(doc: Document, site: SiteId, ownHost?: Element): Hos
       found.set(fixed, box);
     }
   }
-  const floating = [...found.values()].filter((box) => box.top > 0 && box.bottom > box.top && box.right > box.left);
-  return { width, height, feed, floating };
+  const covers = (box: Box) => box.right - box.left >= width * COVER_SHARE && box.bottom - box.top >= height * COVER_SHARE;
+  const frame = (element: Element, box: Box) => content.some((part) => element.contains(part)) || (box.top <= 0 && !covers(box));
+  const floating = [...found]
+    .filter(([element, box]) => box.bottom > box.top && box.right > box.left && !frame(element, box))
+    .map(([, box]) => box);
+  return { width, height, feed, floating, media: videoBoxes(doc, width, height) };
 }

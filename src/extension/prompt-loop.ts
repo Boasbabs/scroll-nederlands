@@ -30,6 +30,8 @@ export type PromptLoopDeps = {
   isForeground: () => boolean;
   /** Focus is in one of the page's text fields or editors. */
   isEditing: () => boolean;
+  /** The page is in full screen, or a long video plays with sound. */
+  isWatching: () => boolean;
   /** Where the card fits now, or undefined when it would cover something. */
   place: () => Placement | undefined;
   show: (placement: Placement, controller: NudgeController) => void;
@@ -97,6 +99,7 @@ export function createPromptLoop(deps: PromptLoopDeps) {
     const siteEnabled = prefs.sites[deps.site];
     const active = count && siteEnabled && now - lastInputAt < ACTIVE_WINDOW_MS;
     const typing = deps.isEditing() || now - lastKeyAt < TYPING_GRACE_MS;
+    const watching = deps.isWatching();
     let action: { show: Placement } | 'hide' | undefined;
 
     await updateTrigger((stored, at) => {
@@ -114,7 +117,7 @@ export function createPromptLoop(deps: PromptLoopDeps) {
         action = 'hide';
         return state;
       }
-      if (!decidePrompt(state, prefs, at, { tab: deps.tab, siteEnabled, typing }).show) return state;
+      if (!decidePrompt(state, prefs, at, { tab: deps.tab, siteEnabled, typing, watching }).show) return state;
       const placement = deps.place();
       // Every corner would cover the feed or the host's own UI: skip this interval.
       if (!placement) return releasePrompt(state, deps.tab);

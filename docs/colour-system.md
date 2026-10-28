@@ -90,10 +90,10 @@ Button variants follow the roles: `primary` (Warm Blue), `secondary` (a soft fac
 
 | Surface | Colours |
 |---|---|
-| Side panel shell | White app bar and tab bar on a `#F3F4F7` ground; active tab Warm Blue; streak chip Mango tint; Review tab badge Mango with an ink count |
-| Today | Golden Yellow review card with the ink `Review now`; white Continue card with a Warm Blue bar and `Start`; caught-up tick in a Seaweed disc |
-| Course | One band per stage (Golden Yellow, Seaweed Green, Denim Blue, Mango Orange); done nodes Warm Blue; current node Mango ring with a Dark Cerulean `Start` bubble; locked nodes grey; checkpoints Butterfly Bush; `Current lesson` pill Dark Cerulean |
-| Review, Progress | Warm Blue `Start review`; studied days Mango; New / Learning / Strong rings grey / Mango / Seaweed; stage bars Warm Blue |
+| Side panel shell | The header on each tab's ground (`--ground-*`); a white raised tab bar whose selected tab is Warm Blue on a soft tile in the ground colour; streak chip Mango tint; Review tab badge Mango with an ink count |
+| Today | Light Denim Blue ground; Golden Yellow review card on an orange-yellow edge with the ink `Review now`; raised white Continue card with a Warm Blue count bar and `Start`; To do today lines with Denim Blue, Dark Cerulean and Mango Orange activity tiles; caught-up tick in a Seaweed disc |
+| Course | Light Dark Cerulean ground; one band per stage (Golden Yellow, Seaweed Green, Denim Blue, Mango Orange) on raised cards; Warm Blue count bars; a dashed grey connector; done nodes Warm Blue; current node Mango ring with a Dark Cerulean `Start` bubble; locked nodes grey; checkpoints Butterfly Bush; `Current lesson` pill Dark Cerulean |
+| Review, Progress | Light Mid Blue and light Dodger Blue grounds; Warm Blue `Start review` and a white `Practice anyway`; studied days Mango; New / Learning / Strong rings grey / Mango / Seaweed; Warm Blue count bars beside the words, ear, de/het and lessons tiles |
 | Settings | Warm Blue switches; Mid Blue chosen chips; `Reset progress` and `Reset everything` in Flush Mahogany under a Warm Blue `Keep my progress`; notice row Golden tint |
 | Onboarding | Warm Blue hero with Dodger Blue squiggles, two-tone wordmark and a Golden Yellow `Get started`; level and start rows turn Mid Blue on a Denim tint when chosen; `Recommended` chip Golden Yellow |
 | Lesson player | Warm Blue progress, audio and mic; learn-card tips Golden tint; picked option Mid Blue; `REVIEW` chip Golden Yellow; combo chip Mango tint |

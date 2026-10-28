@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 /**
  * A progress bar that springs forward and glints when it advances. With `count`, the bar is thick and
  * carries the count inside, as Finch's quest bars do: `true` shows "value / max", a string shows itself.
+ * `decorative` draws it in spans with no role, for inside a button whose own text gives the count.
  */
 export function ProgressBar({
   value,
@@ -10,12 +11,14 @@ export function ProgressBar({
   label,
   thin = false,
   count,
+  decorative = false,
 }: {
   value: number;
   max: number;
-  label: string;
+  label?: string;
   thin?: boolean;
   count?: boolean | string;
+  decorative?: boolean;
 }) {
   const percent = max > 0 ? Math.min(100, Math.max(0, (value / max) * 100)) : 0;
   const previous = useRef(value);
@@ -34,9 +37,13 @@ export function ProgressBar({
 
   const text = count === true ? `${value} / ${max}` : count || null;
   const classes = ['tn-progress', thin && !text && 'tn-progress--thin', text && 'tn-progress--count'].filter(Boolean).join(' ');
+  const Part = decorative ? 'span' : 'div';
+  const semantics = decorative
+    ? { 'aria-hidden': true }
+    : { role: 'progressbar', 'aria-label': label, 'aria-valuemin': 0, 'aria-valuemax': max, 'aria-valuenow': value };
   return (
-    <div className={classes} role="progressbar" aria-label={label} aria-valuemin={0} aria-valuemax={max} aria-valuenow={value}>
-      <div className="tn-progress__fill" data-bump={bump} style={{ width: `${percent}%` }} />
+    <Part className={classes} {...semantics}>
+      <Part className="tn-progress__fill" data-bump={bump} style={{ width: `${percent}%` }} />
       {text ? (
         <>
           <span className="tn-progress__count" aria-hidden="true">
@@ -47,6 +54,6 @@ export function ProgressBar({
           </span>
         </>
       ) : null}
-    </div>
+    </Part>
   );
 }

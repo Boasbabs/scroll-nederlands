@@ -8,7 +8,7 @@ Agreed with the owner on 2026-10-28, in an interview of 27 questions (the "Repla
 |---|---|---|
 | 0 | Commit the work already in the tree | Done (a826a3a) |
 | 1 | Shared parts: tokens and components | Done |
-| 2 | Side panel shell and the four tabs | Not started |
+| 2 | Side panel shell and the four tabs | Done |
 | 3 | Lesson player and end screens | Not started |
 | 4 | Onboarding and Settings | Not started |
 | 5 | In-page card, toasts and dialogs | Not started |

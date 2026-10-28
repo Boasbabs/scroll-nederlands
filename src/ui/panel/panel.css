@@ -17,13 +17,20 @@ body {
   display: grid;
   grid-template-rows: 48px 1fr 56px;
   height: 100%;
+  background: var(--ground);
+  transition: background-color var(--t-base) var(--ease-out);
 }
+/* One light ground per surface (theme.css), as Finch gives each tab its own; the header sits on it. */
+.tn-shell[data-ground='today'] { --ground: var(--ground-today); }
+.tn-shell[data-ground='course'] { --ground: var(--ground-course); }
+.tn-shell[data-ground='review'] { --ground: var(--ground-review); }
+.tn-shell[data-ground='progress'] { --ground: var(--ground-progress); }
+.tn-shell[data-ground='settings'] { --ground: var(--ground-settings); }
 .tn-appbar {
   display: flex;
   align-items: center;
   gap: 8px;
   padding: 0 8px 0 var(--gutter);
-  border-bottom: 1px solid var(--line);
 }
 .tn-appbar .tn-icon-btn:first-child {
   margin-left: -8px;
@@ -51,15 +58,41 @@ body {
 .tn-shell__main {
   overflow-y: auto;
   overscroll-behavior: contain;
-  background: var(--bg);
 }
+/* White, raised off the ground by a soft edge. */
 .tn-tabbar {
+  position: relative;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  border-top: 1px solid var(--line);
+  padding: 0 6px;
   background: var(--surface);
+  box-shadow: 0 -1px 0 var(--raise-edge), 0 -10px 24px -18px rgba(22, 23, 29, 0.35);
+}
+/* Finch's soft tile behind the selected tab, in the surface's ground; it slides to the new tab. */
+.tn-tabbar__tile {
+  position: absolute;
+  top: 6px;
+  bottom: 6px;
+  left: 6px;
+  width: calc((100% - 12px) / 4);
+  transform: translateX(calc(var(--tab, 0) * 100%));
+  transition:
+    transform 260ms var(--ease-in-out),
+    opacity var(--t-quick) var(--ease-out);
+  pointer-events: none;
+}
+.tn-tabbar__tile::before {
+  content: '';
+  position: absolute;
+  inset: 0 8px;
+  border-radius: 14px;
+  background: var(--ground);
+}
+.tn-tabbar__tile[data-hidden] {
+  opacity: 0;
 }
 .tn-tabbar__tab {
+  position: relative;
   display: grid;
   justify-items: center;
   align-content: center;
@@ -103,7 +136,39 @@ body {
   padding: var(--gutter);
 }
 .tn-screen > .tn-stats {
+  border: 0;
+  border-radius: var(--radius-card);
   background: var(--surface);
+  box-shadow: var(--raise);
+}
+.tn-screen > .tn-stats > div + div {
+  border-left-color: var(--line);
+}
+
+/* Section titles sit on the ground, outside their cards: bold sentence case in the display font (Finch Quests). */
+.tn-section {
+  display: grid;
+  gap: 10px;
+}
+.tn-section__title {
+  padding: 0 4px;
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+/* Raised white cards with no outline (components.css .tn-card). */
+.tn-continue,
+.tn-caught-up,
+.tn-review-tab,
+.tn-panel-card,
+.tn-stage {
+  --secondary-face: var(--soft-face);
+  --secondary-edge: var(--soft-edge);
+  border-radius: var(--radius-card);
+  background: var(--surface);
+  box-shadow: var(--raise);
 }
 
 /* ---------- Today ---------- */
@@ -112,9 +177,10 @@ body {
   gap: 8px;
   justify-items: start;
   padding: 18px;
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-card);
   background: var(--highlight);
   color: var(--on-highlight);
+  box-shadow: 0 3px 0 var(--highlight-edge), 0 12px 20px -16px rgba(22, 23, 29, 0.3);
 }
 .tn-review-card__count {
   font-size: 20px;
@@ -123,9 +189,6 @@ body {
   display: grid;
   gap: 10px;
   padding: 16px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-lg);
-  background: var(--surface);
 }
 .tn-continue__context {
   color: var(--ink-muted);
@@ -144,8 +207,6 @@ body {
   justify-items: center;
   gap: 6px;
   padding: 20px 16px;
-  border-radius: var(--radius-lg);
-  background: var(--surface);
   text-align: center;
 }
 .tn-caught-up__tick {
@@ -165,11 +226,14 @@ body {
   margin-top: 6px;
 }
 /* To do today: short tasks as one list of lines, as Duolingo lists its daily quests. */
-.tn-today-list {
-  display: grid;
-  margin: 0 0 -6px;
-  padding: 0;
+.tn-panel-card.tn-today-list {
+  gap: 0;
+  margin: 0;
+  padding: 2px 16px;
   list-style: none;
+}
+.tn-today-list > li:first-child .tn-today-row {
+  border-top: 0;
 }
 .tn-today-row {
   display: flex;
@@ -184,24 +248,22 @@ body {
   color: var(--ink);
   text-align: left;
 }
+/* A finished line: a tick in a Seaweed Green disc where the tile was. */
 .tn-today-row__tile {
   display: grid;
   place-items: center;
   flex: none;
   width: 40px;
   height: 40px;
-  border-radius: var(--radius-sm);
-  background: var(--soft-fill);
-  color: var(--ink);
-  transition: transform var(--t-quick) var(--ease-spring);
-}
-button.tn-today-row:active .tn-today-row__tile {
-  transform: scale(0.9);
-}
-.tn-today-row__tile[data-done] {
   border-radius: var(--radius-pill);
   background: var(--correct);
   color: var(--on-correct);
+}
+.tn-today-row .tn-icon-tile {
+  transition: transform var(--t-quick) var(--ease-spring);
+}
+button.tn-today-row:active .tn-icon-tile {
+  transform: scale(0.9);
 }
 .tn-today-row__text {
   display: grid;
@@ -234,8 +296,6 @@ button.tn-today-row:active .tn-today-row__tile {
   justify-items: center;
   gap: 4px;
   padding: 24px 16px 16px;
-  border-radius: var(--radius-lg);
-  background: var(--surface);
 }
 .tn-review-tab__count {
   font-size: 40px;
@@ -249,14 +309,24 @@ button.tn-today-row:active .tn-today-row__tile {
   display: grid;
   gap: 12px;
   padding: 16px;
-  border-radius: var(--radius-lg);
-  background: var(--surface);
 }
-.tn-week {
+/* A count beside its activity tile: the line on top, the bar under it. */
+.tn-meter {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.tn-meter__text {
   display: grid;
+  flex: 1;
+  gap: 8px;
+  min-width: 0;
+}
+.tn-panel-card.tn-week {
   grid-template-columns: repeat(7, 1fr);
+  gap: 0;
   margin: 0;
-  padding: 0;
+  padding: 14px 8px;
   list-style: none;
 }
 .tn-week li {
@@ -281,6 +351,9 @@ button.tn-today-row:active .tn-today-row__tile {
   color: var(--ink-muted);
   font-size: var(--text-xs);
   font-weight: 800;
+}
+.tn-panel-card > div:first-child > .tn-state-row {
+  border-top: 0;
 }
 .tn-state-row {
   display: flex;
@@ -352,26 +425,23 @@ button.tn-today-row:active .tn-today-row__tile {
 }
 .tn-stage-bars li {
   display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 4px 8px;
+  gap: 6px;
 }
-.tn-stage-bars .tn-progress {
-  grid-column: 1 / -1;
-}
-.tn-tiles {
-  display: grid;
+.tn-panel-card.tn-tiles {
   grid-template-columns: repeat(4, 1fr);
   gap: 8px;
   margin: 0;
+  padding: 12px;
 }
+/* Soft grey cells inside the card, with no outline. */
 .tn-tiles div {
   display: flex;
   flex-direction: column-reverse;
   align-items: center;
   gap: 2px;
   padding: 10px 4px;
-  border: 1px solid var(--line-strong);
   border-radius: var(--radius-md);
+  background: var(--soft-face);
   text-align: center;
 }
 .tn-tiles dt {
@@ -394,8 +464,6 @@ button.tn-today-row:active .tn-today-row__tile {
   gap: 8px;
   padding: 14px 16px;
   overflow: hidden;
-  border-radius: var(--radius-lg);
-  background: var(--surface);
 }
 /* The head is the stage's band: its own light top-row colour with ink type (set as --stage per card),
    the way each Makuteam character owns a band and each Duolingo unit owns a header colour. */
@@ -476,14 +544,6 @@ button.tn-today-row:active .tn-today-row__tile {
 .tn-module__title {
   font-weight: 800;
 }
-.tn-module__text .tn-progress {
-  height: 4px;
-}
-.tn-module__count {
-  color: var(--ink-muted);
-  font-size: var(--text-sm);
-  font-weight: 700;
-}
 .tn-stepper {
   position: relative;
   display: grid;
@@ -492,7 +552,7 @@ button.tn-today-row:active .tn-today-row__tile {
   padding: 6px 16px 18px 26px;
   list-style: none;
 }
-/* The 2px connector behind the nodes. */
+/* A dashed connector behind the nodes, as Finch strings its daily quests on dashes and circles. */
 .tn-stepper::before {
   content: '';
   position: absolute;
@@ -500,7 +560,7 @@ button.tn-today-row:active .tn-today-row__tile {
   bottom: 34px;
   left: 41px;
   width: 2px;
-  background: var(--line-strong);
+  background: repeating-linear-gradient(to bottom, var(--line-strong) 0 6px, transparent 6px 12px);
 }
 .tn-node {
   position: relative;
@@ -885,6 +945,10 @@ button.tn-today-row:active .tn-today-row__tile {
   gap: 6px;
   padding-top: 12px;
   border-top: 1px solid var(--line);
+}
+.tn-draft:first-child {
+  padding-top: 0;
+  border-top: 0;
 }
 .tn-draft__text {
   display: -webkit-box;

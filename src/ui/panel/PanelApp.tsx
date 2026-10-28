@@ -109,7 +109,7 @@ export function PanelApp({ deps }: { deps: PanelDeps }) {
   } else {
     const tab: Tab = screen === 'settings' ? 'today' : screen;
     content = (
-      <div className="tn-shell">
+      <div className="tn-shell" data-ground={screen}>
         <header className="tn-appbar">
           {screen === 'settings' ? (
             <button type="button" className="tn-icon-btn" aria-label="Back" onClick={() => setScreen('today')}>
@@ -132,6 +132,13 @@ export function PanelApp({ deps }: { deps: PanelDeps }) {
           {screen === 'settings' ? <SettingsScreen /> : null}
         </main>
         <nav className="tn-tabbar" aria-label="Sections">
+          {/* Finch's soft tile behind the selected tab; it slides to the new one. None is selected on Settings. */}
+          <span
+            className="tn-tabbar__tile"
+            aria-hidden="true"
+            data-hidden={screen === 'settings' || undefined}
+            style={{ '--tab': TABS.findIndex((entry) => entry.id === tab) } as React.CSSProperties}
+          />
           {TABS.map((entry) => {
             const current = screen !== 'settings' && tab === entry.id;
             return (

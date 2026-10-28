@@ -104,7 +104,7 @@ export function CourseScreen({ snap, start }: { snap: Snapshot; start: StartSess
               <span className="tn-chip">{LEVEL_LABEL[stage.level]}</span>
               <Icon name="chevron" size={20} />
             </button>
-            <ProgressBar value={stageSummary.completed} max={stageSummary.total} label={`${stage.title} progress`} thin />
+            <ProgressBar value={stageSummary.completed} max={stageSummary.total} label={`${stage.title} progress`} count />
             <div className="tn-stage__meta">
               <span className="tn-muted">
                 {modulesDone}/{stage.modules.length} modules
@@ -133,10 +133,8 @@ export function CourseScreen({ snap, start }: { snap: Snapshot; start: StartSess
                         <span className="tn-module__number">{moduleIndex + 1}</span>
                         <span className="tn-module__text">
                           <span className="tn-module__title">{module.title}</span>
-                          <ProgressBar value={count.completed} max={count.total} label={`${module.title} progress`} thin />
-                        </span>
-                        <span className="tn-module__count">
-                          {count.completed}/{count.total}
+                          {/* The count sits inside the bar, as on Finch's quest rows. */}
+                          <ProgressBar value={count.completed} max={count.total} count decorative />
                         </span>
                         <Icon name="chevron" size={20} />
                       </button>

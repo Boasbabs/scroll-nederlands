@@ -8,6 +8,7 @@ import { contrastLabel } from '../../sounds/assemble';
 import { Button } from '../components/Button';
 import { WaitingForCorrection } from '../player/corrections';
 import { Icon, type IconName } from '../components/Icon';
+import { IconTile, type TileKind } from '../components/IconTile';
 import { ProgressBar } from '../components/ProgressBar';
 import { useEnv } from '../env';
 import { formatIn, plural } from '../format';
@@ -41,8 +42,9 @@ function CaughtUp({ snap, onContinue }: { snap: Snapshot; onContinue?: () => voi
 }
 
 type TodayRowProps = {
-  /** The tile's glyph, or `done` for a finished line: a tick and nothing to press. */
+  /** The tile's glyph and the kind of activity that colours it, or `done` for a finished line: a tick and nothing to press. */
   icon: IconName | 'done';
+  kind?: TileKind;
   title: string;
   meta: string;
   bar?: { value: number; max: number };
@@ -50,24 +52,24 @@ type TodayRowProps = {
 };
 
 /** A line of To do today: a tile, what to do, how far along. The whole line is the button. */
-function TodayRow({ icon, title, meta, bar, onClick }: TodayRowProps) {
+function TodayRow({ icon, kind = 'soft', title, meta, bar, onClick }: TodayRowProps) {
   const metaId = useId();
   const content = (
     <>
-      <span className="tn-today-row__tile" data-done={icon === 'done' || undefined}>
-        <Icon name={icon === 'done' ? 'check' : icon} size={20} />
-      </span>
+      {icon === 'done' ? (
+        <span className="tn-today-row__tile" data-done>
+          <Icon name="check" size={20} />
+        </span>
+      ) : (
+        <IconTile icon={icon} kind={kind} />
+      )}
       <span className="tn-today-row__text">
         <span className="tn-today-row__title">{title}</span>
         <span className="tn-today-row__meta" id={metaId}>
           {meta}
         </span>
-        {bar ? (
-          // Spans, as a button holds only phrasing content; the meta line gives the same count in words.
-          <span className="tn-progress tn-progress--thin" aria-hidden="true">
-            <span className="tn-progress__fill" style={{ width: `${bar.max > 0 ? Math.min(100, (bar.value / bar.max) * 100) : 0}%` }} />
-          </span>
-        ) : null}
+        {/* Spans, as a button holds only phrasing content; the meta line gives the same count in words. */}
+        {bar ? <ProgressBar value={bar.value} max={bar.max} count decorative /> : null}
       </span>
       {onClick ? <Icon name="chevron" size={20} /> : null}
     </>
@@ -96,6 +98,7 @@ function NewWordsRow({ snap, start }: ScreenProps) {
   return (
     <TodayRow
       icon="words"
+      kind="words"
       title={`Learn ${plural(batch, 'word')}`}
       meta={`Basic words · ${met} of ${words.total} met`}
       bar={{ value: met, max: words.total }}
@@ -114,6 +117,7 @@ function EarTrainingRow({ snap, start }: ScreenProps) {
   return (
     <TodayRow
       icon="ear"
+      kind="ear"
       title={contrast ? `Hear ${contrastLabel(contrast)}` : 'Practise the sounds'}
       meta={`Ear training · ${met} of ${sounds.total} sound pairs`}
       bar={{ value: met, max: sounds.total }}
@@ -151,7 +155,7 @@ export function TodayScreen({ snap, start }: ScreenProps) {
           <h2 className="tn-continue__title">
             {current.kind === 'checkpoint' && !/check/i.test(current.title) ? `Checkpoint: ${current.title}` : current.title}
           </h2>
-          {moduleCount ? <ProgressBar value={moduleCount.completed} max={moduleCount.total} label={`${module.title} progress`} thin /> : null}
+          {moduleCount ? <ProgressBar value={moduleCount.completed} max={moduleCount.total} label={`${module.title} progress`} count /> : null}
           <Button block onClick={() => void start(() => learning.startLesson(current.id, 'focused'))}>
             {started ? 'Continue' : 'Start'}
           </Button>
@@ -163,9 +167,9 @@ export function TodayScreen({ snap, start }: ScreenProps) {
         </section>
       )}
 
-      <section className="tn-panel-card tn-settle-in" style={{ '--i': 2 } as React.CSSProperties}>
-        <h2 className="tn-label">To do today</h2>
-        <ul className="tn-today-list">
+      <section className="tn-section tn-settle-in" style={{ '--i': 2 } as React.CSSProperties}>
+        <h2 className="tn-section__title">To do today</h2>
+        <ul className="tn-panel-card tn-today-list">
           {summary.dueNow === 0 && summary.nextReview ? (
             <TodayRow
               icon="done"
@@ -177,6 +181,7 @@ export function TodayScreen({ snap, start }: ScreenProps) {
           {summary.sounds.total > 0 ? <EarTrainingRow snap={snap} start={start} /> : null}
           <TodayRow
             icon="bolt"
+            kind="practice"
             title="Quick practice"
             meta="2 min"
             onClick={() => void start(async () => (await learning.startNext('micro')) ?? learning.startPractice('micro'))}
@@ -184,7 +189,7 @@ export function TodayScreen({ snap, start }: ScreenProps) {
         </ul>
       </section>
 
-      <dl className="tn-stats">
+      <dl className="tn-stats tn-settle-in" style={{ '--i': 3 } as React.CSSProperties}>
         <div>
           <dt>Lessons</dt>
           <dd>
@@ -260,9 +265,9 @@ export function ProgressScreen({ snap }: { snap: Snapshot }) {
 
   return (
     <div className="tn-screen">
-      <section className="tn-panel-card">
-        <h2 className="tn-label">This week</h2>
-        <ol className="tn-week">
+      <section className="tn-section">
+        <h2 className="tn-section__title">This week</h2>
+        <ol className="tn-panel-card tn-week">
           {summary.week.map((studied, i) => {
             const day = new Date(today - (6 - i) * DAY);
             return (
@@ -275,84 +280,105 @@ export function ProgressScreen({ snap }: { snap: Snapshot }) {
         </ol>
       </section>
 
-      <section className="tn-panel-card">
-        <h2 className="tn-label">Words and phrases</h2>
-        {STATES.map((state) => (
-          <div key={state.key}>
-            <button type="button" className="tn-state-row" aria-expanded={open === state.key} onClick={() => setOpen(open === state.key ? undefined : state.key)}>
-              <Ring share={summary.items.total ? summary.items[state.key] / summary.items.total : 0} colour={state.colour} />
-              <span className="tn-state-row__count tn-display">{summary.items[state.key]}</span>
-              <span className="tn-state-row__label">{state.label}</span>
-              <Icon name="chevron" size={20} />
-            </button>
-            {open === state.key && groups ? (
-              <ul className="tn-item-list tn-rise-in">
-                {groups[state.key].slice(0, SHOWN_ITEMS).map((item) => (
-                  <li key={item.id}>
-                    <span lang="nl">{item.dutch}</span>
-                    <span className="tn-muted">{item.english}</span>
-                  </li>
-                ))}
-                {groups[state.key].length > SHOWN_ITEMS ? <li className="tn-muted">+ {groups[state.key].length - SHOWN_ITEMS} more</li> : null}
-                {groups[state.key].length === 0 ? <li className="tn-muted">None yet</li> : null}
-              </ul>
-            ) : null}
-          </div>
-        ))}
+      <section className="tn-section">
+        <h2 className="tn-section__title">Words and phrases</h2>
+        <div className="tn-panel-card">
+          {STATES.map((state) => (
+            <div key={state.key}>
+              <button type="button" className="tn-state-row" aria-expanded={open === state.key} onClick={() => setOpen(open === state.key ? undefined : state.key)}>
+                <Ring share={summary.items.total ? summary.items[state.key] / summary.items.total : 0} colour={state.colour} />
+                <span className="tn-state-row__count tn-display">{summary.items[state.key]}</span>
+                <span className="tn-state-row__label">{state.label}</span>
+                <Icon name="chevron" size={20} />
+              </button>
+              {open === state.key && groups ? (
+                <ul className="tn-item-list tn-rise-in">
+                  {groups[state.key].slice(0, SHOWN_ITEMS).map((item) => (
+                    <li key={item.id}>
+                      <span lang="nl">{item.dutch}</span>
+                      <span className="tn-muted">{item.english}</span>
+                    </li>
+                  ))}
+                  {groups[state.key].length > SHOWN_ITEMS ? <li className="tn-muted">+ {groups[state.key].length - SHOWN_ITEMS} more</li> : null}
+                  {groups[state.key].length === 0 ? <li className="tn-muted">None yet</li> : null}
+                </ul>
+              ) : null}
+            </div>
+          ))}
+        </div>
       </section>
 
       {summary.words.total > 0 ? (
-        <section className="tn-panel-card">
-          <h2 className="tn-label">Basic words</h2>
-          <p className="tn-progress-line">
-            <strong className="tn-display">{summary.words.total - summary.words.new}</strong> of {summary.words.total} met · {summary.words.strong} strong
-          </p>
-          <ProgressBar value={summary.words.total - summary.words.new} max={summary.words.total} label="Basic words met" thin />
+        <section className="tn-section">
+          <h2 className="tn-section__title">Basic words</h2>
+          <div className="tn-panel-card tn-meter">
+            <IconTile icon="words" kind="words" />
+            <div className="tn-meter__text">
+              <p className="tn-progress-line">
+                <strong className="tn-display">{summary.words.total - summary.words.new}</strong> of {summary.words.total} met · {summary.words.strong} strong
+              </p>
+              <ProgressBar value={summary.words.total - summary.words.new} max={summary.words.total} label="Basic words met" count />
+            </div>
+          </div>
         </section>
       ) : null}
 
       {summary.sounds.total > 0 ? (
-        <section className="tn-panel-card">
-          <h2 className="tn-label">Ear training</h2>
-          <p className="tn-progress-line">
-            <strong className="tn-display">{summary.sounds.total - summary.sounds.new}</strong> of {summary.sounds.total} sound pairs · {summary.sounds.strong} strong
-          </p>
-          <ProgressBar value={summary.sounds.total - summary.sounds.new} max={summary.sounds.total} label="Sound pairs met" thin />
+        <section className="tn-section">
+          <h2 className="tn-section__title">Ear training</h2>
+          <div className="tn-panel-card tn-meter">
+            <IconTile icon="ear" kind="ear" />
+            <div className="tn-meter__text">
+              <p className="tn-progress-line">
+                <strong className="tn-display">{summary.sounds.total - summary.sounds.new}</strong> of {summary.sounds.total} sound pairs · {summary.sounds.strong} strong
+              </p>
+              <ProgressBar value={summary.sounds.total - summary.sounds.new} max={summary.sounds.total} label="Sound pairs met" count />
+            </div>
+          </div>
         </section>
       ) : null}
 
       {summary.articles.total > 0 ? (
-        <section className="tn-panel-card">
-          <h2 className="tn-label">Articles · de or het</h2>
-          <p className="tn-progress-line">
-            <strong className="tn-display">{summary.articles.total - summary.articles.new}</strong> of {summary.articles.total} nouns · {summary.articles.strong} strong
-          </p>
-          <ProgressBar value={summary.articles.total - summary.articles.new} max={summary.articles.total} label="Articles met" thin />
+        <section className="tn-section">
+          <h2 className="tn-section__title">Articles · de or het</h2>
+          <div className="tn-panel-card tn-meter">
+            <IconTile icon="tag" kind="articles" />
+            <div className="tn-meter__text">
+              <p className="tn-progress-line">
+                <strong className="tn-display">{summary.articles.total - summary.articles.new}</strong> of {summary.articles.total} nouns · {summary.articles.strong} strong
+              </p>
+              <ProgressBar value={summary.articles.total - summary.articles.new} max={summary.articles.total} label="Articles met" count />
+            </div>
+          </div>
         </section>
       ) : null}
 
-      <section className="tn-panel-card">
-        <h2 className="tn-label">Lessons</h2>
-        <p className="tn-progress-line">
-          <strong className="tn-display">{summary.lessons.completed}</strong> of {summary.lessons.total}
-        </p>
-        <ProgressBar value={summary.lessons.completed} max={summary.lessons.total} label="Lessons completed" thin />
-        <ul className="tn-stage-bars">
-          {summary.stages.map((stage) => (
-            <li key={stage.id}>
-              <span>{stage.title}</span>
-              <span className="tn-muted">
-                {stage.completed}/{stage.total}
-              </span>
-              <ProgressBar value={stage.completed} max={stage.total} label={`${stage.title} lessons`} thin />
-            </li>
-          ))}
-        </ul>
+      <section className="tn-section">
+        <h2 className="tn-section__title">Lessons</h2>
+        <div className="tn-panel-card">
+          <div className="tn-meter">
+            <IconTile icon="book" kind="lessons" />
+            <div className="tn-meter__text">
+              <p className="tn-progress-line">
+                <strong className="tn-display">{summary.lessons.completed}</strong> of {summary.lessons.total}
+              </p>
+              <ProgressBar value={summary.lessons.completed} max={summary.lessons.total} label="Lessons completed" count />
+            </div>
+          </div>
+          <ul className="tn-stage-bars">
+            {summary.stages.map((stage) => (
+              <li key={stage.id}>
+                <span>{stage.title}</span>
+                <ProgressBar value={stage.completed} max={stage.total} label={`${stage.title} lessons`} count />
+              </li>
+            ))}
+          </ul>
+        </div>
       </section>
 
-      <section className="tn-panel-card">
-        <h2 className="tn-label">Upcoming reviews</h2>
-        <dl className="tn-tiles">
+      <section className="tn-section">
+        <h2 className="tn-section__title">Upcoming reviews</h2>
+        <dl className="tn-panel-card tn-tiles">
           {(
             [
               ['Today', summary.upcoming.today],

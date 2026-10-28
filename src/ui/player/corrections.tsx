@@ -201,20 +201,22 @@ export function WaitingForCorrection({ drafts, onChange }: { drafts: ReadonlyArr
   const [message, setMessage] = useState<string>();
   if (drafts.length === 0 && !message) return null;
   return (
-    <section className="tn-panel-card tn-drafts">
-      <h2 className="tn-label">Waiting for correction ({drafts.length})</h2>
-      {message ? (
-        <p className="tn-drafts__message" role="status">
-          {message}
-        </p>
-      ) : null}
-      {drafts.length > 0 ? (
-        <ul className="tn-drafts__list">
-          {drafts.map((draft) => (
-            <WaitingDraft key={draft.id} draft={draft} onChange={onChange} onCorrected={setMessage} />
-          ))}
-        </ul>
-      ) : null}
+    <section className="tn-section tn-drafts">
+      <h2 className="tn-section__title">Waiting for correction ({drafts.length})</h2>
+      <div className="tn-panel-card">
+        {message ? (
+          <p className="tn-drafts__message" role="status">
+            {message}
+          </p>
+        ) : null}
+        {drafts.length > 0 ? (
+          <ul className="tn-drafts__list">
+            {drafts.map((draft) => (
+              <WaitingDraft key={draft.id} draft={draft} onChange={onChange} onCorrected={setMessage} />
+            ))}
+          </ul>
+        ) : null}
+      </div>
     </section>
   );
 }

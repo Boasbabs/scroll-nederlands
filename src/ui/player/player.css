@@ -748,15 +748,6 @@
 @keyframes tn-fade-in {
   from { opacity: 0; }
 }
-.tn-overlay__sheet {
-  display: grid;
-  gap: 10px;
-  width: 100%;
-  padding: 20px var(--gutter) 16px;
-  border-radius: 16px 16px 0 0;
-  background: var(--surface);
-  box-shadow: var(--shadow-float);
-}
 .tn-sheet-up {
   animation: tn-sheet-up var(--t-slow) var(--ease-out) both;
 }
@@ -764,6 +755,7 @@
   display: grid;
   gap: 8px;
   margin: 4px 0 8px;
+  text-align: left;
 }
 .tn-keys div {
   display: flex;
@@ -975,32 +967,13 @@
   font-size: var(--text-xl);
   font-weight: 600;
 }
-.tn-complete__tick {
-  display: inline-grid;
-  place-items: center;
-  flex: none;
-  width: 28px;
-  height: 28px;
-  border-radius: var(--radius-pill);
-  background: var(--correct);
-  color: var(--on-correct);
-}
-/* The card keeps its session height: the line sits on top, the actions are pinned below. */
-.tn-complete--card {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 16px;
-}
-.tn-complete__line {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.tn-complete__actions {
+/* Inside the in-page card the field fills the card at its session height, centred above the buttons. */
+.tn-player--compact .tn-complete .tn-player__body {
   display: grid;
-  gap: 8px;
+  align-content: center;
+}
+.tn-player--compact .tn-field {
+  padding-top: 24px;
 }
 
 /* ---------- Compact (in-page card) ---------- */

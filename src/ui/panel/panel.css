@@ -783,10 +783,6 @@ button.tn-today-row:active .tn-icon-tile {
   justify-content: center;
   padding: var(--gutter);
 }
-/* Destructive text in Flush Mahogany, under a safe primary (Brilliant's red "Quit"). */
-.tn-dialog-card .tn-dialog__danger {
-  --btn-ink: var(--wrong);
-}
 
 /* ---------- Onboarding ---------- */
 /* The steps sit on the lesson's neutral ground, under raised level rows and start cards. */

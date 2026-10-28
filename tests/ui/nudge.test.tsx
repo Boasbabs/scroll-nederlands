@@ -196,13 +196,13 @@ describe('the prompt card’s preview line', () => {
   });
 
   it('gives nothing away for reviews and new words: only how many', () => {
-    expect(previewFor(course, { type: 'review', itemIds: ['w-kitchen/vork', 'w-kitchen/mes#article'], dueCount: 7 })).toEqual({ text: '2 quick reviews' });
-    expect(previewFor(course, { type: 'words', itemIds: ['w-kitchen/vork'] })).toEqual({ text: '1 new word' });
+    expect(previewFor(course, { type: 'review', itemIds: ['w-kitchen/vork', 'w-kitchen/mes#article'], dueCount: 7 })).toEqual({ text: '2 quick reviews', kind: 'reviews' });
+    expect(previewFor(course, { type: 'words', itemIds: ['w-kitchen/vork'] })).toEqual({ text: '1 new word', kind: 'words' });
     expect(previewFor(course, { type: 'caughtUp' })).toBeUndefined();
   });
 
   it('shows the count on the card without any Dutch', () => {
-    renderUi(makeEnv(setupLearning(), { surface: 'card' }), <NudgeApp preview={{ text: '3 quick reviews' }} controller={fakeController()} />);
+    renderUi(makeEnv(setupLearning(), { surface: 'card' }), <NudgeApp preview={{ text: '3 quick reviews', kind: 'reviews' }} controller={fakeController()} />);
     expect(document.querySelector('.tn-nudge__preview')).toHaveTextContent(/^3 quick reviews$/);
     expect(document.querySelector('.tn-nudge__preview em')).toBeNull();
   });

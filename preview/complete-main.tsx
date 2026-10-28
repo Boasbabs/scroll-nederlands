@@ -6,6 +6,7 @@ import '../src/ui/motion.css';
 import '../src/ui/components.css';
 import '../src/ui/player/player.css';
 import '../src/ui/panel/panel.css';
+import '../src/ui/nudge/nudge.css';
 import { course } from '../src/curriculum';
 import type { SessionPlan } from '../src/engine/plan';
 import { bundledImages } from '../src/images/manifest';
@@ -59,16 +60,30 @@ const SAMPLES: Record<string, [SessionPlan, SessionOutcome]> = {
 const [plan, outcome] = SAMPLES[kind] ?? SAMPLES.lesson!;
 const stats = kind.startsWith('checkpoint') ? { correct: outcome.checkpoint!.passed ? 13 : 9, graded: 15, ms: 312_000 } : { correct: 7, graded: 8, ms: 192_000 };
 
+const complete = <SessionComplete plan={plan} outcome={outcome} stats={stats} onAction={() => {}} />;
 createRoot(document.getElementById('root')!).render(
-  <div style={{ width: Number(params.get('w') ?? 380), height: '100vh', margin: '0 auto', boxShadow: '0 0 0 1px #e2e4ea', transform: 'translateZ(0)' }}>
-    <EnvProvider env={env}>
-      <SpeechProvider speaker={previewSpeaker}>
-        <div className="tn-root tn-panel">
-          <div className="tn-player">
-            <SessionComplete plan={plan} outcome={outcome} stats={stats} onAction={() => {}} />
+  kind === 'card' ? (
+    // The in-page card's end, in the card's own frame (340px, grown to its session height).
+    <div style={{ display: 'grid', justifyContent: 'center', padding: 24 }}>
+      <EnvProvider env={env}>
+        <SpeechProvider speaker={previewSpeaker}>
+          <div className="tn-root">
+            <section className="tn-nudge tn-nudge--session" aria-label="Dutch practice">
+              <div className="tn-player tn-player--compact">{complete}</div>
+            </section>
           </div>
-        </div>
-      </SpeechProvider>
-    </EnvProvider>
-  </div>,
+        </SpeechProvider>
+      </EnvProvider>
+    </div>
+  ) : (
+    <div style={{ width: Number(params.get('w') ?? 380), height: '100vh', margin: '0 auto', boxShadow: '0 0 0 1px #e2e4ea', transform: 'translateZ(0)' }}>
+      <EnvProvider env={env}>
+        <SpeechProvider speaker={previewSpeaker}>
+          <div className="tn-root tn-panel">
+            <div className="tn-player">{complete}</div>
+          </div>
+        </SpeechProvider>
+      </EnvProvider>
+    </div>
+  ),
 );

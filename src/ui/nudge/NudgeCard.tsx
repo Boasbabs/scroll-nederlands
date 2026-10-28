@@ -1,8 +1,9 @@
-// The in-page prompt: a small corner card, its ⋯ menu, and the snooze toast.
-import { useEffect, useRef, useState } from 'react';
+// The in-page prompt: a small corner card on the Today ground, its ⋯ menu, and the snooze toast.
+import { useEffect, useId, useRef, useState } from 'react';
 import type { SnoozeChoice } from '../../trigger/browsing';
 import { Button } from '../components/Button';
 import { Icon } from '../components/Icon';
+import { IconTile } from '../components/IconTile';
 import { formatClock } from '../format';
 
 /** The brand mark: a Warm Blue tile with a white rounded T. It waves once on arrival (appeal). */
@@ -15,8 +16,14 @@ export function BrandMark({ size = 20 }: { size?: number }) {
   );
 }
 
-/** A new lesson's phrase and meaning, or a line that gives nothing away (reviews, new words). */
-export type NudgePreview = { dutch: string; english: string } | { text: string };
+/** A new lesson's phrase and meaning, or a count that gives nothing away (reviews, new words). */
+export type NudgePreview = { dutch: string; english: string } | { text: string; kind: 'reviews' | 'words' };
+
+/** The activity's own tile, the same as on the Today tab: lessons, reviews or new words. */
+function PreviewTile({ preview }: { preview: NudgePreview }) {
+  if ('dutch' in preview) return <IconTile icon="book" kind="lessons" size={36} />;
+  return preview.kind === 'reviews' ? <IconTile icon="target" kind="reviews" size={36} /> : <IconTile icon="words" kind="words" size={36} />;
+}
 
 type NudgeCardProps = {
   preview?: NudgePreview;
@@ -31,26 +38,35 @@ type NudgeCardProps = {
 
 export function NudgeCard({ preview, onLearn, onNotNow, onSnooze, onQuiet, now, demo = false }: NudgeCardProps) {
   const [menu, setMenu] = useState(false);
+  const more = useRef<HTMLButtonElement>(null);
+  function closeMenu() {
+    setMenu(false);
+    more.current?.focus();
+  }
   return (
     <section className="tn-nudge tn-nudge--card tn-rise-in" aria-label="Dutch practice" inert={demo || undefined}>
       <header className="tn-nudge__head">
         <BrandMark />
         <span className="tn-nudge__meta">Dutch · 2 min</span>
-        <button type="button" className="tn-icon-btn tn-icon-btn--small" aria-label="Close" onClick={onNotNow}>
+        <button type="button" className="tn-round-btn" aria-label="Close" onClick={onNotNow}>
           <Icon name="close" size={18} />
         </button>
       </header>
       <p className="tn-nudge__title">Ready for a 2-minute Dutch break?</p>
       {preview ? (
-        <p className="tn-nudge__preview">
-          {'text' in preview ? (
-            preview.text
-          ) : (
-            <>
-              <em lang="nl">{preview.dutch}</em> · {preview.english}
-            </>
-          )}
-        </p>
+        // What Learn now starts with, as a raised row with its activity tile (Finch lists a goal this way).
+        <div className="tn-nudge__next">
+          <PreviewTile preview={preview} />
+          <p className="tn-nudge__preview">
+            {'text' in preview ? (
+              <span className="tn-nudge__count">{preview.text}</span>
+            ) : (
+              <>
+                <em lang="nl">{preview.dutch}</em> · {preview.english}
+              </>
+            )}
+          </p>
+        </div>
       ) : null}
       <div className="tn-nudge__actions">
         <Button size="sm" onClick={onLearn}>
@@ -62,19 +78,20 @@ export function NudgeCard({ preview, onLearn, onNotNow, onSnooze, onQuiet, now, 
         <span className="tn-nudge__spacer" />
         <div className="tn-menu-anchor">
           <button
+            ref={more}
             type="button"
-            className="tn-icon-btn"
+            className="tn-round-btn"
             aria-label="More options"
             aria-haspopup="menu"
             aria-expanded={menu}
             onClick={() => setMenu((open) => !open)}
           >
-            <Icon name="more" />
+            <Icon name="more" size={20} />
           </button>
           {menu ? (
             <NudgeMenu
               now={now}
-              onClose={() => setMenu(false)}
+              onClose={closeMenu}
               onSnooze={(choice) => {
                 setMenu(false);
                 onSnooze(choice);
@@ -91,14 +108,19 @@ export function NudgeCard({ preview, onLearn, onNotNow, onSnooze, onQuiet, now, 
   );
 }
 
+/**
+ * Finch's sheet as a white card over the prompt: a round grey × at the top left, the menu's name as a
+ * centred title, and a small tile before each row, as on the Settings rows for the same choices.
+ */
 function NudgeMenu({ now, onClose, onSnooze, onQuiet }: { now: number; onClose: () => void; onSnooze: (choice: SnoozeChoice) => void; onQuiet: () => void }) {
-  const list = useRef<HTMLDivElement>(null);
+  const box = useRef<HTMLDivElement>(null);
+  const titleId = useId();
   useEffect(() => {
-    list.current?.querySelector<HTMLButtonElement>('[role="menuitem"]')?.focus();
+    box.current?.querySelector<HTMLButtonElement>('[role="menuitem"]')?.focus();
   }, []);
 
   function onKeyDown(event: React.KeyboardEvent) {
-    const items = [...(list.current?.querySelectorAll<HTMLButtonElement>('[role="menuitem"]') ?? [])];
+    const items = [...(box.current?.querySelectorAll<HTMLButtonElement>('[role="menuitem"]') ?? [])];
     const at = items.indexOf(event.target as HTMLButtonElement);
     if (event.key === 'Escape') {
       event.stopPropagation();
@@ -106,48 +128,63 @@ function NudgeMenu({ now, onClose, onSnooze, onQuiet }: { now: number; onClose: 
     } else if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
       event.preventDefault();
       const step = event.key === 'ArrowDown' ? 1 : -1;
-      items[(at + step + items.length) % items.length]?.focus();
+      // From the ×, down goes to the first row and up to the last.
+      const from = at < 0 ? (step > 0 ? -1 : items.length) : at;
+      items[(from + step + items.length) % items.length]?.focus();
     }
   }
 
   return (
-    <div ref={list} className="tn-menu tn-rise-in" role="menu" aria-label="Prompt options" onKeyDown={onKeyDown}>
-      <button type="button" role="menuitem" onClick={() => onSnooze('30m')}>
-        Snooze 30 min <span className="tn-menu__hint">· until {formatClock(now + 30 * 60_000)}</span>
+    <div ref={box} className="tn-menu tn-rise-in" onKeyDown={onKeyDown}>
+      <button type="button" className="tn-round-btn" aria-label="Close" onClick={onClose}>
+        <Icon name="close" size={18} />
       </button>
-      <button type="button" role="menuitem" onClick={() => onSnooze('1h')}>
-        Snooze 1 hour
-      </button>
-      <button type="button" role="menuitem" onClick={() => onSnooze('tomorrow')}>
-        Snooze until tomorrow
-      </button>
-      <hr className="tn-menu__divider" />
-      <button type="button" role="menuitem" onClick={onQuiet}>
-        <Icon name="moon" size={18} />
-        Quiet mode
-      </button>
+      <p id={titleId} className="tn-menu__title">
+        Prompt options
+      </p>
+      <div className="tn-menu__list" role="menu" aria-labelledby={titleId}>
+        <button type="button" role="menuitem" onClick={() => onSnooze('30m')}>
+          <IconTile icon="alarm" kind="soft" size={30} />
+          <span>
+            Snooze 30 min <span className="tn-menu__hint">· until {formatClock(now + 30 * 60_000)}</span>
+          </span>
+        </button>
+        <button type="button" role="menuitem" onClick={() => onSnooze('1h')}>
+          <IconTile icon="alarm" kind="soft" size={30} />
+          Snooze 1 hour
+        </button>
+        <button type="button" role="menuitem" onClick={() => onSnooze('tomorrow')}>
+          <IconTile icon="alarm" kind="soft" size={30} />
+          Snooze until tomorrow
+        </button>
+        <hr className="tn-menu__divider" />
+        <button type="button" role="menuitem" onClick={onQuiet}>
+          <IconTile icon="moon" kind="soft" size={30} />
+          Quiet mode
+        </button>
+      </div>
     </div>
   );
 }
 
 export const TOAST_MS = 6000;
 
-/** One-line confirmation with Undo; leaves by itself after a few seconds. */
+/** One-line confirmation with Undo, as Finch's dark pill toast; leaves by itself after a few seconds. */
 export function SnoozeToast({ message, onUndo, onClose }: { message: string; onUndo: () => void; onClose: () => void }) {
   useEffect(() => {
     const timer = setTimeout(onClose, TOAST_MS);
     return () => clearTimeout(timer);
   }, [onClose]);
   return (
-    <div className="tn-nudge tn-toast tn-rise-in" role="status">
-      <span className="tn-toast__timer" style={{ animationDuration: `${TOAST_MS}ms` }} aria-hidden="true" />
+    <div className="tn-toast tn-rise-in" role="status">
       <span className="tn-toast__text">{message}</span>
       <Button size="sm" variant="ghost" onClick={onUndo}>
         Undo
       </Button>
-      <button type="button" className="tn-icon-btn tn-icon-btn--small" aria-label="Close" onClick={onClose}>
+      <button type="button" className="tn-round-btn" aria-label="Close" onClick={onClose}>
         <Icon name="close" size={18} />
       </button>
+      <span className="tn-toast__timer" style={{ animationDuration: `${TOAST_MS}ms` }} aria-hidden="true" />
     </div>
   );
 }

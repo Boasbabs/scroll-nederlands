@@ -400,6 +400,14 @@ span.tn-progress__fill {
   font-weight: 600;
   line-height: 1.2;
 }
+/* As a bottom sheet (Quit, the shortcuts), only its top corners are round (Finch's sheets). */
+.tn-dialog-card--sheet {
+  border-radius: var(--radius-card) var(--radius-card) 0 0;
+}
+/* Destructive text in Flush Mahogany, under a safe primary (Brilliant's red "Quit"). */
+.tn-dialog-card .tn-dialog__danger {
+  --btn-ink: var(--wrong);
+}
 .tn-tip {
   padding: 12px 14px;
   border-left: 4px solid var(--highlight);

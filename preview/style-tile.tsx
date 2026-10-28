@@ -4,6 +4,7 @@ import { createRoot } from 'react-dom/client';
 import '../src/ui/theme.css';
 import '../src/ui/motion.css';
 import '../src/ui/components.css';
+import '../src/ui/nudge/nudge.css';
 import { AudioButton, SpeechProvider } from '../src/ui/components/AudioButton';
 import { Button } from '../src/ui/components/Button';
 import { SquigglePattern, Sparks, Wordmark } from '../src/ui/components/Decor';
@@ -185,11 +186,13 @@ function StyleTile() {
             <h2 className="tn-dialog-card__title">Quit lesson?</h2>
             <p className="tn-muted">Your answers in this session won’t be saved.</p>
             <Button block>Keep learning</Button>
-            <Button block variant="secondary">Quit</Button>
+            <Button block variant="ghost" className="tn-dialog__danger">Quit</Button>
           </div>
-          <p style={{ justifySelf: 'center', display: 'flex', alignItems: 'center', gap: 12, padding: '10px 16px', borderRadius: 'var(--radius-pill)', background: 'var(--toast)', color: 'var(--on-toast)', fontWeight: 700 }}>
-            Snoozed until 15:30 <span style={{ textDecoration: 'underline' }}>Undo</span>
-          </p>
+          <div className="tn-toast" style={{ justifySelf: 'center' }}>
+            <span className="tn-toast__text">Snoozed until 15:30</span>
+            <Button size="sm" variant="ghost">Undo</Button>
+            <button type="button" className="tn-round-btn" aria-label="Close"><Icon name="close" size={18} /></button>
+          </div>
         </div>
 
         <div style={{ ...section, paddingBottom: 0 }}>

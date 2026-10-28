@@ -219,17 +219,21 @@ export function SessionPlayer({ plan, onExit, onAction }: SessionPlayerProps) {
         {plan.kind === 'review' && showBar && !compact ? <p className="tn-player__caption">Review · {reviewsLeft} left</p> : null}
         {compact && showBar ? <ProgressBar value={index} max={queue.length} label="Lesson progress" thin /> : null}
         {body}
+        {/* Finch's sheets: a round grey × at the top left (the safe way out, as Esc), a centred title. */}
         {overlay === 'quit' ? (
           <div className="tn-overlay" role="dialog" aria-modal="true" aria-labelledby="tn-quit-title">
-            <div className="tn-overlay__sheet tn-sheet-up">
-              <h2 id="tn-quit-title" className="tn-title">
+            <div className="tn-dialog-card tn-dialog-card--sheet tn-sheet-up">
+              <button type="button" className="tn-round-btn" aria-label="Close" onClick={() => setOverlay(null)}>
+                <Icon name="close" size={18} />
+              </button>
+              <h2 id="tn-quit-title" className="tn-dialog-card__title">
                 Quit lesson?
               </h2>
               <p className="tn-muted">Your answers in this session won’t be saved.</p>
               <Button block onClick={() => setOverlay(null)} data-primary autoFocus>
                 Keep learning
               </Button>
-              <Button block variant="ghost" onClick={onExit}>
+              <Button block variant="ghost" className="tn-dialog__danger" onClick={onExit}>
                 Quit
               </Button>
             </div>
@@ -237,8 +241,11 @@ export function SessionPlayer({ plan, onExit, onAction }: SessionPlayerProps) {
         ) : null}
         {overlay === 'help' ? (
           <div className="tn-overlay" role="dialog" aria-modal="true" aria-labelledby="tn-keys-title">
-            <div className="tn-overlay__sheet tn-sheet-up">
-              <h2 id="tn-keys-title" className="tn-title">
+            <div className="tn-dialog-card tn-dialog-card--sheet tn-sheet-up">
+              <button type="button" className="tn-round-btn" aria-label="Close" onClick={() => setOverlay(null)}>
+                <Icon name="close" size={18} />
+              </button>
+              <h2 id="tn-keys-title" className="tn-dialog-card__title">
                 Keyboard shortcuts
               </h2>
               <dl className="tn-keys">

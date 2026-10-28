@@ -1,23 +1,25 @@
-/* In-page prompt on X and LinkedIn. Lives in a shadow root; positioned by the content script. */
+/* In-page prompt on X and LinkedIn, in Finch's look on the Today ground. Lives in a shadow root;
+   positioned by the content script. */
 
 .tn-nudge {
+  position: relative;
   width: min(340px, calc(100vw - 48px));
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  background: var(--surface);
+  border-radius: var(--radius-card);
+  background: var(--ground-today);
   color: var(--ink);
-  box-shadow: var(--shadow-float);
+  /* Raised off the host page: the shared soft edge under the floating shadow. */
+  box-shadow: 0 3px 0 var(--raise-edge), var(--shadow-float);
 }
 .tn-nudge--card {
   display: grid;
-  gap: 8px;
-  padding: 14px 16px 12px;
+  gap: 10px;
+  padding: 10px 14px 14px;
 }
 .tn-nudge__head {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin: -4px -8px 0 0;
+  margin: 0 -6px 0 2px;
 }
 .tn-nudge__meta {
   flex: 1;
@@ -31,9 +33,21 @@
   animation: tn-wave 900ms var(--ease-in-out) 300ms 1 both;
 }
 .tn-nudge__title {
-  font-size: 16px;
-  font-weight: 800;
-  line-height: 1.3;
+  padding: 0 2px;
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 600;
+  line-height: 1.25;
+}
+/* What Learn now starts with: a raised white row with its activity tile (Finch's goal rows). */
+.tn-nudge__next {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: var(--raise);
 }
 .tn-nudge__preview {
   color: var(--ink-muted);
@@ -42,14 +56,21 @@
 .tn-nudge__preview em {
   color: var(--ink);
   font-family: var(--font-display);
+  font-size: var(--text-md);
   font-style: normal;
   font-weight: 600;
+}
+/* A count of reviews or new words is the row's whole title. */
+.tn-nudge__count {
+  color: var(--ink);
+  font-size: var(--text-md);
+  font-weight: 800;
 }
 .tn-nudge__actions {
   display: flex;
   align-items: center;
   gap: 4px;
-  margin-top: 4px;
+  margin-top: 2px;
 }
 .tn-nudge__actions .tn-btn--sm {
   min-height: 40px;
@@ -61,32 +82,44 @@
   flex: 1;
 }
 
-/* The ⋯ menu opens upward, above the card's action row. */
-.tn-menu-anchor {
-  position: relative;
-}
+/* The ⋯ menu: Finch's sheet as a white card, as wide as the prompt and just above it, with a round grey ×
+   at the top left, a centred title and a small tile before each row. The page is never dimmed (§1.11). */
 .tn-menu {
   position: absolute;
-  right: -6px;
-  bottom: calc(100% + 6px);
+  right: 0;
+  bottom: calc(100% + 8px);
+  left: 0;
   z-index: 3;
   display: grid;
-  width: 244px;
-  padding: 6px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-md);
+  padding: 8px;
+  border-radius: var(--radius-card);
   background: var(--surface);
-  box-shadow: var(--shadow-float);
-  transform-origin: 100% 100%;
+  box-shadow: 0 3px 0 var(--raise-edge), var(--shadow-float);
+  transform-origin: 90% 100%;
+}
+.tn-menu > .tn-round-btn {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+}
+.tn-menu__title {
+  padding: 6px 40px 8px;
+  color: var(--ink-muted);
+  font-weight: 800;
+  line-height: 24px;
+  text-align: center;
+}
+.tn-menu__list {
+  display: grid;
 }
 .tn-menu [role='menuitem'] {
   display: flex;
   align-items: center;
-  gap: 8px;
-  min-height: 44px;
-  padding: 0 12px;
+  gap: 12px;
+  min-height: 48px;
+  padding: 0 10px;
   border: 0;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   background: none;
   color: var(--ink);
   font-weight: 700;
@@ -95,7 +128,9 @@
 .tn-menu [role='menuitem']:hover,
 .tn-menu [role='menuitem']:focus-visible {
   background: var(--surface-sunken);
-  outline: none;
+}
+.tn-menu [role='menuitem']:focus-visible {
+  outline-offset: -3px;
 }
 .tn-menu__hint {
   color: var(--ink-muted);
@@ -103,31 +138,59 @@
 }
 .tn-menu__divider {
   height: 1px;
-  margin: 4px 6px;
+  margin: 4px 10px;
   border: 0;
   background: var(--line);
 }
 
-/* Snooze toast: one line with Undo; a thin bar along the top runs down (timing). */
+/* Snooze toast: Finch's dark pill, in Dark Cerulean with white type. A white line along the bottom runs
+   down while it shows (timing). */
 .tn-toast {
   position: relative;
   display: flex;
   align-items: center;
   gap: 4px;
+  width: min(340px, calc(100vw - 48px));
+  min-height: 52px;
+  padding: 6px 6px 6px 20px;
   overflow: hidden;
-  padding: 8px 6px 8px 16px;
+  border-radius: var(--radius-pill);
+  background: var(--toast);
+  color: var(--on-toast);
+  box-shadow: var(--shadow-float);
 }
 .tn-toast__text {
   flex: 1;
   font-weight: 800;
 }
+/* Undo is white on a translucent face; the × is a translucent disc, as on Finch's dark toast. */
+.tn-toast .tn-btn--ghost {
+  --btn-fill: rgba(255, 255, 255, 0.14);
+  --btn-ink: var(--on-toast);
+  border-radius: var(--radius-pill);
+}
+.tn-toast .tn-round-btn,
+.tn-toast .tn-round-btn:hover {
+  color: var(--on-toast);
+}
+.tn-toast .tn-round-btn {
+  background-color: rgba(255, 255, 255, 0.14);
+}
+.tn-toast .tn-round-btn:hover {
+  background-color: rgba(255, 255, 255, 0.24);
+}
+/* A Dodger Blue ring would vanish on Dark Cerulean, so focus is white here, as on a band. */
+.tn-root .tn-toast :focus-visible {
+  outline-color: var(--white);
+}
 .tn-toast__timer {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
+  right: 26px;
+  bottom: 0;
+  left: 26px;
   height: 3px;
-  background: var(--progress);
+  border-radius: 3px 3px 0 0;
+  background: rgba(255, 255, 255, 0.5);
   transform-origin: 0 50%;
   animation: tn-deplete linear forwards;
 }
@@ -146,6 +209,8 @@
 }
 .tn-nudge--session > .tn-player {
   flex: 1;
+  /* The micro-lesson keeps the card's Today ground. */
+  background: var(--ground-today);
 }
 @keyframes tn-grow {
   0% { opacity: 0.4; transform: scale(0.94, 0.4); }

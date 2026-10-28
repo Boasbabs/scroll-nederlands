@@ -96,9 +96,9 @@ Button variants follow the roles: `primary` (Warm Blue), `secondary` (a soft fac
 | Review, Progress | Light Mid Blue and light Dodger Blue grounds; Warm Blue `Start review` and a white `Practice anyway`; studied days Mango; New / Learning / Strong rings grey / Mango / Seaweed; Warm Blue count bars beside the words, ear, de/het and lessons tiles |
 | Settings | Warm Blue switches; Mid Blue chosen chips; `Reset progress` and `Reset everything` in Flush Mahogany under a Warm Blue `Keep my progress`; notice row Golden tint |
 | Onboarding | Warm Blue hero with Dodger Blue squiggles, two-tone wordmark and a Golden Yellow `Get started`; level and start rows turn Mid Blue on a Denim tint when chosen; `Recommended` chip Golden Yellow |
-| Lesson player | Warm Blue progress, audio and mic; learn-card tips Golden tint; picked option Mid Blue; `REVIEW` chip Golden Yellow; combo chip Mango tint |
+| Lesson player | A neutral grey-blue ground (`--ground-player`) under raised white options and cards; a round grey ×; Warm Blue progress, audio and mic; learn-card tips Golden tint; picked option Mid Blue; `REVIEW` chip Golden Yellow; combo chip Mango tint |
 | Answer feedback | Correct: Seaweed tint sheet, green disc with an ink tick, green `Continue`. Wrong: Mahogany tint sheet, red disc with a white cross, red `Got it` or `Try again`, red diff underline; the right answer outlined green |
-| End screens | Lesson complete: Warm Blue hero, Golden Yellow star badge, palette sparks. Review done: green tick, Remembered (green) and Still learning (orange) pills. Checkpoint: green and red score ring |
+| End screens | Every end is a Warm Blue field: confetti in Golden Yellow, Mango Orange, Seaweed Green, Denim Blue and white; a Warm Blue bar on a white track capped by a Golden Yellow star (lessons, words, ear training), a Seaweed Green tick (reviews) or a Butterfly Bush flag (checkpoints); stat pills in white on Warm Blue darkened by 20% ink, with green ✓, red ✕ and Mango ↺ marks; the Golden Yellow main button and a white text button; lists in a white card |
 | In-page card | White card on the host page, Warm Blue brand mark and `Learn now`, ink `Not now`; the compact player uses the same roles inside the shadow root |
 | Toolbar icon | Warm Blue tile with a white speech bubble (`scripts/make-icons.mjs`) |
 

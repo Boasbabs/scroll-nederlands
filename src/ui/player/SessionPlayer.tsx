@@ -204,8 +204,8 @@ export function SessionPlayer({ plan, onExit, onAction }: SessionPlayerProps) {
                 <span className="tn-player__spacer" />
               </>
             ) : null}
-            <button type="button" className="tn-icon-btn" aria-label="Close lesson" onClick={() => setOverlay('quit')}>
-              <Icon name="close" />
+            <button type="button" className="tn-round-btn" aria-label="Close lesson" onClick={() => setOverlay('quit')}>
+              <Icon name="close" size={18} />
             </button>
             {compact ? null : <ProgressBar value={index} max={queue.length} label="Lesson progress" />}
             {combo >= 3 ? (

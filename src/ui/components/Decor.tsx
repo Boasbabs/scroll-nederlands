@@ -57,3 +57,40 @@ export function Sparks({ count = 8, reach = 30 }: { count?: number; reach?: numb
     </span>
   );
 }
+
+// Light palette colours and white, which all show on the Warm Blue field.
+const CONFETTI_COLOURS = ['var(--golden-yellow)', 'var(--mango-orange)', 'var(--seaweed-green)', 'var(--denim-blue)', 'var(--white)'];
+
+/**
+ * Celebration confetti, as Finch scatters it over a completed goal: pieces burst from one point on
+ * parabolic arcs, spinning, then fall away (straight-ahead action). The spread is fixed, not random,
+ * so every celebration looks the same and screenshots are stable. Hidden under reduced motion.
+ */
+export function Confetti({ count = 32 }: { count?: number }) {
+  return (
+    <span className="tn-confetti" aria-hidden="true">
+      {Array.from({ length: count }, (_, i) => {
+        // A golden-angle walk spreads the pieces evenly without looking regular.
+        const turn = (i * 137.5) % 360;
+        const side = Math.cos((turn * Math.PI) / 180);
+        return (
+          <i
+            key={i}
+            style={
+              {
+                '--dx': `${Math.round(side * (60 + (i % 5) * 26))}px`,
+                '--rise': `${-70 - (i % 4) * 28}px`,
+                '--fall': `${150 + (i % 6) * 34}px`,
+                '--spin': `${(i % 2 ? 1 : -1) * (240 + (i % 3) * 160)}deg`,
+                '--delay': `${(i % 4) * 30}ms`,
+                '--w': `${i % 3 === 0 ? 6 : 8}px`,
+                '--h': `${i % 3 === 0 ? 12 : 6}px`,
+                '--c': CONFETTI_COLOURS[i % CONFETTI_COLOURS.length],
+              } as CSSProperties
+            }
+          />
+        );
+      })}
+    </span>
+  );
+}

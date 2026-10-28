@@ -415,10 +415,11 @@ span.tn-progress__fill {
   color: var(--ink);
 }
 
-/* ---------- Answer options and tiles ---------- */
+/* ---------- Answer options and tiles: raised white cards that press down ---------- */
 .tn-option {
   --opt-fill: var(--surface);
-  --opt-line: var(--line-strong);
+  --opt-line: transparent;
+  --opt-edge: rgba(22, 23, 29, 0.13);
   --opt-ink: var(--ink);
   display: flex;
   align-items: center;
@@ -433,7 +434,7 @@ span.tn-progress__fill {
   font-size: var(--text-md);
   font-weight: 700;
   text-align: left;
-  box-shadow: 0 3px 0 var(--opt-line);
+  box-shadow: 0 3px 0 var(--opt-edge);
   transition:
     transform var(--t-quick) var(--ease-spring),
     box-shadow var(--t-quick) var(--ease-spring),
@@ -442,7 +443,7 @@ span.tn-progress__fill {
 }
 .tn-option:active:not(:disabled) {
   transform: translateY(3px);
-  box-shadow: 0 0 0 var(--opt-line);
+  box-shadow: 0 0 0 var(--opt-edge);
   transition-duration: var(--t-tap);
 }
 /* Selected before Check: Denim tint fill, Mid Blue border, the number badge filled Mid Blue. */
@@ -450,12 +451,14 @@ span.tn-progress__fill {
 .tn-option[aria-checked='true'] {
   --opt-fill: var(--selected-fill);
   --opt-line: var(--selected);
+  --opt-edge: var(--selected);
   --key-fill: var(--selected);
   --key-ink: var(--on-selected);
 }
 .tn-option[data-state='correct'] {
   --opt-fill: var(--correct-fill);
   --opt-line: var(--correct-edge);
+  --opt-edge: var(--correct-edge);
   --opt-ink: var(--ink);
   --key-fill: var(--correct);
   --key-ink: var(--on-correct);
@@ -463,6 +466,7 @@ span.tn-progress__fill {
 .tn-option[data-state='wrong'] {
   --opt-fill: var(--wrong-fill);
   --opt-line: var(--wrong);
+  --opt-edge: var(--wrong);
   --opt-ink: var(--ink);
   --key-fill: var(--wrong);
   --key-ink: var(--on-wrong);
@@ -470,6 +474,7 @@ span.tn-progress__fill {
 /* The right answer, shown after a miss: green, like a correct pick. */
 .tn-option[data-state='answer'] {
   --opt-line: var(--correct-edge);
+  --opt-edge: var(--correct-edge);
   --key-fill: var(--correct);
   --key-ink: var(--on-correct);
 }
@@ -484,7 +489,7 @@ span.tn-progress__fill {
   height: 26px;
   border: 2px solid var(--opt-line);
   border-radius: 8px;
-  background: var(--key-fill, transparent);
+  background: var(--key-fill, var(--soft-face));
   color: var(--key-ink, var(--ink-muted));
   font-size: var(--text-xs);
   font-weight: 800;
@@ -496,19 +501,19 @@ span.tn-progress__fill {
   align-items: center;
   min-height: 42px;
   padding: 6px 14px;
-  border: 2px solid var(--line-strong);
+  border: 2px solid transparent;
   border-radius: var(--radius-sm);
   background: var(--surface);
   color: var(--ink);
   font-family: var(--font-display);
   font-size: var(--text-lg);
   font-weight: 500;
-  box-shadow: 0 3px 0 var(--line-strong);
+  box-shadow: 0 3px 0 rgba(22, 23, 29, 0.13);
   transition: transform var(--t-quick) var(--ease-spring), box-shadow var(--t-quick) var(--ease-spring);
 }
 .tn-tile:active:not(:disabled) {
   transform: translateY(3px) scale(1.03, 0.95);
-  box-shadow: 0 0 0 var(--line-strong);
+  box-shadow: 0 0 0 transparent;
 }
 .tn-tile--ghost {
   border-style: dashed;
@@ -629,6 +634,17 @@ span.tn-progress__fill {
   --btn-edge: var(--highlight-edge);
   --btn-ink: var(--on-highlight);
 }
+/* The secondary action is white text on a band, as Finch sets "Reflect" over its white button. */
+.tn-band .tn-btn--secondary {
+  --btn-fill: transparent;
+  --btn-edge: transparent;
+  --btn-ink: var(--white);
+  box-shadow: none;
+}
+.tn-band .tn-btn:disabled {
+  --btn-fill: rgba(255, 255, 255, 0.18);
+  --btn-ink: rgba(255, 255, 255, 0.75);
+}
 /* A Dodger Blue ring would vanish on blue, so focus is white on a band. */
 .tn-root .tn-band :focus-visible {
   outline-color: var(--white);
@@ -650,3 +666,28 @@ span.tn-progress__fill {
 /* "Taal" takes the surface's type colour; "Nudge" is Warm Blue, or Golden Yellow on a band. */
 .tn-wordmark span:nth-child(2) { color: var(--primary); }
 .tn-band .tn-wordmark span:nth-child(2) { color: var(--highlight); }
+
+/* ---------- Confetti (Decor.tsx): palette pieces on parabolic arcs ---------- */
+/* Horizontal drift eases out (air drag) while the inner piece rises, slows, then falls: together, an arc. */
+.tn-confetti {
+  position: absolute;
+  top: 120px;
+  left: 50%;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+.tn-confetti i {
+  position: absolute;
+  animation: tn-confetti-x 900ms cubic-bezier(0.2, 0.7, 0.4, 1) var(--delay) both;
+}
+.tn-confetti i::before {
+  content: '';
+  display: block;
+  width: var(--w);
+  height: var(--h);
+  margin: calc(var(--h) / -2) 0 0 calc(var(--w) / -2);
+  border-radius: 2px;
+  background: var(--c);
+  animation: tn-confetti-y 900ms linear var(--delay) both;
+}

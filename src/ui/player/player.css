@@ -6,7 +6,8 @@
   flex-direction: column;
   height: 100%;
   min-height: 0;
-  background: var(--surface);
+  /* A neutral ground under raised white prompts and options. */
+  background: var(--ground-player);
 }
 .tn-player__bar {
   display: flex;
@@ -59,8 +60,6 @@
   flex: none;
   gap: 8px;
   padding: 12px var(--gutter) 16px;
-  border-top: 1px solid var(--line);
-  background: var(--surface);
 }
 .tn-player__zone:has(.tn-sheet) {
   padding: 0;
@@ -173,8 +172,9 @@
   align-items: center;
   gap: 12px;
   padding: 12px 14px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--raise);
 }
 .tn-prompt-card__dutch {
   font-family: var(--font-display);
@@ -267,8 +267,9 @@
 }
 .tn-chunk {
   padding: 10px 12px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--raise);
 }
 .tn-chunk__dutch {
   font-family: var(--font-display);
@@ -307,7 +308,8 @@
 .tn-bubble {
   max-width: 82%;
   padding: 8px 12px 6px;
-  border: 2px solid var(--line);
+  border: 2px solid transparent;
+  box-shadow: 0 2px 0 var(--raise-edge);
   border-radius: 16px 16px 16px 4px;
   background: var(--surface);
   transition: border-color var(--t-quick) var(--ease-out), background-color var(--t-quick) var(--ease-out);
@@ -374,10 +376,10 @@
 /* ---------- Passage ---------- */
 .tn-passage {
   padding: 14px 16px;
-  border: 1px solid var(--line);
   border-left: 4px solid var(--primary);
   border-radius: var(--radius-sm);
-  background: var(--surface-sunken);
+  background: var(--surface);
+  box-shadow: var(--raise);
 }
 .tn-passage__text {
   white-space: pre-line;
@@ -439,8 +441,9 @@
   display: grid;
   gap: 10px;
   padding: 14px 16px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--raise);
 }
 .tn-cloze__sentence {
   font-family: var(--font-display);
@@ -474,7 +477,8 @@
   gap: 6px;
   min-height: 36px;
   padding: 0 12px;
-  border: 1px solid var(--line-strong);
+  border: 0;
+  box-shadow: 0 3px 0 rgba(22, 23, 29, 0.14);
   border-radius: var(--radius-pill);
   background: var(--surface);
   color: var(--ink);
@@ -567,8 +571,9 @@
   justify-items: start;
   gap: 10px;
   padding: 14px 16px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--raise);
 }
 .tn-recorder {
   display: grid;
@@ -642,8 +647,9 @@
   align-items: center;
   justify-content: space-between;
   padding: 8px 12px;
-  border: 1px solid var(--line);
   border-radius: var(--radius-md);
+  background: var(--surface);
+  box-shadow: 0 2px 0 var(--raise-edge);
   font-weight: 800;
 }
 .tn-zone-question {
@@ -787,37 +793,157 @@
   flex: 1;
   flex-direction: column;
   min-height: 0;
+  animation: tn-fade-in var(--t-base) var(--ease-out) both;
 }
-.tn-complete__hero {
+.tn-complete .tn-player__zone > .tn-btn {
+  animation: tn-settle-in var(--t-slow) var(--ease-spring) 640ms both;
+}
+
+/* ---------- Celebration field (Finch's goal completed, in Warm Blue) ---------- */
+.tn-field {
+  position: relative;
   display: grid;
   justify-items: center;
-  gap: 6px;
-  padding: 28px var(--gutter) 24px;
+  gap: 10px;
+  padding: 40px var(--gutter) 22px;
+  color: var(--on-primary);
   text-align: center;
 }
-.tn-complete__hero > :not(.tn-band__pattern) {
+.tn-field > :not(.tn-confetti) {
   position: relative;
 }
-.tn-complete__badge {
+.tn-field__eyebrow {
+  font-size: var(--text-xs);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+/* The bar sits on a white track with its badge as the cap, as Finch's bar ends in a glowing disc. */
+.tn-field__meter {
+  width: min(300px, 100%);
+  margin-bottom: 8px;
+  padding-right: 26px;
+}
+.tn-field__meter .tn-progress {
+  height: 28px;
+  padding: 4px;
+  background: var(--white);
+  box-shadow: 0 3px 0 rgba(22, 23, 29, 0.2);
+}
+.tn-field__meter .tn-progress__count {
+  font-size: var(--text-sm);
+}
+.tn-field__cap {
   display: grid;
   place-items: center;
-  width: 72px;
-  height: 72px;
-  margin-bottom: 6px;
+  flex: none;
+  width: 52px;
+  height: 52px;
+  border: 3px solid var(--white);
   border-radius: var(--radius-pill);
   background: var(--highlight);
   color: var(--on-highlight);
-  box-shadow: 0 5px 0 var(--highlight-edge);
+  box-shadow: 0 3px 0 rgba(22, 23, 29, 0.2), 0 0 0 8px rgba(255, 255, 255, 0.16);
 }
-.tn-complete__badge .tn-sparks i {
-  animation-delay: 420ms;
+.tn-field__meter .tn-field__cap {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  margin-top: -26px;
 }
-.tn-complete__title {
+.tn-field__cap[data-cap='check'] {
+  background: var(--correct);
+  color: var(--on-correct);
+}
+.tn-field__cap[data-cap='flag'] {
+  background: var(--checkpoint);
+  color: var(--on-checkpoint);
+}
+.tn-field__title {
   color: var(--white);
   font-size: var(--text-2xl);
+  animation: tn-title-pop var(--t-slow) var(--ease-out) 120ms both;
 }
-.tn-complete__subtitle {
+.tn-field__subtitle {
+  margin-top: -4px;
+}
+/* The stats as translucent pills (Finch's "Lee got +139 Rainbow Stones"): white on darkened Warm Blue, 7:1. */
+.tn-field__pills {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.tn-field__pills .tn-settle-in {
+  animation-delay: calc(var(--i, 0) * 80ms + 360ms);
+}
+.tn-field__pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  background: rgba(22, 23, 29, 0.2);
   color: var(--white);
+  font-weight: 700;
+}
+.tn-field__pill strong {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 600;
+}
+.tn-field__mark {
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: var(--radius-pill);
+  background: var(--correct);
+  color: var(--on-correct);
+}
+.tn-field__mark[data-mark='wrong'] {
+  background: var(--wrong);
+  color: var(--on-wrong);
+}
+.tn-field__mark[data-mark='now'] {
+  background: var(--now);
+  color: var(--on-now);
+}
+/* Lists such as "Review these" sit in a raised white card on the field, titled on the field. */
+.tn-complete__missed {
+  display: grid;
+  gap: 10px;
+  padding: 4px var(--gutter) 16px;
+}
+.tn-complete__section {
+  padding: 0 4px;
+  color: var(--white);
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 600;
+}
+.tn-complete__card {
+  gap: 0;
+  padding: 4px 14px;
+  border-radius: var(--radius-card);
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: 0 3px 0 rgba(22, 23, 29, 0.2);
+}
+.tn-complete__card .tn-chunk {
+  padding: 10px 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+.tn-complete__card .tn-chunk + .tn-chunk {
+  border-top: 1px solid var(--line);
+}
+.tn-root .tn-band .tn-complete__card :focus-visible {
+  outline-color: var(--focus);
 }
 .tn-stats {
   display: grid;
@@ -849,20 +975,6 @@
   font-size: var(--text-xl);
   font-weight: 600;
 }
-.tn-complete__missed {
-  display: grid;
-  gap: 10px;
-}
-.tn-complete__review,
-.tn-complete__checkpoint {
-  justify-items: center;
-  padding-top: 32px;
-  text-align: center;
-}
-.tn-complete__missed {
-  justify-self: stretch;
-  text-align: left;
-}
 .tn-complete__tick {
   display: inline-grid;
   place-items: center;
@@ -872,58 +984,6 @@
   border-radius: var(--radius-pill);
   background: var(--correct);
   color: var(--on-correct);
-}
-.tn-complete__tick--lg {
-  width: 56px;
-  height: 56px;
-}
-.tn-pills {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 8px;
-}
-.tn-pill {
-  padding: 6px 12px;
-  border-radius: var(--radius-pill);
-  font-weight: 800;
-}
-/* Quizlet's Know and Still learning: green for remembered, orange for still learning. */
-.tn-pill--correct {
-  background: var(--correct-fill);
-  color: var(--ink);
-}
-.tn-pill--now {
-  background: var(--now-fill);
-  color: var(--ink);
-}
-.tn-score {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-.tn-score__value {
-  font-size: 40px;
-  text-align: left;
-}
-.tn-score__legend {
-  display: flex;
-  gap: 16px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  font-weight: 700;
-}
-.tn-score__legend i {
-  display: inline-block;
-  width: 10px;
-  height: 10px;
-  margin-right: 4px;
-  border-radius: 3px;
-}
-.tn-complete__verdict {
-  font-size: var(--text-lg);
-  font-weight: 800;
 }
 /* The card keeps its session height: the line sits on top, the actions are pinned below. */
 .tn-complete--card {
@@ -1015,8 +1075,9 @@
   gap: 10px;
   min-width: 0;
   padding: 8px 10px;
-  border: 1px solid var(--line);
   border-radius: var(--radius-md);
+  background: var(--surface);
+  box-shadow: 0 2px 0 var(--raise-edge);
 }
 .tn-contrast__word > span {
   display: grid;
@@ -1282,8 +1343,9 @@
   display: grid;
   gap: 8px;
   padding: 12px 14px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--raise);
 }
 .tn-correction__text {
   font-size: var(--text-sm);

@@ -99,6 +99,7 @@ Product rule: we do not invent UI/UX. Every decision here cites Mobbin screens o
 - Copy: "Correct!" and "Not quite". No exclamation mark on errors, and no guilt.
 
 ### 1.8 Lesson complete, review session, checkpoint result
+*(Restyled as Finch's celebration field in §13.3: the stats are pills and the checkpoint ring is a score bar.)*
 - **Lesson complete**: a brand-hero band with the mascot or illustration, then "Lesson complete!" and "4 new phrases · Groeten".
   - Three stat cells in one bordered row, about 104px each: `Correct 7/8 · New 4 · Time 3:12`.
   - A "Review these" list of missed phrases, each with a speaker.
@@ -480,5 +481,16 @@ The owner asked for every surface to take the look and feel of [Finch](https://m
 - **Course stepper.** The lesson connector is dashed, as Finch strings its daily quests on a dashed line with circles ([Daily Quests](https://mobbin.com/screens/24390f69-5bd2-4f90-b2f9-eae6fa3acfdf)); the nodes keep their state colours. The stage bands keep their colours.
 - **Kept:** every tab's content and order, the 7-day row (no calendar or stat pills), the word-state rings and the review card.
 - **De/het glyph.** The articles tile uses Phosphor's tag (a label set before a noun). This round also added Phosphor's browser, timer, alarm, gauge, music notes, image and bell-slash for the Settings rows in phase 4, copied from `@phosphor-icons/core` 2.1.1 after checking the tarball against the registry's sha512.
+
+### 13.3 Lesson player and end screens (phase 3)
+- **Player ground and raised parts** *(gap fill: Finch has no exercises)*. The player sits on a neutral grey-blue ground (`--ground-player`); answer options, word tiles, prompt cards, sentence and speaking cards, example chunks and the comparison rows become raised white cards with no outline, and options press into their edge. [Speak – Translate](https://mobbin.com/screens/1754842f-604f-46a5-b514-31c49bf645e9) sets its prompt card and options as white cards on a light grey ground; [Vocabulary – quiz](https://mobbin.com/screens/a152f11c-806f-4a46-8a91-c919422c6394) raises its options on a tinted ground with a bottom edge. The selected, correct and wrong states keep their borders and tints; at rest the number badge sits on the soft grey face. Inputs keep their border, as every learning app on Mobbin draws one.
+- **Round grey ×.** The lesson's × sits in a round grey disc, as Finch closes its dialogs ([Quest detail](https://mobbin.com/screens/fc1239aa-1337-4395-bbe3-3a2525d86e52)) and as [Vocabulary](https://mobbin.com/screens/a152f11c-806f-4a46-8a91-c919422c6394) and [Quizlet – Learn](https://mobbin.com/screens/2c70f24d-ad39-4ca6-9c05-2c4c8f9539ec) close a quiz. The top progress bar keeps its style, and the Check zone sits on the ground with no rule.
+- **Feedback sheets** keep their Seaweed Green and Flush Mahogany tints and buttons; `Why?` is the soft white button.
+- **Celebration fields.** Lesson complete, new words, ear training, review done and the checkpoint result now share Finch's goal-completed layout ([Completing a goal](https://mobbin.com/flows/2d8a4c8a-20d1-4239-b528-c4fbd26742a7), [egg step](https://mobbin.com/screens/68e01b5e-52c9-4691-9923-ee0343b5f2c1)): the whole screen is a Warm Blue field; confetti in the light palette colours and white bursts on parabolic arcs; a thick bar on a white track fills to its new value, with the badge as its cap (Finch ends its bar in a glowing disc): a Golden Yellow star for lessons, words and ear training, a Seaweed Green tick for reviews, a Butterfly Bush flag for checkpoints; then the title, the subtitle, and the stats as translucent pills ("Lee got +139 Rainbow Stones" in Finch). The bar is the module's lessons for a lesson, the basic words met, the sound pairs met, the items remembered in a review, or the checkpoint score.
+- **Buttons on the field.** The main button stays Golden Yellow with an ink label; the second action is white text, as Finch sets `Reflect` over its white `Yay!`. "Review these" sits in a raised white card under a white title on the field.
+- **Checkpoint result.** The green and red ring (§1.8) gives way to the score bar and pills with a ✓ or ✕ mark ("Correct 13", "Incorrect 2", "87%"), because Flush Mahogany on Warm Blue is about 1:1 and the ring could not be read on the field. A missed checkpoint gets the field without confetti: it is the one end that does not celebrate.
+- **Pills** are white on Warm Blue darkened by 20% ink, 7.1:1; their marks are the state colours with their usual glyphs (✓ correct, ✕ wrong, ↺ still learning).
+
+These searches returned the `ai_usage_notice` again (Mobbin AI usage is high this month); it was shown to the owner.
 
 These searches returned the `ai_usage_notice` again (Mobbin AI usage is high this month); it was shown to the owner.

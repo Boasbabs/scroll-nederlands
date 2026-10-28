@@ -111,6 +111,26 @@
   100% { transform: none; }
 }
 
+/* Celebration title: pops in, squashes on landing, stretches back (squash and stretch, exaggeration). */
+@keyframes tn-title-pop {
+  0% { opacity: 0; transform: scale(0.6); }
+  55% { opacity: 1; transform: scale(1.1, 0.92); }
+  78% { transform: scale(0.97, 1.04); }
+  100% { opacity: 1; transform: none; }
+}
+
+/* Confetti, straight-ahead: drift sideways while rising, slowing, then falling and spinning away. */
+@keyframes tn-confetti-x {
+  from { transform: translateX(0); }
+  to { transform: translateX(var(--dx)); }
+}
+@keyframes tn-confetti-y {
+  0% { opacity: 1; transform: translateY(0) rotate(0); animation-timing-function: cubic-bezier(0.25, 0.6, 0.45, 1); }
+  35% { transform: translateY(var(--rise)) rotate(calc(var(--spin) * 0.4)); animation-timing-function: cubic-bezier(0.55, 0, 0.8, 0.45); }
+  80% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(var(--fall)) rotate(var(--spin)); }
+}
+
 .tn-rise-in { animation: tn-rise-in var(--t-slow) var(--ease-out) both; }
 .tn-drop-out { animation: tn-drop-out var(--t-base) var(--ease-in) both; }
 .tn-settle-in { animation: tn-settle-in var(--t-base) var(--ease-out) both; animation-delay: calc(var(--i, 0) * var(--stagger)); }
@@ -138,5 +158,9 @@
   @keyframes tn-fade {
     from { opacity: 0; }
     to { opacity: 1; }
+  }
+  /* Confetti is hidden rather than left still. */
+  .tn-confetti {
+    display: none;
   }
 }

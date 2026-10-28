@@ -1,14 +1,17 @@
-// End of a session: lesson complete (the one celebration), review summary,
-// checkpoint result, or the compact line in the in-page card.
+// End of a session: lesson complete, words, ear training, review and checkpoint results, each on
+// Finch's celebration field, or the compact line in the in-page card.
+import { useEffect, useState, type CSSProperties, type ReactNode } from 'react';
 import type { SessionPlan } from '../../engine/plan';
 import { CHECKPOINT_PASS } from '../../engine/progress';
 import { stageCheckpointId } from '../../engine/selection';
+import type { ProgressSummary } from '../../engine/summary';
 import type { SessionOutcome } from '../../learning/actions';
 import { contrastLabel } from '../../sounds/assemble';
 import { AudioButton } from '../components/AudioButton';
 import { Button } from '../components/Button';
-import { SquigglePattern, Sparks } from '../components/Decor';
+import { Confetti } from '../components/Decor';
 import { Icon } from '../components/Icon';
+import { ProgressBar } from '../components/ProgressBar';
 import { useEnv } from '../env';
 import { formatDuration, formatIn, plural } from '../format';
 
@@ -34,9 +37,9 @@ function MissedList({ itemIds }: { itemIds: ReadonlyArray<string> }) {
   const items = itemIds.flatMap((id) => course.item(id) ?? []);
   if (items.length === 0) return null;
   return (
-    <section className="tn-complete__missed">
-      <h3 className="tn-label">Review these</h3>
-      <ul className="tn-chunks">
+    <section className="tn-complete__missed tn-settle-in" style={{ '--i': 4 } as CSSProperties}>
+      <h3 className="tn-complete__section">Review these</h3>
+      <ul className="tn-chunks tn-complete__card">
         {items.map((item) => (
           <li key={item.id} className="tn-chunk">
             <AudioButton text={item.dutch} size="small" />
@@ -53,32 +56,96 @@ function MissedList({ itemIds }: { itemIds: ReadonlyArray<string> }) {
   );
 }
 
-/** Correct in Seaweed Green, incorrect in Flush Mahogany, as two segments of one ring. */
-function ScoreRing({ correct, total }: { correct: number; total: number }) {
-  const r = 34;
-  const length = 2 * Math.PI * r;
-  const share = total > 0 ? correct / total : 0;
-  return (
-    <svg className="tn-ring" viewBox="0 0 84 84" width="84" height="84" aria-hidden="true">
-      <circle cx="42" cy="42" r={r} fill="none" stroke="var(--wrong)" strokeWidth="10" />
-      <circle
-        cx="42"
-        cy="42"
-        r={r}
-        fill="none"
-        stroke="var(--correct)"
-        strokeWidth="10"
-        strokeDasharray={`${share * length} ${length}`}
-        transform="rotate(-90 42 42)"
-        strokeLinecap={share > 0 && share < 1 ? 'round' : 'butt'}
-      />
-    </svg>
+type Pill = { label?: string; value: string; mark?: 'correct' | 'wrong' | 'now' };
+const MARKS = { correct: 'check', wrong: 'cross', now: 'refresh' } as const;
+type Bar = { from: number; to: number; max: number; label: string };
+
+/**
+ * Finch's celebration field, in Warm Blue: confetti, the bar filling to its new value with the
+ * badge as its cap, the title, then the stats as translucent pills. A missed checkpoint gets the
+ * same field without the confetti.
+ */
+function Field({
+  cap,
+  celebrate = true,
+  eyebrow,
+  title,
+  subtitle,
+  bar,
+  pills,
+}: {
+  cap: 'star' | 'check' | 'flag';
+  celebrate?: boolean;
+  eyebrow?: string;
+  title: string;
+  subtitle?: string;
+  bar?: Bar;
+  pills: ReadonlyArray<Pill>;
+}) {
+  // The bar shows where it was, then fills to where it is now once the field has arrived.
+  const [shown, setShown] = useState(bar?.from ?? 0);
+  useEffect(() => {
+    if (!bar) return undefined;
+    setShown(bar.from);
+    const timer = setTimeout(() => setShown(bar.to), 320);
+    return () => clearTimeout(timer);
+  }, [bar?.from, bar?.to]);
+  const badge = (
+    <span className="tn-field__cap tn-land" data-cap={cap}>
+      <Icon name={cap} size={cap === 'star' ? 24 : 22} />
+    </span>
   );
+  return (
+    <header className="tn-field">
+      {celebrate ? <Confetti /> : null}
+      {eyebrow ? <span className="tn-field__eyebrow">{eyebrow}</span> : null}
+      {bar ? (
+        <div className="tn-field__meter">
+          <ProgressBar value={shown} max={bar.max} label={bar.label} count />
+          {badge}
+        </div>
+      ) : (
+        badge
+      )}
+      <h2 className="tn-title tn-field__title">{title}</h2>
+      {subtitle ? <p className="tn-field__subtitle">{subtitle}</p> : null}
+      <ul className="tn-field__pills">
+        {pills.map((pill, i) => (
+          <li key={pill.label ?? pill.value} className="tn-field__pill tn-settle-in" style={{ '--i': i + 2 } as CSSProperties}>
+            {pill.mark ? (
+              <span className="tn-field__mark" data-mark={pill.mark}>
+                <Icon name={MARKS[pill.mark]} size={12} />
+              </span>
+            ) : null}
+            <span>
+              {pill.label ? <span className="tn-field__pill-label">{pill.label} </span> : null}
+              <strong>{pill.value}</strong>
+            </span>
+          </li>
+        ))}
+      </ul>
+    </header>
+  );
+}
+
+/** Where this session moved the learner, for the bar on the field: read once the session is saved. */
+function useSummary() {
+  const { learning } = useEnv();
+  const [summary, setSummary] = useState<ProgressSummary>();
+  useEffect(() => {
+    let live = true;
+    void learning.snapshot('focused').then((snap) => live && setSummary(snap.summary));
+    return () => {
+      live = false;
+    };
+  }, [learning]);
+  return summary;
 }
 
 export function SessionComplete({ plan, outcome, stats, onAction }: SessionCompleteProps) {
   const { course, surface, now } = useEnv();
   const lesson = plan.lessonId ? course.lesson(plan.lessonId) : undefined;
+  const summary = useSummary();
 
   if (surface === 'card') {
     return (
@@ -104,6 +171,17 @@ export function SessionComplete({ plan, outcome, stats, onAction }: SessionCompl
     );
   }
 
+  // The whole screen is the field; the buttons sit on it too.
+  const screen = (field: ReactNode, actions: ReactNode) => (
+    <div className="tn-complete tn-band tn-band--hero">
+      <div className="tn-player__body">
+        {field}
+        <MissedList itemIds={outcome.missedItemIds} />
+      </div>
+      <div className="tn-player__zone">{actions}</div>
+    </div>
+  );
+
   if (plan.kind === 'checkpoint' && outcome.checkpoint && lesson) {
     const total = stats.graded;
     const needed = Math.ceil(CHECKPOINT_PASS * total);
@@ -112,90 +190,62 @@ export function SessionComplete({ plan, outcome, stats, onAction }: SessionCompl
     const nextStage = course.curriculum.stages[stageIndex + 1];
     const endsStage = stageCheckpointId(course, lesson.stageId) === lesson.id;
     const short = (title?: string) => title?.split(' · ')[0] ?? '';
-    return (
-      <div className="tn-complete">
-        <div className="tn-player__body">
-          <div className="tn-player__content tn-complete__checkpoint">
-            <span className="tn-label">{lesson.title}</span>
-            <div className="tn-score">
-              <ScoreRing correct={stats.correct} total={total} />
-              <div>
-                <p className="tn-score__value tn-display">
-                  {stats.correct}/{total}
-                </p>
-                <p className="tn-muted">{Math.round(outcome.checkpoint.score * 100)}%</p>
-              </div>
-            </div>
-            <ul className="tn-score__legend">
-              <li>
-                <i style={{ background: 'var(--correct)' }} /> Correct {stats.correct}
-              </li>
-              <li>
-                <i style={{ background: 'var(--wrong)' }} /> Incorrect {total - stats.correct}
-              </li>
-            </ul>
-            <p className="tn-complete__verdict">
-              {outcome.checkpoint.passed
-                ? endsStage && nextStage
-                  ? `${short(stage?.title)} complete. ${short(nextStage.title)} is unlocked.`
-                  : 'Checkpoint passed.'
-                : `Almost. You need ${needed}/${total}.`}
-            </p>
-            <MissedList itemIds={outcome.missedItemIds} />
-          </div>
-        </div>
-        <div className="tn-player__zone">
-          {outcome.checkpoint.passed ? (
-            <Button block onClick={() => onAction('next')} data-primary>
-              Continue
-            </Button>
-          ) : (
-            <>
-              <Button block onClick={() => onAction('mistakes')} disabled={outcome.missedItemIds.length === 0} data-primary>
-                Review mistakes ({total - stats.correct})
-              </Button>
-              <Button block variant="secondary" onClick={() => onAction('course')}>
-                Retake later
-              </Button>
-            </>
-          )}
-        </div>
-      </div>
+    const { passed } = outcome.checkpoint;
+    return screen(
+      <Field
+        cap="flag"
+        celebrate={passed}
+        eyebrow={lesson.title}
+        title={passed ? (endsStage && nextStage ? `${short(stage?.title)} complete. ${short(nextStage.title)} is unlocked.` : 'Checkpoint passed.') : `Almost. You need ${needed}/${total}.`}
+        bar={{ from: 0, to: stats.correct, max: total, label: 'Score' }}
+        pills={[
+          { label: 'Correct', value: String(stats.correct), mark: 'correct' },
+          { label: 'Incorrect', value: String(total - stats.correct), mark: 'wrong' },
+          { value: `${Math.round(outcome.checkpoint.score * 100)}%` },
+        ]}
+      />,
+      passed ? (
+        <Button block onClick={() => onAction('next')} data-primary>
+          Continue
+        </Button>
+      ) : (
+        <>
+          <Button block onClick={() => onAction('mistakes')} disabled={outcome.missedItemIds.length === 0} data-primary>
+            Review mistakes ({total - stats.correct})
+          </Button>
+          <Button block variant="secondary" onClick={() => onAction('course')}>
+            Retake later
+          </Button>
+        </>
+      ),
     );
   }
 
   if (plan.kind === 'review') {
     const missed = outcome.missedItemIds.length;
     const missedIds = new Set(outcome.missedItemIds);
-    const remembered = new Set(
-      plan.steps.flatMap((step) => (step.type === 'exercise' ? step.planned.itemIds : [])).filter((id) => !missedIds.has(id)),
-    ).size;
-    return (
-      <div className="tn-complete">
-        <div className="tn-player__body">
-          <div className="tn-player__content tn-complete__review">
-            <span className="tn-complete__tick tn-complete__tick--lg tn-pop">
-              <Icon name="check" size={28} />
-            </span>
-            <h2 className="tn-title">Review done</h2>
-            <div className="tn-pills">
-              <span className="tn-pill tn-pill--correct">Remembered {remembered}</span>
-              <span className="tn-pill tn-pill--now">Still learning {missed}</span>
-            </div>
-            <MissedList itemIds={outcome.missedItemIds} />
-          </div>
-        </div>
-        <div className="tn-player__zone">
-          <Button block onClick={() => onAction('done')} data-primary>
-            Done
+    const reviewed = new Set(plan.steps.flatMap((step) => (step.type === 'exercise' ? step.planned.itemIds : [])));
+    const remembered = [...reviewed].filter((id) => !missedIds.has(id)).length;
+    return screen(
+      <Field
+        cap="check"
+        title="Review done"
+        bar={reviewed.size > 0 ? { from: 0, to: remembered, max: reviewed.size, label: 'Remembered' } : undefined}
+        pills={[
+          { label: 'Remembered', value: String(remembered), mark: 'correct' },
+          { label: 'Still learning', value: String(missed), mark: 'now' },
+        ]}
+      />,
+      <>
+        <Button block onClick={() => onAction('done')} data-primary>
+          Done
+        </Button>
+        {missed > 0 ? (
+          <Button block variant="secondary" onClick={() => onAction('again')}>
+            Review {missed} again
           </Button>
-          {missed > 0 ? (
-            <Button block variant="secondary" onClick={() => onAction('again')}>
-              Review {missed} again
-            </Button>
-          ) : null}
-        </div>
-      </div>
+        ) : null}
+      </>,
     );
   }
 
@@ -206,59 +256,52 @@ export function SessionComplete({ plan, outcome, stats, onAction }: SessionCompl
   const contrast = contrastStep?.type === 'contrast' ? course.contrast(contrastStep.itemId) : undefined;
   let title = 'Lesson complete!';
   let subtitle = `${newCount > 0 ? `${plural(newCount, 'new phrase')} · ` : ''}${lesson?.title ?? ''}`;
+  // The bar this session moved: the module's lessons, the basic words met or the sound pairs met.
+  let bar: Bar | undefined;
   if (words) {
     title = 'New words learned!';
     subtitle = plural(newCount, 'new word');
+    if (summary) {
+      const met = summary.words.total - summary.words.new;
+      bar = { from: Math.max(0, met - newCount), to: met, max: summary.words.total, label: 'Basic words met' };
+    }
   } else if (sounds) {
     title = 'Ear training done!';
     subtitle = contrast ? `New sound pair: ${contrastLabel(contrast)}` : '';
+    if (summary) {
+      const met = summary.sounds.total - summary.sounds.new;
+      bar = { from: Math.max(0, met - newCount), to: met, max: summary.sounds.total, label: 'Sound pairs met' };
+    }
+  } else if (lesson && summary?.modules[lesson.moduleId]) {
+    const count = summary.modules[lesson.moduleId]!;
+    // New items mean a first completion; a replayed lesson leaves the count where it was.
+    bar = { from: Math.max(0, count.completed - (newCount > 0 ? 1 : 0)), to: count.completed, max: count.total, label: 'Lessons done in this module' };
   }
-  return (
-    <div className="tn-complete">
-      <div className="tn-player__body">
-        <header className="tn-band tn-band--hero tn-complete__hero">
-          <SquigglePattern />
-          <span className="tn-complete__badge tn-land">
-            <Icon name="star" size={34} />
-            <Sparks count={10} reach={44} />
-          </span>
-          <h2 className="tn-title tn-complete__title">{title}</h2>
-          <p className="tn-complete__subtitle">{subtitle}</p>
-        </header>
-        <div className="tn-player__content">
-          <dl className="tn-stats tn-settle-in">
-            <div>
-              <dt>Correct</dt>
-              <dd>
-                {stats.correct}/{stats.graded}
-              </dd>
-            </div>
-            <div>
-              <dt>New</dt>
-              <dd>{newCount}</dd>
-            </div>
-            <div>
-              <dt>Time</dt>
-              <dd>{formatDuration(stats.ms)}</dd>
-            </div>
-          </dl>
-          <MissedList itemIds={outcome.missedItemIds} />
-        </div>
-      </div>
-      <div className="tn-player__zone">
-        <Button block onClick={() => onAction('next')} data-primary disabled={outcome.next.type === 'finished'}>
-          Continue
+  return screen(
+    <Field
+      cap="star"
+      title={title}
+      subtitle={subtitle}
+      bar={bar}
+      pills={[
+        { label: 'Correct', value: `${stats.correct}/${stats.graded}` },
+        { label: 'New', value: String(newCount) },
+        { label: 'Time', value: formatDuration(stats.ms) },
+      ]}
+    />,
+    <>
+      <Button block onClick={() => onAction('next')} data-primary disabled={outcome.next.type === 'finished'}>
+        Continue
+      </Button>
+      {words || sounds ? (
+        <Button block variant="secondary" onClick={() => onAction('done')}>
+          Done
         </Button>
-        {words || sounds ? (
-          <Button block variant="secondary" onClick={() => onAction('done')}>
-            Done
-          </Button>
-        ) : (
-          <Button block variant="secondary" onClick={() => onAction('course')}>
-            Back to course
-          </Button>
-        )}
-      </div>
-    </div>
+      ) : (
+        <Button block variant="secondary" onClick={() => onAction('course')}>
+          Back to course
+        </Button>
+      )}
+    </>,
   );
 }

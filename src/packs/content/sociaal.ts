@@ -222,7 +222,7 @@ export const sociaal: Pack = {
       ],
       dialogue: [
         { speaker: 'Anouk', dutch: 'Hoi! Wat leuk dat je er bent. Kom binnen!', english: "Hi! How nice that you're here. Come in!" },
-        { speaker: 'Jij', dutch: 'Gefeliciteerd, Anouk! Alsjeblieft, een klein cadeautje.', english: 'Happy birthday, Anouk! Here you are, a little present.' },
+        { speaker: 'Jij', dutch: 'Gefeliciteerd, Anouk! Alsjeblieft, een bosje bloemen.', english: 'Happy birthday, Anouk! Here you are, a bunch of flowers.' },
         { speaker: 'Anouk', dutch: 'O, wat lief, dank je wel! Dit is mijn moeder, en dit is mijn broer Mark.', english: 'Oh, how sweet, thank you! This is my mother, and this is my brother Mark.' },
         { speaker: 'Jij', dutch: 'Dag mevrouw, gefeliciteerd met uw dochter!', english: "Hello, congratulations on your daughter's birthday!" },
         { speaker: 'Moeder', dutch: 'Dank je wel! Ga lekker zitten. Wil je koffie?', english: 'Thank you! Do sit down. Would you like some coffee?' },
@@ -406,7 +406,7 @@ export const sociaal: Pack = {
           kind: 'choice',
           items: ['kraamvisite'],
           prompt: 'Femke leaves you a voice message. Listen. Why is she calling?',
-          audioText: 'Hoi, met Femke! Ons zoontje is vorige week geboren. Hij heet Jens. Kom je een keer op kraamvisite? Bel me even terug, dan zoeken we een dag.',
+          audioText: 'Hoi, met Femke! Ons zoontje is vorige week geboren. Hij heet Jens. Kom je een keer op kraamvisite? Bel me even terug, dan spreken we een dag af.',
           listenOnly: true,
           options: ['Her baby has been born, and she asks you to visit', 'She invites you to her birthday', 'She asks you to babysit next week', 'She has to cancel your coffee'],
           answer: 'Her baby has been born, and she asks you to visit',
@@ -548,7 +548,7 @@ export const sociaal: Pack = {
         { dutch: 'Gelukkig nieuwjaar!', english: 'Happy New Year!' },
       ],
       patternExplanation:
-        'Holiday names take no article. Use met for a holiday period (met Kerst, met Oud en Nieuw) and op for a single day (op Koningsdag, op 4 mei). Say Fijne feestdagen! in December, and in January wish everyone Gelukkig nieuwjaar!',
+        'Holiday names take no article, but de Dodenherdenking, a commemoration, takes de. Use met for a holiday period (met Kerst, met Oud en Nieuw) and op for a single day (op Koningsdag, op 4 mei). Say Fijne feestdagen! in December, and in January wish everyone Gelukkig nieuwjaar!',
       pronunciationTip: 'Oliebol is stressed at the start: OH-lee-bol. Dodenherdenking: DOH-duh-her-den-king. In gelukkig the g is the throat sound: khuh-LUK-ukh.',
       examples: [
         { dutch: 'Op 4 mei is de Dodenherdenking: om acht uur is iedereen twee minuten stil.', english: '4 May is the Remembrance of the Dead: at eight in the evening, everyone is silent for two minutes.' },
@@ -657,7 +657,7 @@ export const sociaal: Pack = {
           ],
           options: ['Leuk! Fijne feestdagen!', 'Gelukkig nieuwjaar!', 'Gefeliciteerd!'],
           answer: 'Leuk! Fijne feestdagen!',
-          explanation: 'Fijne feestdagen covers Christmas and New Year, so it is what you say before the break. Gelukkig nieuwjaar waits until the new year has begun.',
+          explanation: 'Fijne feestdagen covers Christmas and New Year, so it is what you say before the break. On its own, Gelukkig nieuwjaar is for January. Before then, add alvast: Fijne feestdagen en alvast een gelukkig nieuwjaar!',
         },
       ],
     },

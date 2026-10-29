@@ -250,8 +250,8 @@ export const valseVrienden: Pack = {
           kind: 'choice',
           items: ['w-food/worst'],
           prompt: 'A market stall sells "broodje worst". What is it?',
-          options: ['A sausage roll', 'The worst sandwich', 'A cheese roll'],
-          answer: 'A sausage roll',
+          options: ['A bread roll with sausage', 'The worst sandwich', 'A cheese roll'],
+          answer: 'A bread roll with sausage',
           explanation: 'De worst is a sausage. The worst is het slechtst.',
         },
         {

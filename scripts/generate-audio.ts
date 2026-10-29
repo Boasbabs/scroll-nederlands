@@ -264,7 +264,7 @@ let client: ReturnType<typeof googleCloud> | undefined;
 /** The Google client, made on the first call that needs it: --plan, --encode and --report need none. */
 function google() {
   const key = process.env.GOOGLE_CLOUD_API_KEY;
-  if (!key) throw new GoogleApiError('Set GOOGLE_CLOUD_API_KEY in .env.local (see "Google Chirp 3: HD test" in docs/audio-research.md).', true);
+  if (!key) throw new GoogleApiError('Set GOOGLE_CLOUD_API_KEY in .env.local (see "Setup" in docs/audio-research.md).', true);
   client ??= googleCloud({ key, ttsEndpoint: process.env.GOOGLE_TTS_ENDPOINT || undefined, sttEndpoint: process.env.GOOGLE_STT_ENDPOINT || undefined });
   return client;
 }

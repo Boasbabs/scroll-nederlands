@@ -114,7 +114,7 @@ docs/
   ux-research.md         Mobbin research behind every UI decision
   colour-system.md       The Makuteam palette: one job per colour, usage rules, contrast, evidence
   curriculum-plan.md     Lesson-by-lesson plan and assumptions
-  audio-research.md      Voice research, and why the clips moved from ElevenLabs to Google
+  audio-research.md      The course's voices, and how its clips are made and checked
   final-report.md        Final handoff report
 tests/                   Curriculum, engine, storage, audio, UI flows, extension wiring
 preview/                 Dev-only harness that runs the UI in a normal tab with in-memory storage

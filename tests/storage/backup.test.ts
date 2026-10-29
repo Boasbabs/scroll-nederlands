@@ -59,6 +59,7 @@ describe('progress backup', () => {
     await before.store.markLeech(THANKS, T0 - DAY);
     await before.store.setDraft('d-1', { id: 'd-1', text: 'Ik ben gisteren gewerkt.', prompt: 'Say what you did.', exerciseId: 'x0-a-hello/type', at: T0 - DAY });
     await before.store.addCorrections(findCorrections('Ik ben gisteren gewerkt.', 'Ik heb gisteren gewerkt.', T0 - DAY));
+    await before.store.setMission('gemeente', T0 - DAY);
     await addPicture(before, HELLO, [1, 2, 3, 250], T0 - DAY);
 
     expect(await before.backup.lastSaved()).toBeUndefined();
@@ -146,6 +147,8 @@ describe('progress backup', () => {
     await addPicture(before, HELLO, [1], T0 - DAY);
     await addPicture(before, THANKS, [2], T0 - DAY);
     await before.store.setDraft('d-1', { id: 'd-1', text: 'Ik ben gewerkt.', prompt: '', exerciseId: '', at: T0 - DAY });
+    await before.store.setMission('gemeente', T0 - DAY);
+    await before.store.setMission('huren', T0 - DAY);
     const text = await savedText(before);
 
     // Since the backup, a fresh start: lesson 1 again, a newer note and another picture for it, a new draft.
@@ -155,6 +158,7 @@ describe('progress backup', () => {
     await after.store.setNote(THANKS, 'Older than the backup’s', T0 - 2 * DAY);
     await addPicture(after, HELLO, [3], T0 + DAY);
     await after.store.setDraft('d-2', { id: 'd-2', text: 'Ik heb gewerkt.', prompt: '', exerciseId: '', at: T0 + DAY });
+    await after.store.setMission('huren', T0 + DAY);
     await after.backup.save();
     await restore(after, text);
     // The backup saved here since is newer than the restored file.
@@ -173,6 +177,8 @@ describe('progress backup', () => {
     expect(await pictureBytes(after, HELLO)).toEqual([3]);
     expect(await pictureBytes(after, THANKS)).toEqual([2]);
     expect(Object.keys(await after.store.readDrafts()).sort()).toEqual(['d-1', 'd-2']);
+    // A mission ticked since keeps its time here; one ticked only before the backup comes back.
+    expect(await after.store.readMissions()).toEqual({ gemeente: T0 - DAY, huren: T0 + DAY });
   });
 
   it('takes the settings from the backup but keeps the sites as they are here', async () => {

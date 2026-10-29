@@ -28,6 +28,8 @@ export const STORAGE_KEYS = {
   custom: 'tn.custom',
   /** This browser's backup times (BackupTimes). Not itself in a backup. */
   backup: 'tn.backup',
+  /** The packs whose "Do it for real" mission the learner ticked. Not scored. */
+  missions: 'tn.missions',
 } as const;
 
 export type LearnerPreferences = {
@@ -143,6 +145,11 @@ export type LeechIndex = Record<string, number>;
 
 export const parseLeeches: (raw: unknown) => LeechIndex = parsePictures;
 
+/** Pack id → when the learner ticked its mission as done. */
+export type MissionIndex = Record<string, number>;
+
+export const parseMissions: (raw: unknown) => MissionIndex = parsePictures;
+
 function strings(raw: unknown): Array<string> | undefined {
   return Array.isArray(raw) && raw.every((value) => typeof value === 'string') ? raw : undefined;
 }
@@ -226,6 +233,7 @@ export type LearnerRecords = {
   leeches: LeechIndex;
   drafts: Record<string, Draft>;
   corrections: Record<string, Correction>;
+  missions: MissionIndex;
 };
 
 /** Where each record is stored. The browsing state and the backup time are not records. */
@@ -237,6 +245,7 @@ export const RECORD_KEYS = {
   leeches: STORAGE_KEYS.leeches,
   drafts: STORAGE_KEYS.drafts,
   corrections: STORAGE_KEYS.custom,
+  missions: STORAGE_KEYS.missions,
 } as const satisfies Record<keyof LearnerRecords, string>;
 
 /** The records from values keyed as stored (chrome.storage.local, or a backup's data). */
@@ -249,6 +258,7 @@ export function parseRecords(stored: Record<string, unknown>): LearnerRecords {
     leeches: parseLeeches(stored[RECORD_KEYS.leeches]),
     drafts: parseDrafts(stored[RECORD_KEYS.drafts]),
     corrections: parseCorrections(stored[RECORD_KEYS.corrections]),
+    missions: parseMissions(stored[RECORD_KEYS.missions]),
   };
 }
 
@@ -309,6 +319,11 @@ export function createStore(area: StorageAreaLike) {
     return parseDrafts(stored[STORAGE_KEYS.drafts]);
   }
 
+  async function readMissions(): Promise<MissionIndex> {
+    const stored = await area.get([STORAGE_KEYS.missions]);
+    return parseMissions(stored[STORAGE_KEYS.missions]);
+  }
+
   async function readCorrections(): Promise<Record<string, Correction>> {
     const stored = await area.get([STORAGE_KEYS.custom]);
     return parseCorrections(stored[STORAGE_KEYS.custom]);
@@ -331,6 +346,7 @@ export function createStore(area: StorageAreaLike) {
     readLeeches,
     readDrafts,
     readCorrections,
+    readMissions,
     readRecords,
 
     /**
@@ -399,6 +415,17 @@ export function createStore(area: StorageAreaLike) {
       return enqueue(async () => {
         const next = { ...(await readLeeches()), [itemId]: at };
         await area.set({ [STORAGE_KEYS.leeches]: next });
+        return next;
+      });
+    },
+
+    /** Ticks (a time) or unticks (undefined) a pack's mission. */
+    setMission(packId: string, at: number | undefined): Promise<MissionIndex> {
+      return enqueue(async () => {
+        const next = { ...(await readMissions()) };
+        if (at === undefined) delete next[packId];
+        else next[packId] = at;
+        await area.set({ [STORAGE_KEYS.missions]: next });
         return next;
       });
     },

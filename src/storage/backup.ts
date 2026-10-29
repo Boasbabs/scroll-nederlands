@@ -96,8 +96,8 @@ function newerNotes(here: NoteIndex, backup: NoteIndex): NoteIndex {
 /**
  * Adds a backup's records to the ones here. Progress and notes keep the newer
  * copy of each item (a tie keeps the one here), so anything done since the
- * backup stays. Pictures, drafts, corrections and "Make it yours" offers are
- * added where this browser has none. Settings come from the backup, except the
+ * backup stays. Pictures, drafts, corrections, "Make it yours" offers and
+ * ticked missions are added where this browser has none. Settings come from the backup, except the
  * sites: Chrome's site access can't come from a file, so they stay as they are
  * here (all off after a reinstall), and so does a snooze.
  */
@@ -117,6 +117,7 @@ export function mergeRecords(here: LearnerRecords, backup: LearnerRecords): Lear
     leeches: { ...backup.leeches, ...here.leeches },
     drafts: { ...backup.drafts, ...here.drafts },
     corrections: { ...backup.corrections, ...here.corrections },
+    missions: { ...backup.missions, ...here.missions },
   };
 }
 

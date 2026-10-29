@@ -672,9 +672,9 @@ export const diensten: Pack = {
             "Your vacuum cleaner (de stofzuiger) stopped working after four months. Write to the shop's customer service: make a complaint, say when you bought it and what is wrong, and say what you want.",
           mustInclude: [
             ['klacht'],
-            ['gekocht', 'besteld'],
-            ['kapot', 'stuk', 'doet het niet', 'doet hij het niet', 'werkt niet', 'werkt hij niet'],
-            ['repareren', 'nieuwe', 'terug', 'garantie', 'ruilen'],
+            ['gekocht', 'besteld', 'aangeschaft'],
+            ['kapot', 'stuk', 'defect', 'doet het niet', 'doet hij het niet', 'niet meer', 'werkt niet', 'werkt hij niet'],
+            ['repareren', 'gerepareerd', 'nieuwe', 'vervangen', 'terug', 'terugkrijgen', 'garantie', 'ruilen', 'omruilen'],
           ],
           minWords: 15,
           modelAnswer:

@@ -372,8 +372,8 @@ export const sociaal: Pack = {
           note: 'aan het + infinitive: busy doing it right now',
         }),
         phrase('ik-heb-het-druk', 'Ik heb het druk.', "I'm busy.", {
-          accept: ['Ik heb het heel druk.', 'Ik heb het erg druk.'],
-          note: 'not ik ben druk, which means restless',
+          accept: ['Ik heb het heel druk.', 'Ik heb het erg druk.', 'Ik ben druk.'],
+          note: 'in the Netherlands ik ben druk also means busy; een druk kind is a lively, hyper child',
         }),
         noun('de kraamvisite', 'the visit to see a new baby', { note: 'arrange it first, and keep it short' }),
         word('beschuit met muisjes', 'rusk with aniseed sprinkles', { note: 'served after a birth: pink and white for a girl, blue and white for a boy' }),
@@ -484,8 +484,11 @@ export const sociaal: Pack = {
             'Deze week heb ik het druk.',
             'Deze week heb ik het heel druk.',
             'Ik ben druk bezig.',
+            'Ik ben druk.',
+            'Sorry, ik ben druk.',
+            'Ik ben deze week druk.',
           ],
-          explanation: 'Het druk hebben: to be busy. Ik ben druk would mean you are restless, like a lively child.',
+          explanation: 'Het druk hebben: to be busy, wherever Dutch is spoken. In the Netherlands ik ben druk means busy too; said of a child, druk means lively.',
         },
         {
           id: 'deadline',

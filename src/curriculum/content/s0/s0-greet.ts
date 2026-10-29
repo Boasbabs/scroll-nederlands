@@ -397,7 +397,7 @@ export const lessons: Array<LessonDraft> = [
         dutch: 'Hoe gaat het?',
         english: 'How are you?',
         kind: 'phrase',
-        accept: ['Hoe gaat het met je?', 'Hoe gaat het met jou?'],
+        accept: ['Hoe gaat het met je?', 'Hoe gaat het met jou?', 'Hoe gaat het met u?'],
       },
       {
         key: 'goed-dank-je',

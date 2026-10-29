@@ -84,6 +84,7 @@ export const lessons: Array<LessonDraft> = [
           'Wat is je beroep?',
           'Wat is jouw beroep?',
           'En jij, wat doe jij voor werk?',
+          'En jij? Wat doe je voor werk?',
         ],
         explanation: 'Wat doe je voor werk? After doe there is no -t, because je comes after the verb.',
       },

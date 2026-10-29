@@ -532,7 +532,7 @@ export const diensten: Pack = {
       ],
       patternExplanation:
         'Laten from the hairdresser works for repairs too: Ik wil mijn fiets laten repareren. Aan het + an infinitive says you are busy doing something right now: Ik ben aan het wachten. With al and a time, it means "have been … for": Ik ben al een uur aan het wachten.',
-      pronunciationTip: 'Offerte is stressed in the middle: o-FER-tuh. Elektricien is stressed at the end, which sounds like "shen": ay-lek-tree-SHEN.',
+      pronunciationTip: 'Offerte is stressed in the middle: o-FER-tuh. Elektricien is stressed at the end, with a French nasal ending and the n barely said: ay-lek-tree-SHEH(N).',
       examples: [
         { dutch: 'Valt dit onder de garantie?', english: 'Is this covered by the guarantee?' },
         { dutch: 'Ik wil mijn fiets laten repareren.', english: 'I want to have my bike repaired.' },

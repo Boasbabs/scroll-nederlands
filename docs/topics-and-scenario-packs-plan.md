@@ -84,12 +84,22 @@ The rest of Vol 2 is B1 and can wait: the imperfect for storytelling, subordinat
 |---|---|---|
 | T1 | Topics tab over the 21 existing word themes | Done |
 | T2 | Pack engine, pack screen, Today and Progress hooks | Done |
-| T3 | Packs, wave 1: Gemeente, Renting, Money, Doctor | In progress: Gemeente done |
-| T4 | Packs, wave 2: Work, Finding work, Getting around, Emergencies, Supermarket | Not started |
+| T3 | Packs, wave 1: Gemeente, Renting, Money, Doctor | Done |
+| T4 | Packs, wave 2: Work, Finding work, Getting around, Emergencies, Supermarket | Done |
 | T5 | Packs, wave 3: Eating out, Services, Neighbours, School, plus the false-friends set | Not started |
 | T6 | Word track tier 2 (words 626–1,000) | Not started |
 
 The waves follow need: registration, housing, money and health come first in a new arrival's first weeks.
+
+### As built: waves 1 and 2 (2026-10-29)
+
+- **Nine packs, 270 items:** gemeente (33), huren (30), geld (30), zorg (30), werk (28), baan (30), onderweg (29), boodschappen (30), nood (30), in `src/packs/content/`, listed in the plan's order in `content/index.ts`. A test fails if a pack file is not listed.
+- **How they were written:** Gemeente by hand from the worked example; the others by one agent each from a shared brief (Gemeente as the template, the vocabulary checker on every item, `validatePacks` before handing back), then registered, validated together and committed one pack per commit. Every pack has 3–4 scenes of 6–8 exercises, a dialogue, a real-life text, a listening task, a writing task, a mission and a culture note.
+- **One home per word held:** items the course or the word track already teach are practised by id (for example `s2-work-days-off/vrijnemen`, `s2-health-ill/ik-voel-me`, `w-things/pinpas`), and nothing is taught by two packs.
+- **Changes from the tables above,** each said in its commit: dropped to keep a pack near 30 items or because the course teaches them (de rente, de lening, sparen, de aanslag; niezen; vrij nemen; ontslagen worden; de tolk, which Gemeente's "Is er een tolk?" covers); a few chunks added where a scene needed one ("Hoeveel krijg je van me?", "Ik voel me duizelig.", "Mijn trein is uitgevallen.", "Hij ademt niet."). "Ik heb ervaring als …" is a whole sentence, since a gap breaks typed answers.
+- **Facts made more precise than the plan:** the deposit cap (two months' bare rent since July 2023) and kale huur without energy; the triage call decides whether and how soon you see the GP (a *visite* is a home visit); 112 is for when every second counts; the fixed fare (instaptarief) for a missed check-out; check-in with a bank card or phone, as the OV-chipkaart is phased out; allergens in bold in the ingredient list rather than a "bevat" line (the Supermarket mission changed with it); Dienst Toeslagen no longer part of the tax office.
+- **Player fix found on the way:** lines spoken by "Jij" now sit on the learner's side, like "You" (105 course lines were on the left).
+- **For the NT2 review,** beyond every article: zich betermelden (one word), het NL-Alert (left without an article), de/het for "tablet" (avoided), "van dienst ruilen", "een proefdag doen", payslip labels, and the "___ cv" de/het drill, which "de cv" (central heating) makes ambiguous.
 
 ## Phase T1: Topics tab over the existing word themes
 

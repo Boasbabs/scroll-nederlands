@@ -1,6 +1,6 @@
-// Generates the course's Dutch audio with ElevenLabs, post-processes it with
-// ffmpeg, checks it with ElevenLabs speech-to-text and records it in
-// src/audio/clips.json. Voice, model and settings are explained in
+// Generates the course's Dutch audio with Google Cloud Text-to-Speech (Chirp 3: HD
+// voices), post-processes it with ffmpeg, checks it with Google Speech-to-Text and
+// records it in src/audio/clips.json. Voices and settings are explained in
 // docs/audio-research.md; clips the check flags are listed in docs/audio-qa.md.
 //
 //   pnpm audio:generate                   generate what is missing, verify, write the manifest
@@ -14,19 +14,19 @@
 //   pnpm audio:generate --recorded        process human takes from recordings/ into src/audio/recorded.json
 //                                         (see scripts/recordings.ts); no API calls
 //
-// Needs ELEVENLABS_API_KEY in .env.local (Text to Speech, plus Speech to Text for
-// --verify) and ffmpeg on the PATH. The key is only sent in the request header.
+// Needs GOOGLE_CLOUD_API_KEY in .env.local (Cloud Text-to-Speech, plus Cloud
+// Speech-to-Text for --verify) and ffmpeg on the PATH. The key is only sent in the
+// request header. GOOGLE_TTS_ENDPOINT and GOOGLE_STT_ENDPOINT pick regional endpoints.
 //
-// Every take the API returns is kept as a master in audio-masters/ (or the folder
-// AUDIO_MASTERS_DIR names), outside public/ so it never ships, together with the
-// speech-to-text results in checks.json. A clip missing from public/ is made from
-// its master when there is one, so a new encoding costs nothing. Back the folder up:
-// it holds what the clips cost.
+// Every take that speaks is kept as a lossless FLAC master in audio-masters/ (or the
+// folder AUDIO_MASTERS_DIR names), outside public/ so it never ships, together with the
+// speech-to-text results in checks.json. Google's takes differ each time, so the master
+// is the take that was checked. A clip missing from public/ is made from its master when
+// there is one, so a new encoding needs no API call. Back the folder up.
 import { execFile } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { existsSync } from 'node:fs';
 import { mkdir, readdir, readFile, rename, rm, writeFile } from 'node:fs/promises';
-import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { promisify } from 'node:util';
@@ -34,35 +34,38 @@ import { clipKey, type ClipManifest, type ClipVoice } from '../src/audio/speech.
 import type { DialogueLine, Exercise, LessonDraft } from '../src/curriculum/types.ts';
 import type { SoundContrast } from '../src/sounds/types.ts';
 import type { WordTheme } from '../src/words/types.ts';
+import { googleCloud, GoogleApiError } from './google-cloud.ts';
 import { processRecordings, readRecorded, RECORDED_MANIFEST } from './recordings.ts';
 
-/** Both nl-NL library voices bill 1x per character and have a 2-year notice period (docs/audio-research.md). */
+/**
+ * nl-NL Chirp 3: HD voices, chosen on the course's own texts (docs/audio-research.md): Erinome reads
+ * everything but the second speaker of a dialogue, Algieba that speaker.
+ */
 export const VOICES: Record<ClipVoice, { id: string; name: string }> = {
-  a: { id: 'UNBIyLbtFB9k7FKW8wJv', name: 'Serge de Beer' },
-  b: { id: '7qdUFMklKPaaAVMsBTBt', name: 'Roos' },
+  a: { id: 'nl-NL-Chirp3-HD-Erinome', name: 'Erinome' },
+  b: { id: 'nl-NL-Chirp3-HD-Algieba', name: 'Algieba' },
 };
-/** v4 with language_code "nl"; it has no speed setting, and its natural pace is already slower than v2 at 0.9. */
-export const MODEL: string = 'eleven_v4';
-export const SETTINGS: Record<string, number | boolean> = { stability: 0.5, similarity_boost: 0.75 };
-/** Spoken context for very short texts: steers the model to Dutch without being read aloud (and is not billed). */
-const SHORT_CONTEXT = 'Luister en herhaal:';
-/** Bump when post-processing changes, so every clip is rebuilt (from its master, where there is one). */
+/** Chirp 3: HD has no model setting of its own (the voice name picks it); the id names it in the manifest and the cache keys. */
+export const MODEL: string = 'chirp3-hd';
+/** Pace 1: at 0.9 the check heard the voices worse. */
+export const SETTINGS = { speakingRate: 1 };
+/** Bump when post-processing changes, so every clip is rebuilt from its master. */
 const POST_VERSION = 2;
 /**
- * The file each post-processing version writes. 1: MP3 64 kbps at 44.1 kHz, the first run's clips, kept
- * until a master can replace them. 2: Opus 32 kbps in Ogg, about half the size for the same speech.
+ * ffmpeg's output options per file type: Opus 32 kbps in Ogg for a generated clip, MP3 for a human take.
+ * bitexact leaves out the encoder's name, so the same master always makes the same file.
  */
-const VERSION_EXT: Record<number, keyof typeof ENCODERS> = { 1: 'mp3', 2: 'ogg' };
-/** ffmpeg's output options per file type. bitexact leaves out the encoder's name, so the same master always makes the same file. */
 const ENCODERS = {
   mp3: ['-ar', '44100', '-ac', '1', '-c:a', 'libmp3lame', '-b:a', '64k'],
   ogg: ['-ar', '48000', '-ac', '1', '-c:a', 'libopus', '-b:a', '32k', '-application', 'audio', '-map_metadata', '-1', '-fflags', '+bitexact', '-flags:a', '+bitexact'],
 };
-const MIME_TYPES: Record<keyof typeof ENCODERS, string> = { mp3: 'audio/mpeg', ogg: 'audio/ogg' };
-const SOURCE_FORMAT = 'mp3_44100_128';
-/** A master is the API's own file, in SOURCE_FORMAT, before any post-processing. */
-const MASTER_EXT = 'mp3';
+/** A master is Google's take converted losslessly from its WAV, before any post-processing. */
+const MASTER_EXT = 'flac';
 const CONCURRENCY = 3;
+/** A Text-to-Speech take peaks near full scale; one whose peak stays below this came back silent. */
+export const SILENT_PEAK_DB = -30;
+/** Takes asked for a text in all before the browser's voice is left to read it. */
+export const TRIES = 5;
 
 /**
  * Generation order by learning value, so a run stopped by the quota leaves the
@@ -157,41 +160,64 @@ export type AudioManifest = ClipManifest & {
 export const isShort = (text: string) => text.split(' ').length <= 3;
 const hash = (value: unknown) => createHash('sha1').update(JSON.stringify(value)).digest('hex').slice(0, 16);
 
-/** What the API's audio depends on. Post-processing is left out, so a new encoding reuses the masters. */
-function synthesisInputs(clip: ClipText): Array<unknown> {
-  const short = MODEL === 'eleven_multilingual_v2' && isShort(clip.text);
-  return [clip.text, VOICES[clip.voice].id, MODEL, SETTINGS, short ? SHORT_CONTEXT : null];
+/**
+ * What the voice is sent for a text. Every Chirp 3: HD voice reads letters joined by hyphens
+ * ("Smith. S-M-I-T-H.") as the word, but reads letters set apart by commas one by one, so a
+ * spelled name goes as "S, M, I, T, H.". The course shows, and the manifest keys, the text as written.
+ */
+export function spokenText(text: string): string {
+  return text.replace(/(?<![\p{L}\p{N}-])\p{L}(?:-\p{L})+(?![\p{L}\p{N}-])/gu, (letters) => letters.split('-').join(', '));
 }
 
-/** The take as the API returned it, in the masters folder. */
+/** What the API's audio depends on: what was sent, to which voice. Post-processing is left out, so a new encoding reuses the masters. */
+function synthesisInputs(clip: ClipText): Array<unknown> {
+  return [spokenText(clip.text), VOICES[clip.voice].id, MODEL, SETTINGS];
+}
+
+/** The take as the API returned it (losslessly), in the masters folder. */
 export function masterName(clip: ClipText): string {
   return `${hash(synthesisInputs(clip))}.${MASTER_EXT}`;
 }
 
 /** The post-processed clip the extension plays, under public/, as a post-processing version writes it. */
 export function clipFile(clip: ClipText, version = POST_VERSION): string {
-  return `audio/${hash([...synthesisInputs(clip), version])}.${VERSION_EXT[version]}`;
+  return `audio/${hash([...synthesisInputs(clip), version])}.ogg`;
 }
-
-// The seed and the check's sample follow the master, so neither changes with the encoding.
-const seedFor = (clip: ClipText) => Number.parseInt(masterName(clip).slice(0, 8), 16) % 4294967295;
 
 /**
  * Where a clip comes from on this run, cheapest first: it is in public/ already, it can be made
- * from its master, an earlier encoding of the same take is kept, or (the only case that calls the
- * API) it is synthesized. `file` is the clip the text plays once the run has made it.
+ * from its master, or (the only case that calls the API) it is synthesized. `file` is the clip
+ * the text plays once the run has made it.
  */
-export type ClipPlan = { source: 'ready' | 'master' | 'earlier' | 'synthesize'; file: string };
+export type ClipPlan = { source: 'ready' | 'master' | 'synthesize'; file: string };
 
 export function planClip(clip: ClipText, has: { clip: (file: string) => boolean; master: (name: string) => boolean }): ClipPlan {
   const file = clipFile(clip);
   if (has.clip(file)) return { source: 'ready', file };
   if (has.master(masterName(clip))) return { source: 'master', file };
-  // Same text, voice, model and settings: the same take, not worth paying for again.
-  for (let version = POST_VERSION - 1; version >= 1; version--) {
-    if (has.clip(clipFile(clip, version))) return { source: 'earlier', file: clipFile(clip, version) };
-  }
   return { source: 'synthesize', file };
+}
+
+/**
+ * The clips a voice keeps from the manifest before this run, until the run makes its own: only
+ * if the same model and voice made them, so a part never mixes two voices or two providers.
+ */
+export function keptClips(before: Partial<AudioManifest> | undefined, voice: ClipVoice): Record<string, string> {
+  if (before?.model !== MODEL || before.voices?.[voice]?.id !== VOICES[voice].id) return {};
+  return (voice === 'a' ? before.clips : before.clipsB) ?? {};
+}
+
+/**
+ * Asks for takes until one speaks, `tries` at most. Now and then Google returns a quarter second
+ * of near silence for a one-word text, at random; the ffmpeg chain would amplify it into noise.
+ * `silent` counts the silent takes (each one billed); no `take` means every try was silent.
+ */
+export async function spokenTake<T>(synthesize: () => Promise<T>, peakOf: (take: T) => Promise<number>, tries = TRIES): Promise<{ take?: T; silent: number }> {
+  for (let silent = 0; silent < tries; silent++) {
+    const take = await synthesize();
+    if ((await peakOf(take)) >= SILENT_PEAK_DB) return { take, silent };
+  }
+  return { silent: tries };
 }
 
 // ---------------------------------------------------------------------------
@@ -202,11 +228,19 @@ let root = '';
 let manifestPath = '';
 let qaPath = '';
 let mastersDir = '';
-/** Where the check results were kept before they moved in with the masters; read once, then left alone. */
-const oldChecks = path.join(os.tmpdir(), 'taalnudge-audio', 'checks.json');
 const run = promisify(execFile);
 
-class FatalApiError extends Error {}
+/** Speech-to-Text refused a call: the run goes on making clips, unchecked. */
+class CheckRefused extends Error {}
+
+let client: ReturnType<typeof googleCloud> | undefined;
+/** The Google client, made on the first call that needs it: --plan, --encode and --report need none. */
+function google() {
+  const key = process.env.GOOGLE_CLOUD_API_KEY;
+  if (!key) throw new GoogleApiError('Set GOOGLE_CLOUD_API_KEY in .env.local (see "Google Chirp 3: HD test" in docs/audio-research.md).', true);
+  client ??= googleCloud({ key, ttsEndpoint: process.env.GOOGLE_TTS_ENDPOINT || undefined, sttEndpoint: process.env.GOOGLE_STT_ENDPOINT || undefined });
+  return client;
+}
 
 const load = (file: string) => import(pathToFileURL(path.join(root, file)).href);
 
@@ -233,41 +267,16 @@ async function loadLessons(): Promise<Array<LessonDraft>> {
   return [...lessons, ...packs.flatMap((pack) => pack.scenes)];
 }
 
-async function elevenlabs(pathname: string, init: { json?: unknown; form?: FormData; query?: Record<string, string> }): Promise<Response> {
-  const key = process.env.ELEVENLABS_API_KEY;
-  if (!key) throw new FatalApiError('Set ELEVENLABS_API_KEY in .env.local.');
-  const url = new URL(pathname, 'https://api.elevenlabs.io');
-  for (const [name, value] of Object.entries(init.query ?? {})) url.searchParams.set(name, value);
-  for (let attempt = 1; ; attempt++) {
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: { 'xi-api-key': key, ...(init.json ? { 'Content-Type': 'application/json' } : {}) },
-      body: init.json ? JSON.stringify(init.json) : init.form,
-    });
-    if (response.ok) return response;
-    const body = (await response.text()).split(key).join('<key>');
-    // Rate limits and server errors are usually temporary; auth, permission and quota errors are not.
-    if ((response.status === 429 && !body.includes('quota')) || response.status >= 500) {
-      if (attempt < 7) {
-        const retryAfter = Number(response.headers.get('retry-after'));
-        const wait = retryAfter > 0 ? retryAfter * 1000 : 2 ** attempt * 500 + Math.random() * 500;
-        await new Promise((resolve) => setTimeout(resolve, wait));
-        continue;
-      }
-    }
-    const fatal = [401, 402, 403].includes(response.status) || /quota|authentication_error|missing_permissions/.test(body);
-    throw new (fatal ? FatalApiError : Error)(`${response.status} ${body.slice(0, 300)}`);
-  }
+/** The loudest sample of a file, in dB below full scale. */
+export async function peak(file: string): Promise<number> {
+  const { stderr } = await run('ffmpeg', ['-hide_banner', '-nostats', '-i', file, '-af', 'volumedetect', '-f', 'null', '-']);
+  return Number(/max_volume: (-?[\d.]+) dB/.exec(stderr)?.[1] ?? -Infinity);
 }
 
-async function synthesize(clip: ClipText, seed: number): Promise<{ audio: Buffer; cost: number }> {
-  const body: Record<string, unknown> = { text: clip.text, model_id: MODEL, voice_settings: SETTINGS, seed };
-  if (MODEL === 'eleven_multilingual_v2') {
-    if (isShort(clip.text)) body.previous_text = SHORT_CONTEXT;
-  } else body.language_code = 'nl';
-  const response = await elevenlabs(`/v1/text-to-speech/${VOICES[clip.voice].id}`, { json: body, query: { output_format: SOURCE_FORMAT } });
-  const cost = Number(response.headers.get('character-cost') ?? clip.text.length);
-  return { audio: Buffer.from(await response.arrayBuffer()), cost };
+/** Mono FLAC at 16 kHz, which Speech-to-Text v1 reads whatever the clip's own format. */
+export async function toFlac(file: string): Promise<Buffer> {
+  const { stdout } = await run('ffmpeg', ['-v', 'error', '-i', file, '-ac', '1', '-ar', '16000', '-c:a', 'flac', '-f', 'flac', 'pipe:1'], { encoding: 'buffer', maxBuffer: 50e6 });
+  return stdout;
 }
 
 /**
@@ -313,7 +322,7 @@ export function unusedClips(entries: ReadonlyArray<{ name: string; isFile(): boo
 
 // Speech-to-text check -------------------------------------------------------
 
-type Check = { text: string; voice: ClipVoice; group: ClipGroup; file: string; transcript: string; language: string; probability: number; wer: number; seconds?: number; flagged: boolean; retaken: boolean };
+type Check = { text: string; voice: ClipVoice; group: ClipGroup; file: string; transcript: string; wer: number; seconds?: number; flagged: boolean; retaken: boolean };
 
 const UNITS = ['nul', 'een', 'twee', 'drie', 'vier', 'vijf', 'zes', 'zeven', 'acht', 'negen', 'tien', 'elf', 'twaalf', 'dertien', 'veertien', 'vijftien', 'zestien', 'zeventien', 'achttien', 'negentien'];
 const TENS = ['', '', 'twintig', 'dertig', 'veertig', 'vijftig', 'zestig', 'zeventig', 'tachtig', 'negentig'];
@@ -374,17 +383,14 @@ export function wordErrorRate(reference: string, hypothesis: string): number {
   return previous[hyp.length]! / ref.length;
 }
 
-async function transcribe(file: string): Promise<{ text: string; language: string; probability: number }> {
-  const form = new FormData();
-  form.append('model_id', 'scribe_v2');
-  // Forced Dutch: language auto-detection is unreliable on one- and two-word clips.
-  form.append('language_code', 'nld');
-  form.append('tag_audio_events', 'false');
-  const type = MIME_TYPES[path.extname(file).slice(1) as keyof typeof ENCODERS] ?? 'application/octet-stream';
-  form.append('file', new Blob([await readFile(file)], { type }), path.basename(file));
-  const response = await elevenlabs('/v1/speech-to-text', { form });
-  const body = (await response.json()) as { text: string; language_code: string; language_probability: number };
-  return { text: body.text, language: body.language_code, probability: body.language_probability };
+/** What Speech-to-Text (v1, Dutch forced: detection is unreliable on one- and two-word clips) hears in a clip. */
+async function transcribe(file: string): Promise<string> {
+  const flac = await toFlac(file);
+  try {
+    return await google().transcribe(flac, 'nl-NL');
+  } catch (error) {
+    throw error instanceof GoogleApiError && error.fatal ? new CheckRefused(error.message) : error;
+  }
 }
 
 /**
@@ -439,19 +445,18 @@ async function main() {
   const plan = (clip: ClipText) =>
     planClip(clip, { clip: (file) => existsSync(path.join(root, 'public', file)), master: (name) => existsSync(path.join(mastersDir, name)) });
   const groups = until ? GROUPS.slice(0, GROUPS.indexOf(until)) : GROUPS;
-  console.log(`${all.length} texts (${all.filter((c) => c.voice === 'b').length} for voice b), ${all.reduce((s, c) => s + c.text.length, 0)} characters in all.`);
-  let earlier = 0;
+  // Google bills the characters sent, so these count the spoken text.
+  const chars = (clips: ReadonlyArray<ClipText>) => clips.reduce((sum, clip) => sum + spokenText(clip.text).length, 0);
+  console.log(`${all.length} texts (${all.filter((c) => c.voice === 'b').length} for voice b), ${chars(all)} characters in all.`);
   for (const group of GROUPS) {
     const clips = all.filter((clip) => clip.group === group);
     const sources = clips.map((clip) => plan(clip).source);
-    earlier += sources.filter((source) => source === 'earlier').length;
     const todo = clips.filter((_, i) => sources[i] === 'synthesize');
     const fromMasters = sources.filter((source) => source === 'master').length;
     console.log(
-      `  ${group.padEnd(9)} ${String(clips.length).padStart(5)} texts ${String(clips.reduce((s, c) => s + c.text.length, 0)).padStart(7)} chars; to generate ${todo.length} (${todo.reduce((s, c) => s + c.text.length, 0)} chars)${fromMasters ? `; to make from masters ${fromMasters}` : ''}`,
+      `  ${group.padEnd(9)} ${String(clips.length).padStart(5)} texts ${String(chars(clips)).padStart(7)} chars; to generate ${todo.length} (${chars(todo)} chars)${fromMasters ? `; to make from masters ${fromMasters}` : ''}`,
     );
   }
-  if (earlier) console.log(`Kept from an earlier encoding: ${earlier} clips, until a master can remake them.`);
   const masters = existsSync(mastersDir) ? (await readdir(mastersDir)).filter((name) => name.endsWith(`.${MASTER_EXT}`)).length : 0;
   console.log(`Masters kept in ${mastersDir.startsWith(root) ? path.relative(root, mastersDir) : mastersDir}: ${masters}.`);
   const recorded = (await readRecorded(root)).takes;
@@ -480,63 +485,81 @@ async function main() {
   };
   // Until this run makes a text's own clip, the text keeps the one it has: a run that stops early, or
   // --encode, must not silence it. That may be another text's clip that sounds the same ("hoelang").
-  const before: AudioManifest | undefined = existsSync(manifestPath) ? JSON.parse(await readFile(manifestPath, 'utf8')) : undefined;
+  // Only clips of the same model and voice stay (keptClips), so a part never mixes two voices.
+  const before: Partial<AudioManifest> | undefined = existsSync(manifestPath) ? JSON.parse(await readFile(manifestPath, 'utf8')) : undefined;
+  const kept = { a: keptClips(before, 'a'), b: keptClips(before, 'b') };
   for (const clip of all) {
     const { source, file } = plan(clip);
-    const kept = (clip.voice === 'a' ? before?.clips : before?.clipsB)?.[clip.text];
-    if (source === 'ready' || source === 'earlier') register(clip, file);
-    else if (kept && existsSync(at(kept))) register(clip, kept);
+    const old = kept[clip.voice][clip.text];
+    if (source === 'ready') register(clip, file);
+    else if (old && existsSync(at(old))) register(clip, old);
   }
   await save();
 
   let billed = 0;
+  let silentTakes = 0;
   let stopped: string | undefined;
   let checking = verify !== 'none';
+  /** Texts this run tried and could not voice, with why: the browser's voice reads them. */
+  const missed = new Map<ClipText, string>();
   const cachePath = path.join(mastersDir, 'checks.json');
-  const checksFrom = [cachePath, oldChecks].find((file) => existsSync(file));
-  const checks: Record<string, Check> = checksFrom ? JSON.parse(await readFile(checksFrom, 'utf8')) : {};
-  // The temp folder is emptied by the system sooner or later; what the checks cost stays with the masters.
-  if (checksFrom === oldChecks) await writeFile(cachePath, JSON.stringify(checks));
-  // Short items always; a fixed 10% sample of the rest unless --verify all.
+  const checks: Record<string, Check> = existsSync(cachePath) ? JSON.parse(await readFile(cachePath, 'utf8')) : {};
+  // Short items always; a fixed 10% sample of the rest unless --verify all. The sample follows the master, so it stays with the encoding.
   const sampled = (clip: ClipText) => verify === 'all' || isShort(clip.text) || Number.parseInt(masterName(clip).slice(0, 4), 16) % 10 === 0;
 
   /** Makes the clip from its master: no API call. */
   const encode = (clip: ClipText) => postProcess(path.join(mastersDir, masterName(clip)), at(clipFile(clip)));
-  /** Calls the API, keeps the take as the clip's master (a retake replaces it), then makes the clip from it. */
-  const generate = async (clip: ClipText, seed: number) => {
-    const { audio, cost } = await synthesize(clip, seed);
-    billed += cost;
+  /**
+   * Asks for takes until one speaks, keeps it losslessly as the clip's master (a retake replaces it)
+   * and makes the clip from it. False when every take came back silent: nothing is kept.
+   */
+  const generate = async (clip: ClipText): Promise<boolean> => {
+    const text = spokenText(clip.text);
     const master = path.join(mastersDir, masterName(clip));
-    await writeFile(`${master}.tmp`, audio);
-    await rename(`${master}.tmp`, master);
-    await encode(clip);
+    const [wav, flac] = [`${master}.tmp.wav`, `${master}.tmp.flac`];
+    try {
+      const { take, silent } = await spokenTake(async () => {
+        const audio = await google().synthesize(text, VOICES[clip.voice].id, SETTINGS.speakingRate);
+        billed += text.length;
+        await writeFile(wav, audio);
+        return wav;
+      }, peak);
+      silentTakes += silent;
+      if (!take) return false;
+      await run('ffmpeg', ['-v', 'error', '-y', '-i', take, '-c:a', 'flac', flac]);
+      // The clip first, then the master, so the two always hold the same take.
+      await postProcess(flac, at(clipFile(clip)));
+      await rename(flac, master);
+      return true;
+    } finally {
+      await rm(wav, { force: true });
+      await rm(flac, { force: true });
+    }
   };
   const fail = (error: unknown, what: string) => {
-    if (!(error instanceof FatalApiError)) return console.error(`Skipped ${what}: ${(error as Error).message}`);
-    if (/speech_to_text/.test(error.message)) {
+    if (error instanceof CheckRefused) {
+      if (checking) console.error(`Speech-to-Text refused the call, so clips are made but not checked: ${error.message}`);
       checking = false;
-      console.error('This key may not use Speech to Text: clips are generated but not checked.');
-    } else stopped = error.message;
+    } else if (error instanceof GoogleApiError && error.fatal) stopped = error.message;
+    else console.error(`Skipped ${what}: ${(error as Error).message}`);
   };
   const check = async (clip: ClipText) => {
     let file = registered(clip) ?? clipFile(clip);
     try {
-      let result = await transcribe(at(file));
-      let wer = wordErrorRate(clip.text, result.text);
+      let transcript = await transcribe(at(file));
+      let wer = wordErrorRate(clip.text, transcript);
       let retaken = false;
-      if (isFlagged(clip.text, wer, await duration(at(file)))) {
-        // One retake with another seed, then a human listens.
-        await generate(clip, (seedFor(clip) + 1) % 4294967295);
+      // One retake (Google's takes differ each time), then a human listens.
+      if (isFlagged(clip.text, wer, await duration(at(file))) && (await generate(clip))) {
         file = clipFile(clip);
         register(clip, file);
         await save();
-        result = await transcribe(at(file));
-        wer = wordErrorRate(clip.text, result.text);
+        transcript = await transcribe(at(file));
+        wer = wordErrorRate(clip.text, transcript);
         retaken = true;
       }
       const seconds = await duration(at(file));
-      const flagged = isFlagged(clip.text, wer, seconds);
-      checks[file] = { ...clip, file, transcript: result.text, language: result.language, probability: result.probability, wer, seconds, flagged, retaken };
+      checks[file] = { ...clip, file, transcript, wer, seconds, flagged: isFlagged(clip.text, wer, seconds), retaken };
       await writeFile(cachePath, JSON.stringify(checks));
     } catch (error) {
       fail(error, `the check of "${clip.text}"`);
@@ -556,7 +579,7 @@ async function main() {
     await pool(todo, () => Boolean(stopped), async (clip) => {
       const { source, file } = plan(clip);
       if (source === 'synthesize' && encodeOnly) return;
-      if (source === 'synthesize' && billed + clip.text.length > maxChars) {
+      if (source === 'synthesize' && billed + spokenText(clip.text).length > maxChars) {
         stopped = `--max-chars ${maxChars} reached`;
         return;
       }
@@ -566,13 +589,17 @@ async function main() {
           fromMasters++;
           encoded++;
         } else {
-          await generate(clip, seedFor(clip));
+          if (!(await generate(clip))) {
+            missed.set(clip, `silent on all ${TRIES} takes`);
+            return;
+          }
           fresh.push(clip);
           if (++made % 100 === 0) console.log(`${made} clips, ${billed} characters billed`);
         }
         register(clip, file);
         await save();
       } catch (error) {
+        missed.set(clip, (error as Error).message);
         fail(error, `"${clip.text}"`);
       }
     });
@@ -590,12 +617,14 @@ async function main() {
   await save();
   await saving;
   console.log(
-    `Generated ${made} clips, ${billed} characters billed; made ${encoded} from masters. Manifest: ${Object.keys(manifest.clips).length} a, ${Object.keys(manifest.clipsB).length} b.`,
+    `Generated ${made} clips, ${billed} characters billed (${silentTakes} of them silent takes, asked again); made ${encoded} from masters. Manifest: ${Object.keys(manifest.clips).length} a, ${Object.keys(manifest.clipsB).length} b.`,
   );
   if (encodeOnly) {
     const waiting = all.filter((clip) => plan(clip).source === 'synthesize').length;
     if (waiting) console.log(`${waiting} texts have no master yet: run without --encode to generate them.`);
   }
+  const unvoiced = all.filter((clip) => !registered(clip)).map((clip) => ({ ...clip, why: missed.get(clip) }));
+  for (const clip of unvoiced) if (clip.why) console.log(`No clip for "${clip.text}" (${clip.voice}): ${clip.why}. The browser's voice reads it.`);
   if (verify !== 'none') {
     const coverage = `${Object.keys(manifest.clips).length} for voice a and ${Object.keys(manifest.clipsB).length} for voice b, of ${all.length} course texts`;
     await writeQa(
@@ -604,6 +633,7 @@ async function main() {
         return file && checks[file] ? [checks[file]] : [];
       }),
       coverage,
+      unvoiced,
     );
   }
   if (stopped) {
@@ -633,7 +663,7 @@ async function processTakes(all: ReadonlyArray<ClipText>, pairWords: ReadonlySet
   if (report.unknown.length || report.failed.length) process.exitCode = 1;
 }
 
-async function writeQa(stored: Array<Check>, coverage: string) {
+async function writeQa(stored: Array<Check>, coverage: string, unvoiced: ReadonlyArray<ClipText & { why?: string }>) {
   // Re-score stored transcripts with the current rules, so a rule fix does not need new STT calls.
   const checks: Array<Check> = [];
   for (const check of stored) {
@@ -643,16 +673,19 @@ async function writeQa(stored: Array<Check>, coverage: string) {
   }
   const flagged = checks.filter((check) => check.flagged);
   const retaken = checks.filter((check) => check.retaken);
+  const tried = unvoiced.filter((clip) => clip.why);
+  const untried = unvoiced.length - tried.length;
   const cell = (text: string) => text.replace(/\|/g, '\\|');
   const lines = [
     '# Audio QA',
     '',
-    `Speech-to-text check of the clips made by \`pnpm audio:generate\` (Scribe v2, Dutch forced, last run ${new Date().toISOString().slice(0, 10)}). Checked: every text of up to 3 words and a fixed 10% sample of longer ones. A clip is flagged when a short text does not round-trip exactly (after lower-casing, removing punctuation and accents, spelling out numbers and clock times, and treating "ij" and "ei" as the same sound), when a longer text has a word error rate above 0.2, or when its length does not fit its text. A flagged clip is regenerated once with another seed and checked again. STT cannot judge accent, and it often mishears isolated sounds and one-syllable words, so the list below is a listening list, not a list of errors.`,
+    `Speech-to-text check of the clips made by \`pnpm audio:generate\` (Google Speech-to-Text v1, Dutch (nl-NL) forced, last run ${new Date().toISOString().slice(0, 10)}). Checked: every text of up to 3 words and a fixed 10% sample of longer ones. A clip is flagged when a short text does not round-trip exactly (after lower-casing, removing punctuation and accents, spelling out numbers and clock times, and treating "ij" and "ei" as the same sound), when a longer text has a word error rate above 0.2, or when its length does not fit its text. A flagged clip is regenerated once (Google's takes differ each time) and checked again. STT cannot judge accent, and it often mishears isolated sounds and one-syllable words (isolated "man" and "maan" for every voice), so the list below is a listening list, not a list of errors.`,
     '',
     `- Clips checked: ${checks.length} (${checks.filter((c) => isShort(c.text)).length} short, ${checks.filter((c) => !isShort(c.text)).length} longer)`,
     `- Flagged on the first take and regenerated: ${retaken.length}`,
     `- Still flagged after the retake (need a human listen): ${flagged.length}`,
     `- Clips in the manifest: ${coverage}`,
+    `- Course texts with no clip (the browser's voice reads them): ${unvoiced.length}`,
     '',
     '## Still flagged',
     '',
@@ -663,6 +696,12 @@ async function writeQa(stored: Array<Check>, coverage: string) {
     '## Fixed by the retake',
     '',
     retaken.filter((c) => !c.flagged).map((c) => `- "${c.text}" (${c.voice}, ${c.group})`).join('\n') || 'None.',
+    '',
+    '## No clip',
+    '',
+    tried.map((c) => `- "${c.text}" (${c.voice}, ${c.group}): ${c.why}`).join('\n') || 'None of the texts this run tried.',
+    // A run stopped early leaves whole groups untried: those are counted, not listed.
+    ...(untried ? ['', `${untried} more not tried on this run (it stopped early, or ran with --until or --report): \`pnpm audio:generate\` makes them.`] : []),
     '',
   ];
   await writeFile(qaPath, lines.join('\n'));

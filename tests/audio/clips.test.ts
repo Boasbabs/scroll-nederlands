@@ -1,6 +1,24 @@
 import { existsSync } from 'node:fs';
 import path from 'node:path';
-import { besideTexts, clipFile, collectClipTexts, GROUPS, masterName, planClip, unusedClips, type AudioManifest, type ClipText } from '../../scripts/generate-audio.ts';
+import {
+  besideTexts,
+  clipFile,
+  collectClipTexts,
+  GROUPS,
+  keptClips,
+  masterName,
+  MODEL,
+  planClip,
+  SETTINGS,
+  SILENT_PEAK_DB,
+  spokenTake,
+  spokenText,
+  TRIES,
+  unusedClips,
+  VOICES,
+  type AudioManifest,
+  type ClipText,
+} from '../../scripts/generate-audio.ts';
 import { clipKey, type RecordedManifest } from '../../src/audio/speech';
 import { course } from '../../src/curriculum';
 import { clipManifest } from '../../src/extension/clips';
@@ -50,31 +68,90 @@ describe.skipIf(!manifest)('the generated audio manifest', () => {
 describe('naming clips and their masters', () => {
   const avonds: ClipText = { text: "'s avonds", voice: 'a', group: 'items' };
 
-  it('names a clip of the first run as that run did, so its MP3s are found again', () => {
-    expect(clipFile(avonds, 1)).toBe('audio/db012cff92f77e47.mp3');
-    if (manifest) expect(manifest.clips["'s avonds"]).toBe(clipFile(avonds, 1));
-  });
-
-  it('encodes new clips as Opus in Ogg', () => {
-    expect(clipFile(avonds)).toMatch(/^audio\/[0-9a-f]{16}\.ogg$/);
+  it('names a clip after its text, voice, model, settings and post-processing, as Opus in Ogg', () => {
+    // Pinned: a change to what goes into the name would rename, and remake, every clip.
+    expect(clipFile(avonds)).toBe('audio/b038b4efe03181a4.ogg');
   });
 
   it('keys a master by what the API was asked for, so a new encoding finds it', () => {
-    expect(masterName(avonds)).toMatch(/^[0-9a-f]{16}\.mp3$/);
+    expect(masterName(avonds)).toMatch(/^[0-9a-f]{16}\.flac$/);
     expect(masterName({ ...avonds, group: 'pairs' })).toBe(masterName(avonds));
     expect(masterName({ ...avonds, voice: 'b' })).not.toBe(masterName(avonds));
     // A clip's name also carries the post-processing; the master's does not.
-    const names = [clipFile(avonds), clipFile(avonds, 1), masterName(avonds)].map((file) => path.parse(file).name);
+    const names = [clipFile(avonds), clipFile(avonds, 3), masterName(avonds)].map((file) => path.parse(file).name);
     expect(new Set(names).size).toBe(3);
+    // A spelled name's master is keyed by the letters as they were sent.
+    const smith: ClipText = { text: 'Smith. S-M-I-T-H.', voice: 'b', group: 'context' };
+    expect(masterName(smith)).toBe(masterName({ ...smith, text: 'Smith. S, M, I, T, H.' }));
   });
 
   it('makes a clip from what is on disk, cheapest first, and calls the API only when nothing is', () => {
     const plan = (clips: Array<string>, masters: Array<string>) => planClip(avonds, { clip: (file) => clips.includes(file), master: (name) => masters.includes(name) });
     expect(plan([clipFile(avonds)], [masterName(avonds)])).toEqual({ source: 'ready', file: clipFile(avonds) });
-    // A master makes the Opus clip, even where the first run's MP3 is there.
+    // An older encoding of the take is remade from the master.
     expect(plan([clipFile(avonds, 1)], [masterName(avonds)])).toEqual({ source: 'master', file: clipFile(avonds) });
-    expect(plan([clipFile(avonds, 1)], [])).toEqual({ source: 'earlier', file: clipFile(avonds, 1) });
+    // The ElevenLabs run's MP3 of the same text is another voice: Google voices the text again.
+    expect(plan(['audio/db012cff92f77e47.mp3'], [])).toEqual({ source: 'synthesize', file: clipFile(avonds) });
     expect(plan([], [])).toEqual({ source: 'synthesize', file: clipFile(avonds) });
+  });
+
+  it('keeps a part’s clips from before the run only if the same model and voice made them', () => {
+    const made = (voices: AudioManifest['voices'], model: string): AudioManifest => ({ voices, model, settings: SETTINGS, clips: { ja: 'audio/a.ogg' }, clipsB: { nee: 'audio/b.ogg' } });
+    expect(keptClips(made(VOICES, MODEL), 'a')).toEqual({ ja: 'audio/a.ogg' });
+    expect(keptClips(made(VOICES, MODEL), 'b')).toEqual({ nee: 'audio/b.ogg' });
+    // The ElevenLabs manifest: no clip of it stays to play beside Google's.
+    const eleven = made({ a: { id: 'UNBIyLbtFB9k7FKW8wJv', name: 'Serge de Beer' }, b: { id: '7qdUFMklKPaaAVMsBTBt', name: 'Roos' } }, 'eleven_v4');
+    expect(keptClips(eleven, 'a')).toEqual({});
+    expect(keptClips(eleven, 'b')).toEqual({});
+    // A new voice for one part drops that part's clips only.
+    const algenib = made({ ...VOICES, b: { id: 'nl-NL-Chirp3-HD-Algenib', name: 'Algenib' } }, MODEL);
+    expect(keptClips(algenib, 'a')).toEqual({ ja: 'audio/a.ogg' });
+    expect(keptClips(algenib, 'b')).toEqual({});
+    expect(keptClips(undefined, 'a')).toEqual({});
+  });
+});
+
+describe('what the voice is sent', () => {
+  it('sends letters joined by hyphens apart, with commas, since every Google voice reads them as the word', () => {
+    expect(spokenText('Smith. S-M-I-T-H.')).toBe('Smith. S, M, I, T, H.');
+    expect(spokenText('Sharma. S-H-A-R-M-A.')).toBe('Sharma. S, H, A, R, M, A.');
+  });
+
+  it('leaves hyphenated words, abbreviations and letters already apart as they are', () => {
+    const texts = ['het e-mailadres', 'het T-shirt', 'Ik krijg een NL-Alert.', 'de OV-chipkaart', 'Ik spel het: E, V, A.', 'Patel: p, a, t, e, l.'];
+    expect(texts.map(spokenText)).toEqual(texts);
+  });
+
+  it('changes only the few spelled names in the course, whose texts stay as written', () => {
+    const changed = collectClipTexts(played, besideTexts(wordThemes, contrasts)).filter((clip) => spokenText(clip.text) !== clip.text);
+    expect(changed.map((clip) => clip.text)).toContain('Smith. S-M-I-T-H.');
+    expect(changed.length).toBeLessThan(10);
+  });
+});
+
+describe('the silence check', () => {
+  /** Takes that are just their peak in dB, handed out in order. */
+  const takes = (peaks: Array<number>) => {
+    let asked = 0;
+    return { synthesize: async () => peaks[asked++]!, peakOf: async (peak: number) => peak, asked: () => asked };
+  };
+
+  it('keeps the first take that speaks', async () => {
+    const google = takes([-3.2, -2]);
+    expect(await spokenTake(google.synthesize, google.peakOf)).toEqual({ take: -3.2, silent: 0 });
+    expect(google.asked()).toBe(1);
+  });
+
+  it('asks again after a silent take, also one peaking just above -50 dB that trimming would keep', async () => {
+    const google = takes([-61, -48.5, SILENT_PEAK_DB - 0.1, SILENT_PEAK_DB]);
+    expect(await spokenTake(google.synthesize, google.peakOf)).toEqual({ take: SILENT_PEAK_DB, silent: 3 });
+  });
+
+  it('gives up after four more tries and keeps nothing, so the browser’s voice reads the text', async () => {
+    expect(TRIES).toBe(5);
+    const google = takes([-43, -50, -55, -61, -47, -1]);
+    expect(await spokenTake(google.synthesize, google.peakOf)).toEqual({ silent: 5 });
+    expect(google.asked()).toBe(5);
   });
 });
 

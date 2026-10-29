@@ -1,5 +1,5 @@
 import { besideTexts, collectClipTexts, isShort } from '../../scripts/generate-audio.ts';
-import { DEFAULT_VOICES, heard, listeningPage, report, summarize, TEST_TEXTS, voiceName, type TestResult } from '../../scripts/voice-test.ts';
+import { COURSE, DEFAULT_VOICES, heard, listeningPage, report, summarize, TEST_TEXTS, voiceName, type TestResult } from '../../scripts/voice-test.ts';
 import { clipKey } from '../../src/audio/speech';
 import { course } from '../../src/curriculum';
 import { contrasts } from '../../src/sounds/pairs';
@@ -26,9 +26,9 @@ describe('the voice test set', () => {
 
 describe('scoring and laying out the voice test', () => {
   const results: Array<TestResult> = [
-    { source: 'ElevenLabs Serge de Beer', text: 'deur', file: '../public/audio/a.mp3', seconds: 0.6, transcript: 'deur', wer: 0 },
-    { source: 'ElevenLabs Serge de Beer', text: 'wel', file: '../public/audio/b.mp3', seconds: 0.5, transcript: 'well', wer: 1 },
-    { source: 'ElevenLabs Serge de Beer', text: 'Hoe schrijf je dat?', file: '../public/audio/c.mp3', seconds: 1.2, transcript: 'hoe schrijf je dat', wer: 0 },
+    { source: 'Course (Erinome)', text: 'deur', file: '../public/audio/a.mp3', seconds: 0.6, transcript: 'deur', wer: 0 },
+    { source: 'Course (Erinome)', text: 'wel', file: '../public/audio/b.mp3', seconds: 0.5, transcript: 'well', wer: 1 },
+    { source: 'Course (Erinome)', text: 'Hoe schrijf je dat?', file: '../public/audio/c.mp3', seconds: 1.2, transcript: 'hoe schrijf je dat', wer: 0 },
     { source: 'Charon (pace 1)', text: 'deur', file: 'clips/Charon/1/x.ogg', seconds: 0.6, transcript: 'deur', wer: 0 },
     { source: 'Charon (pace 1)', text: 'wel', file: 'clips/Charon/1/y.ogg', seconds: 0.5, transcript: 'wel', wer: 0 },
     { source: 'Charon (pace 1)', text: 'Hoe schrijf je dat?', file: 'clips/Charon/1/z.ogg', seconds: 1.4, transcript: 'hoe schrijf je', wer: 0.25 },
@@ -39,10 +39,10 @@ describe('scoring and laying out the voice test', () => {
   ];
 
   it('scores each source: short texts back exactly, sentences within one word in five, silent takes, pace and length', () => {
-    const [eleven, charon] = summarize(results);
-    expect(eleven).toMatchObject({ source: 'ElevenLabs Serge de Beer', short: { exact: 1, total: 2 }, sentences: { close: 1, total: 1 }, lengthFlags: 0, silent: 0 });
+    const [course, charon] = summarize(results);
+    expect(course).toMatchObject({ source: 'Course (Erinome)', short: { exact: 1, total: 2 }, sentences: { close: 1, total: 1 }, lengthFlags: 0, silent: 0 });
     // "Hoe schrijf je dat?" has 15 letters.
-    expect(eleven!.pace).toBeCloseTo(15 / 1.2);
+    expect(course!.pace).toBeCloseTo(15 / 1.2);
     expect(charon).toMatchObject({ source: 'Charon (pace 1)', short: { exact: 2, total: 3 }, sentences: { close: 1, total: 2 }, lengthFlags: 1, silent: 1 });
   });
 
@@ -57,7 +57,7 @@ describe('scoring and laying out the voice test', () => {
 
   it('lays every clip out to listen to, with what the check heard, and escapes the text', () => {
     const texts = [{ text: 'A & <i>', probes: 'escaping', voice: 'a' as const, from: 'research' as const }, ...TEST_TEXTS.filter((text) => ['deur', 'wel', 'goed'].includes(text.text))];
-    const page = listeningPage(texts, ['ElevenLabs', 'Charon (pace 1)'], results.map((result) => (result.source.startsWith('ElevenLabs') ? { ...result, source: 'ElevenLabs' } : result)), '2026-10-29 16:00');
+    const page = listeningPage(texts, [COURSE, 'Charon (pace 1)'], results.map((result) => (result.source.startsWith(COURSE) ? { ...result, source: COURSE } : result)), '2026-10-29 16:00');
     expect(page).toContain('A &amp; &lt;i&gt;');
     expect(page).not.toContain('<i>');
     expect(page).toContain('<audio controls preload="none" src="../public/audio/b.mp3"></audio><span class="miss">heard “well”</span>');
@@ -68,13 +68,13 @@ describe('scoring and laying out the voice test', () => {
     expect(page).toContain('<td class="none">–</td>');
   });
 
-  it('reports the texts both providers have apart, and lists what the check missed', () => {
+  it('reports the texts the course and the voices tested both have apart, and lists what the check missed', () => {
     const text = report(TEST_TEXTS, results, '2026-10-29 16:00', 120);
-    expect(text).toContain('3 of them with an ElevenLabs clip in the course. 120 characters went to Text-to-Speech');
-    expect(text).toContain('| ElevenLabs Serge de Beer | 1 of 2 | 1 of 1 | 0 | 12.5 | 0 |');
+    expect(text).toContain('3 of them with a clip in the course. 120 characters went to Text-to-Speech');
+    expect(text).toContain('| Course (Erinome) | 1 of 2 | 1 of 1 | 0 | 12.5 | 0 |');
     expect(text).toContain('| Charon (pace 1) | 2 of 2 | 0 of 1 | 0 | 10.7 | 0 |');
     expect(text).toContain('| Charon (pace 1) | 2 of 3 | 1 of 2 | 1 | 6.7 | 1 |');
-    expect(text).toContain('| wel | ElevenLabs Serge de Beer | well | 1.00 |');
+    expect(text).toContain('| wel | Course (Erinome) | well | 1.00 |');
     expect(text).toContain('| Hoe schrijf je dat? | Charon (pace 1) | hoe schrijf je | 0.25 |');
     expect(text).toContain('| goed | Charon (pace 1) | (the take came back silent) | – |');
   });

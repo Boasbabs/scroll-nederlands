@@ -1,6 +1,6 @@
 // The voice test: the course's riskiest texts through Google's Chirp 3: HD voices, beside the
-// ElevenLabs clips the course already has for the same texts. Every clip goes through the
-// course's ffmpeg chain and the same Speech-to-Text check, and lands on one page to listen to.
+// clips the course already has for the same texts. Every clip goes through the course's ffmpeg
+// chain and the same Speech-to-Text check, and lands on one page to listen to.
 // docs/audio-research.md explains why short words decide between voices.
 //
 //   pnpm voice:test --list                 the nl-NL Chirp 3: HD voices, with their gender
@@ -14,15 +14,13 @@
 // monthly allowance, and takes and transcripts are reused: delete voice-test/ to start over.
 // It writes voice-test/ (gitignored): takes/ as Google returned them, clips/ through the ffmpeg
 // chain, results.json, report.md, and index.html, the page to listen with.
-import { execFile } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { existsSync } from 'node:fs';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { promisify } from 'node:util';
-import { clipKey, type ClipManifest, type ClipVoice } from '../src/audio/speech.ts';
-import { duration, isFlagged, isShort, postProcess, VOICES, wordErrorRate } from './generate-audio.ts';
+import { clipKey, type ClipVoice } from '../src/audio/speech.ts';
+import { duration, isFlagged, isShort, peak, postProcess, SILENT_PEAK_DB, toFlac, wordErrorRate, type AudioManifest } from './generate-audio.ts';
 import { googleCloud, GoogleApiError } from './google-cloud.ts';
 
 export type TestText = {
@@ -31,11 +29,11 @@ export type TestText = {
   probes: string;
   /** The course voice that reads it: a, the main voice; b, the second speaker of a dialogue. */
   voice: ClipVoice;
-  /** course: a text the course plays, so it may have an ElevenLabs clip to compare with; research: a probe from docs/audio-research.md. */
+  /** course: a text the course plays, so it may have a clip of its own to compare with; research: a probe from docs/audio-research.md. */
   from: 'course' | 'research';
 };
 
-/** Short words first: there the ElevenLabs voices differed, while every voice read the sentences right. */
+/** Short words first: there the voices differed, while every voice read the sentences right. */
 export const TEST_TEXTS: ReadonlyArray<TestText> = [
   { text: 'deur', probes: 'eu, said alone', voice: 'a', from: 'course' },
   { text: 'wel', probes: 'a short word heard as English', voice: 'a', from: 'course' },
@@ -64,7 +62,7 @@ export const TEST_TEXTS: ReadonlyArray<TestText> = [
   { text: 'Smith. S-M-I-T-H.', probes: 'spelling a name', voice: 'b', from: 'course' },
 ];
 
-/** Two male candidates for the main voice (Serge de Beer's part) and a female one for the dialogues (Roos's). */
+/** The first test's candidates (docs/audio-research.md): two male voices for the main voice and a female one for the dialogues. */
 export const DEFAULT_VOICES = ['Charon', 'Iapetus', 'Erinome'];
 export const DEFAULT_RATES = [1, 0.9];
 
@@ -80,8 +78,8 @@ export function voiceName(voice: string): string {
  */
 export type TestResult = { source: string; text: string; file: string; seconds: number; transcript?: string; wer?: number; silent?: boolean };
 
-/** A Text-to-Speech take peaks near full scale; one whose peak stays below this came back silent. */
-export const SILENT_PEAK_DB = -30;
+/** The source name of the course's own clips: "Course (Erinome)", by the manifest's voice for the part. */
+export const COURSE = 'Course';
 
 export type SourceSummary = {
   source: string;
@@ -183,9 +181,9 @@ ${rows.join('\n')}
 
 const percent = (part: number, whole: number) => (whole ? `${part} of ${whole}` : '–');
 
-/** The report: the scores on the texts both providers have, then every text the check missed. */
+/** The report: the scores on the texts the course and the voices tested both have, then every text the check missed. */
 export function report(texts: ReadonlyArray<TestText>, results: ReadonlyArray<TestResult>, when: string, characters: number): string {
-  const shared = new Set(results.filter((result) => result.source.startsWith('ElevenLabs')).map((result) => result.text));
+  const shared = new Set(results.filter((result) => result.source.startsWith(COURSE)).map((result) => result.text));
   const table = (rows: Array<SourceSummary>) => [
     '| Source | Short texts back exactly | Sentences heard | Silent takes | Pace (letters/s) | Length flags |',
     '|---|---|---|---|---|---|',
@@ -196,11 +194,11 @@ export function report(texts: ReadonlyArray<TestText>, results: ReadonlyArray<Te
   ];
   const missed = results.filter((result) => heard(result) === false);
   return [
-    '# Voice test: Google Chirp 3: HD and the course’s ElevenLabs clips',
+    '# Voice test: Google Chirp 3: HD voices and the course’s clips',
     '',
-    `Run ${when}: ${texts.length} texts, ${shared.size} of them with an ElevenLabs clip in the course. ${characters} characters went to Text-to-Speech this run. Speech-to-Text: Google, Dutch (nl-NL) forced; every clip went through the course's ffmpeg chain first. The listening page is \`voice-test/index.html\`.`,
+    `Run ${when}: ${texts.length} texts, ${shared.size} of them with a clip in the course. ${characters} characters went to Text-to-Speech this run. Speech-to-Text: Google, Dutch (nl-NL) forced; every clip went through the course's ffmpeg chain first. The listening page is \`voice-test/index.html\`.`,
     '',
-    'Google’s Speech-to-Text may hear Google’s own voices more easily than other voices. The ElevenLabs clips go through the same check, so the first table compares like with like, but only a Dutch listener settles it.',
+    'Google’s Speech-to-Text may hear Google’s own voices more easily than other voices. The course’s clips go through the same check, so the first table compares like with like, but only a Dutch listener settles it.',
     '',
     '## On the texts both have',
     '',
@@ -226,7 +224,6 @@ export function report(texts: ReadonlyArray<TestText>, results: ReadonlyArray<Te
 // ---------------------------------------------------------------------------
 // Everything below runs only when the script is executed.
 
-const run = promisify(execFile);
 const option = (name: string) => {
   const index = process.argv.indexOf(name);
   return index === -1 ? undefined : process.argv[index + 1];
@@ -237,18 +234,6 @@ const SETUP = `Set GOOGLE_CLOUD_API_KEY in .env.local. In the Google Cloud conso
   1. Create a project, or pick one, with billing linked (the free trial's credit covers it).
   2. Enable the Cloud Text-to-Speech API, and the Cloud Speech-to-Text API for the check.
   3. Under APIs & Services > Credentials, create an API key and restrict it to those two APIs.`;
-
-/** The loudest sample of a file, in dB below full scale. */
-async function peak(file: string): Promise<number> {
-  const { stderr } = await run('ffmpeg', ['-hide_banner', '-nostats', '-i', file, '-af', 'volumedetect', '-f', 'null', '-']);
-  return Number(/max_volume: (-?[\d.]+) dB/.exec(stderr)?.[1] ?? -Infinity);
-}
-
-/** Mono FLAC at 16 kHz, which Speech-to-Text v1 reads whatever the clip's own format. */
-async function toFlac(file: string): Promise<Buffer> {
-  const { stdout } = await run('ffmpeg', ['-v', 'error', '-i', file, '-ac', '1', '-ar', '16000', '-c:a', 'flac', '-f', 'flac', 'pipe:1'], { encoding: 'buffer', maxBuffer: 50e6 });
-  return stdout;
-}
 
 async function main() {
   const root = fileURLToPath(new URL('..', import.meta.url));
@@ -288,17 +273,17 @@ async function main() {
   const label = (voice: string, rate: number) => `${voiceName(voice).split('-').at(-1)} (pace ${rate})`;
   const sources = voices.flatMap((voice) => rates.map((rate) => ({ voice, rate, label: label(voice, rate) })));
 
-  const manifest = JSON.parse(await readFile(path.join(root, 'src/audio/clips.json'), 'utf8')) as ClipManifest;
+  const manifest = JSON.parse(await readFile(path.join(root, 'src/audio/clips.json'), 'utf8')) as Partial<AudioManifest>;
   const resultsPath = path.join(out, 'results.json');
   const before: Record<string, TestResult> = existsSync(resultsPath) ? JSON.parse(await readFile(resultsPath, 'utf8')) : {};
   const results: Array<TestResult> = [];
   let characters = 0;
   let stopped = false;
 
-  // The course's ElevenLabs clips for the same texts: Serge de Beer reads voice a, Roos voice b.
+  // The course's own clips for the same texts, named after the voice that reads each part.
   for (const text of TEST_TEXTS) {
     const file = (text.voice === 'a' ? manifest.clips : manifest.clipsB)?.[clipKey(text.text)];
-    if (file) results.push({ source: `ElevenLabs ${VOICES[text.voice].name}`, text: text.text, file: `../public/${file}`, seconds: await duration(path.join(root, 'public', file)) });
+    if (file) results.push({ source: `${COURSE} (${manifest.voices?.[text.voice]?.name ?? text.voice})`, text: text.text, file: `../public/${file}`, seconds: await duration(path.join(root, 'public', file)) });
   }
   // Google's takes, kept as returned, then through the course's ffmpeg chain.
   const jobs = sources.flatMap((source) => TEST_TEXTS.map((text) => ({ ...source, text })));
@@ -354,14 +339,14 @@ async function main() {
   };
   await Promise.all([checker(), checker(), checker()]);
 
-  const order = [...new Set(results.filter((result) => result.source.startsWith('ElevenLabs')).map((result) => result.source)), ...sources.map((source) => source.label)];
+  const order = [...new Set(results.filter((result) => result.source.startsWith(COURSE)).map((result) => result.source)), ...sources.map((source) => source.label)];
   results.sort((x, y) => order.indexOf(x.source) - order.indexOf(y.source) || TEST_TEXTS.findIndex((t) => t.text === x.text) - TEST_TEXTS.findIndex((t) => t.text === y.text));
   const when = new Date().toISOString().slice(0, 16).replace('T', ' ');
   await mkdir(out, { recursive: true });
   await writeFile(resultsPath, `${JSON.stringify(Object.fromEntries(results.map((result) => [result.file, result])), null, 2)}\n`);
-  // ElevenLabs takes one column: its clips are Serge de Beer's or Roos's, by the text's voice.
-  const columns = ['ElevenLabs', ...sources.map((source) => source.label)];
-  const page = results.map((result) => (result.source.startsWith('ElevenLabs') ? { ...result, source: 'ElevenLabs' } : result));
+  // The course takes one column: its clips are voice a's or voice b's, by the text's voice.
+  const columns = [COURSE, ...sources.map((source) => source.label)];
+  const page = results.map((result) => (result.source.startsWith(COURSE) ? { ...result, source: COURSE } : result));
   await writeFile(path.join(out, 'index.html'), listeningPage(TEST_TEXTS, columns, page, when));
   await writeFile(path.join(out, 'report.md'), report(TEST_TEXTS, results, when, characters));
   for (const row of summarize(results)) {

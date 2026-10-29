@@ -1,5 +1,6 @@
-// Google Cloud Text-to-Speech (Chirp 3: HD voices) and Speech-to-Text, for the voice test
-// (scripts/voice-test.ts). The API key is only ever sent in the X-Goog-Api-Key header.
+// Google Cloud Text-to-Speech (Chirp 3: HD voices) and Speech-to-Text, for the course's clips
+// (scripts/generate-audio.ts) and the voice test (scripts/voice-test.ts). The API key is only
+// ever sent in the X-Goog-Api-Key header.
 // GOOGLE_TTS_ENDPOINT and GOOGLE_STT_ENDPOINT pick a regional endpoint, such as
 // https://eu-texttospeech.googleapis.com.
 
@@ -80,7 +81,7 @@ export function googleCloud({ key, ttsEndpoint = 'https://texttospeech.googleapi
       return Buffer.from(body.audioContent, 'base64');
     },
 
-    /** What Speech-to-Text hears in a FLAC file, with the language forced, as the ElevenLabs check forces it. */
+    /** What Speech-to-Text hears in a FLAC file, with the language forced: detection is unreliable on one- and two-word clips. */
     async transcribe(flac: Buffer, languageCode = 'nl-NL'): Promise<string> {
       const body = await call<{ results?: Array<{ alternatives?: Array<{ transcript?: string }> }> }>(`${sttEndpoint}/v1/speech:recognize`, {
         config: { encoding: 'FLAC', languageCode },

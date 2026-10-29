@@ -109,7 +109,7 @@ Stage 1 · 20 · 100; Stage 2 · 17 · 71; Stage 3 · 11 · 52.
 ### s1-countries — Countries and languages
 - C `s1-countries-nationality` — Ik ben Brits/Amerikaans/Nederlands/Indiaas …
 - C `s1-countries-languages` — Welke talen spreek je? Ik spreek een beetje Nederlands.
-- C `s1-countries-how-long` — Ik woon al twee jaar in Nederland. Hoe lang woon je hier al?
+- C `s1-countries-how-long` — Ik woon al twee jaar in Nederland. Hoelang woon je hier al?
 - P `s1-countries-practice` — small talk with a new colleague.
 
 ### s1-verbs — Present tense

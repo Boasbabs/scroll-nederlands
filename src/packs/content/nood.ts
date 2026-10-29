@@ -24,7 +24,7 @@ export const nood: Pack = {
       targetPhrase: 'Waar bent u precies?',
       meaningEn: 'Where exactly are you?',
       items: [
-        phrase('waar-bent-u-precies', 'Waar bent u precies?', 'Where exactly are you?', { note: 'give the street and something nearby' }),
+        phrase('waar-bent-u-precies', 'Waar bent u precies?', 'Where exactly are you?', { note: 'give the street and something nearby', recognitionOnly: true }),
         phrase('blijf-aan-de-lijn', 'Blijf aan de lijn.', 'Stay on the line.', {
           accept: ['Blijft u aan de lijn.'],
           note: 'hang up only when the operator says so',

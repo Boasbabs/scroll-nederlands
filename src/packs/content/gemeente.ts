@@ -180,7 +180,7 @@ export const gemeente: Pack = {
       targetPhrase: 'Wilt u hier ondertekenen?',
       meaningEn: 'Could you sign here?',
       items: [
-        phrase('wilt-u-hier-ondertekenen', 'Wilt u hier ondertekenen?', 'Could you sign here?'),
+        phrase('wilt-u-hier-ondertekenen', 'Wilt u hier ondertekenen?', 'Could you sign here?', { recognitionOnly: true }),
         noun('de achternaam', 'the surname', { note: 'de voornaam + de achternaam' }),
         noun('de geboorteplaats', 'the place of birth'),
         noun('de burgerlijke staat', 'the marital status', { note: 'on forms: gehuwd or ongehuwd' }),
@@ -310,7 +310,7 @@ export const gemeente: Pack = {
       targetPhrase: 'Log in met uw DigiD.',
       meaningEn: 'Log in with your DigiD.',
       items: [
-        phrase('log-in-met-uw-digid', 'Log in met uw DigiD.', 'Log in with your DigiD.', { accept: ['Log in met je DigiD.'] }),
+        phrase('log-in-met-uw-digid', 'Log in met uw DigiD.', 'Log in with your DigiD.', { accept: ['Log in met je DigiD.'], recognitionOnly: true }),
         word('DigiD', 'DigiD, your login for government websites', { note: 'apply for it once, with your BSN' }),
         word('inloggen', 'to log in', { note: 'ik log in, ik heb ingelogd' }),
         word('aanvragen', 'to apply for', { note: 'een paspoort aanvragen, toeslag aanvragen' }),

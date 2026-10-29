@@ -490,6 +490,7 @@ export const boodschappen: Pack = {
         phrase('heeft-u-een-klantenkaart', 'Heeft u een klantenkaart?', 'Do you have a loyalty card?', {
           accept: ['Heb je een klantenkaart?', 'Hebt u een klantenkaart?'],
           note: 'each chain has its own name for its card',
+          recognitionOnly: true,
         }),
         pattern('die-heb-ik-niet', 'Nee, die heb ik niet.', "No, I don't have one.", {
           accept: ['Nee, ik heb er geen.', 'Nee, heb ik niet.'],

@@ -4,7 +4,7 @@ import { withoutArticle } from '../articles/assemble';
 import type { ItemKind, LearningItemDraft } from '../curriculum/types';
 import { keyFor } from '../words/build';
 
-type Extra = Partial<Pick<LearningItemDraft, 'key' | 'accept' | 'note' | 'plural' | 'articleCue'>>;
+type Extra = Partial<Pick<LearningItemDraft, 'key' | 'accept' | 'note' | 'plural' | 'articleCue' | 'recognitionOnly'>>;
 
 /** A noun with its article and "the" in English. Typed without the article it still counts: the de/het drill asks that apart. */
 export function noun(dutch: string, english: string, { accept = [], ...extra }: Extra = {}): LearningItemDraft {

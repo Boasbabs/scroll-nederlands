@@ -180,7 +180,7 @@ export const baan: Pack = {
         word('solliciteren', 'to apply (for a job)', { note: 'not "to solicit"; ik heb gesolliciteerd' }),
         noun('de sollicitatie', 'the job application', { note: 'an application for a permit or an allowance is de aanvraag' }),
         noun('de sollicitatiebrief', 'the cover letter', { accept: ['de motivatiebrief', 'motivatiebrief'], note: 'also called de motivatiebrief' }),
-        noun('het cv', 'the CV', { note: "said say-VAY; plural: cv's" }),
+        noun('het cv', 'the CV', { note: "said say-VAY; plural: cv's", articleCue: 'the CV you send when you apply for a job' }),
         phrase('cv-in-de-bijlage', 'In de bijlage vindt u mijn cv.', 'Please find my CV attached.', {
           accept: ['In de bijlage vind je mijn cv.', 'Mijn cv vindt u in de bijlage.', 'Mijn cv zit in de bijlage.'],
           note: 'with je: In de bijlage vind je mijn cv.',

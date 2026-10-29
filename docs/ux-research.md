@@ -689,3 +689,17 @@ Phase T6 of `docs/topics-and-scenario-packs-plan.md` adds a second tier of 375 w
 - No new animation. Overlapping action: More words' rows join the list's stagger after the word themes (capped at eight steps, so they settle with the rest).
 - The sentence on a word card appears with the card (staging), and its English with the meaning's reveal, as on a lesson card.
 - Reduced motion turns all of it into fades (`motion.css`).
+
+## 20. A cue on a two-sense de/het drill (thirteenth session, 2026-10-29)
+
+The de/het drill shows only the bare noun ("De or het? ___ cv"). Het cv is the CV, but de cv is the central heating, so both answers were right. A noun like this now carries an `articleCue`, and its drill says which sense is meant.
+
+### 20.1 References (Mobbin)
+- [Ahead – Fill in the blank](https://mobbin.com/screens/ac375a0d-8dd0-49cb-9951-a7ba87f1a014): the instruction, then the context that settles the answer, then the options. No app in the search adds a sense hint to a gender question, so the cue reuses a line the player already has rather than inventing one.
+
+### 20.2 Decisions
+- **The scene line under the prompt** ("De or het?", then "the CV you send when you apply for a job", then the noun and de/het) carries the cue, as a generated recall drill shows its scene. No new component, and the noun keeps its place and size.
+- **Only where it is needed:** a cue names the sense without giving the article away, and only nouns that take the other article in another sense get one. Today that is het cv.
+
+### 20.3 Motion (Lasseter)
+- No new animation: the line arrives with the drill, as a scene does.

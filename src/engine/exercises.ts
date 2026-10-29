@@ -208,6 +208,7 @@ export function articleDrill(item: LearningItem, noun: LearningItem, stage: Exer
     kind: 'choice',
     prompt: 'De or het?',
     noun: withoutArticle(noun.dutch),
+    ...(noun.articleCue ? { situation: noun.articleCue } : {}),
     ...(pictured ? { picture: noun.id } : {}),
     options: ['de', 'het'],
     answer: article,

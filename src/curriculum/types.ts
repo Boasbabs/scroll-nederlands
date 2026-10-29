@@ -57,6 +57,12 @@ export type LearningItemDraft = {
   recognitionOnly?: boolean;
   /** A noun in the plural ("de servicekosten"): plurals always take de, so it gets no de/het item. The course lists its own in COURSE_PLURALS. */
   plural?: boolean;
+  /**
+   * A noun whose bare form takes the other article in another sense (het cv,
+   * the CV; de cv, central heating): the meaning its de/het drill shows, so
+   * the question has one answer.
+   */
+  articleCue?: string;
   /** A sentence using it word for word, for a gapped drill where no lesson example has it (tier-2 basic words). */
   example?: DutchEnglish;
 };
@@ -98,7 +104,7 @@ type ExerciseBase = {
   focusedOnly?: boolean;
   /** Checkpoints only: the earlier lesson this exercise assesses. */
   testsLesson?: string;
-  /** Generated recall drills: the scene to answer from, in place of the English meaning. */
+  /** Generated recall drills: the scene to answer from, in place of the English meaning. De/het drills: which sense of the noun is meant. */
   situation?: string;
   /** Generated drills: the item whose picture is the cue (the learner's own, else a bundled one). */
   picture?: string;

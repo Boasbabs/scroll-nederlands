@@ -87,6 +87,16 @@ describe('the de or het drill', () => {
     }
   });
 
+  it('says which sense is meant when the bare noun takes the other article in another sense', () => {
+    const cv = makeCourse(
+      { 'x0-a-hello': { items: [{ key: 'cv', dutch: 'het cv', english: 'the CV', kind: 'word' as const, articleCue: 'the CV you send when you apply for a job' }] } },
+      testWordThemes,
+    );
+    const drill = generateExercise(cv, cv.item('x0-a-hello/cv#article')!, 'recognition', 0, seededRandom('x'));
+    expect(drill).toMatchObject({ prompt: 'De or het?', noun: 'cv', situation: 'the CV you send when you apply for a job', answer: 'het' });
+    expect(generateExercise(index, index.item('w-kitchen/mes#article')!, 'recognition', 0, seededRandom('x')).situation).toBeUndefined();
+  });
+
   it('shows the noun’s picture when it has one', () => {
     const drill = generateExercise(index, index.item('w-kitchen/vork#article')!, 'recognition', 0, seededRandom('x'), { hasPicture: (id) => id === 'w-kitchen/vork' });
     expect(drill).toMatchObject({ picture: 'w-kitchen/vork', answer: 'de' });

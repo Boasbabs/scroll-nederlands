@@ -19,7 +19,7 @@ Loonheffing: – € 230,00
 Pensioenpremie: – € 90,00
 Reiskostenvergoeding: + € 60,00
 Nettoloon: € 2.140,00
-Vakantiegeld deze maand: € 192,00 (8% van het brutoloon)
+Reservering vakantiegeld: € 192,00 (8% van het brutoloon)
 Het salaris wordt op 25 maart betaald. Het vakantiegeld wordt in mei betaald.
 Vragen? Mail de salarisadministratie.`;
 
@@ -87,7 +87,7 @@ export const werk: Pack = {
       ],
       patternExplanation:
         'Contract is a het-word, so after een the adjective has no -e: een vast contract, een tijdelijk contract. With het it gets one (het vaste contract), and so it does before a de-word: een vaste baan. Is het … of …? asks someone to choose between two things.',
-      pronunciationTip: 'Cao is said letter by letter: say-ah-oh. Salaris is stressed in the middle: sah-LAH-ris.',
+      pronunciationTip: 'Cao is said letter by letter, stressed on the o: say-ah-OH. Salaris is stressed in the middle: sah-LAH-ris.',
       examples: [
         { dutch: 'Ik heb een tijdelijk contract voor een jaar.', english: 'I have a temporary contract for a year.' },
         { dutch: 'Na een jaar krijg ik misschien een vast contract.', english: 'After a year I may get a permanent contract.' },
@@ -339,7 +339,7 @@ export const werk: Pack = {
           passage: PAYSLIP,
           options: ['In May', 'Every month', 'On 25 March'],
           answer: 'In May',
-          explanation: 'Het vakantiegeld wordt in mei betaald. Each month € 192 is saved up, and in May you get it all at once.',
+          explanation: 'Het vakantiegeld wordt in mei betaald. Reservering vakantiegeld: each month € 192 is put aside, and in May you get it all at once.',
           focusedOnly: true,
         },
       ],
@@ -383,7 +383,7 @@ export const werk: Pack = {
         { dutch: 'Het rooster voor volgende week staat online.', english: 'Next week’s rota is online.' },
         { dutch: 'De dienst van zaterdag begint om drie uur.', english: 'The Saturday shift starts at three.' },
         { dutch: 'Ik moet vandaag twee uur overwerken.', english: 'I have to work two hours overtime today.' },
-        { dutch: 'Het verlof en de vakantiedagen regel je met de leidinggevende.', english: 'You arrange leave and days off with the manager.' },
+        { dutch: 'Ik vraag de vakantiedagen voor juli aan bij de leidinggevende, en zij keurt het verlof goed.', english: 'I ask the manager for the days off in July, and she approves the leave.' },
       ],
       speakingPrompt: 'Ask a colleague: Ik heb zaterdag de late dienst. Kunnen we van dienst ruilen?',
       revisits: ['s2-work-days-off', 's2-shopissues-return', 's2-separable-bellen'],

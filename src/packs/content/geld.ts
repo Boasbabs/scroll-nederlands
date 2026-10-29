@@ -173,7 +173,7 @@ export const geld: Pack = {
       kind: 'core',
       title: 'Paying and getting paid back',
       objective: 'Split costs with a payment request, transfer money, pay people back and understand a failed payment.',
-      situation: 'You have lunch with your colleague Daan. He pays for you both and sends you a payment request. Later, your banking app tells you a payment has failed.',
+      situation: 'You have lunch with your colleague Daan. He pays for you both, so you ask him to send you a payment request. Later, your banking app tells you a payment has failed.',
       targetPhrase: 'Kun je me een betaalverzoek sturen?',
       meaningEn: 'Can you send me a payment request?',
       items: [
@@ -336,7 +336,7 @@ export const geld: Pack = {
           accept: ['Mag ik in termijnen betalen?', 'Kan ik het in termijnen betalen?', 'Mag ik het in termijnen betalen?'],
           note: 'in termijnen: in parts, for example each month',
         }),
-        noun('de factuur', 'the invoice', { note: 'from a company; in a café you ask for de rekening' }),
+        noun('de factuur', 'the invoice', { note: 'the formal word on a company bill; in speech often de rekening (de telefoonrekening)' }),
         noun('de automatische incasso', 'the direct debit', { accept: ['de incasso', 'incasso', 'het automatische incasso', 'het incasso'], note: 'you allow a company to take the money from your account' }),
         noun('de aanmaning', 'the payment reminder', { note: 'it sets a deadline; after it, extra costs follow' }),
         noun('de betalingsregeling', 'the payment plan'),

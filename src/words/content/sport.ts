@@ -7,6 +7,7 @@ export const sport: WordTheme = {
   tier: 2,
   words: [
     verb('hardlopen', 'to go running', {
+      accept: ['rennen', 'lopen'],
       note: 'separable: ik loop hard',
       example: { dutch: 'Ik wil in dertig minuten vijf kilometer hardlopen.', english: 'I want to run five kilometres in thirty minutes.' },
     }),
@@ -14,7 +15,7 @@ export const sport: WordTheme = {
       example: { dutch: 'Ik ga naar de sportschool om sterker te worden.', english: 'I go to the gym to get stronger.' },
     }),
     verb('trainen', 'to train', {
-      example: { dutch: 'Als je beter wilt worden, moet je veel trainen.', english: 'If you want to get better, you have to train a lot.' },
+      example: { dutch: 'Met gewichten kun je je armen trainen.', english: 'You can train your arms with weights.' },
     }),
     noun('de vereniging', 'the association', {
       accept: ['de club'],
@@ -33,29 +34,30 @@ export const sport: WordTheme = {
       example: { dutch: 'Bij welke club speel jij?', english: 'Which club do you play for?' },
     }),
     noun('de training', 'the training session', {
-      example: { dutch: 'Na de training ben ik altijd moe.', english: "I'm always tired after training." },
+      example: { dutch: 'Zaterdag hebben we geen wedstrijd, alleen training.', english: "On Saturday we don't have a match, only training." },
     }),
     noun('de ploeg', 'the team, the squad', {
       note: 'also a shift at work: in ploegen werken',
-      example: { dutch: 'De hele ploeg gaat na de wedstrijd uit eten.', english: 'The whole team is going out for dinner after the match.' },
+      example: { dutch: 'De Nederlandse ploeg staat in de finale.', english: 'The Dutch team is in the final.' },
     }),
     noun('de trainer', 'the coach', {
+      accept: ['de coach'],
       example: { dutch: 'De trainer kiest wie er mag spelen.', english: 'The coach picks who gets to play.' },
     }),
     noun('de scheidsrechter', 'the referee', {
       example: { dutch: 'De scheidsrechter geeft hem een gele kaart.', english: 'The referee gives him a yellow card.' },
     }),
     verb('winnen', 'to win', {
-      example: { dutch: 'Je kunt niet elke wedstrijd winnen.', english: "You can't win every match." },
+      example: { dutch: 'Als we vandaag winnen, zijn we kampioen.', english: "If we win today, we're the champions." },
     }),
     verb('verliezen', 'to lose', {
       example: { dutch: 'Als we zo slecht spelen, gaan we verliezen.', english: "If we play this badly, we're going to lose." },
     }),
     noun('het doelpunt', 'the goal (scored)', {
-      example: { dutch: 'Hij maakte in de laatste minuut een doelpunt.', english: 'He scored a goal in the last minute.' },
+      example: { dutch: 'Het enige doelpunt viel in de laatste minuut.', english: 'The only goal came in the last minute.' },
     }),
     verb('scoren', 'to score', {
-      example: { dutch: 'Wie gaat er vanavond voor Oranje scoren?', english: "Who's going to score for the Dutch team tonight?" },
+      example: { dutch: 'Hij krijgt veel kansen, maar hij kan niet scoren.', english: "He gets lots of chances, but he can't score." },
     }),
     verb('schaatsen', 'to ice-skate', {
       example: { dutch: 'Als het hard vriest, gaan we schaatsen.', english: "When there's a hard frost, we go skating." },
@@ -68,15 +70,16 @@ export const sport: WordTheme = {
     }),
     noun('het hockey', 'the hockey', {
       note: 'field hockey; on ice it is ijshockey',
-      example: { dutch: 'Voor hockey heb je een stick nodig.', english: 'You need a stick for hockey.' },
+      example: { dutch: 'Voor hockey heb je een stick en een bal nodig.', english: 'For hockey you need a stick and a ball.' },
     }),
     noun('de contributie', 'the membership fee', {
       example: { dutch: 'Heb jij de contributie voor de voetbalclub al betaald?', english: 'Have you paid the membership fee for the football club yet?' },
     }),
     noun('het toernooi', 'the tournament', {
-      example: { dutch: 'Het toernooi duurt het hele weekend.', english: 'The tournament lasts the whole weekend.' },
+      example: { dutch: 'Aan het toernooi doen zestien teams mee.', english: 'Sixteen teams are taking part in the tournament.' },
     }),
     noun('de supporter', 'the supporter', {
+      accept: ['de fan'],
       example: { dutch: 'Mijn buurman is al veertig jaar supporter van Feyenoord.', english: 'My neighbour has been a Feyenoord supporter for forty years.' },
     }),
     noun('de blessure', 'the injury', {
@@ -85,10 +88,10 @@ export const sport: WordTheme = {
     }),
     adj('geblesseerd', 'injured', {
       note: 'mostly in sport; hurt in an accident: gewond',
-      example: { dutch: 'Ze kan niet spelen, want ze is geblesseerd.', english: "She can't play because she's injured." },
+      example: { dutch: 'Ze kan niet spelen: ze is geblesseerd aan haar knie.', english: "She can't play: she has a knee injury." },
     }),
     adj('fit', 'fit', {
-      example: { dutch: 'Mijn opa is tachtig, maar nog heel fit.', english: 'My grandpa is eighty, but still very fit.' },
+      example: { dutch: 'Ik ben niet fit genoeg om tien kilometer te rennen.', english: "I'm not fit enough to run ten kilometres." },
     }),
     noun('de conditie', 'the (physical) condition', {
       example: { dutch: 'Ik fiets elke dag, dus mijn conditie is goed.', english: "I cycle every day, so I'm in good shape." },
@@ -103,6 +106,7 @@ export const sport: WordTheme = {
       example: { dutch: 'Geef je tegenstander na de wedstrijd een hand.', english: 'Shake hands with your opponent after the match.' },
     }),
     noun('het zwemdiploma', 'the swimming diploma', {
+      accept: ['het diploma'],
       note: 'most Dutch children get one: A first, then B and C',
       example: { dutch: 'Na een jaar zwemles heeft ze haar zwemdiploma gehaald.', english: 'After a year of swimming lessons, she got her swimming diploma.' },
     }),

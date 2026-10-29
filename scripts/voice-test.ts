@@ -73,8 +73,15 @@ export function voiceName(voice: string): string {
   return voice.includes('-') ? voice : `nl-NL-Chirp3-HD-${voice}`;
 }
 
-/** One clip of one text, as the check heard it. `file` is relative to voice-test/. */
-export type TestResult = { source: string; text: string; file: string; seconds: number; transcript?: string; wer?: number };
+/**
+ * One clip of one text, as the check heard it. `file` is relative to voice-test/. A silent take
+ * (Google sometimes returns a quarter second of nothing for a one-word text) has no clip and
+ * counts as a miss.
+ */
+export type TestResult = { source: string; text: string; file: string; seconds: number; transcript?: string; wer?: number; silent?: boolean };
+
+/** A Text-to-Speech take peaks near full scale; one whose peak stays below this came back silent. */
+export const SILENT_PEAK_DB = -30;
 
 export type SourceSummary = {
   source: string;
@@ -86,25 +93,29 @@ export type SourceSummary = {
   pace?: number;
   /** Clips far longer or shorter than their text: a repeat or a cut-off. */
   lengthFlags: number;
+  /** Takes that came back silent: misses in the counts above too. */
+  silent: number;
 };
 
 const letters = (text: string) => text.replace(/[^\p{L}\p{N}]/gu, '').length;
 
-/** Per source, in the order the sources first appear; only checked clips count towards the scores. */
+/** Per source, in the order the sources first appear. Checked clips and silent takes count towards the scores. */
 export function summarize(results: ReadonlyArray<TestResult>): Array<SourceSummary> {
   const sources = [...new Set(results.map((result) => result.source))];
   return sources.map((source) => {
     const own = results.filter((result) => result.source === source);
-    const checked = own.filter((result) => result.wer !== undefined);
-    const short = checked.filter((result) => isShort(result.text));
-    const sentences = checked.filter((result) => !isShort(result.text));
-    const timed = own.filter((result) => !isShort(result.text) && result.seconds > 0);
+    const scored = own.filter((result) => result.silent || result.wer !== undefined);
+    const short = scored.filter((result) => isShort(result.text));
+    const sentences = scored.filter((result) => !isShort(result.text));
+    const spoken = own.filter((result) => !result.silent);
+    const timed = spoken.filter((result) => !isShort(result.text) && result.seconds > 0);
     return {
       source,
-      short: { exact: short.filter((result) => result.wer === 0).length, total: short.length },
-      sentences: { close: sentences.filter((result) => result.wer! <= 0.2).length, total: sentences.length },
+      short: { exact: short.filter((result) => heard(result)).length, total: short.length },
+      sentences: { close: sentences.filter((result) => heard(result)).length, total: sentences.length },
       ...(timed.length ? { pace: timed.reduce((sum, result) => sum + letters(result.text) / result.seconds, 0) / timed.length } : {}),
-      lengthFlags: own.filter((result) => isFlagged(result.text, 0, result.seconds)).length,
+      lengthFlags: spoken.filter((result) => isFlagged(result.text, 0, result.seconds)).length,
+      silent: own.length - spoken.length,
     };
   });
 }
@@ -113,6 +124,7 @@ const escape = (text: string) => text.replace(/&/g, '&amp;').replace(/</g, '&lt;
 
 /** Whether the check heard the text: exactly for a short text, within one word in five for a sentence. */
 export function heard(result: TestResult): boolean | undefined {
+  if (result.silent) return false;
   if (result.wer === undefined) return undefined;
   return isShort(result.text) ? result.wer === 0 : result.wer <= 0.2;
 }
@@ -122,6 +134,7 @@ export function listeningPage(texts: ReadonlyArray<TestText>, sources: ReadonlyA
   const cell = (text: TestText, source: string) => {
     const result = results.find((candidate) => candidate.source === source && candidate.text === text.text);
     if (!result) return '<td class="none">–</td>';
+    if (result.silent) return '<td><span class="miss">came back silent</span></td>';
     const verdict = heard(result);
     const mark = verdict === undefined ? '' : verdict ? '<span class="ok">heard</span>' : `<span class="miss">heard “${escape(result.transcript || '…')}”</span>`;
     return `<td><audio controls preload="none" src="${escape(result.file)}"></audio>${mark}</td>`;
@@ -174,9 +187,12 @@ const percent = (part: number, whole: number) => (whole ? `${part} of ${whole}` 
 export function report(texts: ReadonlyArray<TestText>, results: ReadonlyArray<TestResult>, when: string, characters: number): string {
   const shared = new Set(results.filter((result) => result.source.startsWith('ElevenLabs')).map((result) => result.text));
   const table = (rows: Array<SourceSummary>) => [
-    '| Source | Short texts back exactly | Sentences heard | Pace (letters/s) | Length flags |',
-    '|---|---|---|---|---|',
-    ...rows.map((row) => `| ${row.source} | ${percent(row.short.exact, row.short.total)} | ${percent(row.sentences.close, row.sentences.total)} | ${row.pace?.toFixed(1) ?? '–'} | ${row.lengthFlags} |`),
+    '| Source | Short texts back exactly | Sentences heard | Silent takes | Pace (letters/s) | Length flags |',
+    '|---|---|---|---|---|---|',
+    ...rows.map(
+      (row) =>
+        `| ${row.source} | ${percent(row.short.exact, row.short.total)} | ${percent(row.sentences.close, row.sentences.total)} | ${row.silent} | ${row.pace?.toFixed(1) ?? '–'} | ${row.lengthFlags} |`,
+    ),
   ];
   const missed = results.filter((result) => heard(result) === false);
   return [
@@ -198,7 +214,11 @@ export function report(texts: ReadonlyArray<TestText>, results: ReadonlyArray<Te
     '',
     missed.length ? '| Text | Source | Heard | WER |' : 'Nothing: every checked clip came back.',
     ...(missed.length ? ['|---|---|---|---|'] : []),
-    ...missed.map((result) => `| ${result.text.replace(/\|/g, '\\|')} | ${result.source} | ${(result.transcript || '(nothing)').replace(/\|/g, '\\|')} | ${result.wer!.toFixed(2)} |`),
+    ...missed.map((result) =>
+      result.silent
+        ? `| ${result.text.replace(/\|/g, '\\|')} | ${result.source} | (the take came back silent) | – |`
+        : `| ${result.text.replace(/\|/g, '\\|')} | ${result.source} | ${(result.transcript || '(nothing)').replace(/\|/g, '\\|')} | ${result.wer!.toFixed(2)} |`,
+    ),
     '',
   ].join('\n');
 }
@@ -217,6 +237,12 @@ const SETUP = `Set GOOGLE_CLOUD_API_KEY in .env.local. In the Google Cloud conso
   1. Create a project, or pick one, with billing linked (the free trial's credit covers it).
   2. Enable the Cloud Text-to-Speech API, and the Cloud Speech-to-Text API for the check.
   3. Under APIs & Services > Credentials, create an API key and restrict it to those two APIs.`;
+
+/** The loudest sample of a file, in dB below full scale. */
+async function peak(file: string): Promise<number> {
+  const { stderr } = await run('ffmpeg', ['-hide_banner', '-nostats', '-i', file, '-af', 'volumedetect', '-f', 'null', '-']);
+  return Number(/max_volume: (-?[\d.]+) dB/.exec(stderr)?.[1] ?? -Infinity);
+}
 
 /** Mono FLAC at 16 kHz, which Speech-to-Text v1 reads whatever the clip's own format. */
 async function toFlac(file: string): Promise<Buffer> {
@@ -289,6 +315,11 @@ async function main() {
           await mkdir(path.dirname(take), { recursive: true });
           await writeFile(take, audio);
         }
+        // A miss, not retried: how often a take comes back silent is part of what the test measures.
+        if ((await peak(take)) < SILENT_PEAK_DB) {
+          results.push({ source: job.label, text: job.text.text, file: path.relative(out, take), seconds: 0, silent: true });
+          continue;
+        }
         if (!existsSync(path.join(out, clip))) {
           await mkdir(path.dirname(path.join(out, clip)), { recursive: true });
           await postProcess(take, path.join(out, clip));
@@ -307,6 +338,7 @@ async function main() {
   const checkQueue = [...results];
   const checker = async () => {
     for (let result = checkQueue.shift(); result && checking; result = checkQueue.shift()) {
+      if (result.silent) continue;
       const cached = before[result.file];
       try {
         const transcript = cached?.transcript ?? (await google.transcribe(await toFlac(path.join(out, result.file))));
@@ -333,7 +365,9 @@ async function main() {
   await writeFile(path.join(out, 'index.html'), listeningPage(TEST_TEXTS, columns, page, when));
   await writeFile(path.join(out, 'report.md'), report(TEST_TEXTS, results, when, characters));
   for (const row of summarize(results)) {
-    console.log(`${row.source.padEnd(28)} short ${percent(row.short.exact, row.short.total).padEnd(9)} sentences ${percent(row.sentences.close, row.sentences.total).padEnd(9)} pace ${row.pace?.toFixed(1) ?? '–'}`);
+    console.log(
+      `${row.source.padEnd(28)} short ${percent(row.short.exact, row.short.total).padEnd(9)} sentences ${percent(row.sentences.close, row.sentences.total).padEnd(9)} silent ${row.silent}  pace ${row.pace?.toFixed(1) ?? '–'}`,
+    );
   }
   console.log(`${characters} characters sent to Text-to-Speech. Listen in voice-test/index.html; the scores are in voice-test/report.md.`);
 }

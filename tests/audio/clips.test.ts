@@ -37,17 +37,17 @@ describe.skipIf(!manifest)('the generated audio manifest', () => {
   const clips = manifest?.clips ?? {};
   const clipsB = manifest?.clipsB ?? {};
 
-  it('names both voices and the model it was made with', () => {
-    expect(manifest?.voices.a.id).toBeTruthy();
-    expect(manifest?.voices.b.id).toBeTruthy();
+  it('names both voices and the model it was made with: Google’s nl-NL Chirp 3: HD', () => {
+    expect(manifest?.voices.a.id).toMatch(/^nl-NL-Chirp3-HD-/);
+    expect(manifest?.voices.b.id).toMatch(/^nl-NL-Chirp3-HD-/);
     expect(manifest?.voices.a.id).not.toBe(manifest?.voices.b.id);
-    expect(manifest?.model).toMatch(/^eleven_/);
+    expect(manifest?.model).toBe('chirp3-hd');
   });
 
-  it('points every clip at an Opus or (from the first run) an MP3 file that exists in public/', () => {
+  it('points every clip at an Opus file that exists in public/', () => {
     const files = [...Object.values(clips), ...Object.values(clipsB)];
     expect(files.length).toBeGreaterThan(0);
-    expect(files.filter((file) => !/^audio\/[0-9a-f]{16}\.(ogg|mp3)$/.test(file))).toEqual([]);
+    expect(files.filter((file) => !/^audio\/[0-9a-f]{16}\.ogg$/.test(file))).toEqual([]);
     expect(files.filter((file) => !existsSync(path.join(publicDir, file)))).toEqual([]);
   });
 
@@ -71,6 +71,7 @@ describe('naming clips and their masters', () => {
   it('names a clip after its text, voice, model, settings and post-processing, as Opus in Ogg', () => {
     // Pinned: a change to what goes into the name would rename, and remake, every clip.
     expect(clipFile(avonds)).toBe('audio/b038b4efe03181a4.ogg');
+    if (manifest) expect(manifest.clips["'s avonds"]).toBe(clipFile(avonds));
   });
 
   it('keys a master by what the API was asked for, so a new encoding finds it', () => {

@@ -1,5 +1,5 @@
 // Dutch audio behind one small interface: a human recording when one exists
-// for the text, then a bundled ElevenLabs clip, otherwise the browser's nl-NL
+// for the text, then a bundled generated clip, otherwise the browser's nl-NL
 // voice, otherwise silence with an explanation. Nothing here talks to a server.
 
 export const DUTCH_LOCALE = 'nl-NL';

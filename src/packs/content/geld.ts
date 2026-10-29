@@ -472,7 +472,7 @@ export const geld: Pack = {
         }),
         noun('de belasting', 'the tax', { note: 'belasting betalen = to pay tax' }),
         noun('de Belastingdienst', 'the tax office', { note: 'its letters come in a blue envelope' }),
-        noun('de belastingaangifte', 'the tax return', { note: 'aangifte doen = to file it, before 1 May' }),
+        noun('de belastingaangifte', 'the tax return', { note: 'aangifte doen = to file it, before 1 May; for the year you arrived, on the M-form by 1 July' }),
         word('bruto', 'gross, before tax'),
         word('netto', 'net, after tax', { note: 'what reaches your account' }),
         noun('de btw', 'the VAT', { note: '21%, or 9% on food; shop prices include it' }),
@@ -560,7 +560,7 @@ export const geld: Pack = {
           items: ['belastingaangifte'],
           prompt: 'Every spring you tell the tax office what you earned last year. What is that form called in Dutch?',
           answers: ['de belastingaangifte', 'belastingaangifte', 'mijn belastingaangifte', 'de aangifte', 'aangifte'],
-          explanation: 'De belastingaangifte: the tax return. File it before 1 May, or ask for more time.',
+          explanation: 'De belastingaangifte: the tax return. File it before 1 May, or ask for more time. For the year you arrived, you file the M-form instead, by 1 July.',
         },
         {
           id: 'ask',

@@ -153,7 +153,8 @@ export type AudioManifest = ClipManifest & {
   clipsB: Record<string, string>;
 };
 
-const isShort = (text: string) => text.split(' ').length <= 3;
+/** Up to three words: the check wants these back exactly. */
+export const isShort = (text: string) => text.split(' ').length <= 3;
 const hash = (value: unknown) => createHash('sha1').update(JSON.stringify(value)).digest('hex').slice(0, 16);
 
 /** What the API's audio depends on. Post-processing is left out, so a new encoding reuses the masters. */
@@ -391,13 +392,13 @@ async function transcribe(file: string): Promise<{ text: string; language: strin
  * five. A clip far longer or shorter than its text (a repeat or a cut-off) is
  * flagged whatever the transcript says.
  */
-function isFlagged(text: string, wer: number, seconds: number): boolean {
+export function isFlagged(text: string, wer: number, seconds: number): boolean {
   const letters = text.replace(/[^\p{L}\p{N}]/gu, '').length;
   if (seconds > 2 + letters * 0.15 || seconds < letters * 0.025) return true;
   return wer > (isShort(text) ? 0 : 0.2);
 }
 
-async function duration(file: string): Promise<number> {
+export async function duration(file: string): Promise<number> {
   const { stdout } = await run('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', file]);
   return Number(stdout.trim());
 }

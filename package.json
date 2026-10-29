@@ -13,6 +13,7 @@
     "test:watch": "vitest",
     "validate:curriculum": "vitest run tests/curriculum",
     "audio:generate": "node --env-file-if-exists=.env.local --import ./scripts/ts-resolve.mjs --experimental-strip-types scripts/generate-audio.ts",
+    "voice:test": "node --env-file-if-exists=.env.local --import ./scripts/ts-resolve.mjs --experimental-strip-types scripts/voice-test.ts",
     "images:fetch": "node --experimental-strip-types scripts/fetch-images.ts",
     "postinstall": "wxt prepare"
   },

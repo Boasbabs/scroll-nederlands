@@ -1,7 +1,7 @@
 // Places the scenario packs beside the course. Each scene is a lesson the
 // lesson player runs as it is; scenes are found by id but stay off the course
 // path, as the basic words do.
-import type { LearningItem, Lesson } from '../curriculum/types';
+import type { Curriculum, CurriculumModule, CurriculumStage, LearningItem, Lesson } from '../curriculum/types';
 import type { Pack } from './types';
 
 /** The stage id of every scene lesson and pack item; course lessons never use it. */
@@ -15,6 +15,15 @@ export function packModuleId(packId: string): string {
 /** True for a set (false friends), false for a situation. */
 export function isSet(pack: Pick<Pack, 'kind'>): boolean {
   return pack.kind === 'set';
+}
+
+/**
+ * The course module a pack is best after: the latest, in course order, of those it builds on.
+ * Advice only, never a lock. A set builds on none, so it has none.
+ */
+export function bestAfter(curriculum: Curriculum, pack: Pick<Pack, 'buildsOn'>): { stage: CurriculumStage; module: CurriculumModule } | undefined {
+  const modules = curriculum.stages.flatMap((stage) => stage.modules.map((module) => ({ stage, module })));
+  return modules.filter(({ module }) => pack.buildsOn.includes(module.id)).at(-1);
 }
 
 /** A pack placed beside the course. */

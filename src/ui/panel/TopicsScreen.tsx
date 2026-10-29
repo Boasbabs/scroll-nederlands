@@ -5,7 +5,7 @@
 // or brings in new ones, within the daily limit.
 import { useEffect, useId, useRef, useState, type CSSProperties } from 'react';
 import type { LearningItem, Lesson } from '../../curriculum/types';
-import { isSet, type PlacedPack } from '../../packs/assemble';
+import { bestAfter, isSet, type PlacedPack } from '../../packs/assemble';
 import { itemStrength, type ItemStrength } from '../../engine/schedule';
 import { isLessonDone, REVIEW_BATCH, themeWordsLeftToday, WORD_BATCH, wordsLeftToday } from '../../engine/selection';
 import { summarizePack, summarizeTopic } from '../../engine/summary';
@@ -18,7 +18,7 @@ import { Icon } from '../components/Icon';
 import { IconTile } from '../components/IconTile';
 import { ProgressBar } from '../components/ProgressBar';
 import { useEnv } from '../env';
-import { packTerms, plural } from '../format';
+import { packMeta, packTerms, plural } from '../format';
 import type { StartSession } from './PanelApp';
 
 type TopicsProps = {
@@ -93,17 +93,6 @@ function TopicList({ snap, onOpen }: { snap: Snapshot; onOpen: (id: string) => v
       ) : null}
     </div>
   );
-}
-
-/** A pack's line: where the learner is in its scenes (a set's parts), and its words met. */
-function packMeta(pack: PlacedPack, progress: LearnerProgress, at: number): string {
-  const summary = summarizePack(pack, progress, at);
-  const { step, Step } = packTerms(pack);
-  const met = summary.items.total - summary.items.new;
-  const due = summary.items.due > 0 ? ` · ${summary.items.due} due` : '';
-  if (!summary.next) return `All ${summary.scenes.total} ${step}s done${due}`;
-  if (!summary.started) return `${plural(summary.scenes.total, step)} · ${summary.items.total} phrases and words`;
-  return `${Step} ${summary.scenes.completed + 1} of ${summary.scenes.total} · ${met} of ${summary.items.total} met${due}`;
 }
 
 /** A pack as a line of the list, in the Today tab's row style; its bar counts scenes. A set's tile shows two languages. */
@@ -317,13 +306,6 @@ function MissionCard({ pack, mission, done, onChange }: { pack: PlacedPack; miss
   );
 }
 
-/** "Best after: Stage 3 · Service situations": the latest course module the pack builds on. */
-function bestAfter(course: ReturnType<typeof useEnv>['course'], pack: PlacedPack): string | undefined {
-  const modules = course.curriculum.stages.flatMap((stage) => stage.modules.map((module) => ({ stage, module })));
-  const last = modules.filter(({ module }) => pack.buildsOn.includes(module.id)).at(-1);
-  return last && `Best after: ${last.stage.title.split(' · ')[0]} · ${last.module.title}`;
-}
-
 function PackPage({ pack, snap, start, onBack, onChange }: { pack: PlacedPack; snap: Snapshot; start: StartSession; onBack: () => void; onChange: () => void }) {
   const { learning, course, now } = useEnv();
   const back = usePageStart(pack.id);
@@ -332,7 +314,9 @@ function PackPage({ pack, snap, start, onBack, onChange }: { pack: PlacedPack; s
   const met = summary.items.total - summary.items.new;
   const next = summary.next;
   const nextNumber = next ? pack.scenes.indexOf(next) + 1 : 0;
-  const context = bestAfter(course, pack);
+  // "Best after: Stage 3 · Service situations".
+  const after = bestAfter(course.curriculum, pack);
+  const context = after && `Best after: ${after.stage.title.split(' · ')[0]} · ${after.module.title}`;
   const terms = packTerms(pack);
   const play = (scene: Lesson) => () => void start(() => learning.startLesson(scene.id, 'focused'));
   const practise = met > 0 ? () => void start(() => learning.startPackPractice(pack.id)) : undefined;

@@ -1,7 +1,9 @@
 // Small formatting helpers for times and counts shown to the learner.
 import { dayKey } from '../engine/progress';
 import { DAY, HOUR, MINUTE } from '../engine/schedule';
-import { isSet } from '../packs/assemble';
+import { summarizePack } from '../engine/summary';
+import type { LearnerProgress } from '../engine/types';
+import { isSet, type PlacedPack } from '../packs/assemble';
 import type { Pack } from '../packs/types';
 
 /** "15:30" in the learner's local time (24-hour, as in the Netherlands). */
@@ -49,4 +51,15 @@ export function plural(count: number, one: string, many = `${one}s`): string {
 /** What a pack's steps and the pack are called: a situation is played scene by scene, a set (false friends) part by part. */
 export function packTerms(pack: Pick<Pack, 'kind'>): { step: string; Step: string; whole: string } {
   return isSet(pack) ? { step: 'part', Step: 'Part', whole: 'set' } : { step: 'scene', Step: 'Scene', whole: 'pack' };
+}
+
+/** A pack's line: where the learner is in its scenes (a set's parts), and its words met. */
+export function packMeta(pack: PlacedPack, progress: LearnerProgress, at: number): string {
+  const summary = summarizePack(pack, progress, at);
+  const { step, Step } = packTerms(pack);
+  const met = summary.items.total - summary.items.new;
+  const due = summary.items.due > 0 ? ` · ${summary.items.due} due` : '';
+  if (!summary.next) return `All ${summary.scenes.total} ${step}s done${due}`;
+  if (!summary.started) return `${plural(summary.scenes.total, step)} · ${summary.items.total} phrases and words`;
+  return `${Step} ${summary.scenes.completed + 1} of ${summary.scenes.total} · ${met} of ${summary.items.total} met${due}`;
 }

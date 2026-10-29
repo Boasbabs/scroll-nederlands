@@ -199,7 +199,7 @@ export const sociaal: Pack = {
       kind: 'core',
       title: 'A Dutch birthday',
       objective: 'Understand a birthday invitation, invite people yourself, and at the party congratulate the family too.',
-      situation: 'Your colleague Anouk invites you to her 40th birthday at home, where guests sit together with coffee and cake and everyone congratulates everyone. Next month it is your own birthday, and you ask your colleagues to come.',
+      situation: 'Your colleague Anouk invites you to her 40th birthday at home, where guests sit together with coffee and cake and everyone congratulates everyone. Next month it is your own birthday, and you ask your colleague Daan to come.',
       targetPhrase: 'Kom je op mijn verjaardag?',
       meaningEn: 'Are you coming to my birthday?',
       items: [

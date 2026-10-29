@@ -185,7 +185,7 @@ export const school: Pack = {
       kind: 'core',
       title: 'A day at school',
       objective: 'Find out the school times, follow what the teacher tells you at the classroom door, and read the school newsletter.',
-      situation: 'Lina has started in groep 1 with juf Sanne, and Sami is in groep 4 with meester Tim. Every morning you take them to their classroom doors, and on Friday the school newsletter arrives.',
+      situation: 'Lina has started in groep 1 with juf Sanne, and Sami is in groep 4 with meester Tim. Every morning you take them to their classroom doors, and on Friday the school newsletter arrives. In the first week you ask another parent what time school finishes.',
       targetPhrase: 'Hoe laat gaat de school uit?',
       meaningEn: 'What time does school finish?',
       items: [
@@ -314,7 +314,7 @@ export const school: Pack = {
       kind: 'core',
       title: 'Talking to the teacher',
       objective: 'Report your child absent, and ask the teacher how your child is doing at the parent–teacher meeting.',
-      situation: 'Sami wakes up with a fever, so you send meester Tim a message before school starts. The next week you have a tienminutengesprek with juf Sanne about Lina.',
+      situation: 'Sami wakes up with a fever, so you send meester Tim a message before school starts. The next week you have a tienminutengesprek with juf Sanne about Lina, and you ask how she is doing in class.',
       targetPhrase: 'Hoe gaat het met haar in de klas?',
       meaningEn: 'How is she doing in class?',
       items: [
@@ -464,7 +464,7 @@ export const school: Pack = {
       kind: 'core',
       title: 'Childcare',
       objective: 'Choose the right kind of childcare, say who is picking your child up, and plan for study days and the school holidays.',
-      situation: 'You work until half past five, so after school Sami and Lina go to the bso. You tell the bso who is collecting them, and you plan for a study day and the school holidays.',
+      situation: 'You work until half past five, so after school Sami and Lina go to the bso. You tell the bso who is collecting them, and you plan for a study day and the school holidays. Before work you talk to your partner about Sami and ask who is picking him up today.',
       targetPhrase: 'Wie haalt hem vandaag op?',
       meaningEn: "Who's picking him up today?",
       items: [

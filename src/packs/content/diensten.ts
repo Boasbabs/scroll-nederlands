@@ -32,7 +32,7 @@ export const diensten: Pack = {
       kind: 'core',
       title: 'Parcels',
       objective: 'Find out where a parcel went while you were out, collect it from a neighbour or a pick-up point, and send an online order back.',
-      situation: 'You order a lot online, but you are often at work when the delivery driver comes. Today the tracking page says a neighbour took your parcel in; last week the carrier left a card in your letterbox.',
+      situation: 'You order a lot online, but you are often at work when the delivery driver comes. Today the tracking page says a neighbour took your parcel in; last week the carrier left a card in your letterbox. When your housemate asks where your parcel is, you tell her it was left with the neighbours.',
       targetPhrase: 'Mijn pakket is bij de buren afgeleverd.',
       meaningEn: 'My parcel was left with the neighbours.',
       items: [

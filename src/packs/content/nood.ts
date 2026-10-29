@@ -507,7 +507,7 @@ export const nood: Pack = {
           prompt: 'You have asked a locksmith on the phone whether he can still come. Listen. When will he be there?',
           audioText: 'Slotenmaker Dijkstad, goedenavond. Vanavond nog? Ja, dat kan. Ik ben er over twintig minuten. Het openen van de deur kost vijfennegentig euro.',
           listenOnly: true,
-          options: ['In twenty minutes', 'In two hours', 'Tomorrow morning', 'At ten to ten'],
+          options: ['In twenty minutes', 'In two hours', 'Tomorrow morning', 'In ten minutes'],
           answer: 'In twenty minutes',
           explanation: 'Ik ben er over twintig minuten: I will be there in twenty minutes. Opening the door costs vijfennegentig euro, 95 euros.',
         },

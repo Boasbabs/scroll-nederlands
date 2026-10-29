@@ -28,16 +28,18 @@ export const actions: WordTheme = {
       example: { dutch: 'Wil je me morgen aan de afspraak herinneren?', english: 'Will you remind me about the appointment tomorrow?' },
     }),
     verb('beslissen', 'to decide', {
+      accept: ['besluiten'],
       example: { dutch: 'Jij mag beslissen waar we vanavond eten.', english: 'You can decide where we eat tonight.' },
     }),
     verb('kiezen', 'to choose', {
       example: { dutch: 'Ik kan niet kiezen tussen pizza en pasta.', english: "I can't choose between pizza and pasta." },
     }),
     verb('besluiten', 'to make up your mind', {
+      accept: ['beslissen'],
       note: 'close to beslissen; ik heb besloten: I have decided',
       example: { dutch: 'Ik moet vandaag besluiten of ik die baan aanneem.', english: 'I have to make up my mind today whether to take that job.' },
     }),
-    verb('regelen', 'to arrange, to sort out', {
+    verb('regelen', 'to sort out, to take care of', {
       example: { dutch: 'Geen zorgen, ik ga het voor je regelen.', english: "Don't worry, I'll sort it out for you." },
     }),
     verb('organiseren', 'to organise', {
@@ -115,8 +117,9 @@ export const actions: WordTheme = {
     verb('klagen', 'to complain', {
       example: { dutch: 'Ik ga bij de huisbaas klagen over de verwarming.', english: "I'm going to complain to the landlord about the heating." },
     }),
-    verb('schreeuwen', 'to shout, to scream', {
-      example: { dutch: 'Je hoeft niet zo te schreeuwen, ik hoor je wel.', english: "You don't have to shout like that, I can hear you." },
+    verb('schreeuwen', 'to yell, to scream', {
+      near: ['roepen'],
+      example: { dutch: 'Je hoeft niet zo te schreeuwen, ik hoor je wel.', english: "You don't have to yell like that, I can hear you." },
     }),
     verb('roepen', 'to call (out)', {
       example: { dutch: 'Kun je de kinderen roepen? Het eten is klaar.', english: "Can you call the children? Dinner's ready." },
@@ -164,14 +167,14 @@ export const actions: WordTheme = {
     verb('hangen', 'to hang', {
       example: { dutch: 'Je kunt je jas aan de kapstok hangen.', english: 'You can hang your coat on the coat rack.' },
     }),
-    verb('stellen', 'to put, to set', {
-      note: 'een vraag stellen: to ask a question',
+    verb('stellen', 'to pose (a question), to set', {
+      note: 'een vraag stellen: to ask a question; to put a thing down: zetten, leggen',
       example: { dutch: 'Mag ik u een vraag stellen?', english: 'May I ask you a question?' },
     }),
     verb('passen', 'to fit; to try on', {
       example: { dutch: 'Mag ik deze broek even passen?', english: 'Can I try on these trousers?' },
     }),
-    verb('lukken', 'to work out, to succeed', {
+    verb('lukken', 'to work out', {
       note: "het lukt me niet: I can't manage it",
       example: { dutch: 'Ik heb geen tijd, het gaat me vandaag niet lukken.', english: "I don't have time, I won't manage it today." },
     }),
@@ -212,7 +215,7 @@ export const actions: WordTheme = {
       note: 'what a person means: bedoelen',
       example: { dutch: 'Dat woord kan in het Engels iets anders betekenen.', english: 'That word can mean something else in English.' },
     }),
-    verb('noemen', 'to name, to call', {
+    verb('noemen', 'to name, to call (by a name)', {
       example: { dutch: 'We willen onze dochter Emma noemen.', english: 'We want to call our daughter Emma.' },
     }),
     verb('trouwen', 'to marry, to get married', {
@@ -266,7 +269,7 @@ export const actions: WordTheme = {
     verb('verdwijnen', 'to disappear', {
       example: { dutch: 'De pijn zal na een paar dagen verdwijnen.', english: 'The pain will disappear after a few days.' },
     }),
-    verb('verschijnen', 'to appear', {
+    verb('verschijnen', 'to appear (come into view)', {
       example: { dutch: 'Er moet nu een code op je scherm verschijnen.', english: 'A code should now appear on your screen.' },
     }),
     verb('volgen', 'to follow', {

@@ -17,6 +17,7 @@ export const sport: WordTheme = {
       example: { dutch: 'Als je beter wilt worden, moet je veel trainen.', english: 'If you want to get better, you have to train a lot.' },
     }),
     noun('de vereniging', 'the association', {
+      accept: ['de club'],
       note: 'most Dutch sports clubs are one: a sportvereniging',
       example: { dutch: 'Onze vereniging zoekt vrijwilligers voor de kantine.', english: 'Our club is looking for volunteers for the canteen.' },
     }),
@@ -28,6 +29,7 @@ export const sport: WordTheme = {
       example: { dutch: 'Mijn dochter is lid van een tennisclub.', english: 'My daughter is a member of a tennis club.' },
     }),
     noun('de club', 'the club', {
+      accept: ['de vereniging', 'de ploeg'],
       example: { dutch: 'Bij welke club speel jij?', english: 'Which club do you play for?' },
     }),
     noun('de training', 'the training session', {

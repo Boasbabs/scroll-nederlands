@@ -4,6 +4,7 @@ import { withCorrections } from '../corrections/assemble';
 import { findCorrections } from '../corrections/diff';
 import type { Correction, Draft } from '../corrections/types';
 import type { CurriculumIndex } from '../curriculum/assemble';
+import { articleItemId } from '../articles/assemble';
 import { catchUpArticles, introduceArticles } from '../engine/articles';
 import type { DrillContext } from '../engine/exercises';
 import { leechCheck } from '../engine/notes';
@@ -17,6 +18,7 @@ import {
   pickPracticeItems,
   REVIEW_BATCH,
   stageCheckpointId,
+  themeWordsLeftToday,
   WORD_BATCH,
   wordsLeftToday,
   type NextActivity,
@@ -106,6 +108,14 @@ export function createLearning({ store, course: base, images = {}, now = Date.no
     };
   }
 
+  /** A topic's practice pool: its words, and the de/het item of each noun among them. */
+  function topicPool(topicId: string): Set<string> | undefined {
+    const theme = course.themes.find((entry) => entry.id === topicId);
+    if (!theme) return undefined;
+    const ids = theme.items.map((item) => item.id);
+    return new Set([...ids, ...ids.map(articleItemId)]);
+  }
+
   /** The plan for an activity the engine suggested, or undefined when there is nothing to do. */
   function planActivity(activity: NextActivity, progress: LearnerProgress, mode: PracticeMode, context: DrillContext): SessionPlan | undefined {
     const seed = `${now()}`;
@@ -169,6 +179,25 @@ export function createLearning({ store, course: base, images = {}, now = Date.no
       const count = Math.min(WORD_BATCH[mode], wordsLeftToday(course, progress, now(), prefs.newWordsPerDay));
       const ids = getNewWordIds(course, progress, count);
       return ids.length > 0 ? planWords(course, ids, mode, `${now()}`, await drillContext(progress)) : undefined;
+    },
+
+    /** One topic's practice (the Topics tab): its due items first, then the least secure. */
+    async startTopicPractice(topicId: string): Promise<SessionPlan | undefined> {
+      await sync();
+      const pool = topicPool(topicId);
+      if (!pool) return undefined;
+      const progress = await store.readProgress();
+      const ids = pickPracticeItems(course, progress, now(), REVIEW_BATCH.focused, new Set(), pool);
+      return ids.length > 0 ? planReview(course, progress, ids, 'focused', `${now()}`, await drillContext(progress)) : undefined;
+    },
+
+    /** New words from one topic, within today's limits (the Topics tab). */
+    async startTopicWords(topicId: string): Promise<SessionPlan | undefined> {
+      await sync();
+      const [progress, prefs] = await Promise.all([store.readProgress(), store.readPreferences()]);
+      const count = Math.min(WORD_BATCH.focused, themeWordsLeftToday(course, progress, now(), prefs.newWordsPerDay, topicId));
+      const ids = getNewWordIds(course, progress, count, topicId);
+      return ids.length > 0 ? planWords(course, ids, 'focused', `${now()}`, await drillContext(progress)) : undefined;
     },
 
     /**

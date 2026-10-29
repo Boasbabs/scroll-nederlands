@@ -16,11 +16,20 @@ export function bareWord(dutch: string): string {
   return normalizeAnswer(dutch).replace(/^(de|het|een) /, '');
 }
 
+/** One theme of the list, in its own order: most useful first (the Topics tab). */
+export type PlacedTheme = {
+  id: string;
+  title: string;
+  /** New items and the course items referenced. */
+  items: Array<LearningItem>;
+};
+
 export type PlacedWords = {
   /** New word items, added to the course's items. */
   items: Array<LearningItem>;
   /** The whole list in introduction order: new items and the course items referenced. */
   words: Array<LearningItem>;
+  themes: Array<PlacedTheme>;
   /** New items that are singular nouns (each gets a de/het article item, src/articles). */
   nouns: Array<LearningItem>;
   /** References that match no course item (the validator reports them). */
@@ -68,5 +77,11 @@ export function placeWords(themes: ReadonlyArray<WordTheme>, courseItems: Readon
       return [item];
     }),
   );
-  return { items, words: interleave(perTheme), nouns, unresolved };
+  return {
+    items,
+    words: interleave(perTheme),
+    themes: themes.map((theme, i) => ({ id: theme.id, title: theme.title, items: perTheme[i]! })),
+    nouns,
+    unresolved,
+  };
 }

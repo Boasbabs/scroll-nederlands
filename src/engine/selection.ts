@@ -81,13 +81,28 @@ export function wordsLeftToday(index: CurriculumIndex, progress: LearnerProgress
   return Math.max(0, perDay - wordsIntroducedToday(index, progress, now));
 }
 
-/** Basic words not met yet, in the list's order. */
-export function getNewWordIds(index: CurriculumIndex, progress: LearnerProgress, count: number): Array<string> {
+/** Basic words not met yet, in the list's order, or in one theme's own order. */
+export function getNewWordIds(index: CurriculumIndex, progress: LearnerProgress, count: number, themeId?: string): Array<string> {
   if (count <= 0) return [];
-  return index.words
+  const list = themeId === undefined ? index.words : (index.themes.find((theme) => theme.id === themeId)?.items ?? []);
+  return list
     .filter((item) => !progress.items[item.id])
     .slice(0, count)
     .map((item) => item.id);
+}
+
+/**
+ * New words one theme may still give today (the Topics tab): within the
+ * learner's daily limit, and at most one batch from a theme a day, since ten
+ * fruits learned together blur.
+ */
+export function themeWordsLeftToday(index: CurriculumIndex, progress: LearnerProgress, now: number, perDay: number, themeId: string): number {
+  const theme = index.themes.find((entry) => entry.id === themeId);
+  if (!theme) return 0;
+  const start = startOfDay(now);
+  const metToday = theme.items.filter((item) => (progress.items[item.id]?.introducedAt ?? -1) >= start).length;
+  const unmet = theme.items.filter((item) => !progress.items[item.id]).length;
+  return Math.max(0, Math.min(wordsLeftToday(index, progress, now, perDay), WORD_BATCH.focused - metToday, unmet));
 }
 
 /** The next sound contrast not met yet, in the list's order. */
@@ -144,7 +159,8 @@ export function getNextActivity(
 
 /**
  * Items for extra practice: due ones first, then the least secure
- * (relearning, then the lowest stage, then the soonest due).
+ * (relearning, then the lowest stage, then the soonest due). A pool limits
+ * the choice to those items (one topic).
  */
 export function pickPracticeItems(
   index: CurriculumIndex,
@@ -152,10 +168,11 @@ export function pickPracticeItems(
   now: number,
   count: number,
   exclude: ReadonlySet<string> = new Set(),
+  pool?: ReadonlySet<string>,
 ): Array<string> {
-  const due = getDueItemIds(progress, now, exclude);
+  const due = getDueItemIds(progress, now, exclude).filter((id) => !pool || pool.has(id));
   const rest = Object.entries(progress.items)
-    .filter(([id, item]) => item.dueAt > now && !exclude.has(id))
+    .filter(([id, item]) => item.dueAt > now && !exclude.has(id) && (!pool || pool.has(id)))
     .sort(
       ([, a], [, b]) =>
         Number(b.relearning) - Number(a.relearning) ||

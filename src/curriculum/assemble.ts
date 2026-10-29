@@ -2,7 +2,7 @@ import { isCourseNoun, placeArticles } from '../articles/assemble';
 import type { Correction } from '../corrections/types';
 import { contrastItemId, placeContrasts } from '../sounds/assemble';
 import type { SoundContrast } from '../sounds/types';
-import { placeWords } from '../words/assemble';
+import { placeWords, type PlacedTheme } from '../words/assemble';
 import type { WordTheme } from '../words/types';
 import type { StagePlan } from './structure';
 import type { Curriculum, Exercise, LearningItem, Lesson, LessonDraft } from './types';
@@ -74,6 +74,8 @@ export type CurriculumIndex = {
   items: Array<LearningItem>;
   /** The basic-word list in introduction order, course items included (see src/words). */
   words: Array<LearningItem>;
+  /** The same list theme by theme, each in its own order (the Topics tab). */
+  themes: Array<PlacedTheme>;
   /** The sound contrasts for ear training, in introduction order (see src/sounds). */
   sounds: Array<LearningItem>;
   /** One de/het item per singular noun, course nouns first (see src/articles). */
@@ -105,6 +107,7 @@ export function indexCurriculum(
     lessons,
     items,
     words: placed.words,
+    themes: placed.themes,
     sounds,
     articles,
     lesson: (id) => lessonById.get(id),

@@ -16,6 +16,14 @@ function countStrength(items: ReadonlyArray<LearningItem>, progress: LearnerProg
   return counts;
 }
 
+/** One topic's items by strength, and how many of them are due now (the Topics tab). */
+export type TopicSummary = StrengthCount & { due: number };
+
+export function summarizeTopic(items: ReadonlyArray<LearningItem>, progress: LearnerProgress, now: number): TopicSummary {
+  const due = items.filter((item) => (progress.items[item.id]?.dueAt ?? Infinity) <= now).length;
+  return { ...countStrength(items, progress), due };
+}
+
 /** The course's own items: those its lessons teach (not the basic words or sound contrasts beside it). */
 function courseItems(index: CurriculumIndex): Array<LearningItem> {
   return index.lessons.flatMap((lesson) => lesson.items);

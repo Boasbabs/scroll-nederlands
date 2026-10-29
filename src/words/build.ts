@@ -3,7 +3,7 @@ import { stripAccents } from '../engine/answers';
 import { bareWord } from './assemble';
 import type { CourseWord, NewWord, PartOfSpeech } from './types';
 
-type Extra = Partial<Pick<NewWord, 'key' | 'plural' | 'accept' | 'note' | 'example'>>;
+type Extra = Partial<Pick<NewWord, 'key' | 'plural' | 'accept' | 'note' | 'example' | 'near'>>;
 
 /** The permanent key: the word without article, accents or spaces ("het T-shirt" → "t-shirt"). */
 export function keyFor(dutch: string): string {

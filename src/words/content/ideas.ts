@@ -10,6 +10,7 @@ export const ideas: WordTheme = {
       example: { dutch: 'Het probleem is dat mijn fiets kapot is.', english: 'The problem is that my bike is broken.' },
     }),
     noun('de reden', 'the reason', {
+      near: ['de oorzaak'],
       example: { dutch: 'Wat is de reden van uw bezoek?', english: 'What is the reason for your visit?' },
     }),
     noun('het idee', 'the idea', {
@@ -20,6 +21,7 @@ export const ideas: WordTheme = {
       example: { dutch: 'Thee of koffie? De keuze is aan jou.', english: 'Tea or coffee? The choice is yours.' },
     }),
     noun('de kans', 'the chance', {
+      near: ['de mogelijkheid'],
       example: { dutch: 'De kans op regen is vandaag klein.', english: 'The chance of rain is low today.' },
     }),
     noun('de fout', 'the mistake', {
@@ -56,6 +58,7 @@ export const ideas: WordTheme = {
       example: { dutch: 'Regent het? In dat geval blijf ik thuis.', english: "Is it raining? In that case I'll stay at home." },
     }),
     noun('de zaak', 'the business; the matter', {
+      near: ['het geval'],
       example: { dutch: 'Mijn oom heeft een eigen zaak: een bakkerij.', english: 'My uncle has his own business: a bakery.' },
     }),
     noun('het punt', 'the point', {
@@ -97,6 +100,7 @@ export const ideas: WordTheme = {
       example: { dutch: 'De nieuwe keuken is klaar. Wat een mooi resultaat!', english: 'The new kitchen is finished. What a great result!' },
     }),
     noun('het gevolg', 'the consequence', {
+      near: ['het resultaat'],
       example: { dutch: 'Hij reed te snel. Het gevolg: een boete.', english: 'He drove too fast. The consequence: a fine.' },
     }),
     noun('de oorzaak', 'the cause', {
@@ -187,6 +191,7 @@ export const ideas: WordTheme = {
       example: { dutch: 'Iedereen heeft thuis een taak: ik doe de afwas.', english: 'Everyone has a task at home: I do the washing-up.' },
     }),
     noun('de opdracht', 'the assignment', {
+      near: ['de taak'],
       example: { dutch: 'Voor school moet ik een opdracht maken.', english: 'I have to do an assignment for school.' },
     }),
     noun('het gesprek', 'the conversation', {

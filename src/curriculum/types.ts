@@ -65,6 +65,12 @@ export type LearningItemDraft = {
   articleCue?: string;
   /** A sentence using it word for word, for a gapped drill where no lesson example has it (tier-2 basic words). */
   example?: DutchEnglish;
+  /**
+   * Words so close in meaning that one would be a second right answer
+   * among the other's wrong options (by their Dutch, as written). Unlike
+   * `accept`, they do not count as answers.
+   */
+  near?: Array<string>;
 };
 
 /** A learning item placed in the curriculum. */

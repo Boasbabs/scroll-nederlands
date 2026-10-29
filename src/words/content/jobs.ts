@@ -52,6 +52,7 @@ export const jobs: WordTheme = {
       example: { dutch: 'De koerier bezorgt het pakket tussen tien en twaalf.', english: 'The courier delivers the parcel between ten and twelve.' },
     }),
     noun('de vrachtwagenchauffeur', 'the lorry driver', {
+      near: ['de chauffeur'],
       example: { dutch: 'Mijn oom is vrachtwagenchauffeur en rijdt vaak naar Italië.', english: 'My uncle is a lorry driver and often drives to Italy.' },
     }),
     noun('de beveiliger', 'the security guard', {
@@ -131,6 +132,7 @@ export const jobs: WordTheme = {
       example: { dutch: 'Mijn werkgever betaalt mijn reiskosten.', english: 'My employer pays my travel costs.' },
     }),
     noun("de zzp'er", 'the freelancer', {
+      near: ['de ondernemer'],
       key: 'zzper',
       note: 'said zet-zet-PAY-er; zelfstandige zonder personeel: self-employed, no staff',
       example: { dutch: "Mijn zus is zzp'er en werkt voor zichzelf.", english: 'My sister is a freelancer and works for herself.' },

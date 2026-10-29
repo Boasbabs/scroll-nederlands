@@ -161,6 +161,31 @@ describe('a word session', () => {
     }
   });
 
+  it('keeps near-synonyms out of each other’s wrong options without accepting them', () => {
+    const near = makeCourse({}, [
+      ...testWordThemes,
+      {
+        id: 'linking',
+        title: 'Linking words',
+        tier: 2,
+        words: [
+          { key: 'best', dutch: 'best', english: 'quite, pretty', pos: 'other', example: { dutch: 'Het is best koud vandaag.', english: 'It is pretty cold today.' } },
+          { key: 'nogal', dutch: 'nogal', english: 'rather', pos: 'other', near: ['best'], example: { dutch: 'De huur is nogal hoog.', english: 'The rent is rather high.' } },
+          { key: 'zelfs', dutch: 'zelfs', english: 'even', pos: 'other', example: { dutch: 'Zelfs mijn oma heeft een telefoon.', english: 'Even my gran has a phone.' } },
+          { key: 'bijna', dutch: 'bijna', english: 'almost', pos: 'other', example: { dutch: 'Het is bijna acht uur.', english: 'It is almost eight o’clock.' } },
+        ],
+      },
+    ]);
+    for (const [id, own] of [['w-linking/best', 'quite, pretty'], ['w-linking/nogal', 'rather']] as const) {
+      for (const seed of ['a', 'b', 'c']) {
+        const recognition = exerciseSteps(planWords(near, [id], 'focused', seed))[0]!.exercise;
+        expect(recognition.kind === 'choice' && [...recognition.options].sort()).toEqual([own, 'almost', 'even'].sort());
+      }
+    }
+    const gap = generateExercise(near, near.item('w-linking/nogal')!, 'independentRecall', 0, seededRandom('x'));
+    expect(gap.kind === 'cloze' && checkTyped('best', gap.answers).correct).toBe(false);
+  });
+
   it('starts each word on its schedule and counts the answers for the day', () => {
     const plan = planWords(index, ['w-kitchen/vork', 'w-kitchen/mes'], 'focused', 'seed');
     const results = answers(plan).map((result) => (result.itemIds[0] === 'w-kitchen/mes' && result.stage === 'recognition' ? { ...result, correct: false } : result));

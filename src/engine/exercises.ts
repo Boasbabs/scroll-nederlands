@@ -64,9 +64,10 @@ function distractors(
   usable: (other: LearningItem) => boolean = () => true,
 ): Array<LearningItem> {
   const taken = new Set([normalizeAnswer(item.dutch), normalizeAnswer(item.english)]);
-  // A synonym one item accepts for the other ("opeens", "plotseling") would be a second right answer.
-  const forms = new Set([item.dutch, ...(item.accept ?? [])].map(normalizeAnswer));
-  const synonym = (other: LearningItem) => [other.dutch, ...(other.accept ?? [])].some((form) => forms.has(normalizeAnswer(form)));
+  // A synonym one item accepts for the other ("opeens", "plotseling"), or a near one it names
+  // ("gevolg", "resultaat"), would be a second right answer.
+  const forms = new Set([item.dutch, ...(item.accept ?? []), ...(item.near ?? [])].map(normalizeAnswer));
+  const synonym = (other: LearningItem) => [other.dutch, ...(other.accept ?? []), ...(other.near ?? [])].some((form) => forms.has(normalizeAnswer(form)));
   const picked: Array<LearningItem> = [];
   const pools = [
     index.items.filter((other) => other.moduleId === item.moduleId && other.kind === item.kind),

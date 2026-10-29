@@ -87,10 +87,12 @@ export const linking: WordTheme = {
       example: { dutch: 'Ik drink alleen thee, geen koffie.', english: 'I only drink tea, not coffee.' },
     }),
     other('pas', 'only, not until', {
+      near: ['alleen'],
       note: 'pas om acht uur: not until eight; not "pass"',
       example: { dutch: 'Op zondag gaat de winkel pas om twaalf uur open.', english: 'On Sundays the shop doesn’t open until twelve.' },
     }),
     other('slechts', 'only (formal)', {
+      near: ['alleen', 'pas'],
       note: 'slecht, with no s, means bad',
       example: { dutch: 'De cursus kost slechts tien euro per maand.', english: 'The course costs only ten euros a month.' },
     }),
@@ -109,6 +111,7 @@ export const linking: WordTheme = {
       example: { dutch: 'Dit is precies wat ik zoek.', english: 'This is exactly what I’m looking for.' },
     }),
     other('nogal', 'fairly', {
+      near: ['best'],
       note: 'often a bit critical: het is nogal duur',
       example: { dutch: 'De huur in Amsterdam is nogal hoog.', english: 'The rent in Amsterdam is fairly high.' },
     }),
@@ -117,6 +120,7 @@ export const linking: WordTheme = {
       example: { dutch: 'Nederlands is best moeilijk, maar ook leuk.', english: 'Dutch is quite difficult, but fun too.' },
     }),
     other('zowel', 'both (… and)', {
+      near: ['beide'],
       note: 'zowel … als: both … and',
       example: { dutch: 'Ik spreek zowel Engels als Nederlands.', english: 'I speak both English and Dutch.' },
     }),

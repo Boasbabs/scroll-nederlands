@@ -97,6 +97,7 @@ export const qualities: WordTheme = {
       example: { dutch: 'Wie belt er? Het nummer is onbekend.', english: 'Who’s calling? The number is unknown.' },
     }),
     adj('beroemd', 'famous', {
+      near: ['bekend'],
       example: { dutch: 'Van Gogh is over de hele wereld beroemd.', english: 'Van Gogh is famous all over the world.' },
     }),
     adj('populair', 'popular', {
@@ -107,6 +108,7 @@ export const qualities: WordTheme = {
       example: { dutch: 'Mijn dochter wil een eigen kamer.', english: 'My daughter wants her own room.' },
     }),
     adj('verschillend', 'different', {
+      near: ['ander'],
       note: 'verschillende (before a noun): several, various',
       example: { dutch: 'Mijn zus en ik zijn heel verschillend.', english: 'My sister and I are very different.' },
     }),
@@ -134,6 +136,7 @@ export const qualities: WordTheme = {
       example: { dutch: 'Volgend weekend ga ik naar mijn ouders.', english: 'Next weekend I’m going to my parents’.' },
     }),
     adj('vorig', 'last, previous', {
+      near: ['laatst'],
       note: 'vorig jaar, but vorige week',
       example: { dutch: 'Vorig weekend waren we in Parijs.', english: 'Last weekend we were in Paris.' },
     }),
@@ -176,6 +179,7 @@ export const qualities: WordTheme = {
       example: { dutch: 'Op zondag ben ik lekker lui.', english: 'On Sundays I’m nice and lazy.' },
     }),
     adj('handig', 'handy, useful', {
+      near: ['praktisch'],
       note: 'also: good with your hands',
       example: { dutch: 'Het is handig om een paraplu mee te nemen.', english: 'It’s handy to take an umbrella with you.' },
     }),

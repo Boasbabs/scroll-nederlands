@@ -24,6 +24,8 @@ export type NewWord = {
    * way in for words a picture cannot show. Every tier-2 word has one.
    */
   example?: { dutch: string; english: string };
+  /** Near-synonyms (their Dutch) never shown as this word's wrong options, nor it as theirs. */
+  near?: Array<string>;
 };
 
 /** A basic word the course already teaches, found by its Dutch text ("de keuken"). */

@@ -69,6 +69,7 @@ export function placeWords(themes: ReadonlyArray<WordTheme>, courseItems: Readon
         ...(entry.accept ? { accept: entry.accept } : {}),
         ...(entry.note ? { note: entry.note } : {}),
         ...(entry.example ? { example: entry.example } : {}),
+        ...(entry.near ? { near: entry.near } : {}),
         id: `${moduleId}/${entry.key}`,
         lessonId: moduleId,
         moduleId,

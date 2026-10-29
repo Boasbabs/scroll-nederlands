@@ -63,6 +63,11 @@ describe('the de/het items', () => {
       'w-ideas/idee',
       'w-ideas/risico',
       'w-feelings/heimwee',
+      'sc-geld-aanmaning/automatische-incasso',
+      'sc-zorg-kosten/eigen-risico',
+      'sc-werk-rooster/rooster',
+      'sc-boodschappen-vinden/schap',
+      'sc-boodschappen-vinden/zuivel',
     ]);
   });
 

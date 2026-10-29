@@ -482,7 +482,7 @@ export const zorg: Pack = {
         }),
         phrase('hoeveel-moet-ik-zelf-betalen', 'Hoeveel moet ik zelf betalen?', 'How much do I have to pay myself?', { note: 'zelf: you, not the insurer' }),
         noun('de zorgverzekering', 'the health insurance', { note: 'everyone who lives or works here must have one' }),
-        noun('het eigen risico', 'the annual excess', { note: 'you pay the first part of your care each year; a GP visit is free' }),
+        noun('het eigen risico', 'the annual excess', { accept: ['de eigen risico'], note: 'you pay the first part of your care each year; a GP visit is free' }),
         noun('de premie', 'the premium', { note: 'paid to your insurer every month' }),
         word('vergoeden', 'to cover, to reimburse', { note: 'de verzekering vergoedt het: the insurance pays for it' }),
         noun('de fysiotherapeut', 'the physiotherapist', { note: 'often called de fysio' }),

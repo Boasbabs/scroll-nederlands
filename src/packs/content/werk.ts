@@ -357,7 +357,7 @@ export const werk: Pack = {
         phrase('van-dienst-ruilen', 'Kunnen we van dienst ruilen?', 'Can we swap shifts?', {
           accept: ['Kunnen wij van dienst ruilen?', 'Kunnen we diensten ruilen?', 'Wil je met mij van dienst ruilen?', 'Wil jij met mij van dienst ruilen?'],
         }),
-        noun('het rooster', 'the rota, the work schedule', { note: 'at school: het lesrooster' }),
+        noun('het rooster', 'the rota, the work schedule', { accept: ['de rooster'], note: 'at school: het lesrooster; de rooster is right too' }),
         noun('de dienst', 'the shift', { note: 'de vroege dienst, de late dienst, de nachtdienst' }),
         noun('de leidinggevende', 'the manager (formal)', { note: 'in speech often de manager or de baas' }),
         word('overwerken', 'to work overtime', { note: 'ik werk over, ik heb overgewerkt' }),

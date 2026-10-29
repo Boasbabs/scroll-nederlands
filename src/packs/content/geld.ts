@@ -337,7 +337,7 @@ export const geld: Pack = {
           note: 'in termijnen: in parts, for example each month',
         }),
         noun('de factuur', 'the invoice', { note: 'from a company; in a café you ask for de rekening' }),
-        noun('de automatische incasso', 'the direct debit', { accept: ['de incasso', 'incasso'], note: 'you allow a company to take the money from your account' }),
+        noun('de automatische incasso', 'the direct debit', { accept: ['de incasso', 'incasso', 'het automatische incasso', 'het incasso'], note: 'you allow a company to take the money from your account' }),
         noun('de aanmaning', 'the payment reminder', { note: 'it sets a deadline; after it, extra costs follow' }),
         noun('de betalingsregeling', 'the payment plan'),
         noun('de schuld', 'the debt', { note: 'also fault: het is mijn schuld = it is my fault' }),

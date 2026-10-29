@@ -6,7 +6,7 @@ export const lessons: Array<LessonDraft> = [
     kind: 'core',
     title: 'Instructions',
     objective: 'Understand and give simple instructions with the command form.',
-    situation: 'At the gemeente (town hall) a screen tells you what to do, and the form you get has instructions on it.',
+    situation: 'At the gemeente (town hall) a screen tells you what to do, and the form you get has instructions on it. The next week you go there with a friend and tell her to fill in the form.',
     targetPhrase: 'Vul het formulier in.',
     meaningEn: 'Fill in the form.',
     items: [

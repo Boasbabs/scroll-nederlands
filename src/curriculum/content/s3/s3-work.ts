@@ -6,7 +6,7 @@ export const lessons: Array<LessonDraft> = [
     kind: 'core',
     title: 'Did you have a nice weekend?',
     objective: "Ask about a colleague's weekend and answer briefly with a detail.",
-    situation: 'Monday morning at the coffee machine. A colleague asks about your weekend.',
+    situation: 'Monday morning at the coffee machine. A colleague asks about your weekend. When Daan comes in, you ask him whether he had a nice weekend.',
     targetPhrase: 'Heb je een leuk weekend gehad?',
     meaningEn: 'Did you have a nice weekend?',
     items: [
@@ -566,7 +566,7 @@ export const lessons: Array<LessonDraft> = [
     kind: 'core',
     title: 'Drinks with colleagues',
     objective: 'Chat with colleagues at a borrel about holiday plans.',
-    situation: 'It is Friday afternoon before the summer holidays, and your team is having a borrel (after-work drinks) in the office canteen.',
+    situation: 'It is Friday afternoon before the summer holidays, and your team is having a borrel (after-work drinks) in the office canteen. Later you ask another colleague what she is going to do this holiday.',
     targetPhrase: 'Wat ga je deze vakantie doen?',
     meaningEn: 'What are you going to do this holiday?',
     items: [

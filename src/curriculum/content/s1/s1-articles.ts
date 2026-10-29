@@ -6,7 +6,7 @@ export const lessons: Array<LessonDraft> = [
     kind: 'core',
     title: 'De or het?',
     objective: 'Use de and het with common nouns, and know that -je words are always het.',
-    situation: 'A Dutch friend kindly corrects you: it is het huis, not de huis. You want to get "the" right.',
+    situation: 'A Dutch friend kindly corrects you: it is het huis, not de huis. You want to get "the" right. To practise, you name the people in a family photo: the man, the woman and the child.',
     targetPhrase: 'De man, de vrouw en het kind.',
     meaningEn: 'The man, the woman and the child.',
     items: [

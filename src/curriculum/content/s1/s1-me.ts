@@ -474,7 +474,7 @@ export const lessons: Array<LessonDraft> = [
     kind: 'core',
     title: 'Address and phone number',
     objective: 'Ask for and give your address, phone number and date of birth.',
-    situation: 'A new friend wants to send you a card and asks for your details.',
+    situation: 'A new friend wants to send you a card and asks for your details. You want to send her one too, so you ask for her address.',
     targetPhrase: 'Wat is je adres?',
     meaningEn: "What's your address?",
     items: [

@@ -161,7 +161,7 @@ export const lessons: Array<LessonDraft> = [
     kind: 'core',
     title: "Yes, or sorry, I can't",
     objective: 'Accept an invitation, or decline it politely with a short reason.',
-    situation: 'A colleague invites you to her party. Sometimes you are free, sometimes you are not.',
+    situation: 'A colleague invites you to her party. Sometimes you are free, sometimes you are not. This time you have to work.',
     targetPhrase: 'Helaas kan ik niet, ik moet werken.',
     meaningEn: "Unfortunately I can't, I have to work.",
     items: [

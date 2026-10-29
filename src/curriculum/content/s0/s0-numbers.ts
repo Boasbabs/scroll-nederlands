@@ -109,7 +109,7 @@ export const lessons: Array<LessonDraft> = [
     kind: 'core',
     title: 'Numbers 11 to 20',
     objective: 'Understand and say the numbers 11 to 20.',
-    situation: 'At a market stall you ask what something costs and the seller tells you the price.',
+    situation: 'At a market stall you ask what something costs and the seller tells you the price. Later a friend asks what it costs, and you tell her: €15.',
     targetPhrase: 'Het kost vijftien euro.',
     meaningEn: 'It costs fifteen euros.',
     items: [
@@ -326,7 +326,7 @@ export const lessons: Array<LessonDraft> = [
     kind: 'core',
     title: 'Days of the week',
     objective: 'Name the days of the week and use vandaag, morgen and gisteren.',
-    situation: 'You are arranging when to meet a friend and need to name the day.',
+    situation: 'You are arranging when to meet a friend and need to name the day. She has lost track of the week and asks what day it is today: it is Monday.',
     targetPhrase: 'Het is vandaag maandag.',
     meaningEn: 'Today is Monday.',
     items: [
@@ -569,7 +569,7 @@ export const lessons: Array<LessonDraft> = [
     kind: 'core',
     title: "O'clock and half past",
     objective: 'Tell the time on the hour and the half hour, knowing that half vier means 3:30.',
-    situation: 'A friend says the film starts at "half acht" and you need to know when to be there.',
+    situation: 'A friend says the film starts at "half acht" and you need to know when to be there. That afternoon a colleague asks you the time: it is 3:30.',
     targetPhrase: 'Het is half vier.',
     meaningEn: "It's half past three (3:30).",
     items: [
@@ -793,7 +793,7 @@ export const lessons: Array<LessonDraft> = [
     kind: 'practice',
     title: 'Numbers in real life',
     objective: 'Understand and give phone numbers, house numbers, dates and times in everyday situations.',
-    situation: 'You phone a bike shop to book a repair. Bart asks for your details and gives you a day and time.',
+    situation: 'You phone a bike shop to book a repair. Bart asks for your details and gives you a day and time. Afterwards your partner asks when the repair is: Thursday at 10:15.',
     targetPhrase: 'Donderdag om kwart over tien.',
     meaningEn: 'Thursday at quarter past ten.',
     items: [

@@ -113,7 +113,7 @@ export const lessons: Array<LessonDraft> = [
     kind: 'core',
     title: 'There is, there are',
     objective: 'Say what a home or street has with er is and er zijn.',
-    situation: 'You are viewing a flat to rent and the landlord shows you around.',
+    situation: 'You are viewing a flat to rent and the landlord shows you around. Afterwards a friend asks about the flat, and you tell her there are two bedrooms.',
     targetPhrase: 'Er zijn twee slaapkamers.',
     meaningEn: 'There are two bedrooms.',
     items: [

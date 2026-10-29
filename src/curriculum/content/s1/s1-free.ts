@@ -207,7 +207,7 @@ export const lessons: Array<LessonDraft> = [
     kind: 'core',
     title: 'In your free time',
     objective: 'Ask what someone does in their free time and say how often you do something.',
-    situation: 'During a coffee break a colleague wants to get to know you and asks about your free time.',
+    situation: 'During a coffee break a colleague wants to get to know you and asks about your free time. Later you ask a new colleague what she does in her free time.',
     targetPhrase: 'Wat doe je in je vrije tijd?',
     meaningEn: 'What do you do in your free time?',
     items: [

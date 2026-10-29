@@ -177,7 +177,7 @@ export const lessons: Array<LessonDraft> = [
     kind: 'core',
     title: 'Have you ever …?',
     objective: 'Ask and answer whether someone has ever done or tried something.',
-    situation: 'Over lunch, a colleague asks which Dutch places you have visited and which Dutch food you have tried.',
+    situation: 'Over lunch, a colleague asks which Dutch places you have visited and which Dutch food you have tried. Then you ask her whether she has ever been to Maastricht.',
     targetPhrase: 'Ben je ooit in Maastricht geweest?',
     meaningEn: 'Have you ever been to Maastricht?',
     items: [

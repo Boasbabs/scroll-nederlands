@@ -6,7 +6,7 @@ export const lessons: Array<LessonDraft> = [
     kind: 'core',
     title: 'The Dutch alphabet',
     objective: 'Ask how something is spelled and follow a name spelled out with Dutch letter names.',
-    situation: 'A new colleague in Utrecht is adding you to the team list. She hears your name and asks how to spell it.',
+    situation: 'A new colleague in Utrecht is adding you to the team list. She hears your name and asks how to spell it. Then she tells you her own surname, and you ask her how to spell it.',
     targetPhrase: 'Hoe schrijf je dat?',
     meaningEn: 'How do you spell that?',
     items: [

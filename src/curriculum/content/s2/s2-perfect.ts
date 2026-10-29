@@ -800,7 +800,7 @@ export const lessons: Array<LessonDraft> = [
     kind: 'practice',
     title: 'What did you do this weekend?',
     objective: 'Ask and tell what you did at the weekend, mixing hebben and zijn.',
-    situation: 'Monday morning at the coffee machine, your colleague Fatima asks about your weekend.',
+    situation: 'Monday morning at the coffee machine, your colleague Fatima asks about your weekend. Later you ask another colleague what she did this weekend.',
     targetPhrase: 'Wat heb je dit weekend gedaan?',
     meaningEn: 'What did you do this weekend?',
     items: [

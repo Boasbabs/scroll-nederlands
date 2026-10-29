@@ -3,6 +3,8 @@ import { course, curriculum } from '../../src/curriculum';
 import { requiredObjectives } from '../../src/curriculum/objectives';
 import { EXERCISE_STAGES } from '../../src/curriculum/types';
 import { curriculumStats, validateCurriculum } from '../../src/curriculum/validate';
+import { generateExercise, seededRandom } from '../../src/engine/exercises';
+import { gradeAnswer } from '../../src/ui/player/grade';
 import { SOUNDS_STAGE } from '../../src/sounds/assemble';
 import { WORDS_STAGE } from '../../src/words/assemble';
 import { makeCourse } from '../fixtures/curriculum';
@@ -72,6 +74,24 @@ describe('the bundled curriculum', () => {
       if ([WORDS_STAGE, SOUNDS_STAGE, ARTICLES_STAGE].includes(item.stageId)) expect(course.lesson(item.lessonId)).toBeUndefined();
       else expect(course.lesson(item.lessonId)?.items).toContain(item);
     }
+  });
+});
+
+describe('typed answers in the bundled course', () => {
+  it('find the word a text spells, a noun with or without its article', () => {
+    expect(course.taught('De boot!')).toEqual({ dutch: 'de boot', english: 'the boat' });
+    expect(course.taught('tekening')).toMatchObject({ dutch: 'tekening' });
+    expect(course.taught('de booom')).toBeUndefined();
+    // A form of the item being practised is not another word.
+    expect(course.taught('de boot', ['w-transport/boot'])).toBeUndefined();
+  });
+
+  it('take a slip that spells another taught word as that word, not as a typo', () => {
+    // Dictation: "de boom" heard, "de boot" typed.
+    const boom = generateExercise(course, course.item('w-nature/boom')!, 'transfer', 0, seededRandom('boom'));
+    const taught = (text: string) => course.taught(text, ['w-nature/boom']);
+    expect(gradeAnswer(boom, { kind: 'text', text: 'de boot' }, taught)).toMatchObject({ verdict: 'incorrect', note: '"de boot" means "the boat".' });
+    expect(gradeAnswer(boom, { kind: 'text', text: 'de booom' }, taught)).toMatchObject({ verdict: 'typo', correct: true });
   });
 });
 

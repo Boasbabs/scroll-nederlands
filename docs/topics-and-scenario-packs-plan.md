@@ -811,7 +811,7 @@ Four read-only reviews, written to the same editor's brief, covered all 375 word
 - **Glosses:** nogal, best, pas, verder, bekend, spannend, verbaasd, verschijnen, stellen, schreeuwen, noemen, lukken and regelen are sharper; beslissen and besluiten, and de club and de vereniging, accept each other.
 - **heimwee** takes de or het (Woordenlijst: m/v/o), so it has no de/het drill: it is taught as het heimwee, with de heimwee accepted.
 
-Left for the owner: the answer checker takes a one-letter slip as a typo even when it makes another word (slecht for slechts, trouwen for trouwens). Het aanrecht, a tier-1 noun the Woordenlijst lists with both articles, is covered in the next section.
+Left for the owner, and since settled: the answer checker took a one-letter slip as a typo even when it made another word (slecht for slechts, trouwen for trouwens), and het aanrecht, a tier-1 noun the Woordenlijst lists with both articles, had a de/het drill. Both are covered in the next two sections.
 
 ### Nouns that take de or het (2026-10-29)
 
@@ -821,6 +821,14 @@ Every noun with a de/het drill (820: 131 in the course, 488 in the word track, 2
 - **The nouns:** het afval and het gft-afval (course); het aanrecht, het gordijn, de deken, het snoep, de knoflook and het T-shirt (tier 1); het idee, het risico and het heimwee, which is taught with het again (tier 2); het rooster, het schap and de zuivel, and the phrases de automatische incasso and het eigen risico, whose head nouns are m/o (packs). The two phrases have no note, since banks say de automatische incasso and insurers het eigen risico.
 - **Two senses, two articles:** de stof was glossed "the fabric; the dust", but dust is het stof, so it is now "the fabric" with the note "dust is het stof". Its drill and those of het voetbal (de voetbal is the ball), het punt (de punt is the tip) and de pleister (het pleister is wall plaster) say which sense is meant (`articleCue`, `docs/ux-research.md` §20), and word-track nouns can now carry a cue. Het bos, het blik and de bal also have a rarer sense with the other article, but their glosses make the sense plain, so they have no cue.
 - **Tests:** 129 course nouns and 480 word-track nouns (348 in tier 1, 132 in tier 2) in the de/het drills; `tests/curriculum/articles.test.ts` lists the nouns that take either article and those with a cue.
+
+### Slips that spell another word (2026-10-29)
+
+Agreed with the owner: a typed slip that spells another word the app teaches is a mistake, not a typo. The checker took one slip as a typo in any answer of six letters or more, the article's letters included, so "de boot" passed for de boom and "het oor" for het oog. Across the taught words there were 250 such pairs, 166 of them nouns typed with their article.
+
+- **The rule:** `checkTyped` is told which word a text spells (`course.taught`: every item's Dutch and accepted forms, a noun with or without its article). A slip that spells one is incorrect, and the retry sheet names it ("de boot" means "the boat"), as it names a swapped determiner. A form of the item being practised is never another word, so its variants still pass as typos. An answer that differs only in accents still counts (een for één).
+- **Two answers accepted** that had passed only as typos and that the rule would have turned down: "Hoe gaat het met u?" for "How are you?", and "En jij? Wat doe je voor werk?" in s1-work-what-job. Every typed exercise, authored or generated, was run against every taught form: 891 verdicts move from typo to wrong, and these two were the only right answers among them.
+- **Tests:** `tests/engine/answers.test.ts`, `tests/ui/player.test.tsx` (the retry sheet names the word) and `tests/curriculum/curriculum.test.ts` for the bundled course (de boot for de boom at dictation).
 
 ## Evidence behind the choices
 

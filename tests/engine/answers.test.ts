@@ -55,6 +55,26 @@ describe('checkTyped', () => {
     expect(checkTyped('Ik heb een kind.', ['Ik heb één kind.'])).toMatchObject({ verdict: 'accent', correct: true });
   });
 
+  it('counts a slip that spells another word the app teaches as that word, and names it', () => {
+    const words = new Map([
+      ['de boot', { dutch: 'de boot', english: 'the boat' }],
+      ['slecht', { dutch: 'slecht', english: 'bad' }],
+      ['hoe gaat het met je', { dutch: 'Hoe gaat het met je?', english: 'How are you?' }],
+    ]);
+    const taught = (text: string) => words.get(normalizeAnswer(text));
+    expect(checkTyped('De boot', ['de boom'], false, taught)).toMatchObject({
+      verdict: 'incorrect',
+      correct: false,
+      expected: 'de boom',
+      note: '"de boot" means "the boat".',
+    });
+    expect(checkTyped('slecht', ['slechts'], false, taught)).toMatchObject({ verdict: 'incorrect', note: '"slecht" means "bad".' });
+    expect(checkTyped('Hoe gaat het met je?', ['Hoe gaat het met u?'], false, taught)).toMatchObject({ verdict: 'incorrect', note: '"Hoe gaat het met je?" means "How are you?"' });
+    // A slip that spells no word is still a typo, and another word the answers accept is right.
+    expect(checkTyped('de booom', ['de boom'], false, taught)).toMatchObject({ verdict: 'typo', correct: true });
+    expect(checkTyped('de boot', ['de boom', 'de boot'], false, taught)).toMatchObject({ verdict: 'correct' });
+  });
+
   it('marks a wrong or empty answer incorrect and returns the closest model answer', () => {
     expect(checkTyped('Ik wil koffie', accepted)).toMatchObject({ verdict: 'incorrect', expected: 'Ik wil graag betalen.' });
     expect(checkTyped('   ', accepted).correct).toBe(false);

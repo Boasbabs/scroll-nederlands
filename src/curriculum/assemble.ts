@@ -1,5 +1,6 @@
-import { isLessonNoun, placeArticles } from '../articles/assemble';
+import { articleOf, isLessonNoun, placeArticles, withoutArticle } from '../articles/assemble';
 import type { Correction } from '../corrections/types';
+import { normalizeAnswer, type TaughtWord } from '../engine/answers';
 import { placePacks, withMembers, type PlacedPack } from '../packs/assemble';
 import type { Pack } from '../packs/types';
 import { contrastItemId, placeContrasts } from '../sounds/assemble';
@@ -91,6 +92,14 @@ export type CurriculumIndex = {
   contrast: (itemId: string) => SoundContrast | undefined;
   /** The learner's correction behind a correction item (added at runtime, see withCorrections). */
   correction: (itemId: string) => Correction | undefined;
+  /**
+   * The word or phrase a text spells, case and punctuation aside, if the
+   * course, the word track or a pack teaches it: an item's Dutch or an
+   * accepted form, a noun with or without its article. A typed slip that
+   * spells one is that word, not a typo (slecht for slechts). A form of the
+   * items `besides` (those being practised) is not another word.
+   */
+  taught: (text: string, besides?: ReadonlyArray<string>) => TaughtWord | undefined;
 };
 
 export function indexCurriculum(
@@ -112,6 +121,17 @@ export function indexCurriculum(
   const packs = withMembers(placedPacks, (id) => itemById.get(id));
   const lessonById = new Map([...lessons, ...packs.flatMap((pack) => pack.scenes)].map((lesson) => [lesson.id, lesson]));
   const contrastById = new Map(contrasts.map((contrast) => [contrastItemId(contrast), contrast]));
+  const taughtByText = new Map<string, { word: TaughtWord; itemIds: Array<string> }>();
+  for (const item of [...courseItems, ...placed.items, ...packItems]) {
+    for (const form of [item.dutch, ...(item.accept ?? [])]) {
+      for (const dutch of articleOf(form) ? [form, withoutArticle(form)] : [form]) {
+        const text = normalizeAnswer(dutch);
+        const known = taughtByText.get(text);
+        if (known) known.itemIds.push(item.id);
+        else if (text) taughtByText.set(text, { word: { dutch, english: item.english }, itemIds: [item.id] });
+      }
+    }
+  }
   return {
     curriculum: source,
     lessons,
@@ -125,5 +145,9 @@ export function indexCurriculum(
     item: (id) => itemById.get(id),
     contrast: (itemId) => contrastById.get(itemId),
     correction: () => undefined,
+    taught: (text, besides = []) => {
+      const known = taughtByText.get(normalizeAnswer(text));
+      return known && !known.itemIds.some((id) => besides.includes(id)) ? known.word : undefined;
+    },
   };
 }

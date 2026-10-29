@@ -4,10 +4,14 @@
  * correct: matches an accepted answer.
  * accent: right apart from accents (één → een); counts as correct.
  * typo: one slip in a longer answer; counts as correct, the spelling is shown.
- *   A different determiner (de for het, een for geen) is never a typo.
+ *   A different determiner (de for het, een for geen) is never a typo, nor is
+ *   a slip that spells another word the app teaches (slecht for slechts).
  * incorrect: anything else.
  */
 export type Verdict = 'correct' | 'accent' | 'typo' | 'incorrect';
+
+/** A word or phrase the app teaches, as the answer check names it. */
+export type TaughtWord = { dutch: string; english: string };
 
 export type AnswerCheck = {
   verdict: Verdict;
@@ -79,8 +83,15 @@ function swappedDeterminer(expected: string, given: string): string | undefined 
 /**
  * Checks a typed answer against the accepted answers (the first is the model
  * answer). With `strict`, spelling is the point and typos are not tolerated.
+ * `taught` finds the word the app teaches that a text spells, if any: a slip
+ * that spells one is that other word, so it is a mistake.
  */
-export function checkTyped(given: string, accepted: ReadonlyArray<string>, strict = false): AnswerCheck {
+export function checkTyped(
+  given: string,
+  accepted: ReadonlyArray<string>,
+  strict = false,
+  taught: (text: string) => TaughtWord | undefined = () => undefined,
+): AnswerCheck {
   const model = accepted[0] ?? '';
   const answer = normalizeAnswer(given);
   if (!answer) return { verdict: 'incorrect', correct: false, expected: model };
@@ -106,6 +117,10 @@ export function checkTyped(given: string, accepted: ReadonlyArray<string>, stric
   if (!strict && nearestDistance <= typoAllowance(normalizeAnswer(nearest))) {
     const swapped = swappedDeterminer(nearest, answer);
     if (swapped) return { verdict: 'incorrect', correct: false, expected: nearest, note: `Check the word "${swapped}".` };
+    const other = taught(answer);
+    // "How are you?" ends the sentence itself.
+    const stop = /[.!?]$/.test(other?.english ?? '') ? '' : '.';
+    if (other) return { verdict: 'incorrect', correct: false, expected: nearest, note: `"${other.dutch}" means "${other.english}"${stop}` };
     return { verdict: 'typo', correct: true, expected: nearest, note: `Nearly perfect. It is spelled: ${nearest}` };
   }
   return { verdict: 'incorrect', correct: false, expected: closestByWords(answer, accepted) };

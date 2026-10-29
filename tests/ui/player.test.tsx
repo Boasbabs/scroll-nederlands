@@ -111,6 +111,33 @@ describe('lesson player', () => {
     expect(screen.getByRole('button', { name: 'Try again' })).toBeInTheDocument();
   });
 
+  it('treats a slip that spells another taught word as a mistake and names that word', async () => {
+    const user = userEvent.setup();
+    const exercise: Exercise = {
+      id: 'type',
+      stage: 'independentRecall',
+      kind: 'type',
+      prompt: 'Say: the tree',
+      answers: ['de boom'],
+      explanation: 'de boom = the tree.',
+    };
+    const nature = {
+      id: 'nature',
+      title: 'Nature',
+      words: [
+        { key: 'boom', dutch: 'de boom', english: 'the tree', pos: 'noun' as const },
+        { key: 'boot', dutch: 'de boot', english: 'the boat', pos: 'noun' as const },
+      ],
+    };
+    const setup = setupLearning(makeCourse({ 'x0-a-hello': { exercises: [exercise] } }, [nature]));
+    await startLesson(setup);
+    await user.click(screen.getByRole('button', { name: 'Continue' }));
+    await user.type(screen.getByLabelText('Your answer in Dutch'), 'de boot');
+    await user.click(screen.getByRole('button', { name: 'Check' }));
+    expect(screen.getByText('"de boot" means "the boat".')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Try again' })).toBeInTheDocument();
+  });
+
   it('marks only the words that differ from the option picked', async () => {
     const user = userEvent.setup();
     const exercises = stageExercises('Hallo daar', 'Hello there').map((exercise) =>

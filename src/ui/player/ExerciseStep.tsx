@@ -58,7 +58,8 @@ export function ExerciseStep({ planned, review, recall, onGraded, onNext, onCant
 
   function submit() {
     if (phase !== 'answering' || !isAnswered(answer)) return;
-    const result = gradeAnswer(exercise, answer);
+    // A slip into another word the app teaches is a mistake; a form of the word practised here is not another word.
+    const result = gradeAnswer(exercise, answer, (text) => course.taught(text, planned.itemIds));
     setCheck(result);
     if (exercise.kind === 'write') {
       setPhase('rate');

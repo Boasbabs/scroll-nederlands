@@ -1,6 +1,6 @@
 // Turning what the learner entered into a verdict, using the engine's checks.
 import type { Exercise } from '../../curriculum/types';
-import { checkChoice, checkOrder, checkTyped, checkWriting, type AnswerCheck } from '../../engine/answers';
+import { checkChoice, checkOrder, checkTyped, checkWriting, type AnswerCheck, type TaughtWord } from '../../engine/answers';
 
 export type Answer =
   | { kind: 'choice'; option: string }
@@ -24,7 +24,8 @@ export function isAnswered(answer: Answer | undefined): answer is Answer {
   return true;
 }
 
-export function gradeAnswer(exercise: Exercise, answer: Answer): AnswerCheck {
+/** `taught` finds the word the app teaches that a typed answer spells (the course index's), so a slip into it is a mistake. */
+export function gradeAnswer(exercise: Exercise, answer: Answer, taught?: (text: string) => TaughtWord | undefined): AnswerCheck {
   if (answer.kind === 'self') return { verdict: answer.yes ? 'correct' : 'incorrect', correct: answer.yes, expected: '' };
   if (answer.kind === 'match') {
     const correct = answer.missedItemIds.length === 0;
@@ -35,7 +36,7 @@ export function gradeAnswer(exercise: Exercise, answer: Answer): AnswerCheck {
       return checkChoice(answer.kind === 'choice' ? answer.option : '', exercise.answer);
     case 'cloze':
     case 'type':
-      return checkTyped(answer.kind === 'text' ? answer.text : '', exercise.answers, exercise.strict);
+      return checkTyped(answer.kind === 'text' ? answer.text : '', exercise.answers, exercise.strict, taught);
     case 'order':
       return checkOrder(answer.kind === 'tiles' ? answer.words : [], exercise.words, exercise.alternatives);
     case 'write':

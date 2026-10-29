@@ -34,7 +34,7 @@ Phase 5 (saving words from X and LinkedIn) is out of scope: it would change the 
 
 `checkTyped` in `src/engine/answers.ts` tolerated two edits in answers of 14+ letters, and swapping de and het is exactly two, so "De kopje is in de keuken." passed as a typo. A swap between two determiners (de, het, die, dat, deze, dit, een, geen) is now always incorrect, and the retry sheet says which word to check. Tests: `tests/engine/answers.test.ts`, `tests/ui/player.test.tsx`.
 
-Not fixed, for a later decision: inflection endings still pass as typos ("Werkt jij?" for "Werk jij?", "een grote huis" in longer sentences), which the s1-verbs and s1-weather lessons test.
+Not fixed, for a later decision: inflection endings still pass as typos ("Werkt jij?" for "Werk jij?", "een grote huis" in longer sentences), which the s1-verbs and s1-weather lessons test. Since 2026-10-29 a slip that spells another word the app teaches is a mistake (`docs/topics-and-scenario-packs-plan.md`, "Slips that spell another word"), which covers the one-word gaps where the wrong form is itself taught (nieuw for nieuwe, fiets for fietst), but not sentences.
 
 ## Phase A1: basic-word track engine
 

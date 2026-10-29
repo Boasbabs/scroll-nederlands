@@ -482,7 +482,7 @@ export const zorg: Pack = {
         }),
         phrase('hoeveel-moet-ik-zelf-betalen', 'Hoeveel moet ik zelf betalen?', 'How much do I have to pay myself?', { note: 'zelf: you, not the insurer' }),
         noun('de zorgverzekering', 'the health insurance', { note: 'everyone who lives or works here must have one' }),
-        noun('het eigen risico', 'the annual excess', { accept: ['de eigen risico'], note: 'you pay the first part of your care each year; a GP visit is free' }),
+        noun('het eigen risico', 'the annual excess', { accept: ['de eigen risico'], note: 'you pay the first part of your care each year; a GP visit is free, a lab test is not' }),
         noun('de premie', 'the premium', { note: 'paid to your insurer every month' }),
         word('vergoeden', 'to cover, to reimburse', { note: 'de verzekering vergoedt het: the insurance pays for it' }),
         noun('de fysiotherapeut', 'the physiotherapist', { note: 'often called de fysio' }),
@@ -499,7 +499,7 @@ export const zorg: Pack = {
         'Wordt dit vergoed? is the passive, worden + vergoed, the way insurers write: Fysiotherapie wordt vergoed uit de aanvullende verzekering. Zelf means yourself, not someone else: Hoeveel moet ik zelf betalen?',
       pronunciationTip: 'Vergoed ends like goed: a rough g, the oe of "fool" and a t sound. Premie: PRAY-mee.',
       examples: [
-        { dutch: 'Voor de huisarts betaalt u niets: de zorgverzekering vergoedt alles.', english: 'You pay nothing for the GP: the health insurance covers it all.' },
+        { dutch: 'Voor de huisarts betaalt u niets: de zorgverzekering vergoedt het helemaal.', english: 'You pay nothing for the GP: the health insurance covers it in full.' },
         { dutch: 'Medicijnen van de apotheek gaan van het eigen risico af.', english: 'Medicines from the pharmacy come out of your annual excess.' },
         { dutch: 'De premie betaalt u elke maand.', english: 'You pay the premium every month.' },
         { dutch: 'Mijn verzekering wil de fysiotherapeut niet vergoeden.', english: "My insurance won't cover the physiotherapist." },

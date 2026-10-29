@@ -67,11 +67,11 @@ export const uit: Pack = {
       ],
       patternExplanation:
         'Ask with Heeft u …? and say how many with voor + number + personen, as in Ik wil graag reserveren voor vier personen. If the restaurant is volgeboekt, it may offer another time. To cancel, use the same frame as for booking: Ik wil mijn reservering annuleren.',
-      pronunciationTip: 'Volgeboekt is stressed on vol: VOL-khuh-bookt, with the oo of "food". The dots in vegetariër start a new syllable: ve-ge-TA-ri-ër.',
+      pronunciationTip: 'Volgeboekt is stressed on vol: VOL-khuh-bookt, with the oo of "food". The dots in vegetariër start a new syllable: vay-khay-TAH-ree-yuhr. The g is the throaty Dutch g, not the j of English "vegetarian", and ër is a light "yuhr".',
       examples: [
         { dutch: 'Vanavond zijn we helaas volgeboekt.', english: "Unfortunately we're fully booked tonight." },
         { dutch: 'Kunt u toch niet komen? Dan kunt u de reservering online annuleren.', english: "Can't you come after all? Then you can cancel the booking online." },
-        { dutch: 'Wij bezorgen niet, maar u kunt het eten afhalen.', english: "We don't deliver, but you can pick up the food." },
+        { dutch: 'Wij bezorgen niet, maar u kunt het eten wel afhalen.', english: "We don't deliver, but you can pick up the food." },
         { dutch: 'Mijn vriendin is vegetariër: ze eet geen vlees en geen vis.', english: "My friend is a vegetarian: she doesn't eat meat or fish." },
       ],
       speakingPrompt: 'Call the restaurant aloud: Goedemiddag. Heeft u zaterdag een tafel voor vier personen? Om zeven uur, graag.',
@@ -353,7 +353,7 @@ export const uit: Pack = {
           context: [
             { speaker: 'Ober', dutch: 'Was alles naar wens?', english: 'Was everything all right?' },
             { speaker: 'Jij', dutch: 'Ja, heel lekker, dank u.', english: 'Yes, very good, thank you.' },
-            { speaker: 'Ober', dutch: 'Nog zin in een toetje? De appeltaart is huisgemaakt.', english: 'Fancy a dessert? The apple pie is homemade.' },
+            { speaker: 'Ober', dutch: 'Heeft u nog zin in een toetje? De appeltaart is huisgemaakt.', english: 'Would you like a dessert? The apple pie is homemade.' },
           ],
           options: ['Ja, graag. De appeltaart, zonder slagroom.', 'Nee, dank u. Ik zit vol.', 'Ja, graag. De appeltaart met extra slagroom.'],
           answer: 'Ja, graag. De appeltaart, zonder slagroom.',

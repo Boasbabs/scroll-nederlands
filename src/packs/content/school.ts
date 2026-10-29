@@ -334,7 +334,7 @@ export const school: Pack = {
       ],
       wordBreakdown: [
         { dutch: 'afmelden', english: 'to report your child absent: ik meld hem af' },
-        { dutch: 'thuis blijven', english: 'to stay at home' },
+        { dutch: 'thuisblijven', english: 'to stay at home: hij blijft thuis' },
         { dutch: 'met haar / met hem', english: 'with her / with him' },
         { dutch: 'het tienminutengesprek', english: 'a ten-minute talk with the teacher' },
         { dutch: 'het rapport', english: 'the school report' },
@@ -388,7 +388,7 @@ export const school: Pack = {
           answers: ['thuis'],
           hint: 'at home',
           english: "My son is ill, he's staying home today.",
-          explanation: 'Thuis blijven: to stay at home. The time (vandaag) comes before the place (thuis).',
+          explanation: 'Thuisblijven: to stay at home (hij blijft thuis). The time (vandaag) comes before the place (thuis).',
         },
         {
           id: 'order',

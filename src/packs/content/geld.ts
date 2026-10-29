@@ -489,7 +489,7 @@ export const geld: Pack = {
         'Terugkrijgen is separable, like terugbetalen: Ik krijg geld terug. Bruto and netto come after the amount: 2.800 euro bruto per maand.',
       pronunciationTip: 'Belastingdienst: buh-LAS-ting-deenst. Btw is spelled out, stressed at the end: bay-tay-WAY.',
       examples: [
-        { dutch: '2.800 euro bruto is ongeveer 2.300 netto: de rest gaat naar de belasting.', english: '2,800 euros gross is about 2,300 net: the rest goes to tax.' },
+        { dutch: '2.800 euro bruto is ongeveer 2.500 netto: het verschil is de belasting.', english: '2,800 euros gross is about 2,500 net: the difference is the tax.' },
         { dutch: 'De btw zit al in de prijs.', english: 'The VAT is already in the price.' },
         { dutch: 'Hulp nodig bij de belastingaangifte? Vraag het in de bibliotheek.', english: 'Need help with the tax return? Ask at the library.' },
         { dutch: 'De Belastingdienst stuurt brieven in een blauwe envelop.', english: 'The tax office sends letters in a blue envelope.' },

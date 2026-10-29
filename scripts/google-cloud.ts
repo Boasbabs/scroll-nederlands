@@ -44,15 +44,18 @@ export function googleCloud({ key, ttsEndpoint = 'https://texttospeech.googleapi
       });
       if (response.ok) return (await response.json()) as T;
       const body = (await response.text()).split(key).join('<key>');
-      // Rate limits ("… per minute") and server errors pass; a spent daily or monthly quota does not.
-      const spent = response.status === 429 && /quota/i.test(body) && !/per minute|rate limit/i.test(body);
+      // A spent daily or monthly quota stays spent. Any other 429 ("Resource has been exhausted (e.g. check
+      // quota)" is Google's word for a per-minute limit) passes within a minute, as do server errors.
+      const spent = response.status === 429 && /per ?day|per ?month|daily|monthly/i.test(body);
       if ((response.status === 429 && !spent) || response.status >= 500) {
         if (attempt < 6) {
-          await new Promise((resolve) => setTimeout(resolve, retryDelay * 2 ** (attempt - 1)));
+          // A rate limit waits 2, 4, 8, 16 and 32 s in all; a server error a sixteenth of that.
+          await new Promise((resolve) => setTimeout(resolve, (response.status === 429 ? 4 : 1) * retryDelay * 2 ** (attempt - 1)));
           continue;
         }
       }
-      const fatal = response.status === 401 || response.status === 403 || spent || /API key not valid/i.test(body);
+      // A limit still there after a minute of waiting stops the run like a spent quota; a rerun picks up where it left off.
+      const fatal = response.status === 401 || response.status === 403 || response.status === 429 || /API key not valid/i.test(body);
       throw new GoogleApiError(`${response.status} ${explain(body)}`, fatal);
     }
   }

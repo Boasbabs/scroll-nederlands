@@ -49,14 +49,26 @@ describe('the Google Cloud client', () => {
     expect(JSON.parse(String(calls[0]!.init.body))).toEqual({ config: { encoding: 'FLAC', languageCode: 'nl-NL' }, audio: { content: Buffer.from('fLaC').toString('base64') } });
   });
 
-  it('retries a busy server and a per-minute limit', async () => {
+  it('retries a busy server and a per-minute limit, however Google words it', async () => {
     const { calls, send } = fakeFetch([
       new Response('busy', { status: 503 }),
       new Response("Quota exceeded for quota metric 'Requests' and limit 'Requests per minute'", { status: 429 }),
+      json({ error: { code: 429, message: 'Resource has been exhausted (e.g. check quota).', status: 'RESOURCE_EXHAUSTED' } }, 429),
       json({ audioContent: '' }),
     ]);
     await googleCloud({ key: 'k', fetch: send, retryDelay: 0 }).synthesize('ja', 'nl-NL-Chirp3-HD-Kore');
-    expect(calls).toHaveLength(3);
+    expect(calls).toHaveLength(4);
+  });
+
+  it('stops when a rate limit outlasts the retries', async () => {
+    const exhausted = () => json({ error: { code: 429, message: 'Resource has been exhausted (e.g. check quota).', status: 'RESOURCE_EXHAUSTED' } }, 429);
+    const { calls, send } = fakeFetch(Array.from({ length: 6 }, exhausted));
+    // A key that cannot occur in Google's wording: the client scrubs the key from every error.
+    const error = await googleCloud({ key: 'test-key-1', fetch: send, retryDelay: 0 })
+      .synthesize('ja', 'nl-NL-Chirp3-HD-Kore')
+      .catch((caught: unknown) => caught);
+    expect(calls).toHaveLength(6);
+    expect(error).toMatchObject({ fatal: true, message: '429 RESOURCE_EXHAUSTED: Resource has been exhausted (e.g. check quota).' });
   });
 
   it('stops on a disabled API or a spent quota without echoing the key, and only skips a bad text', async () => {

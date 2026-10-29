@@ -87,6 +87,17 @@ The short words are "deur", "wel", "Pardon?" and "man, maan". The 4/4 for Ruth i
 - **Size and masters (29 October).** New clips are Opus, so the remaining 4,101 take about 43 MB and the course's audio comes to about 61 MB in the extension, against about 94 MB as MP3. Every take is kept as a master in `audio-masters/` (about 150 MB for the remaining clips), with the speech-to-text results in `checks.json` beside it, so a new encoding is one `pnpm audio:generate --encode` at no cost. Back that folder up: it holds what the clips cost. The first run's 1,270 takes were not kept, so their MP3s stay as they are.
 - **v1 clips:** the 463 v1 files were moved out of `public/audio/`, to the session scratchpad next to the v1 manifest.
 
+## Google Chirp 3: HD test (set up 29 October)
+
+Google's Chirp 3: HD voices cost about $30 per million characters, with the first million each month free, so the whole course (152,000 characters) would cost nothing to voice. They include nl-NL voices, a pace setting (0.25 to 2.0) and custom IPA pronunciations, none of which `eleven_v4` has. Before any switch, `pnpm voice:test` hears them on the course's own texts:
+
+- **Texts.** 25: 13 short words, where the ElevenLabs voices differed (ui, eu, ij, the soft g, sch, a minimal pair); sentences with a time, a number and spelling; four dialogue lines for voice b. 20 of them have an ElevenLabs clip to compare with.
+- **Voices.** Charon and Iapetus (male) for the main voice and Erinome (female) for the dialogues, at pace 1 and 0.9. `--voices` and `--rates` change them; `--list` shows all of them.
+- **Check.** Every clip, Google's and the course's, goes through the ffmpeg chain, then Google Speech-to-Text (v1, Dutch forced). Google's recogniser may hear Google's voices more easily, so the table of shared texts compares like with like, but a Dutch listener decides.
+- **Setup.** A Google Cloud project with billing linked, the Cloud Text-to-Speech and Cloud Speech-to-Text APIs enabled, and an API key restricted to those two, in `.env.local` as `GOOGLE_CLOUD_API_KEY`. `GOOGLE_TTS_ENDPOINT=https://eu-texttospeech.googleapis.com` keeps the calls in the EU, if the voices are offered there: check with `--list`.
+- **Output.** `voice-test/` (gitignored): Google's takes, the clips, `results.json`, `report.md`, and `index.html`, a page to listen across each text. A default run sends 2,274 characters; a second run reuses takes and transcripts.
+- **Not decided yet.** If Google wins, every clip is remade with it (one voice per part, never two providers for the same part), and `scripts/generate-audio.ts` gets Google as its provider. Until then, the ElevenLabs run on 1 November goes ahead as planned.
+
 ## Limitations
 
 - **STT measures intelligibility, not accent.** It cannot tell nl-NL from nl-BE, and it mishears isolated sounds and one-syllable words, so the QA list is a listening list. The Netherlands accent rests on library metadata (all 6 voices are labelled nl-NL, standard), not on a native listener. A Dutch speaker should spot-check about 20 clips per voice: the hard g/sch, ui/eu/ij, w, v/z devoicing and r.

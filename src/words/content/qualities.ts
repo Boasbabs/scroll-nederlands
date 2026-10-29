@@ -90,8 +90,8 @@ export const qualities: WordTheme = {
     adj('ouderwets', 'old-fashioned', {
       example: { dutch: 'Een fax? Dat is zo ouderwets!', english: 'A fax? That’s so old-fashioned!' },
     }),
-    adj('bekend', 'well-known, familiar', {
-      example: { dutch: 'Die kok is bekend van de televisie.', english: 'That chef is well known from TV.' },
+    adj('bekend', 'known, familiar', {
+      example: { dutch: 'Ken ik jou ergens van? Je komt me bekend voor.', english: 'Do I know you from somewhere? You look familiar.' },
     }),
     adj('onbekend', 'unknown', {
       example: { dutch: 'Wie belt er? Het nummer is onbekend.', english: 'Who’s calling? The number is unknown.' },

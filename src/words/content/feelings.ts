@@ -10,7 +10,7 @@ export const feelings: WordTheme = {
     adj('trots', 'proud', { example: { dutch: 'Je hebt je diploma! Ik ben trots op je.', english: "You've got your diploma! I'm proud of you." } }),
     adj('jaloers', 'jealous', { example: { dutch: 'Mijn buurman heeft een nieuwe auto. Ik ben jaloers!', english: "My neighbour has a new car. I'm jealous!" } }),
     adj('eenzaam', 'lonely', { example: { dutch: 'Mijn oma woont alleen en is vaak eenzaam.', english: 'My grandma lives alone and is often lonely.' } }),
-    adj('verbaasd', 'amazed', { near: ['verrast'], example: { dutch: 'Ik ben verbaasd dat ze al zo goed Nederlands spreekt.', english: "I'm amazed that she already speaks Dutch so well." } }),
+    adj('verbaasd', 'amazed, astonished', { near: ['verrast'], example: { dutch: 'Ik ben verbaasd dat ze al zo goed Nederlands spreekt.', english: "I'm amazed that she already speaks Dutch so well." } }),
     adj('teleurgesteld', 'disappointed', { example: { dutch: 'Ik heb de baan niet gekregen. Ik ben erg teleurgesteld.', english: "I didn't get the job. I'm very disappointed." } }),
     adj('tevreden', 'satisfied', { example: { dutch: 'Mijn baas is heel tevreden over mijn werk.', english: 'My boss is very satisfied with my work.' } }),
     adj('ongerust', 'worried', {
@@ -37,9 +37,9 @@ export const feelings: WordTheme = {
       example: { dutch: 'Hij komt weer te laat. Ik word echt kwaad!', english: "He's late again. I'm getting really angry!" },
     }),
     adj('verrast', 'surprised', { example: { dutch: 'Een feest voor mij? Ik ben echt verrast!', english: "A party for me? I'm really surprised!" } }),
-    adj('geschrokken', 'shocked', { near: ['schrikken'], example: { dutch: 'Ik ben erg geschrokken van het nieuws.', english: 'I was really shocked by the news.' } }),
-    adj('spannend', 'exciting, tense', {
-      note: "not 'spanning'",
+    adj('geschrokken', 'shocked', { note: 'from schrikken: ik ben geschrokken, I got a fright', near: ['schrikken'], example: { dutch: 'Ik ben erg geschrokken van het nieuws.', english: 'I was really shocked by the news.' } }),
+    adj('spannend', 'exciting, thrilling', {
+      note: 'of a thing or a moment: Wat spannend! (exciting, or nerve-racking)',
       example: { dutch: 'Dit boek is zo spannend! Ik kan niet stoppen.', english: "This book is so exciting! I can't stop." },
     }),
     adj('heerlijk', 'delicious, lovely', {
@@ -48,7 +48,7 @@ export const feelings: WordTheme = {
     }),
     adj('vreselijk', 'terrible', { example: { dutch: 'Ik heb slecht geslapen. Ik voel me vreselijk.', english: 'I slept badly. I feel terrible.' } }),
     adj('zielig', 'pitiful', { example: { dutch: 'Hij is gevallen en huilt. Ach, wat zielig!', english: "He's fallen over and he's crying. Oh, poor thing!" } }),
-    verb('schrikken', 'to get a fright', { example: { dutch: 'Niet schrikken, het is maar de kat!', english: "Don't be scared, it's only the cat!" } }),
+    verb('schrikken', 'to get a fright', { note: 'ik schrok, ik ben geschrokken', example: { dutch: 'Niet schrikken, het is maar de kat!', english: "Don't be scared, it's only the cat!" } }),
     verb('missen', 'to miss', {
       note: 'a person; also a train',
       example: { dutch: 'Je gaat verhuizen? Ik ga je missen!', english: "You're moving? I'm going to miss you!" },

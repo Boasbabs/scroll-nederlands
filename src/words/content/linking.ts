@@ -74,7 +74,7 @@ export const linking: WordTheme = {
       accept: ['daarnaast'],
       example: { dutch: 'Fietsen is goedkoop en bovendien is het gezond.', english: 'Cycling is cheap, and what’s more, it’s healthy.' },
     }),
-    other('verder', 'further', {
+    other('verder', 'further (on)', {
       note: 'also: apart from that (verder is alles goed)',
       example: { dutch: 'Het station is nog een stukje verder.', english: 'The station is a bit further on.' },
     }),
@@ -86,9 +86,9 @@ export const linking: WordTheme = {
     other('alleen', 'only; alone', {
       example: { dutch: 'Ik drink alleen thee, geen koffie.', english: 'I only drink tea, not coffee.' },
     }),
-    other('pas', 'only, not until', {
+    other('pas', 'not until; only', {
       near: ['alleen'],
-      note: 'pas om acht uur: not until eight; not "pass"',
+      note: 'also: only (hij is pas twintig); de pas is a card, as in de pinpas',
       example: { dutch: 'Op zondag gaat de winkel pas om twaalf uur open.', english: 'On Sundays the shop doesn’t open until twelve.' },
     }),
     other('slechts', 'only (formal)', {
@@ -105,19 +105,19 @@ export const linking: WordTheme = {
     }),
     other('inderdaad', 'indeed', {
       note: 'everyday Dutch, for agreeing: ja, inderdaad',
-      example: { dutch: 'Je hebt gelijk, de winkel is inderdaad dicht.', english: 'You’re right, the shop really is closed.' },
+      example: { dutch: 'Je hebt gelijk, de winkel is inderdaad dicht.', english: 'You’re right, the shop is indeed closed.' },
     }),
     other('precies', 'exactly', {
       example: { dutch: 'Dit is precies wat ik zoek.', english: 'This is exactly what I’m looking for.' },
     }),
-    other('nogal', 'fairly', {
+    other('nogal', 'rather', {
       near: ['best'],
       note: 'often a bit critical: het is nogal duur',
-      example: { dutch: 'De huur in Amsterdam is nogal hoog.', english: 'The rent in Amsterdam is fairly high.' },
+      example: { dutch: 'De huur in Amsterdam is nogal hoog.', english: 'The rent in Amsterdam is rather high.' },
     }),
-    other('best', 'quite, rather', {
-      note: 'also: best',
-      example: { dutch: 'Nederlands is best moeilijk, maar ook leuk.', english: 'Dutch is quite difficult, but fun too.' },
+    other('best', 'quite, pretty', {
+      note: 'also: best, as in goed, beter, best',
+      example: { dutch: 'Nederlands is best moeilijk, maar ook leuk.', english: 'Dutch is pretty difficult, but fun too.' },
     }),
     other('zowel', 'both (… and)', {
       near: ['beide'],

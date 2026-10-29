@@ -13,6 +13,13 @@ describe('the bundled packs', () => {
     expect(validatePacks(course)).toEqual([]);
   });
 
+  it('list every pack written in src/packs/content, each once', () => {
+    const files = import.meta.glob<Record<string, Pack>>('../../src/packs/content/!(index).ts', { eager: true });
+    const written = Object.values(files).flatMap((module) => Object.values(module));
+    expect(written.length).toBeGreaterThan(0);
+    expect(packs.map((pack) => pack.id).sort()).toEqual(written.map((pack) => pack.id).sort());
+  });
+
   it('stay beside the course: no scene on the path, the course unchanged', () => {
     expect(course.packs.map((pack) => pack.id)).toEqual(packs.map((pack) => pack.id));
     expect(course.lessons).toHaveLength(272);

@@ -4,6 +4,7 @@
 import type { Pack } from '../types';
 import { baan } from './baan';
 import { boodschappen } from './boodschappen';
+import { diensten } from './diensten';
 import { geld } from './geld';
 import { gemeente } from './gemeente';
 import { huren } from './huren';
@@ -14,4 +15,4 @@ import { valseVrienden } from './valse-vrienden';
 import { werk } from './werk';
 import { zorg } from './zorg';
 
-export const packs: Array<Pack> = [gemeente, huren, geld, zorg, werk, baan, onderweg, boodschappen, uit, nood, valseVrienden];
+export const packs: Array<Pack> = [gemeente, huren, geld, zorg, werk, baan, onderweg, boodschappen, uit, diensten, nood, valseVrienden];

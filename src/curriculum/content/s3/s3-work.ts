@@ -401,7 +401,7 @@ export const lessons: Array<LessonDraft> = [
     ],
     wordBreakdown: [
       {
-        dutch: 'zich ziekmelden – ik meld me ziek',
+        dutch: 'zich ziek melden – ik meld me ziek',
         english: "to call in sick – I'm calling in sick (literally: I report myself ill)",
       },
       { dutch: 'de koorts', english: 'the fever' },
@@ -485,7 +485,7 @@ export const lessons: Array<LessonDraft> = [
         answers: ['meld'],
         hint: 'm___',
         english: "Good morning, it's Sam. I'm calling in sick.",
-        explanation: 'Ik meld me ziek, from zich ziekmelden. Me (myself) comes straight after the verb.',
+        explanation: 'Ik meld me ziek, from zich ziek melden. Me (myself) comes straight after the verb.',
       },
       {
         id: 'choice',
@@ -511,7 +511,7 @@ export const lessons: Array<LessonDraft> = [
           'Ik meld mij ziek.',
           'Ik meld me vandaag ziek.',
           'Ik meld mij vandaag ziek.',
-          'Ik wil me ziekmelden.',
+          'Ik wil me ziek melden.',
           'Goedemorgen, ik meld me ziek.',
           'Hoi, ik meld me ziek.',
           'Ik meld me ziek, ik heb koorts.',

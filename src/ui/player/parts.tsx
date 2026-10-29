@@ -106,8 +106,11 @@ export function Conversation({ lines, reply }: { lines: ReadonlyArray<DialogueLi
  * Dutch text with some words emphasised: those in `targets` (bold, blue) and
  * those in `missed` (bold, Sunset underline).
  */
+/** Articles are part of a noun item ("de balie") but would light up every sentence on their own. */
+const UNMARKED = new Set(['de', 'het', 'een']);
+
 export function Highlighted({ text, targets = [] }: { text: string; targets?: ReadonlyArray<string> }) {
-  const wanted = new Set(targets.flatMap((target) => normalizeAnswer(target).split(' ')).filter(Boolean));
+  const wanted = new Set(targets.flatMap((target) => normalizeAnswer(target).split(' ')).filter((word) => word && !UNMARKED.has(word)));
   return (
     <>
       {text.split(/(\s+)/).map((token, i) => {

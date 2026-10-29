@@ -1,6 +1,7 @@
 import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { Exercise } from '../../src/curriculum/types';
+import { Highlighted } from '../../src/ui/player/parts';
 import { SessionPlayer } from '../../src/ui/player/SessionPlayer';
 import { makeCourse, stageExercises } from '../fixtures/curriculum';
 import { makeEnv, renderUi, setupLearning } from './harness';
@@ -193,5 +194,12 @@ describe('lesson player', () => {
       'x0-a-hello/hoi': false,
       'x0-a-hello/dag': false,
     });
+  });
+});
+
+describe('highlighted examples', () => {
+  it('marks the words of the items, but never an article on its own', () => {
+    const { container } = renderUi(makeEnv(setupLearning()), <Highlighted text="Trek een nummertje bij de ingang van het loket." targets={['het nummertje', 'het loket']} />);
+    expect([...container.querySelectorAll('.tn-target')].map((word) => word.textContent)).toEqual(['nummertje', 'loket.']);
   });
 });

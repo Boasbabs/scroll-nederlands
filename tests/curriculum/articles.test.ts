@@ -49,9 +49,9 @@ describe('the de/het items', () => {
     }
   });
 
-  it('number 131 course nouns and 354 from the word track, besides the packs’', () => {
+  it('number 131 course nouns and 489 from the word track (354 in tier 1, 135 in tier 2), besides the packs’', () => {
     const from = (prefix: string) => (item: { id: string }) => nounIdOf(item.id).startsWith(prefix);
     expect(course.articles.filter((item) => !from('w-')(item) && !from('sc-')(item))).toHaveLength(131);
-    expect(course.articles.filter(from('w-'))).toHaveLength(354);
+    expect(course.articles.filter(from('w-'))).toHaveLength(489);
   });
 });

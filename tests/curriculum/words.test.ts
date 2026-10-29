@@ -1,6 +1,7 @@
-// The basic-word list (src/words): 625 words beside the course, never a word twice.
+// The basic-word list (src/words): 1,000 words beside the course, never a word twice.
 import { course } from '../../src/curriculum';
 import { normalizeAnswer } from '../../src/engine/answers';
+import { wordGap } from '../../src/engine/exercises';
 import { bareWord, isCourseWord, placeWords } from '../../src/words/assemble';
 import { wordThemes } from '../../src/words/content';
 import type { NewWord } from '../../src/words/types';
@@ -10,11 +11,25 @@ const courseItems = course.lessons.flatMap((lesson) => lesson.items);
 const newWords = wordThemes.flatMap((theme) => theme.words.filter((entry): entry is NewWord => !isCourseWord(entry)).map((word) => ({ theme, word })));
 
 describe('the basic-word list', () => {
-  it('has 625 words, every reference found in the course', () => {
+  it('has 1,000 words, 625 in tier 1 and 375 in tier 2, every reference found in the course', () => {
     const placed = placeWords(wordThemes, courseItems);
     expect(placed.unresolved).toEqual([]);
-    expect(course.words).toHaveLength(625);
-    expect(new Set(course.words.map((item) => item.id)).size).toBe(625);
+    expect(course.words).toHaveLength(1000);
+    expect(new Set(course.words.map((item) => item.id)).size).toBe(1000);
+    const inTier = (tier: 1 | 2) => wordThemes.filter((theme) => (theme.tier ?? 1) === tier).flatMap((theme) => theme.words);
+    expect(inTier(1)).toHaveLength(625);
+    expect(inTier(2)).toHaveLength(375);
+  });
+
+  it('teaches every tier-2 word new, from a sentence that has it', () => {
+    const issues: Array<string> = [];
+    for (const theme of wordThemes.filter((theme) => theme.tier === 2)) {
+      for (const entry of theme.words) {
+        if (isCourseWord(entry)) issues.push(`${theme.id}: "${entry.ref}" is a course word`);
+        else if (!wordGap(entry)) issues.push(`${theme.id}/${entry.key}: "${entry.dutch}" is not in its example`);
+      }
+    }
+    expect(issues).toEqual([]);
   });
 
   it('leaves the course alone', () => {

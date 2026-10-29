@@ -86,7 +86,7 @@ The rest of Vol 2 is B1 and can wait: the imperfect for storytelling, subordinat
 | T2 | Pack engine, pack screen, Today and Progress hooks | Done |
 | T3 | Packs, wave 1: Gemeente, Renting, Money, Doctor | Done |
 | T4 | Packs, wave 2: Work, Finding work, Getting around, Emergencies, Supermarket | Done |
-| T5 | Packs, wave 3: Eating out, Services, Neighbours, School, plus the false-friends set | Not started |
+| T5 | Packs, wave 3: Eating out, Services, Neighbours, School, plus the false-friends set | Done |
 | T6 | Word track tier 2 (words 626–1,000) | Not started |
 
 The waves follow need: registration, housing, money and health come first in a new arrival's first weeks.
@@ -100,6 +100,15 @@ The waves follow need: registration, housing, money and health come first in a n
 - **Facts made more precise than the plan:** the deposit cap (two months' bare rent since July 2023) and kale huur without energy; the triage call decides whether and how soon you see the GP (a *visite* is a home visit); 112 is for when every second counts; the fixed fare (instaptarief) for a missed check-out; check-in with a bank card or phone, as the OV-chipkaart is phased out; allergens in bold in the ingredient list rather than a "bevat" line (the Supermarket mission changed with it); Dienst Toeslagen no longer part of the tax office.
 - **Player fix found on the way:** lines spoken by "Jij" now sit on the learner's side, like "You" (105 course lines were on the left).
 - **For the NT2 review,** beyond every article: zich betermelden (one word), het NL-Alert (left without an article), de/het for "tablet" (avoided), "van dienst ruilen", "een proefdag doen", payslip labels, and the "___ cv" de/het drill, which "de cv" (central heating) makes ambiguous.
+
+### As built: wave 3 and the false-friends set (2026-10-29)
+
+- **Four more packs, 115 items:** uit (29), diensten (27), sociaal (29), school (30), written as waves 1 and 2 were and listed in the plan's order: the 13 situations hold 385 items. Each pack has 4 scenes of 8 exercises, a dialogue, a text, a listening task, a writing task, a mission and a culture note.
+- **Practised by id rather than taught again:** "… doet het niet" (`s2-home-problem/doet-het-niet`, so "Mijn internet doet het niet." is not an item), "Gefeliciteerd met je moeder!" (the course's pattern, so "Gefeliciteerd met je zus!" is not an item), reserveren, apart betalen, de borrel, de klacht, opzeggen, het verlof and others; each commit names them. Not every plan word became an item (Kerst, Pasen, de pakjesavond, de oppas, de toestemming) to keep scenes near nine items; they appear in the texts.
+- **Facts made more precise than the tables:** a tip is optional because menu prices include service; the 14 days of bedenktijd run from the day after delivery, with 14 more to send the item back, and a shop has none; schooling is compulsory from the first school day of the month after the fifth birthday, and leave in term needs the head teacher's permission (a wedding of relatives up to the third degree is one reason); the ouderbijdrage is voluntary; Koningsdag moves to 26 April when the 27th is a Sunday; a day off on 5 May depends on the employer or cao; no fireworks rules are stated.
+- **The false-friends set** (`valse-vrienden`, `kind: 'set'`) has four parts rather than three, so each is about 14 quick drills: People, Food and shops, Home and street, Work and the news. Each part opens on a phrase with a real situation ("Wat een brutaal kind!", "Mag ik een monstertje?", "Er is brand!", "Eventueel kan ik zaterdag werken."), and each of the 17 words has a meaning drill with the English look-alike among the options and a typed drill cued "It looks like an English word". Slim, kind, worst and solliciteren are listed in `Pack.shared`, practised by id, shown on the set's page and introduced by the set if the learner meets them there first.
+- **Engine for sets:** `Pack.kind`, an optional mission, `Pack.shared` and `PlacedPack.members`; `validatePacks` skips the situation's parts for a set and checks its shared words; Progress counts situations only. **UI:** Tricky words on Topics, "part" and "set" in place of "scene" and "pack", each word's note on the set's page (`docs/ux-research.md` §18).
+- **For the NT2 review,** beyond every article: "Maak er maar dertig van." and "Doe maar dertig." for a tip, "Nog zin in een toetje?" after "Was alles naar wens?", "de wifi" (left out), "terechtkunnen" (avoided), "in de wacht staan" as a word item, de Dodenherdenking with a capital, "hè" with an accent, "de bso" in lower case, "aanmelden" for a child at school, "afmelden" for a sick child, and "proper" described as more Belgian.
 
 ## Phase T1: Topics tab over the existing word themes
 

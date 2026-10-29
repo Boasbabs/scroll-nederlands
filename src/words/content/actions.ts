@@ -21,7 +21,7 @@ export const actions: WordTheme = {
       example: { dutch: 'Ik wil graag nieuwe mensen ontmoeten.', english: "I'd like to meet new people." },
     }),
     verb('onthouden', 'to remember (keep in mind)', {
-      example: { dutch: 'Ik kan zijn naam nooit onthouden.', english: 'I can never remember his name.' },
+      example: { dutch: 'Kun je dit nummer onthouden? Ik heb geen pen.', english: "Can you remember this number? I don't have a pen." },
     }),
     verb('herinneren', 'to remind', {
       note: 'zich herinneren: to remember (recall)',
@@ -29,7 +29,7 @@ export const actions: WordTheme = {
     }),
     verb('beslissen', 'to decide', {
       accept: ['besluiten'],
-      example: { dutch: 'Jij mag beslissen waar we vanavond eten.', english: 'You can decide where we eat tonight.' },
+      example: { dutch: 'Je mag zelf over je eigen leven beslissen.', english: 'You get to decide about your own life.' },
     }),
     verb('kiezen', 'to choose', {
       example: { dutch: 'Ik kan niet kiezen tussen pizza en pasta.', english: "I can't choose between pizza and pasta." },
@@ -40,16 +40,17 @@ export const actions: WordTheme = {
       example: { dutch: 'Ik moet vandaag besluiten of ik die baan aanneem.', english: 'I have to make up my mind today whether to take that job.' },
     }),
     verb('regelen', 'to sort out, to take care of', {
-      example: { dutch: 'Geen zorgen, ik ga het voor je regelen.', english: "Don't worry, I'll sort it out for you." },
+      example: { dutch: 'Geen zorgen, ik ga het met de gemeente regelen.', english: "Don't worry, I'll sort it out with the council." },
     }),
     verb('organiseren', 'to organise', {
-      example: { dutch: 'We willen een feestje voor oma organiseren.', english: 'We want to organise a party for grandma.' },
+      accept: ['plannen'],
+      example: { dutch: 'Het is veel werk om een bruiloft te organiseren.', english: "It's a lot of work to organise a wedding." },
     }),
     verb('plannen', 'to plan', {
       example: { dutch: 'Ik wil mijn week beter plannen.', english: 'I want to plan my week better.' },
     }),
     verb('verdienen', 'to earn; to deserve', {
-      example: { dutch: 'Ik wil meer geld verdienen.', english: 'I want to earn more money.' },
+      example: { dutch: 'Ik werk in een café om geld te verdienen.', english: 'I work in a café to earn money.' },
     }),
     verb('uitgeven', 'to spend (money)', {
       note: 'ik geef uit, ik heb uitgegeven',
@@ -57,20 +58,20 @@ export const actions: WordTheme = {
     }),
     verb('sparen', 'to save (money)', {
       note: 'also: to collect (stamps, points)',
-      example: { dutch: 'Ik wil elke maand honderd euro sparen.', english: 'I want to save a hundred euros every month.' },
+      example: { dutch: 'We sparen al twee jaar voor een huis.', english: "We've been saving for a house for two years." },
     }),
     verb('lenen', 'to borrow; to lend', {
-      example: { dutch: 'Mag ik je fiets even lenen?', english: 'Can I borrow your bike for a bit?' },
+      example: { dutch: 'Kun je me tot morgen tien euro lenen?', english: 'Can you lend me ten euros until tomorrow?' },
     }),
     verb('delen', 'to share', {
-      example: { dutch: 'Zullen we een taxi delen?', english: 'Shall we share a taxi?' },
+      example: { dutch: 'Je moet je speelgoed met je zusje delen.', english: 'You have to share your toys with your little sister.' },
     }),
     verb('ontvangen', 'to receive', {
       note: 'more formal than krijgen',
-      example: { dutch: 'Binnen twee weken zult u een brief ontvangen.', english: 'You will receive a letter within two weeks.' },
+      example: { dutch: 'Wij hebben uw betaling ontvangen.', english: 'We have received your payment.' },
     }),
     verb('verwachten', 'to expect', {
-      example: { dutch: 'Wanneer kan ik het pakketje verwachten?', english: 'When can I expect the parcel?' },
+      example: { dutch: 'Voor morgen verwachten ze veel regen en wind.', english: "They're expecting a lot of rain and wind tomorrow." },
     }),
     verb('hopen', 'to hope', {
       example: { dutch: 'We kunnen alleen maar hopen dat het goed gaat.', english: 'We can only hope that it goes well.' },
@@ -80,7 +81,7 @@ export const actions: WordTheme = {
     }),
     verb('uitleggen', 'to explain', {
       note: 'ik leg uit, ik heb uitgelegd',
-      example: { dutch: 'Kun je dat nog een keer uitleggen?', english: 'Can you explain that once more?' },
+      example: { dutch: 'Ik begrijp deze regel niet. Kun je hem uitleggen?', english: "I don't understand this rule. Can you explain it?" },
     }),
     verb('beschrijven', 'to describe', {
       example: { dutch: 'Hoe ziet hij eruit? Kun je hem beschrijven?', english: 'What does he look like? Can you describe him?' },
@@ -93,10 +94,11 @@ export const actions: WordTheme = {
       example: { dutch: 'Mag ik je iets te drinken aanbieden?', english: 'Can I offer you something to drink?' },
     }),
     verb('accepteren', 'to accept', {
+      accept: ['aannemen'],
       example: { dutch: 'Ik kan zijn excuses niet accepteren.', english: "I can't accept his apology." },
     }),
     verb('weigeren', 'to refuse', {
-      example: { dutch: 'Je kunt de cookies op deze website weigeren.', english: 'You can refuse the cookies on this website.' },
+      example: { dutch: 'Mijn kinderen weigeren hun groente te eten.', english: 'My children refuse to eat their vegetables.' },
     }),
     verb('verbieden', 'to forbid, to ban', {
       example: { dutch: 'De gemeente wil vuurwerk verbieden.', english: 'The council wants to ban fireworks.' },
@@ -122,24 +124,25 @@ export const actions: WordTheme = {
       example: { dutch: 'Je hoeft niet zo te schreeuwen, ik hoor je wel.', english: "You don't have to yell like that, I can hear you." },
     }),
     verb('roepen', 'to call (out)', {
-      example: { dutch: 'Kun je de kinderen roepen? Het eten is klaar.', english: "Can you call the children? Dinner's ready." },
+      example: { dutch: 'Ik hoorde iemand in de verte mijn naam roepen.', english: 'I heard someone calling my name in the distance.' },
     }),
     verb('reageren', 'to react, to respond', {
       note: 'reageren op: to respond to',
-      example: { dutch: 'Hoe moet ik op zijn bericht reageren?', english: 'How should I respond to his message?' },
+      example: { dutch: 'Hoe gaat je baas op het nieuws reageren?', english: 'How is your boss going to react to the news?' },
     }),
     verb('ruiken', 'to smell', {
-      example: { dutch: 'Ik kan niets ruiken, ik ben verkouden.', english: "I can't smell anything, I've got a cold." },
+      example: { dutch: 'Ik kan niets ruiken; mijn neus zit dicht.', english: "I can't smell anything; my nose is blocked." },
     }),
     verb('proeven', 'to taste', {
-      example: { dutch: 'Wil je deze kaas even proeven?', english: 'Would you like to taste this cheese?' },
+      example: { dutch: 'Kun je proeven of er genoeg zout in zit?', english: "Can you taste whether there's enough salt in it?" },
     }),
     verb('pakken', 'to grab, to take', {
+      accept: ['halen'],
       note: 'also: to pack (een koffer pakken)',
       example: { dutch: 'Kun je de melk uit de koelkast pakken?', english: 'Can you grab the milk from the fridge?' },
     }),
     verb('gooien', 'to throw', {
-      example: { dutch: 'Glas moet je in de glasbak gooien.', english: 'You have to throw glass in the bottle bank.' },
+      example: { dutch: 'Je mag geen afval op straat gooien.', english: "You're not allowed to throw litter in the street." },
     }),
     verb('bouwen', 'to build', {
       example: { dutch: 'Ze gaan hier honderd nieuwe huizen bouwen.', english: "They're going to build a hundred new houses here." },
@@ -159,7 +162,7 @@ export const actions: WordTheme = {
     }),
     verb('bewegen', 'to move', {
       note: 'moving house: verhuizen',
-      example: { dutch: 'Ik kan mijn arm bijna niet bewegen.', english: 'I can hardly move my arm.' },
+      example: { dutch: 'Mijn rug doet pijn, ik kan me bijna niet bewegen.', english: 'My back hurts, I can hardly move.' },
     }),
     verb('dromen', 'to dream', {
       example: { dutch: 'Ze blijft dromen van een huis aan zee.', english: 'She keeps dreaming of a house by the sea.' },
@@ -172,7 +175,7 @@ export const actions: WordTheme = {
       example: { dutch: 'Mag ik u een vraag stellen?', english: 'May I ask you a question?' },
     }),
     verb('passen', 'to fit; to try on', {
-      example: { dutch: 'Mag ik deze broek even passen?', english: 'Can I try on these trousers?' },
+      example: { dutch: 'Deze schoenen passen niet, ze zijn te klein.', english: "These shoes don't fit, they're too small." },
     }),
     verb('lukken', 'to work out', {
       note: "het lukt me niet: I can't manage it",
@@ -186,17 +189,17 @@ export const actions: WordTheme = {
       example: { dutch: 'Succes met je examen! Je gaat vast slagen.', english: "Good luck with your exam! I'm sure you'll pass." },
     }),
     verb('oefenen', 'to practise', {
-      example: { dutch: 'Ik wil elke dag tien minuten Nederlands oefenen.', english: 'I want to practise Dutch for ten minutes every day.' },
+      example: { dutch: 'Ik wil mijn Nederlands met de buren oefenen.', english: 'I want to practise my Dutch with the neighbours.' },
     }),
     verb('onderzoeken', 'to examine, to investigate', {
-      example: { dutch: 'De huisarts wil je knie even onderzoeken.', english: 'The GP wants to examine your knee.' },
+      example: { dutch: 'De politie gaat het ongeluk onderzoeken.', english: 'The police are going to investigate the accident.' },
     }),
     verb('ontdekken', 'to discover', {
-      example: { dutch: 'Op vakantie wil ik graag nieuwe dingen ontdekken.', english: 'On holiday I like to discover new things.' },
+      example: { dutch: 'Mijn zoon wil later nieuwe planeten ontdekken.', english: 'My son wants to discover new planets when he grows up.' },
     }),
     verb('verbeteren', 'to improve', {
       note: 'also: to correct (mistakes)',
-      example: { dutch: 'Ik wil mijn uitspraak verbeteren.', english: 'I want to improve my pronunciation.' },
+      example: { dutch: 'Hoe kunnen we de sfeer op het werk verbeteren?', english: 'How can we improve the atmosphere at work?' },
     }),
     verb('tellen', 'to count', {
       example: { dutch: 'Mijn zoontje kan al tot tien tellen.', english: 'My little boy can already count to ten.' },
@@ -209,7 +212,7 @@ export const actions: WordTheme = {
       example: { dutch: 'Voor de nieuwe gordijnen moet ik het raam meten.', english: 'I need to measure the window for the new curtains.' },
     }),
     verb('wegen', 'to weigh', {
-      example: { dutch: 'Ik moet mijn koffer nog wegen voor de vlucht.', english: 'I still need to weigh my suitcase for the flight.' },
+      example: { dutch: 'Je koffer mag niet meer dan twintig kilo wegen.', english: 'Your suitcase may not weigh more than twenty kilos.' },
     }),
     verb('betekenen', 'to mean (signify)', {
       note: 'what a person means: bedoelen',
@@ -219,32 +222,34 @@ export const actions: WordTheme = {
       example: { dutch: 'We willen onze dochter Emma noemen.', english: 'We want to call our daughter Emma.' },
     }),
     verb('trouwen', 'to marry, to get married', {
-      example: { dutch: 'Ze gaan volgend jaar in juni trouwen.', english: "They're getting married in June next year." },
+      example: { dutch: 'Na tien jaar samen gaan ze eindelijk trouwen.', english: "After ten years together, they're finally getting married." },
     }),
     verb('sterven', 'to die', {
+      accept: ['doodgaan', 'overlijden'],
       note: 'in speech often doodgaan',
       example: { dutch: 'Mijn opa wilde thuis sterven, niet in het ziekenhuis.', english: 'My grandpa wanted to die at home, not in hospital.' },
     }),
     // "geboren worden" never stands whole in a natural sentence, so the word is the participle.
     other('geboren', 'born', {
       note: 'geboren worden: to be born; ik ben geboren: I was born',
-      example: { dutch: 'Ik ben in Lagos geboren.', english: 'I was born in Lagos.' },
+      example: { dutch: 'Ik ben in Lagos geboren en opgegroeid.', english: 'I was born and raised in Lagos.' },
     }),
     verb('opruimen', 'to tidy up', {
       note: 'ik ruim op, ik heb opgeruimd',
-      example: { dutch: 'Na het eten gaan we samen opruimen.', english: "After dinner we'll tidy up together." },
+      example: { dutch: 'Wat een rommel! Je moet je kamer opruimen.', english: 'What a mess! You have to tidy your room.' },
     }),
     verb('schoonmaken', 'to clean', {
       note: 'ik maak schoon, ik heb schoongemaakt',
-      example: { dutch: 'Op zaterdag gaan we het huis schoonmaken.', english: "On Saturday we're going to clean the house." },
+      example: { dutch: 'De badkamer is vies, ik moet hem schoonmaken.', english: 'The bathroom is dirty, I need to clean it.' },
     }),
     verb('bakken', 'to bake; to fry', {
-      example: { dutch: 'Zullen we morgen een appeltaart bakken?', english: 'Shall we bake an apple pie tomorrow?' },
+      example: { dutch: 'De bakker moet elke nacht brood bakken.', english: 'The baker has to bake bread every night.' },
     }),
     verb('snijden', 'to cut (with a knife)', {
       example: { dutch: 'Kun je de tomaten in stukjes snijden?', english: 'Can you cut the tomatoes into pieces?' },
     }),
     verb('breken', 'to break', {
+      accept: ['kapotgaan'],
       example: { dutch: 'Voorzichtig met die borden, ze kunnen breken.', english: 'Careful with those plates, they can break.' },
     }),
     verb('laten', 'to let', {
@@ -252,32 +257,33 @@ export const actions: WordTheme = {
       example: { dutch: 'Kun je me laten weten of je komt?', english: "Can you let me know if you're coming?" },
     }),
     verb('snappen', 'to get (understand)', {
+      accept: ['begrijpen'],
       note: 'informal for begrijpen',
-      example: { dutch: 'Je hoeft niet alles meteen te snappen.', english: "You don't have to get everything straight away." },
+      example: { dutch: 'Ik kan niet snappen waarom hij zo boos is.', english: "I can't understand why he's so angry." },
     }),
     verb('merken', 'to notice', {
       example: { dutch: 'Ik denk niet dat de buren het gaan merken.', english: "I don't think the neighbours will notice." },
     }),
     verb('opletten', 'to pay attention', {
       note: 'ik let op, ik heb opgelet',
-      example: { dutch: 'Je moet goed opletten in de les.', english: 'You have to pay attention in class.' },
+      example: { dutch: 'Je moet opletten dat de kat niet naar buiten gaat.', english: "You have to watch that the cat doesn't get out." },
     }),
     verb('nadenken', 'to think about, to consider', {
       note: 'ik denk na, ik heb nagedacht',
       example: { dutch: 'Ik moet er even over nadenken.', english: 'I need to think about it for a moment.' },
     }),
     verb('verdwijnen', 'to disappear', {
-      example: { dutch: 'De pijn zal na een paar dagen verdwijnen.', english: 'The pain will disappear after a few days.' },
+      example: { dutch: 'Hoe kan mijn sleutel zomaar verdwijnen?', english: 'How can my key just disappear?' },
     }),
     verb('verschijnen', 'to appear (come into view)', {
-      example: { dutch: 'Er moet nu een code op je scherm verschijnen.', english: 'A code should now appear on your screen.' },
+      example: { dutch: 'Als het donker wordt, verschijnen de eerste sterren.', english: 'When it gets dark, the first stars appear.' },
     }),
     verb('volgen', 'to follow', {
       note: 'een cursus volgen: to take a course',
       example: { dutch: 'Je kunt mij volgen, ik weet de weg.', english: 'You can follow me, I know the way.' },
     }),
     verb('bereiken', 'to reach', {
-      example: { dutch: 'Hoe kan ik u het beste bereiken?', english: "What's the best way to reach you?" },
+      example: { dutch: 'U kunt ons van negen tot vijf telefonisch bereiken.', english: 'You can reach us by phone from nine to five.' },
     }),
   ],
 };

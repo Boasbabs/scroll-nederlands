@@ -252,6 +252,33 @@ body {
 .tn-caught-up .tn-btn {
   margin-top: 6px;
 }
+/* The reminder to back up: a quiet card after the day's tasks, never ahead of them. */
+.tn-backup-reminder {
+  grid-template-columns: auto 1fr;
+  align-items: start;
+}
+.tn-backup-reminder__text {
+  display: grid;
+  gap: 2px;
+}
+.tn-backup-reminder__title {
+  font-size: var(--text-md);
+  font-weight: 800;
+}
+.tn-backup-reminder__body {
+  color: var(--ink-muted);
+  font-size: var(--text-sm);
+}
+/* The file name stays whole, so it can be searched for as written. */
+.tn-backup-reminder__file {
+  white-space: nowrap;
+}
+.tn-backup-reminder__actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 8px;
+}
 /* To do today: short tasks as one list of lines, as Duolingo lists its daily quests. */
 .tn-panel-card.tn-today-list {
   gap: 0;
@@ -773,6 +800,8 @@ button.tn-today-row:active .tn-icon-tile {
 .tn-row__button .tn-row__label {
   flex: 1;
 }
+/* Whole-row actions: Back up progress, Restore from file, and Reset progress in red. */
+.tn-group__card > .tn-row__action,
 .tn-group__card > .tn-row__danger {
   justify-content: flex-start;
   gap: 12px;
@@ -780,10 +809,25 @@ button.tn-today-row:active .tn-icon-tile {
   min-height: 56px;
   padding: 10px 16px;
   border-radius: 0;
-  --btn-ink: var(--wrong);
   font-family: var(--font-body);
   font-size: var(--text-md);
   font-weight: 800;
+  text-align: left;
+}
+.tn-group__card > .tn-row__action {
+  --btn-ink: var(--ink);
+}
+/* The button's weight and tracking are for its label; the helper reads like every other row's. */
+.tn-row__action .tn-row__helper {
+  font-weight: 400;
+  letter-spacing: normal;
+}
+.tn-group__card > .tn-row__danger {
+  --btn-ink: var(--wrong);
+}
+.tn-group__card > .tn-row__action + .tn-row__action,
+.tn-group__card > .tn-row__action ~ .tn-row__danger {
+  border-top: 1px solid var(--line);
 }
 .tn-switch {
   position: relative;
@@ -892,6 +936,16 @@ button.tn-today-row:active .tn-icon-tile {
   display: grid;
   gap: 8px;
   padding: var(--gutter);
+}
+/* A file that can't be restored, said on the welcome band, above its buttons so they stay put.
+   An ink tint, not a white one, so the white text keeps its contrast (6.7:1). */
+.tn-onboarding__problem {
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  background: rgba(22, 23, 29, 0.16);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  text-align: center;
 }
 .tn-onboarding__mock {
   display: grid;

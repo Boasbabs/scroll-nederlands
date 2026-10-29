@@ -65,7 +65,7 @@ export function ChipGroup<T extends string | number>({
   );
 }
 
-/** A confirmation where the safe choice is the primary button. */
+/** A confirmation where the safe choice is the primary button. `danger` (red) is for choices that destroy something. */
 export function ConfirmDialog({
   title,
   body,
@@ -73,6 +73,7 @@ export function ConfirmDialog({
   confirm,
   onKeep,
   onConfirm,
+  danger = true,
 }: {
   title: string;
   body: string;
@@ -80,6 +81,7 @@ export function ConfirmDialog({
   confirm: string;
   onKeep: () => void;
   onConfirm: () => void;
+  danger?: boolean;
 }) {
   const first = useRef<HTMLButtonElement>(null);
   // Keeping plays the dialog's exit first; confirming goes at once, as the reset happens.
@@ -110,7 +112,7 @@ export function ConfirmDialog({
         <Button ref={first} block onClick={keepNow}>
           {keep}
         </Button>
-        <Button block variant="ghost" className="tn-dialog__danger" onClick={onConfirm}>
+        <Button block variant="ghost" className={danger ? 'tn-dialog__danger' : undefined} onClick={onConfirm}>
           {confirm}
         </Button>
       </div>

@@ -5,6 +5,7 @@ import type { CurriculumIndex } from '../../curriculum/assemble';
 import type { SessionPlan } from '../../engine/plan';
 import type { PictureSource } from '../../images/pictures';
 import type { Learning, SessionOutcome, Snapshot } from '../../learning/actions';
+import type { ProgressBackup } from '../../storage/backup';
 import { SpeechProvider } from '../components/AudioButton';
 import { Icon, type IconName } from '../components/Icon';
 import { EnvProvider, type SitePermissions, type UiEnv } from '../env';
@@ -27,6 +28,7 @@ export type PanelDeps = {
   now?: () => number;
   canRecord?: boolean;
   pictures?: PictureSource;
+  backup?: ProgressBackup;
 };
 
 export type Tab = 'today' | 'course' | 'review' | 'progress';
@@ -43,7 +45,7 @@ const TABS: Array<{ id: Tab; label: string; icon: IconName }> = [
 export type StartSession = (start: () => Promise<SessionPlan | undefined> | SessionPlan | undefined) => Promise<void>;
 
 export function PanelApp({ deps }: { deps: PanelDeps }) {
-  const { learning, course, speaker, permissions, subscribe, canRecord, pictures } = deps;
+  const { learning, course, speaker, permissions, subscribe, canRecord, pictures, backup } = deps;
   const now = deps.now ?? Date.now;
   const [snap, setSnap] = useState<Snapshot>();
   const [screen, setScreen] = useState<Screen>('today');
@@ -83,8 +85,9 @@ export function PanelApp({ deps }: { deps: PanelDeps }) {
         permissions,
         canRecord,
         pictures,
+        backup,
       },
-    [snap, learning, course, sfx, now, permissions, canRecord, pictures, refresh],
+    [snap, learning, course, sfx, now, permissions, canRecord, pictures, backup, refresh],
   );
 
   function closeSession(to?: Screen) {

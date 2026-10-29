@@ -13,6 +13,8 @@ import { bundledImages } from '../src/images/manifest';
 import { createIndexedDbPictures } from '../src/images/own';
 import { createPictureSource } from '../src/images/pictures';
 import { createLearning } from '../src/learning/actions';
+import { createProgressBackup } from '../src/storage/backup';
+import { saveFile } from '../src/storage/save-file';
 import { PanelApp } from '../src/ui/panel/PanelApp';
 import { createPreviewArea, createStore, fakePermissions, seed } from './fake-chrome';
 import { previewSpeaker } from './preview-speaker';
@@ -23,11 +25,13 @@ await seed(area, state, Date.now(), new URLSearchParams(location.search).get('le
 const store = createStore(area);
 const learning = createLearning({ store, course, images: bundledImages });
 // The preview tab's own IndexedDB stands in for the extension's.
-const pictures = createPictureSource({ course, images: bundledImages, blobs: createIndexedDbPictures(indexedDB), record: store.setPicture, downscale: downscaleToWebp });
+const blobs = createIndexedDbPictures(indexedDB);
+const pictures = createPictureSource({ course, images: bundledImages, blobs, record: store.setPicture, downscale: downscaleToWebp });
+const backup = createProgressBackup({ store, blobs, version: 'preview', saveFile });
 
 createRoot(document.getElementById('root')!).render(
   // The transform makes this frame the containing block for fixed dialogs, as the real panel's viewport is.
   <div style={{ width: Number(new URLSearchParams(location.search).get('w') ?? 380), height: '100vh', margin: '0 auto', boxShadow: '0 0 0 1px #e2e4ea', transform: 'translateZ(0)' }}>
-    <PanelApp deps={{ learning, course, speaker: previewSpeaker, permissions: fakePermissions(), subscribe, canRecord: true, pictures }} />
+    <PanelApp deps={{ learning, course, speaker: previewSpeaker, permissions: fakePermissions(), subscribe, canRecord: true, pictures, backup }} />
   </div>,
 );

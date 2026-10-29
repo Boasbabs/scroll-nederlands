@@ -93,6 +93,20 @@ export async function toDataUrl(blob: Blob): Promise<string> {
   return `data:${blob.type || 'image/webp'};base64,${btoa(binary)}`;
 }
 
+/** A picture's data URL (a backup's) as a blob again. Only plain raster images are taken. */
+export function fromDataUrl(url: string): Blob | undefined {
+  const match = /^data:(image\/(?:webp|png|jpeg|gif));base64,([A-Za-z0-9+/]+={0,2})$/.exec(url);
+  if (!match) return undefined;
+  try {
+    const binary = atob(match[2]!);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+    return new Blob([bytes], { type: match[1] });
+  } catch {
+    return undefined;
+  }
+}
+
 /** Only plain file names in public/images/ can be asked for. */
 const BUNDLED_FILE = /^[a-z0-9-]+\.webp$/;
 

@@ -551,3 +551,42 @@ The owner asked for the card on more of the sites where browsing time goes: a fi
 - **Watching.** No new card appears while a video longer than 3 minutes plays with sound, or while the page is in full screen. The browsing time is kept. Shorts and Reels are shorter, so a prompt can still come while scrolling through them.
 - **Whole-page chats** now include Instagram's `/direct`, Facebook's `/messages` and Reddit's `/chat`.
 - **Not checked live:** Reddit (blocked in the test browser), and Instagram and Facebook (sign-in walls).
+
+## 15. Progress backup (ninth session, 2026-10-29)
+
+The owner lost their progress and streak by removing the extension while reloading it: Chrome deletes an extension's storage when it is removed, and nothing else held a copy. A backup is a file the learner keeps, so nothing leaves the device.
+
+### 15.1 The file
+- **One JSON file**, `taalnudge-backup-YYYY-MM-DD.json`. It holds `app: 'taalnudge'`, `format: 1`, `exportedAt`, the extension's version, `data` (every stored record under its `chrome.storage.local` key) and `pictures` (the learner's own pictures from IndexedDB, as data URLs). A picture is about 25 KB, so a backup with pictures stays small.
+- **Left out:** `tn.trigger`, the browsing session's state, which means nothing later, and `tn.backup`, this browser's backup times: when the newest backup was made and when the reminder was put off.
+- **Checked like stored data.** A file is a backup only if it has `app: 'taalnudge'`, a `format` and `data`. A later `format` gets its own message, to update the extension. Inside a backup, the store's own parsers drop anything malformed, as they do when reading storage, and only raster images are taken as pictures.
+- **Saved with a link with `download`.** Chrome treats it as its own download, so the extension needs no `downloads` permission and no new Chrome Web Store justification.
+
+### 15.2 Where it is
+- **Settings → Progress**, above Reset progress: **Back up progress** and **Restore from file**, as whole-row actions with row tiles (Phosphor's download-simple and upload-simple) and ink labels. Red stays with Reset, the one destructive row.
+- **Back up progress** says why before the first backup: "Saves a file you can restore from if TaalNudge is removed". After that it says when: "Last backup: today, 09:30", or "20 Oct 2026" on another day.
+- **Onboarding's first screen** has **Restore from a backup** under Get started, because a reinstall starts there. It is the band's secondary button, white text on the blue.
+
+### 15.3 Restoring
+- **Pick, check, confirm.** The file picker shows only `.json` files. A file that isn't a backup gets a line saying so, and that backup files start with "taalnudge-backup": under the Settings rows, or in an ink-tinted box above the welcome buttons, so the buttons don't move. White on that tint is 6.7:1; a white tint measured 4.33:1, below AA for small text.
+- **The confirmation** is the existing dialog with the safe choice as the primary button: **Cancel** (focused) and **Restore**. Restore is blue, not red, because a restore removes nothing: `ConfirmDialog` gained `danger`, on by default. The body says which backup it is and what restoring does: "Saved 20 Oct 2026, with 9 lessons done. It's added to your progress here, and your settings come back as they were." If sites that were on in the backup are off here, it adds "Prompts stay off until you turn your sites on again."
+- **The dialog sits outside the welcome band.** Inside it, the band's rules would turn its primary button yellow and its focus ring white.
+- **After a restore,** Settings says "Progress restored." From onboarding, the learner lands on Today: a restore marks them onboarded, as their progress is past the first-run steps.
+- **The restored file counts as the last backup** here, unless this browser saved a newer one. The learner has that file, so Settings shows its date and the reminder doesn't ask for a backup straight after a restore.
+
+### 15.4 Merging *(rule)*
+A restore adds the backup to what is here and never wipes anything, so restoring onto a fresh start keeps what was done since.
+- **Progress** goes through `mergeProgress`: per item, the more recently practised copy wins; per lesson, the copy completed more times; per day, the higher count. A tie keeps the copy here.
+- **Notes:** the one written last wins; a tie keeps the one here.
+- **Own pictures, drafts, corrections and "Make it yours" offers:** the backup adds the ones this browser doesn't have, and this browser's copy stays where both have one. A picture here is never swapped for one the learner can't see yet, and corrections keep their permanent ids.
+- **Settings** come from the backup, with three exceptions. Sites stay as they are here, because Chrome's site access can't come from a file: after a reinstall every site is off until the learner turns it on, and Settings already checks access when it opens. A snooze stays as it is here, as it belongs to the moment it was set. The het-word image stays as it is here when the backup has none.
+- **Known gap:** nothing records deletions, so a note, draft or picture removed since the backup comes back with it.
+
+### 15.5 The reminder to back up
+A backup only helps a learner who makes one, so Today reminds them.
+- **When:** the learner has practised on 3 days and has no backup, or has practised since a backup that is 14 days old or more. With nothing new since the last backup, there is nothing to remind about. **Not now** puts it off for 14 days. The rule is `backupDue` in `src/storage/backup.ts`. Three days means the learner has some progress to lose and the first-run screens are behind them. Both numbers are starting heuristics, like the schedule's intervals, not tuned values.
+- **Where:** a white card after **To do today**, before the stats. The day's learning comes first. In a 600px-tall panel with reviews due, the card is below the fold, as the stats are. A row in the to-do list was the other option, but a row is one button, and the reminder needs a second action, Not now.
+- **What it says:** "Back up your progress", then "Removing TaalNudge deletes your progress. A backup file brings it back." for a first backup, or "Your last backup is from 20 Oct 2026." later. **Back up** is the soft secondary button and **Not now** a link, so the card stays quieter than the Start and Review buttons above it.
+- **After Back up,** the card turns into "Backup saved" with a tick and the file's name, kept on one line so it can be searched for as written. On the next visit to Today it is gone.
+- **Not now and the backup time** are kept in `chrome.storage.local` (`tn.backup`), so they last across panel and browser restarts, but are not part of any backup.
+- **Preview:** `/panel.html?state=backup` is the `today` learner with two more days of practice, so the card shows. The `today` seed itself, with two days, doesn't show it.

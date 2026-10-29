@@ -1,5 +1,5 @@
 // Settings: grouped cards, label left, control right, changes apply at once.
-import { useEffect, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 import { bundledImages, type ImageManifest } from '../../images/manifest';
 import { snoozeEnd, type SnoozeChoice } from '../../trigger/browsing';
 import { SITE_IDS, switchSites, type SiteId } from '../../sites';
@@ -7,9 +7,10 @@ import { NEW_WORDS_CHOICES } from '../../storage/store';
 import { Button } from '../components/Button';
 import { Icon } from '../components/Icon';
 import { useEnv } from '../env';
-import { formatClock } from '../format';
+import { formatClock, formatDay } from '../format';
 import { HetImageChoice } from '../player/het';
 import { ChipGroup, ConfirmDialog, Group, RowTile, Toggle } from './controls';
+import { useRestore } from './restore';
 import { SitePicker } from './SitePicker';
 
 export const PROMPT_INTERVALS = [5, 8, 15, 30] as const;
@@ -61,6 +62,64 @@ function ImageCredits({ images }: { images: ImageManifest }) {
         ) : null}
       </div>
     </Group>
+  );
+}
+
+/** Back up progress and Restore from file, in the Progress group. */
+function BackupRows() {
+  const { backup, setPrefs, now } = useEnv();
+  const helperId = useId();
+  const [lastBackup, setLastBackup] = useState<number>();
+  const [notice, setNotice] = useState<string>();
+  const restore = useRestore({
+    onProblem: setNotice,
+    onRestored: () => {
+      setNotice('Progress restored.');
+      // The restored file now counts as the last backup, unless a newer one was saved here.
+      void backup?.lastSaved().then(setLastBackup);
+      void setPrefs({});
+    },
+  });
+
+  useEffect(() => {
+    let live = true;
+    void backup
+      ?.lastSaved()
+      .then((at) => live && setLastBackup(at))
+      .catch(() => undefined);
+    return () => {
+      live = false;
+    };
+  }, [backup]);
+
+  function save() {
+    setNotice(undefined);
+    void backup?.save().then(setLastBackup, () => setNotice('The backup couldn’t be saved.'));
+  }
+
+  if (!backup) return null;
+  return (
+    <>
+      <Button variant="ghost" className="tn-row__action" aria-label="Back up progress" aria-describedby={helperId} onClick={save}>
+        <RowTile icon="download" />
+        <span className="tn-row__text">
+          <span className="tn-row__label">Back up progress</span>
+          <span className="tn-row__helper" id={helperId}>
+            {lastBackup ? `Last backup: ${formatDay(lastBackup, now())}` : 'Saves a file you can restore from if TaalNudge is removed.'}
+          </span>
+        </span>
+      </Button>
+      <Button variant="ghost" className="tn-row__action" onClick={restore.pick}>
+        <RowTile icon="upload" />
+        Restore from file
+      </Button>
+      {notice ? (
+        <p className="tn-row__helper tn-row--pad" role="status">
+          {notice}
+        </p>
+      ) : null}
+      {restore.parts}
+    </>
   );
 }
 
@@ -240,6 +299,7 @@ export function SettingsScreen({ images = bundledImages }: { images?: ImageManif
       <ImageCredits images={images} />
 
       <Group title="Progress">
+        <BackupRows />
         <Button variant="ghost" className="tn-row__danger" onClick={() => setConfirmReset(true)}>
           <RowTile icon="refresh" />
           Reset progress

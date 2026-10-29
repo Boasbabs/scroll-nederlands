@@ -1,17 +1,18 @@
 // Today, Review and Progress tabs.
-import { useEffect, useId, useState } from 'react';
+import { useEffect, useId, useState, type ReactNode } from 'react';
 import { DAY } from '../../engine/schedule';
 import { REVIEW_BATCH, WORD_BATCH } from '../../engine/selection';
 import { itemsByStrength } from '../../engine/summary';
 import type { Snapshot } from '../../learning/actions';
 import { contrastLabel } from '../../sounds/assemble';
+import { backupFileName } from '../../storage/backup';
 import { Button } from '../components/Button';
 import { WaitingForCorrection } from '../player/corrections';
 import { Icon, type IconName } from '../components/Icon';
 import { IconTile, type TileKind } from '../components/IconTile';
 import { ProgressBar } from '../components/ProgressBar';
 import { useEnv } from '../env';
-import { formatIn, plural } from '../format';
+import { formatDay, formatIn, plural } from '../format';
 import type { StartSession } from './PanelApp';
 
 type ScreenProps = { snap: Snapshot; start: StartSession };
@@ -134,6 +135,70 @@ function EarTrainingRow({ snap, start }: ScreenProps) {
   );
 }
 
+/**
+ * A reminder to back up, after the day's tasks (when, see backupDue). Saving
+ * here says the file's name, so the learner can find it later.
+ */
+function BackupReminder({ snap }: { snap: Snapshot }) {
+  const { backup, now } = useEnv();
+  const titleId = useId();
+  const [reminder, setReminder] = useState<{ lastSaved?: number }>();
+  const [saved, setSaved] = useState<string>();
+  const [failed, setFailed] = useState(false);
+
+  useEffect(() => {
+    let live = true;
+    void backup
+      ?.reminder(snap.progress)
+      .then((due) => live && setReminder(due))
+      .catch(() => undefined);
+    return () => {
+      live = false;
+    };
+  }, [backup, snap.progress]);
+
+  if (!backup || !(reminder || saved)) return null;
+
+  function save() {
+    setFailed(false);
+    void backup?.save().then((at) => setSaved(backupFileName(at)), () => setFailed(true));
+  }
+
+  function putOff() {
+    setReminder(undefined);
+    void backup?.putOffReminder().catch(() => undefined);
+  }
+
+  let body: ReactNode = 'Removing TaalNudge deletes your progress. A backup file brings it back.';
+  if (saved) body = <>Saved as <span className="tn-backup-reminder__file">{saved}</span>.</>;
+  else if (failed) body = 'The backup couldn’t be saved. Try again.';
+  else if (reminder?.lastSaved) body = `Your last backup is from ${formatDay(reminder.lastSaved, now())}.`;
+
+  return (
+    <section className="tn-panel-card tn-backup-reminder tn-settle-in" style={{ '--i': 3 } as React.CSSProperties} aria-labelledby={titleId}>
+      <IconTile icon={saved ? 'check' : 'download'} kind="soft" />
+      <div className="tn-backup-reminder__text">
+        <h2 id={titleId} className="tn-backup-reminder__title">
+          {saved ? 'Backup saved' : 'Back up your progress'}
+        </h2>
+        <p className="tn-backup-reminder__body" role="status">
+          {body}
+        </p>
+        {saved ? null : (
+          <div className="tn-backup-reminder__actions">
+            <Button variant="secondary" size="sm" onClick={save}>
+              Back up
+            </Button>
+            <button type="button" className="tn-link" onClick={putOff}>
+              Not now
+            </button>
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
+
 export function TodayScreen({ snap, start }: ScreenProps) {
   const { learning, course, now } = useEnv();
   const { summary, progress } = snap;
@@ -197,7 +262,9 @@ export function TodayScreen({ snap, start }: ScreenProps) {
         </ul>
       </section>
 
-      <dl className="tn-stats tn-settle-in" style={{ '--i': 3 } as React.CSSProperties}>
+      <BackupReminder snap={snap} />
+
+      <dl className="tn-stats tn-settle-in" style={{ '--i': 4 } as React.CSSProperties}>
         <div>
           <dt>Lessons</dt>
           <dd>

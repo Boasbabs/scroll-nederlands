@@ -26,6 +26,8 @@ export const STORAGE_KEYS = {
   drafts: 'tn.drafts',
   /** Corrections of the learner's writing, practised as items (`c-…`). */
   custom: 'tn.custom',
+  /** This browser's backup times (BackupTimes). Not itself in a backup. */
+  backup: 'tn.backup',
 } as const;
 
 export type LearnerPreferences = {
@@ -80,7 +82,7 @@ export function defaultPreferences(): LearnerPreferences {
   };
 }
 
-function isRecord(value: unknown): value is Record<string, unknown> {
+export function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
@@ -215,6 +217,55 @@ export function parseProgress(raw: unknown): LearnerProgress {
   return progress;
 }
 
+/** Everything the learner has built up: what a backup holds. */
+export type LearnerRecords = {
+  progress: LearnerProgress;
+  prefs: LearnerPreferences;
+  pictures: PictureIndex;
+  notes: NoteIndex;
+  leeches: LeechIndex;
+  drafts: Record<string, Draft>;
+  corrections: Record<string, Correction>;
+};
+
+/** Where each record is stored. The browsing state and the backup time are not records. */
+export const RECORD_KEYS = {
+  progress: STORAGE_KEYS.progress,
+  prefs: STORAGE_KEYS.prefs,
+  pictures: STORAGE_KEYS.pictures,
+  notes: STORAGE_KEYS.notes,
+  leeches: STORAGE_KEYS.leeches,
+  drafts: STORAGE_KEYS.drafts,
+  corrections: STORAGE_KEYS.custom,
+} as const satisfies Record<keyof LearnerRecords, string>;
+
+/** The records from values keyed as stored (chrome.storage.local, or a backup's data). */
+export function parseRecords(stored: Record<string, unknown>): LearnerRecords {
+  return {
+    progress: parseProgress(stored[RECORD_KEYS.progress]),
+    prefs: parsePreferences(stored[RECORD_KEYS.prefs]),
+    pictures: parsePictures(stored[RECORD_KEYS.pictures]),
+    notes: parseNotes(stored[RECORD_KEYS.notes]),
+    leeches: parseLeeches(stored[RECORD_KEYS.leeches]),
+    drafts: parseDrafts(stored[RECORD_KEYS.drafts]),
+    corrections: parseCorrections(stored[RECORD_KEYS.corrections]),
+  };
+}
+
+/** The records keyed as stored. */
+export function storedRecords(records: LearnerRecords): Record<string, unknown> {
+  return Object.fromEntries(Object.entries(RECORD_KEYS).map(([name, key]) => [key, records[name as keyof LearnerRecords]]));
+}
+
+/** When this browser's newest backup was saved (or restored from), and when the learner last put off the reminder. */
+export type BackupTimes = { savedAt?: number; dismissedAt?: number };
+
+export function parseBackupTimes(raw: unknown): BackupTimes {
+  if (!isRecord(raw)) return {};
+  const time = (value: unknown) => (typeof value === 'number' && Number.isFinite(value) ? value : undefined);
+  return { savedAt: time(raw.savedAt), dismissedAt: time(raw.dismissedAt) };
+}
+
 /**
  * Reads and writes learner state. Writes within one page are queued; each
  * write re-reads the stored value first and merges per item, so the side
@@ -263,6 +314,15 @@ export function createStore(area: StorageAreaLike) {
     return parseCorrections(stored[STORAGE_KEYS.custom]);
   }
 
+  async function readRecords(): Promise<LearnerRecords> {
+    return parseRecords(await area.get(Object.values(RECORD_KEYS)));
+  }
+
+  async function readBackupTimes(): Promise<BackupTimes> {
+    const stored = await area.get([STORAGE_KEYS.backup]);
+    return parseBackupTimes(stored[STORAGE_KEYS.backup]);
+  }
+
   return {
     readProgress,
     readPreferences,
@@ -271,6 +331,30 @@ export function createStore(area: StorageAreaLike) {
     readLeeches,
     readDrafts,
     readCorrections,
+    readRecords,
+
+    /**
+     * Applies `change` to every record and saves them in one write (a restore),
+     * so each page refreshes once. Progress another page saved meanwhile is kept.
+     */
+    updateRecords(change: (records: LearnerRecords) => LearnerRecords): Promise<LearnerRecords> {
+      return enqueue(async () => {
+        const changed = change(await readRecords());
+        const next = { ...changed, progress: mergeProgress(await readProgress(), changed.progress) };
+        await area.set(storedRecords(next));
+        return next;
+      });
+    },
+
+    readBackupTimes,
+
+    updateBackupTimes(change: (times: BackupTimes) => BackupTimes): Promise<BackupTimes> {
+      return enqueue(async () => {
+        const next = change(await readBackupTimes());
+        await area.set({ [STORAGE_KEYS.backup]: next });
+        return next;
+      });
+    },
 
     /** Keeps (or, with undefined, drops) a text waiting for correction. */
     setDraft(id: string, draft: Draft | undefined): Promise<Record<string, Draft>> {

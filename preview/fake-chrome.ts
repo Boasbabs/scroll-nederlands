@@ -2,7 +2,7 @@
 // panel and the in-page card run in a normal tab.
 import { findCorrections } from '../src/corrections/diff';
 import type { Correction, Draft } from '../src/corrections/types';
-import { completeLesson } from '../src/engine/progress';
+import { completeLesson, dayKey } from '../src/engine/progress';
 import { exerciseSteps, planLesson } from '../src/engine/plan';
 import { DAY } from '../src/engine/schedule';
 import { emptyProgress, type ItemProgress } from '../src/engine/types';
@@ -35,6 +35,7 @@ export function createPreviewArea() {
 /**
  * Seeds a learner: `fresh` (onboarding), `today` (lessons done, reviews due),
  * `caughtup`, `streak` (as `today`, but studied yesterday, so a session today grows the streak),
+ * `backup` (as `today`, with practice on two more days, so Today reminds the learner to back up),
  * `path`, `recall`, `pictures`, `articles`, `notes` or `corrections`. With `lessonId`, every lesson before it is done, so
  * it is next on the path.
  */
@@ -109,6 +110,7 @@ export async function seed(area: StorageAreaLike, state: string, now: number, le
     }
   }
   progress.days[new Date(now - DAY).toISOString().slice(0, 10)] = 12;
+  if (state === 'backup') for (const daysAgo of [3, 4]) progress.days[dayKey(now - daysAgo * DAY)] = 8;
   await area.set({
     [STORAGE_KEYS.progress]: progress,
     [STORAGE_KEYS.prefs]: { ...defaultPreferences(), onboarded: true, sites: siteRecord(['x', 'youtube']) },

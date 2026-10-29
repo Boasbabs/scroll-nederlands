@@ -1,4 +1,5 @@
 // First run: welcome, level and starting point, browsing prompts, then lesson 1.
+// After a reinstall, the welcome screen restores a backup instead.
 import { useState } from 'react';
 import { stageCheckpointId } from '../../engine/selection';
 import { SITE_IDS, siteRecord, switchSites } from '../../sites';
@@ -9,6 +10,7 @@ import { useEnv } from '../env';
 import { NudgeCard } from '../nudge/NudgeCard';
 import { ChipGroup, Segments, SignalBars } from './controls';
 import type { StartSession } from './PanelApp';
+import { useRestore } from './restore';
 import { PROMPT_INTERVALS } from './SettingsScreen';
 import { SitePicker } from './SitePicker';
 
@@ -21,8 +23,11 @@ const LEVELS: ReadonlyArray<{ id: Level; label: string; cefr: string; bars: 1 | 
 ];
 
 export function Onboarding({ start }: { start: StartSession }) {
-  const { course, learning, setPrefs, permissions, now } = useEnv();
+  const { course, learning, setPrefs, permissions, now, backup } = useEnv();
   const [step, setStep] = useState(0);
+  const [problem, setProblem] = useState<string>();
+  // The restore marks the learner onboarded; saving it again refreshes the panel, which lands on Today.
+  const restore = useRestore({ onProblem: setProblem, onRestored: () => void setPrefs({ onboarded: true }) });
   const [level, setLevel] = useState<Level>();
   const [from, setFrom] = useState<'scratch' | 'checkpoint'>();
   // Every site starts ticked; the learner takes away the ones they do not want.
@@ -57,21 +62,35 @@ export function Onboarding({ start }: { start: StartSession }) {
 
   if (step === 0) {
     return (
-      <div className="tn-onboarding tn-onboarding--hero tn-band tn-band--hero">
-        <SquigglePattern className="tn-band__pattern tn-band__pattern--top" />
-        <SquigglePattern />
-        <div className="tn-onboarding__hero">
-          <Segments count={3} current={0} />
-          <Wordmark size={26} />
-          <h1 className="tn-onboarding__greeting tn-display tn-land">Hallo · Hoi · Dag</h1>
-          <p className="tn-onboarding__lead">Learn Dutch in 2-minute breaks while you browse.</p>
+      <>
+        <div className="tn-onboarding tn-onboarding--hero tn-band tn-band--hero">
+          <SquigglePattern className="tn-band__pattern tn-band__pattern--top" />
+          <SquigglePattern />
+          <div className="tn-onboarding__hero">
+            <Segments count={3} current={0} />
+            <Wordmark size={26} />
+            <h1 className="tn-onboarding__greeting tn-display tn-land">Hallo · Hoi · Dag</h1>
+            <p className="tn-onboarding__lead">Learn Dutch in 2-minute breaks while you browse.</p>
+          </div>
+          <div className="tn-onboarding__zone">
+            {problem ? (
+              <p className="tn-onboarding__problem" role="status">
+                {problem}
+              </p>
+            ) : null}
+            <Button block onClick={() => setStep(1)}>
+              Get started
+            </Button>
+            {backup ? (
+              <Button block variant="secondary" onClick={restore.pick}>
+                Restore from a backup
+              </Button>
+            ) : null}
+          </div>
         </div>
-        <div className="tn-onboarding__zone">
-          <Button block onClick={() => setStep(1)}>
-            Get started
-          </Button>
-        </div>
-      </div>
+        {/* Outside the band, whose button and focus colours are for blue. */}
+        {restore.parts}
+      </>
     );
   }
 

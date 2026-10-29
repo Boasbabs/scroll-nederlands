@@ -5,6 +5,7 @@ import type { CurriculumIndex } from '../curriculum/assemble';
 import type { PictureSource } from '../images/pictures';
 import type { Learning } from '../learning/actions';
 import type { SiteId } from '../sites';
+import type { ProgressBackup } from '../storage/backup';
 import type { LearnerPreferences } from '../storage/store';
 import type { Sfx } from './sfx';
 
@@ -34,6 +35,8 @@ export type UiEnv = {
   canRecord?: boolean;
   /** Item pictures. Saving one of the learner's own works in the side panel only. */
   pictures?: PictureSource;
+  /** Backing up progress to a file and restoring it (side panel only). */
+  backup?: ProgressBackup;
 };
 
 const EnvContext = createContext<UiEnv | null>(null);

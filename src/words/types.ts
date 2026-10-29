@@ -26,6 +26,8 @@ export type NewWord = {
   example?: { dutch: string; english: string };
   /** Near-synonyms (their Dutch) never shown as this word's wrong options, nor it as theirs. */
   near?: Array<string>;
+  /** A noun whose bare form takes the other article in another sense (het voetbal, the game; de voetbal, the ball): the meaning its de/het drill shows. */
+  articleCue?: string;
 };
 
 /** A basic word the course already teaches, found by its Dutch text ("de keuken"). */

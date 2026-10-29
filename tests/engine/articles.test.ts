@@ -114,6 +114,9 @@ describe('the de or het drill', () => {
     );
     const drill = generateExercise(cv, cv.item('x0-a-hello/cv#article')!, 'recognition', 0, seededRandom('x'));
     expect(drill).toMatchObject({ prompt: 'De or het?', noun: 'cv', situation: 'the CV you send when you apply for a job', answer: 'het' });
+    const hobbies: WordTheme = { id: 'hobbies', title: 'Hobbies', words: [{ key: 'voetbal', dutch: 'het voetbal', english: 'the football', pos: 'noun', articleCue: 'football, the game you play or watch' }] };
+    const words = makeCourse({}, [...testWordThemes, hobbies]);
+    expect(generateExercise(words, words.item('w-hobbies/voetbal#article')!, 'recognition', 0, seededRandom('x'))).toMatchObject({ noun: 'voetbal', situation: 'football, the game you play or watch', answer: 'het' });
     expect(generateExercise(index, index.item('w-kitchen/mes#article')!, 'recognition', 0, seededRandom('x')).situation).toBeUndefined();
   });
 

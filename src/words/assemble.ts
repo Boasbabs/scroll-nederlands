@@ -70,6 +70,7 @@ export function placeWords(themes: ReadonlyArray<WordTheme>, courseItems: Readon
         ...(entry.note ? { note: entry.note } : {}),
         ...(entry.example ? { example: entry.example } : {}),
         ...(entry.near ? { near: entry.near } : {}),
+        ...(entry.articleCue ? { articleCue: entry.articleCue } : {}),
         id: `${moduleId}/${entry.key}`,
         lessonId: moduleId,
         moduleId,

@@ -65,6 +65,8 @@ export const ideas: WordTheme = {
       example: { dutch: 'Mijn oom heeft een kleine zaak: hij is loodgieter.', english: "My uncle has a small business: he's a plumber." },
     }),
     noun('het punt', 'the point', {
+      note: 'the tip of a knife or a pencil is de punt',
+      articleCue: 'a point you make in a discussion, or score in a game',
       example: { dutch: 'Op dat punt heb je gelijk.', english: "You're right on that point." },
     }),
     noun('het onderwerp', 'the topic, the subject', {

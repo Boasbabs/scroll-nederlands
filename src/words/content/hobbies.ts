@@ -7,7 +7,7 @@ export const hobbies: WordTheme = {
   words: [
     course('de muziek'),
     noun('de sport', 'the sport'),
-    noun('het voetbal', 'the football'),
+    noun('het voetbal', 'the football', { note: 'the ball itself is de voetbal', articleCue: 'football, the game you play or watch' }),
     noun('de film', 'the film'),
     noun('het spel', 'the game'),
     course('het feest'),

@@ -71,6 +71,10 @@ describe('the de/het items', () => {
     ]);
   });
 
+  it('say which sense is meant where the bare noun takes the other article in another sense', () => {
+    expect(course.items.filter((item) => item.articleCue).map((item) => item.id)).toEqual(['w-hobbies/voetbal', 'w-ideas/punt', 'sc-baan-solliciteren/cv']);
+  });
+
   it('number 129 course nouns and 480 from the word track (348 in tier 1, 132 in tier 2), besides the packs’', () => {
     const from = (prefix: string) => (item: { id: string }) => nounIdOf(item.id).startsWith(prefix);
     expect(course.articles.filter((item) => !from('w-')(item) && !from('sc-')(item))).toHaveLength(129);

@@ -12,7 +12,7 @@ import { Icon } from '../components/Icon';
 import { IconTile } from '../components/IconTile';
 import { ProgressBar } from '../components/ProgressBar';
 import { useEnv } from '../env';
-import { packMeta } from '../format';
+import { packMeta, plural } from '../format';
 import type { StartSession } from './PanelApp';
 
 const LEVEL_LABEL: Record<CurriculumLevel, string> = { 'pre-a1': 'Pre-A1', a1: 'A1', 'a1-a2': 'A1–A2', a2: 'A2' };
@@ -169,12 +169,18 @@ export function CourseScreen({ snap, start, onOpenPack }: { snap: Snapshot; star
                         className="tn-module__head"
                         aria-expanded={open}
                         // The row's bar and counts would otherwise be read as one run-on name.
-                        aria-label={`Module ${moduleIndex + 1}: ${module.title}, ${count.completed} of ${count.total} lessons done`}
+                        aria-label={`Module ${moduleIndex + 1}: ${module.title}, ${count.completed} of ${count.total} lessons done${after.length > 0 ? `, plus ${plural(after.length, 'situation')}` : ''}`}
                         onClick={() => setOpenModules(toggle(openModules, module.id))}
                       >
                         <span className="tn-module__number">{moduleIndex + 1}</span>
                         <span className="tn-module__text">
-                          <span className="tn-module__title">{module.title}</span>
+                          <span className="tn-module__line">
+                            <span className="tn-module__title">{module.title}</span>
+                            {/* One small pack tile per situation, so a closed module still shows it has one, as Duolingo's unit band carries its guidebook. */}
+                            {after.map((pack) => (
+                              <IconTile key={pack.id} icon="chats" kind="packs" size={20} />
+                            ))}
+                          </span>
                           {/* The count sits inside the bar, as on Finch's quest rows. */}
                           <ProgressBar value={count.completed} max={count.total} count decorative />
                         </span>

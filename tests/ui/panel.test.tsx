@@ -446,6 +446,23 @@ describe('Situations on the course path', () => {
     expect(within(screen.getByRole('button', { name: /Stage X1/ }).closest('section')!).getByText('0/2 modules')).toBeInTheDocument();
   });
 
+  it('marks a closed module that has a situation on its head', async () => {
+    const user = userEvent.setup();
+    const { unmount } = renderPanel(await pathLearner());
+    await user.click(await screen.findByRole('button', { name: 'Course' }));
+    await user.click(screen.getByRole('button', { name: /Stage X1/ }));
+    expect(screen.getByRole('button', { name: 'Module 1: Module B, 0 of 2 lessons done, plus 1 situation' })).toHaveAttribute('aria-expanded', 'false');
+    expect(screen.getByRole('button', { name: 'Module 1: Module A, 0 of 3 lessons done' })).toBeInTheDocument();
+    unmount();
+
+    const setup = setupLearning(realCourse);
+    await setup.store.updatePreferences({ onboarded: true });
+    renderPanel(setup);
+    await user.click(await screen.findByRole('button', { name: 'Course' }));
+    await user.click(screen.getByRole('button', { name: /^Stage 3/ }));
+    expect(screen.getByRole('button', { name: /^Module 5: Service situations, 0 of \d+ lessons done, plus 2 situations$/ })).toHaveAttribute('aria-expanded', 'false');
+  });
+
   it('keeps a set off the path', async () => {
     const user = userEvent.setup();
     renderPanel(await pathLearner([...testPacks, testSet]));

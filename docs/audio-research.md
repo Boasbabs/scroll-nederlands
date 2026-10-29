@@ -2,7 +2,7 @@
 
 Research for TaalNudge's pre-generated Dutch clips (A0 to A2, standard Netherlands Dutch, nl-NL). Date: 27 October 2026.
 
-**Status: decided; generation 41% done (stopped by the monthly quota).** Main voice: Serge de Beer. Dialogue voice: Roos. Model: `eleven_v4` with `language_code: "nl"`. The choice rests on a measured speech-to-text (STT) round trip, measured cost, and library metadata. `scripts/generate-audio.ts` produces the clips; `docs/audio-qa.md` lists the clips it flags.
+**Status: decided; generation 24% done (1,265 of 5,366 clips; stopped by the monthly quota, and the course has grown since).** Main voice: Serge de Beer. Dialogue voice: Roos. Model: `eleven_v4` with `language_code: "nl"`. The choice rests on a measured speech-to-text (STT) round trip, measured cost, and library metadata. `scripts/generate-audio.ts` produces the clips; `docs/audio-qa.md` lists the clips it flags.
 
 ## Method
 
@@ -68,21 +68,22 @@ The short words are "deur", "wel", "Pardon?" and "man, maan". The 4/4 for Ruth i
 ## Quota and generation status
 
 - **Quota.** The plan allows 90,000 credits a month; that figure comes from the quota error, because the key cannot read `/v1/user/subscription`. STT costs about 0.6 credits per second of audio, with a minimum of 1 per request.
-- **Course.** 3,115 clips (2,818 voice a, 297 voice b), 94,398 characters.
-- **First run (27 October)** billed 30,309 characters, retakes included, then stopped cleanly on `quota_exceeded` (0 credits left). The research before it cost about 5k.
+- **First run (27 October)** billed 30,309 characters, retakes included, then stopped cleanly on `quota_exceeded` (0 credits left). The research before it cost about 5k. The course then had 3,115 clips (94,398 characters), and the run made 1,270 of them: every target phrase, learning item and listening exercise, and 39 context lines. The manifest holds 1,256 clips for voice a and 14 for voice b.
+- **The course has grown since (29 October).** The word track (with a sentence for each tier-2 word), the minimal pairs and the scenario packs now have texts too: 5,366 clips (4,988 voice a, 378 voice b), 151,933 characters. A few lines that already had a clip were corrected in the Dutch reviews and need a new one. `pnpm audio:generate --plan` counts what is left:
 
   | Group | Clips done | Of | Characters left |
   |---|---|---|---|
-  | target | 272 | 272 | 0 |
-  | items | 766 | 766 | 0 |
-  | audio | 193 | 193 | 0 |
-  | context | 25 a + 14 b | 266 | 7,850 |
-  | dialogue | 0 | 424 | 16,490 |
-  | examples | 0 | 612 | 17,782 |
-  | answers | 0 | 582 | 22,351 |
+  | target | 271 | 328 | 1,579 |
+  | items | 764 | 1,116 | 4,989 |
+  | words | 1 | 1,219 | 23,004 |
+  | pairs | 3 | 81 | 289 |
+  | audio | 188 | 216 | 3,518 |
+  | context | 38 | 344 | 10,952 |
+  | dialogue | 0 | 538 | 21,677 |
+  | examples | 0 | 833 | 28,126 |
+  | answers | 0 | 691 | 28,032 |
 
-  The manifest holds 1,256 clips for voice a and 14 for voice b.
-- **To finish:** 1,845 clips and 64,473 characters, plus about 1k for STT and retakes. That fits one month. After the reset, run `pnpm audio:generate`; it resumes and skips existing clips.
+- **To finish:** 4,101 clips and 122,166 characters, plus about 2k for STT checks and 1k for retakes: about 125,000 credits, so two months. The groups run in the order above, so the first month's 90,000 credits should run out about three-quarters of the way through `examples`, leaving about 35,000 for the next month: the rest of the examples and all the model answers. That assumes nothing else uses the month's credits. After each reset, run `pnpm audio:generate`; it resumes and skips existing clips. Until a text has a clip, the browser's nl-NL voice reads it.
 - **v1 clips:** the 463 v1 files were moved out of `public/audio/`, to the session scratchpad next to the v1 manifest.
 
 ## Limitations

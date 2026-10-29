@@ -166,7 +166,7 @@ export const nood: Pack = {
           accept: ['Ik wil graag aangifte doen van diefstal.', 'Ik wil aangifte van diefstal doen.', 'Ik kom aangifte doen van diefstal.'],
           note: 'van + what happened: van diefstal, van inbraak',
         }),
-        phrase('mijn-fiets-is-gestolen', 'Mijn fiets is gestolen.', 'My bike has been stolen.', { note: 'Mijn telefoon is gestolen. Mijn tas is gestolen.' }),
+        phrase('mijn-fiets-is-gestolen', 'Mijn fiets is gestolen.', 'My bike has been stolen.', { note: 'Mijn telefoon is gestolen. Mijn tas is gestolen. A bike gone from a station may be in the gemeente’s fietsdepot: check there first.' }),
         word('aangifte doen', 'to report (a crime) to the police', { note: 'online or at the police station; you get a copy for your insurer' }),
         word('gestolen', 'stolen', { note: 'stelen → gestolen: Er is iets gestolen.' }),
         word('beroofd', 'robbed', { note: 'Ik ben beroofd: someone took something from you, often by force' }),
@@ -195,7 +195,7 @@ export const nood: Pack = {
       dialogue: [
         { speaker: 'Agent', dutch: 'Goedemorgen. Waarmee kan ik u helpen?', english: 'Good morning. How can I help you?' },
         { speaker: 'Jij', dutch: 'Ik wil aangifte doen van diefstal. Mijn fiets is gestolen.', english: "I'd like to report a theft. My bike has been stolen." },
-        { speaker: 'Agent', dutch: 'Wat vervelend. Waar en wanneer is dat gebeurd?', english: 'How annoying. Where and when did it happen?' },
+        { speaker: 'Agent', dutch: 'Wat vervelend. Waar en wanneer is dat gebeurd?', english: "I'm sorry to hear that. Where and when did it happen?" },
         { speaker: 'Jij', dutch: 'Gisteravond, bij het station. Hij stond op slot.', english: 'Last night, at the station. It was locked.' },
         { speaker: 'Agent', dutch: 'Kunt u de fiets beschrijven? Weet u het framenummer?', english: 'Can you describe the bike? Do you know the frame number?' },
         { speaker: 'Jij', dutch: 'Het is een zwarte damesfiets met een rode mand voorop. Hier is een foto van het framenummer.', english: "It's a black women's bike with a red basket on the front. Here's a photo of the frame number." },
@@ -352,7 +352,7 @@ export const nood: Pack = {
         { dutch: 'de aansprakelijkheidsverzekering', english: 'insurance for damage you do to others' },
       ],
       patternExplanation:
-        'Er is bij mij ingebroken has no real subject, like Er is iets gebeurd: er + is + the participle at the end. Inbreken is separable, so ge- goes in the middle: ingebroken. Two insurances matter here: the inboedelverzekering for your own things, the aansprakelijkheidsverzekering for damage you do to others.',
+        'Er is bij mij ingebroken has no subject at all: er fills the first place, is comes second and ingebroken goes to the end. Inbreken is separable, so ge- goes in the middle: ingebroken. Two insurances matter here: the inboedelverzekering for your own things, the aansprakelijkheidsverzekering for damage you do to others.',
       pronunciationTip: 'Verzekering: fur-ZAY-kuh-ring. Say the long one in parts: aan-SPRAA-kuh-luk-heids-verzekering, with -lijk said as "luk". Inbraak: IN-braak.',
       examples: [
         { dutch: 'Na de inbraak heb ik aangifte gedaan.', english: 'After the break-in I reported it to the police.' },
@@ -436,7 +436,7 @@ export const nood: Pack = {
           context: [
             { speaker: 'Yusuf', dutch: 'Goedemiddag, schadeafdeling, met Yusuf.', english: 'Good afternoon, claims department, Yusuf speaking.' },
             { speaker: 'Jij', dutch: 'Goedemiddag. Ik wil schade melden. Er is bij mij ingebroken.', english: "Good afternoon. I'd like to report damage. My home has been broken into." },
-            { speaker: 'Yusuf', dutch: 'Wat vervelend. Heeft u al aangifte gedaan bij de politie?', english: 'How annoying. Have you reported it to the police yet?' },
+            { speaker: 'Yusuf', dutch: 'Wat vervelend. Heeft u al aangifte gedaan bij de politie?', english: "I'm sorry to hear that. Have you reported it to the police yet?" },
           ],
           options: ['Ja, gisteren. Ik heb een kopie van de aangifte.', 'Ja, de laptop was bijna nieuw.', 'Nee, ik ben niet gewond.'],
           answer: 'Ja, gisteren. Ik heb een kopie van de aangifte.',
@@ -465,7 +465,7 @@ export const nood: Pack = {
       kind: 'core',
       title: 'Locked out',
       objective: 'Say you have locked yourself out, call a locksmith and understand an NL-Alert.',
-      situation: 'It is half past nine in the evening. You take the bin out, and the front door falls shut behind you. Your keys are on the kitchen table.',
+      situation: 'It is half past nine in the evening. You take the bin out, and the front door swings shut and locks behind you. Your keys are on the kitchen table.',
       targetPhrase: 'Ik heb mezelf buitengesloten.',
       meaningEn: "I've locked myself out.",
       items: [
@@ -520,7 +520,7 @@ export const nood: Pack = {
           passage: NL_ALERT,
           options: ['A big fire with a lot of smoke', 'A storm with strong winds', 'A gas leak in your street', 'A road closed for roadworks'],
           answer: 'A big fire with a lot of smoke',
-          explanation: 'Grote brand: a big fire. Er komt veel rook vrij: a lot of smoke is coming off it.',
+          explanation: 'Grote brand: a big fire. Er komt veel rook vrij: a lot of smoke is being released.',
           focusedOnly: true,
         },
         {
@@ -542,7 +542,7 @@ export const nood: Pack = {
           items: ['kunt-u-vandaag-nog-komen'],
           prompt: 'Ask the locksmith whether he can still come today.',
           words: ['Kunt', 'u', 'vandaag', 'nog', 'komen?'],
-          distractors: ['kan'],
+          distractors: ['kun'],
           alternatives: [['Kunt', 'u', 'nog', 'vandaag', 'komen?']],
           english: 'Can you still come today?',
           explanation: 'Kunt u … komen? is a polite question, with komen at the end. Vandaag nog: still today.',

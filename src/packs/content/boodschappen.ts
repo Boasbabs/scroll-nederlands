@@ -27,7 +27,7 @@ export const boodschappen: Pack = {
   title: 'Supermarket and labels',
   situation: 'Finding things in the supermarket, reading offers and food labels, returning bottles and getting through the checkout.',
   buildsOn: ['s1-shop', 's1-food'],
-  mission: 'On three products in your kitchen, find the allergens in the list of ingrediënten (they are printed in bold) and any "kan sporen bevatten van" line.',
+  mission: 'On three products in your kitchen, find the allergens in the list of ingrediënten (they stand out, usually in bold) and any "kan sporen bevatten van" line.',
   cultureNote:
     "THT (ten minste houdbaar tot) is a best-before date: food past it is often still fine, so look, smell and taste before you throw it away. TGT (te gebruiken tot) is a use-by date on fresh food such as meat and fish: don't eat it after that date.",
   scenes: [
@@ -36,7 +36,7 @@ export const boodschappen: Pack = {
       kind: 'core',
       title: 'Finding things',
       objective: 'Return your bottles, take a basket and find the right section and shelf in a Dutch supermarket.',
-      situation: "It is Saturday morning. You walk into a big supermarket with a bag of empty bottles and your shopping list, and you can't find half of what is on it.",
+      situation: "It is Saturday morning. You walk into a big supermarket with a bag of empty bottles and your shopping list, and you can't find half of what is on it. First you ask where to hand in the bottles.",
       targetPhrase: 'Waar kan ik flessen inleveren?',
       meaningEn: 'Where can I return bottles?',
       items: [
@@ -152,7 +152,7 @@ export const boodschappen: Pack = {
             'Pardon, waar kan ik de flessen inleveren?',
             'Pardon, waar kan ik lege flessen inleveren?',
           ],
-          explanation: 'Waar kan ik …? with the verb at the end. You get the deposit back at the machine.',
+          explanation: 'Waar kan ik …? with the verb at the end. The machine prints a slip for the deposit, and you cash it in at the till.',
         },
         {
           id: 'lactose',
@@ -186,7 +186,7 @@ export const boodschappen: Pack = {
           prompt: 'You are making pancakes (pannenkoeken) for four, and your housemate is lactose intolerant. Write your shopping list with amounts. Flour is bloem.',
           mustInclude: [['melk'], ['eieren', 'ei'], ['bloem', 'meel'], ['lactosevrij', 'lactosevrije'], ['gram', 'kilo', 'liter', 'pond', 'pak', 'pakje', 'pakken', 'fles', 'flessen', 'zak', 'zakje', 'doos', 'stuks']],
           minWords: 15,
-          modelAnswer: 'Boodschappenlijst voor de pannenkoeken: 400 gram bloem, een liter lactosevrije melk, drie eieren, een pakje boter en een fles stroop.',
+          modelAnswer: 'Boodschappenlijst voor de pannenkoeken: 400 gram bloem, een liter lactosevrije melk, drie eieren, een fles olie en een fles stroop.',
           explanation: 'The amount comes straight before the food, with no word for "of": een liter melk. Lactosevrije gets an -e before melk.',
           focusedOnly: true,
         },
@@ -197,7 +197,7 @@ export const boodschappen: Pack = {
       kind: 'core',
       title: 'Offers and deposits',
       objective: "Read the week's offers, understand prices per piece and the deposit on drinks, and ask whether something is on offer.",
-      situation: "You check this week's offers in your supermarket's leaflet, then compare them with the greengrocer and the butcher on the same street.",
+      situation: "You check this week's offers in your supermarket's leaflet, then compare them with the greengrocer and the butcher on the same street. At the greengrocer's you point at something and ask whether it is on offer.",
       targetPhrase: 'Is dit in de aanbieding?',
       meaningEn: 'Is this on offer?',
       items: [
@@ -306,7 +306,7 @@ export const boodschappen: Pack = {
           items: ['statiegeld'],
           prompt: 'You pay 15 cents extra for a can of cola and get it back when you return the empty can. What is that money called in Dutch?',
           answers: ['het statiegeld', 'statiegeld'],
-          explanation: 'Het statiegeld: the deposit on bottles and cans. You get it back at the bottle machine.',
+          explanation: 'Het statiegeld: the deposit on bottles and cans. The bottle machine prints a slip, and you get the money at the till.',
         },
         {
           id: 'board',
@@ -337,7 +337,7 @@ export const boodschappen: Pack = {
       kind: 'core',
       title: 'Reading labels',
       objective: 'Read the ingredients, allergens and dates on a food label, and ask what is in something.',
-      situation: "You don't eat meat and you are allergic to nuts. Before anything goes in your basket, you turn it over and read the label.",
+      situation: "You don't eat meat and you are allergic to nuts. Before anything goes in your basket, you turn it over and read the label. At a party, where nothing has a label, you ask whether there is meat in a snack.",
       targetPhrase: 'Zit hier vlees in?',
       meaningEn: 'Is there meat in this?',
       items: [
@@ -366,8 +366,8 @@ export const boodschappen: Pack = {
         { dutch: 'vegetarisch, veganistisch', english: 'vegetarian, vegan' },
       ],
       patternExplanation:
-        'Dutch uses zitten in for what is in food: Zit hier vlees in? Zitten hier noten in? Allergisch takes voor: Ik ben allergisch voor noten. On a pack, the allergens are printed in bold in the list of ingrediënten.',
-      pronunciationTip: 'Ingrediënten: in-khray-dee-EN-tun; the dots on the ë start a new syllable. Houdbaar: HOWT-baar, with ou as in "how".',
+        'Dutch uses zitten in for what is in food: Zit hier vlees in? Zitten hier noten in? Allergisch takes voor: Ik ben allergisch voor noten. On a pack, the allergens stand out in the list of ingrediënten, usually in bold, sometimes in capitals.',
+      pronunciationTip: 'Ingrediënten: in-khray-dee-EN-tun; the dots on the ë start a new syllable. Houdbaar: HOWD-baar, with ou as in "how"; before the b, the d stays a d.',
       examples: [
         { dutch: 'Ik ben allergisch voor noten, dus ik lees de ingrediënten.', english: "I'm allergic to nuts, so I read the ingredients." },
         { dutch: 'Deze koekjes zijn vegetarisch, maar niet veganistisch.', english: 'These biscuits are vegetarian, but not vegan.' },
@@ -388,7 +388,7 @@ export const boodschappen: Pack = {
           passage: LABEL,
           options: ['Wheat, butter and egg', 'Nuts and peanuts', 'Sugar and salt'],
           answer: 'Wheat, butter and egg',
-          explanation: 'TARWE (wheat), ROOMBOTER (butter, so milk) and EI (egg) are the allergens. On a real pack they are in bold.',
+          explanation: 'TARWE (wheat), ROOMBOTER (butter, so milk) and EI (egg) are the allergens. Most packs print them in bold; capitals, as here, are allowed too.',
           focusedOnly: true,
         },
         {
@@ -511,8 +511,8 @@ export const boodschappen: Pack = {
       examples: [
         { dutch: 'Heeft u een klantenkaart? Nee, die heb ik niet.', english: "Do you have a loyalty card? No, I don't have one." },
         { dutch: 'Bij de zelfscankassa kun je vaak alleen pinnen.', english: 'At the self-checkout you can often only pay by card.' },
-        { dutch: 'Heeft u een tas nodig, of heeft u er zelf een?', english: 'Do you need a bag, or do you have one yourself?' },
-        { dutch: 'Het bonnetje van het statiegeld geef je aan de kassa.', english: 'You hand the deposit slip in at the checkout.' },
+        { dutch: 'Heeft u een tas nodig, of heeft u er zelf een bij?', english: 'Do you need a bag, or have you brought your own?' },
+        { dutch: 'Het bonnetje van het statiegeld lever je in bij de kassa.', english: 'You hand in the deposit slip at the checkout.' },
       ],
       speakingPrompt: 'Answer the cashier aloud: Heeft u een klantenkaart? Nee, die heb ik niet. Wilt u de bon? Nee, dank u.',
       revisits: ['s1-shop-paying', 's3-listen-shop'],
@@ -525,7 +525,7 @@ export const boodschappen: Pack = {
           kind: 'choice',
           items: ['heeft-u-een-klantenkaart', 's1-shop-paying/wilt-u-de-bon', 's1-shop-paying/wilt-u-een-tasje'],
           prompt: 'Listen to the cashier. What does she ask about?',
-          audioText: 'Goedemiddag. Heeft u een klantenkaart? Dat is dan zeventien euro veertig. Wilt u de bon? En wilt u een tasje?',
+          audioText: 'Goedemiddag. Heeft u een klantenkaart? Wilt u een tasje? Dat is dan zeventien euro veertig. Wilt u de bon?',
           listenOnly: true,
           options: ['A loyalty card, the receipt and a bag', 'A loyalty card, cash and a bag', 'Your age, the receipt and a bag'],
           answer: 'A loyalty card, the receipt and a bag',

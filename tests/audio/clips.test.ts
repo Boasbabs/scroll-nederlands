@@ -26,10 +26,10 @@ describe.skipIf(!manifest)('the generated audio manifest', () => {
     expect(manifest?.model).toMatch(/^eleven_/);
   });
 
-  it('points every clip at an mp3 that exists in public/', () => {
+  it('points every clip at an Opus or (from the first run) an MP3 file that exists in public/', () => {
     const files = [...Object.values(clips), ...Object.values(clipsB)];
     expect(files.length).toBeGreaterThan(0);
-    expect(files.filter((file) => !/^audio\/[0-9a-f]{16}\.mp3$/.test(file))).toEqual([]);
+    expect(files.filter((file) => !/^audio\/[0-9a-f]{16}\.(ogg|mp3)$/.test(file))).toEqual([]);
     expect(files.filter((file) => !existsSync(path.join(publicDir, file)))).toEqual([]);
   });
 
@@ -50,23 +50,30 @@ describe.skipIf(!manifest)('the generated audio manifest', () => {
 describe('naming clips and their masters', () => {
   const avonds: ClipText = { text: "'s avonds", voice: 'a', group: 'items' };
 
-  it('names a clip as the first run did, so the clips made then are found again', () => {
-    expect(clipFile(avonds)).toBe('audio/db012cff92f77e47.mp3');
-    if (manifest) expect(manifest.clips["'s avonds"]).toBe(clipFile(avonds));
+  it('names a clip of the first run as that run did, so its MP3s are found again', () => {
+    expect(clipFile(avonds, 1)).toBe('audio/db012cff92f77e47.mp3');
+    if (manifest) expect(manifest.clips["'s avonds"]).toBe(clipFile(avonds, 1));
+  });
+
+  it('encodes new clips as Opus in Ogg', () => {
+    expect(clipFile(avonds)).toMatch(/^audio\/[0-9a-f]{16}\.ogg$/);
   });
 
   it('keys a master by what the API was asked for, so a new encoding finds it', () => {
     expect(masterName(avonds)).toMatch(/^[0-9a-f]{16}\.mp3$/);
     expect(masterName({ ...avonds, group: 'pairs' })).toBe(masterName(avonds));
     expect(masterName({ ...avonds, voice: 'b' })).not.toBe(masterName(avonds));
-    // The clip's name also carries the post-processing; the master's does not.
-    expect(path.basename(clipFile(avonds), '.mp3')).not.toBe(path.basename(masterName(avonds), '.mp3'));
+    // A clip's name also carries the post-processing; the master's does not.
+    const names = [clipFile(avonds), clipFile(avonds, 1), masterName(avonds)].map((file) => path.parse(file).name);
+    expect(new Set(names).size).toBe(3);
   });
 
   it('makes a clip from what is on disk, cheapest first, and calls the API only when nothing is', () => {
     const plan = (clips: Array<string>, masters: Array<string>) => planClip(avonds, { clip: (file) => clips.includes(file), master: (name) => masters.includes(name) });
     expect(plan([clipFile(avonds)], [masterName(avonds)])).toEqual({ source: 'ready', file: clipFile(avonds) });
-    expect(plan([], [masterName(avonds)])).toEqual({ source: 'master', file: clipFile(avonds) });
+    // A master makes the Opus clip, even where the first run's MP3 is there.
+    expect(plan([clipFile(avonds, 1)], [masterName(avonds)])).toEqual({ source: 'master', file: clipFile(avonds) });
+    expect(plan([clipFile(avonds, 1)], [])).toEqual({ source: 'earlier', file: clipFile(avonds, 1) });
     expect(plan([], [])).toEqual({ source: 'synthesize', file: clipFile(avonds) });
   });
 });
@@ -92,7 +99,8 @@ describe('the human takes manifest', () => {
 
   it('is out of reach of --prune, which only looks at files directly in public/audio/', () => {
     const entry = (name: string, file = true) => ({ name, isFile: () => file });
-    expect(unusedClips([entry('a.mp3'), entry('b.mp3'), entry('recorded', false), entry('notes.txt')], new Set(['a.mp3']))).toEqual(['b.mp3']);
+    const entries = [entry('a.mp3'), entry('b.mp3'), entry('c.ogg'), entry('d.ogg'), entry('recorded', false), entry('notes.txt')];
+    expect(unusedClips(entries, new Set(['a.mp3', 'c.ogg']))).toEqual(['b.mp3', 'd.ogg']);
   });
 });
 

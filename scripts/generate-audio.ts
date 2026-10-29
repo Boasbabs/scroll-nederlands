@@ -47,7 +47,18 @@ export const SETTINGS: Record<string, number | boolean> = { stability: 0.5, simi
 /** Spoken context for very short texts: steers the model to Dutch without being read aloud (and is not billed). */
 const SHORT_CONTEXT = 'Luister en herhaal:';
 /** Bump when post-processing changes, so every clip is rebuilt (from its master, where there is one). */
-const POST_VERSION = 1;
+const POST_VERSION = 2;
+/**
+ * The file each post-processing version writes. 1: MP3 64 kbps at 44.1 kHz, the first run's clips, kept
+ * until a master can replace them. 2: Opus 32 kbps in Ogg, about half the size for the same speech.
+ */
+const VERSION_EXT: Record<number, keyof typeof ENCODERS> = { 1: 'mp3', 2: 'ogg' };
+/** ffmpeg's output options per file type. bitexact leaves out the encoder's name, so the same master always makes the same file. */
+const ENCODERS = {
+  mp3: ['-ar', '44100', '-ac', '1', '-c:a', 'libmp3lame', '-b:a', '64k'],
+  ogg: ['-ar', '48000', '-ac', '1', '-c:a', 'libopus', '-b:a', '32k', '-application', 'audio', '-map_metadata', '-1', '-fflags', '+bitexact', '-flags:a', '+bitexact'],
+};
+const MIME_TYPES: Record<keyof typeof ENCODERS, string> = { mp3: 'audio/mpeg', ogg: 'audio/ogg' };
 const SOURCE_FORMAT = 'mp3_44100_128';
 /** A master is the API's own file, in SOURCE_FORMAT, before any post-processing. */
 const MASTER_EXT = 'mp3';
@@ -156,24 +167,30 @@ export function masterName(clip: ClipText): string {
   return `${hash(synthesisInputs(clip))}.${MASTER_EXT}`;
 }
 
-/** The post-processed clip the extension plays, under public/. */
-export function clipFile(clip: ClipText): string {
-  return `audio/${hash([...synthesisInputs(clip), POST_VERSION])}.mp3`;
+/** The post-processed clip the extension plays, under public/, as a post-processing version writes it. */
+export function clipFile(clip: ClipText, version = POST_VERSION): string {
+  return `audio/${hash([...synthesisInputs(clip), version])}.${VERSION_EXT[version]}`;
 }
 
 // The seed and the check's sample follow the master, so neither changes with the encoding.
 const seedFor = (clip: ClipText) => Number.parseInt(masterName(clip).slice(0, 8), 16) % 4294967295;
 
 /**
- * Where a clip comes from on this run, cheapest first: it is in public/ already,
- * it can be made from its master, or (the only case that calls the API) it is synthesized.
+ * Where a clip comes from on this run, cheapest first: it is in public/ already, it can be made
+ * from its master, an earlier encoding of the same take is kept, or (the only case that calls the
+ * API) it is synthesized. `file` is the clip the text plays once the run has made it.
  */
-export type ClipPlan = { source: 'ready' | 'master' | 'synthesize'; file: string };
+export type ClipPlan = { source: 'ready' | 'master' | 'earlier' | 'synthesize'; file: string };
 
 export function planClip(clip: ClipText, has: { clip: (file: string) => boolean; master: (name: string) => boolean }): ClipPlan {
   const file = clipFile(clip);
   if (has.clip(file)) return { source: 'ready', file };
-  return { source: has.master(masterName(clip)) ? 'master' : 'synthesize', file };
+  if (has.master(masterName(clip))) return { source: 'master', file };
+  // Same text, voice, model and settings: the same take, not worth paying for again.
+  for (let version = POST_VERSION - 1; version >= 1; version--) {
+    if (has.clip(clipFile(clip, version))) return { source: 'earlier', file: clipFile(clip, version) };
+  }
+  return { source: 'synthesize', file };
 }
 
 // ---------------------------------------------------------------------------
@@ -253,10 +270,13 @@ async function synthesize(clip: ClipText, seed: number): Promise<{ audio: Buffer
 }
 
 /**
- * Trims silence (keeps 50 ms before, 150 ms after), normalises to -18 LUFS, encodes mono MP3 64 kbps 44.1 kHz.
- * Generated clips and human takes both go through it.
+ * Trims silence (keeps 50 ms before, 150 ms after), normalises to -18 LUFS, and encodes mono for the
+ * output's type (ENCODERS): Opus for a generated clip (.ogg), MP3 for a human take (.mp3).
  */
 export async function postProcess(raw: string, out: string): Promise<void> {
+  const ext = path.extname(out).slice(1);
+  if (!(ext in ENCODERS)) throw new Error(`no encoder for .${ext} files`);
+  const encoder = ENCODERS[ext as keyof typeof ENCODERS];
   const trim = [
     'silenceremove=start_periods=1:start_threshold=-50dB:start_silence=0.05',
     'areverse',
@@ -271,10 +291,10 @@ export async function postProcess(raw: string, out: string): Promise<void> {
   const loudnorm = finite
     ? `loudnorm=${target}:measured_I=${measured.input_i}:measured_TP=${measured.input_tp}:measured_LRA=${measured.input_lra}:measured_thresh=${measured.input_thresh}:offset=${measured.target_offset}:linear=true`
     : `loudnorm=${target}`;
-  const tmp = `${out}.tmp.mp3`;
+  const tmp = `${out}.tmp.${ext}`;
   try {
-    await run('ffmpeg', ['-hide_banner', '-nostats', '-y', '-i', raw, '-af', `${trim},${loudnorm}`, '-ar', '44100', '-ac', '1', '-c:a', 'libmp3lame', '-b:a', '64k', tmp]);
-    // Audio entirely under the silence threshold comes out as an MP3 with no frames.
+    await run('ffmpeg', ['-hide_banner', '-nostats', '-y', '-i', raw, '-af', `${trim},${loudnorm}`, ...encoder, tmp]);
+    // Audio entirely under the silence threshold comes out as a file with no frames.
     if (!((await duration(tmp).catch(() => 0)) > 0.05)) throw new Error('nothing is left after trimming the silence: the audio is empty or too quiet');
   } catch (error) {
     // A half-written or empty file must not replace a good one or ship: nothing prunes the takes folder.
@@ -286,7 +306,8 @@ export async function postProcess(raw: string, out: string): Promise<void> {
 
 /** Generated clips the manifest no longer uses. Only files directly in public/audio/, so human takes in its recorded/ folder are never pruned. */
 export function unusedClips(entries: ReadonlyArray<{ name: string; isFile(): boolean }>, used: ReadonlySet<string>): Array<string> {
-  return entries.filter((entry) => entry.isFile() && entry.name.endsWith('.mp3') && !used.has(entry.name)).map((entry) => entry.name);
+  const isClip = (name: string) => Object.keys(ENCODERS).some((ext) => name.endsWith(`.${ext}`));
+  return entries.filter((entry) => entry.isFile() && isClip(entry.name) && !used.has(entry.name)).map((entry) => entry.name);
 }
 
 // Speech-to-text check -------------------------------------------------------
@@ -358,7 +379,8 @@ async function transcribe(file: string): Promise<{ text: string; language: strin
   // Forced Dutch: language auto-detection is unreliable on one- and two-word clips.
   form.append('language_code', 'nld');
   form.append('tag_audio_events', 'false');
-  form.append('file', new Blob([await readFile(file)], { type: 'audio/mpeg' }), path.basename(file));
+  const type = MIME_TYPES[path.extname(file).slice(1) as keyof typeof ENCODERS] ?? 'application/octet-stream';
+  form.append('file', new Blob([await readFile(file)], { type }), path.basename(file));
   const response = await elevenlabs('/v1/speech-to-text', { form });
   const body = (await response.json()) as { text: string; language_code: string; language_probability: number };
   return { text: body.text, language: body.language_code, probability: body.language_probability };
@@ -417,15 +439,18 @@ async function main() {
     planClip(clip, { clip: (file) => existsSync(path.join(root, 'public', file)), master: (name) => existsSync(path.join(mastersDir, name)) });
   const groups = until ? GROUPS.slice(0, GROUPS.indexOf(until)) : GROUPS;
   console.log(`${all.length} texts (${all.filter((c) => c.voice === 'b').length} for voice b), ${all.reduce((s, c) => s + c.text.length, 0)} characters in all.`);
+  let earlier = 0;
   for (const group of GROUPS) {
     const clips = all.filter((clip) => clip.group === group);
     const sources = clips.map((clip) => plan(clip).source);
+    earlier += sources.filter((source) => source === 'earlier').length;
     const todo = clips.filter((_, i) => sources[i] === 'synthesize');
     const fromMasters = sources.filter((source) => source === 'master').length;
     console.log(
       `  ${group.padEnd(9)} ${String(clips.length).padStart(5)} texts ${String(clips.reduce((s, c) => s + c.text.length, 0)).padStart(7)} chars; to generate ${todo.length} (${todo.reduce((s, c) => s + c.text.length, 0)} chars)${fromMasters ? `; to make from masters ${fromMasters}` : ''}`,
     );
   }
+  if (earlier) console.log(`Kept from an earlier encoding: ${earlier} clips, until a master can remake them.`);
   const masters = existsSync(mastersDir) ? (await readdir(mastersDir)).filter((name) => name.endsWith(`.${MASTER_EXT}`)).length : 0;
   console.log(`Masters kept in ${mastersDir.startsWith(root) ? path.relative(root, mastersDir) : mastersDir}: ${masters}.`);
   const recorded = (await readRecorded(root)).takes;
@@ -458,7 +483,7 @@ async function main() {
   for (const clip of all) {
     const { source, file } = plan(clip);
     const kept = (clip.voice === 'a' ? before?.clips : before?.clipsB)?.[clip.text];
-    if (source === 'ready') register(clip, file);
+    if (source === 'ready' || source === 'earlier') register(clip, file);
     else if (kept && existsSync(at(kept))) register(clip, kept);
   }
   await save();
@@ -523,7 +548,10 @@ async function main() {
   for (const group of reportOnly ? [] : groups) {
     const fresh: Array<ClipText> = [];
     let fromMasters = 0;
-    const todo = all.filter((clip) => clip.group === group && plan(clip).source !== 'ready');
+    const todo = all.filter((clip) => {
+      const { source } = plan(clip);
+      return clip.group === group && (source === 'master' || source === 'synthesize');
+    });
     await pool(todo, () => Boolean(stopped), async (clip) => {
       const { source, file } = plan(clip);
       if (source === 'synthesize' && encodeOnly) return;

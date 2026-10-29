@@ -117,6 +117,33 @@ describe.skipIf(!hasFfmpeg)('the ffmpeg chain on a raw take', () => {
     expect(existsSync(`${out}.tmp.mp3`)).toBe(false);
   }, 20_000);
 
+  it('encodes a generated clip (.ogg) as mono Opus at 48 kHz, and the same take always as the same file', async () => {
+    const raw = path.join(root, 'clip.wav');
+    const out = path.join(root, 'clip.ogg');
+    const sound = 'sine=frequency=220:sample_rate=48000:duration=1.2';
+    execFileSync('ffmpeg', ['-hide_banner', '-loglevel', 'error', '-f', 'lavfi', '-i', sound, '-af', 'volume=-20dB,adelay=500:all=1,apad=pad_dur=0.8', '-ac', '2', raw]);
+    await postProcess(raw, out);
+
+    const probe = JSON.parse(
+      execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'stream=codec_name,channels,sample_rate:format=format_name,duration,bit_rate', '-of', 'json', out], { encoding: 'utf8' }),
+    ) as { streams: Array<Record<string, unknown>>; format: Record<string, string> };
+    expect(probe.streams[0]).toMatchObject({ codec_name: 'opus', channels: 1, sample_rate: '48000' });
+    expect(probe.format.format_name).toBe('ogg');
+    expect(Number(probe.format.duration)).toBeGreaterThan(1.3);
+    expect(Number(probe.format.duration)).toBeLessThan(1.5);
+    // 32 kbps, plus a few hundred bytes of container.
+    expect(Number(probe.format.bit_rate)).toBeLessThan(40_000);
+    const { stderr } = spawnSync('ffmpeg', ['-hide_banner', '-nostats', '-i', out, '-af', 'ebur128', '-f', 'null', '-'], { encoding: 'utf8' });
+    const loudness = Number(/I:\s+(-?[\d.]+) LUFS/.exec(stderr.slice(stderr.lastIndexOf('Summary:')))?.[1]);
+    expect(loudness).toBeGreaterThan(-19);
+    expect(loudness).toBeLessThan(-17);
+    // Re-encoding a master never shows up as a changed file.
+    const first = await readFile(out);
+    await postProcess(raw, out);
+    expect((await readFile(out)).equals(first)).toBe(true);
+    expect(existsSync(`${out}.tmp.ogg`)).toBe(false);
+  }, 20_000);
+
   it('refuses a take with nothing left after trimming, and keeps the version made before', async () => {
     const raw = path.join(root, 'silent.wav');
     const out = path.join(root, 'silent.mp3');

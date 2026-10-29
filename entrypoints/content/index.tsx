@@ -166,7 +166,8 @@ export default defineContentScript({
       });
     };
     browser.storage.onChanged.addListener(onChanged);
-    ctx.onInvalidated(() => browser.storage.onChanged.removeListener(onChanged));
+    // After an update the old script in an open tab has no browser.storage, and no changes reach it.
+    ctx.onInvalidated(() => browser.storage?.onChanged.removeListener(onChanged));
 
     // The extension may be reloading; the next tick tries again.
     ctx.setInterval(() => void loop.tick().catch(() => undefined), TICK_MS);

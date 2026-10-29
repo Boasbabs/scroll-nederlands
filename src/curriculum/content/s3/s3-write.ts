@@ -486,7 +486,8 @@ export const lessons: Array<LessonDraft> = [
         dutch: 'het afval',
         english: 'the rubbish, the waste',
         kind: 'word',
-        accept: ['afval'],
+        accept: ['afval', 'de afval'],
+        note: 'de afval is right too',
       },
       {
         key: 'de-stoep',

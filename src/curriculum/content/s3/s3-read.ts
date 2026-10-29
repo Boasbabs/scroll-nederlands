@@ -329,8 +329,8 @@ export const lessons: Array<LessonDraft> = [
         dutch: 'het gft-afval',
         english: 'food and garden waste',
         kind: 'word',
-        accept: ['gft-afval'],
-        note: 'gft = groente, fruit, tuin',
+        accept: ['gft-afval', 'de gft-afval'],
+        note: 'gft = groente, fruit, tuin; de gft-afval is right too',
       },
       {
         key: 'om-de-week',

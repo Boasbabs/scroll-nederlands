@@ -1,6 +1,7 @@
 // Applying finished sessions to learner progress. Pure: returns new objects.
 import type { CurriculumIndex } from '../curriculum/assemble';
 import type { ExerciseStage } from '../curriculum/types';
+import { PACKS_STAGE } from '../packs/assemble';
 import { introduceItem, recordAnswer } from './schedule';
 import type { ExerciseResult, LearnerProgress, LessonProgress, PracticeMode } from './types';
 
@@ -67,6 +68,8 @@ export function markLessonStarted(progress: LearnerProgress, lessonId: string, n
  * Finishes a lesson. Its own items start their review schedule from what the
  * learner showed in the lesson; items from earlier lessons that the lesson
  * revisits are graded like a review. Repeating a lesson grades everything.
+ * A pack scene may practise course items the course has not taught yet (a
+ * pack never waits on the path): those are left for the course to introduce.
  */
 export function completeLesson(
   progress: LearnerProgress,
@@ -79,7 +82,8 @@ export function completeLesson(
   const lesson = index.lesson(lessonId);
   if (!lesson) throw new Error(`Unknown lesson ${lessonId}`);
   const fresh = new Set(lesson.items.filter((item) => !progress.items[item.id]).map((item) => item.id));
-  const graded = gradeAll(progress.items, results, mode, now, (itemId) => !fresh.has(itemId));
+  const scene = lesson.stageId === PACKS_STAGE;
+  const graded = gradeAll(progress.items, results, mode, now, (itemId) => (scene ? itemId in progress.items : !fresh.has(itemId)));
   const items = introduceAll(graded, [...fresh], results, now);
 
   const previous: LessonProgress = progress.lessons[lessonId] ?? { timesCompleted: 0 };

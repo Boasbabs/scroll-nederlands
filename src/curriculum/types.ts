@@ -55,6 +55,8 @@ export type LearningItemDraft = {
    * labels), so it is only practised by recognition and listening.
    */
   recognitionOnly?: boolean;
+  /** A noun in the plural ("de servicekosten"): plurals always take de, so it gets no de/het item. The course lists its own in COURSE_PLURALS. */
+  plural?: boolean;
 };
 
 /** A learning item placed in the curriculum. */
@@ -229,7 +231,7 @@ export type Lesson = Omit<LessonDraft, 'items'> & {
   moduleId: string;
   stageId: string;
   level: CurriculumLevel;
-  /** Position in teaching order across the whole course. */
+  /** Position in teaching order across the whole course; for a pack scene, its place in its pack. */
   order: number;
   items: Array<LearningItem>;
 };

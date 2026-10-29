@@ -1,6 +1,7 @@
 import { assembleCurriculum, indexCurriculum, type CurriculumIndex } from '../../src/curriculum/assemble';
 import type { StagePlan } from '../../src/curriculum/structure';
 import type { Curriculum, Exercise, LessonDraft } from '../../src/curriculum/types';
+import type { Pack } from '../../src/packs/types';
 import type { SoundContrast } from '../../src/sounds/types';
 import type { WordTheme } from '../../src/words/types';
 
@@ -100,6 +101,7 @@ export function makeCourse(
   overrides: Record<string, Partial<LessonDraft>> = {},
   wordThemes: Array<WordTheme> = [],
   contrasts: Array<SoundContrast> = [],
+  packs: Array<Pack> = [],
 ): CurriculumIndex {
   const drafts: Record<string, Array<LessonDraft>> = {
     'x0-a': [
@@ -150,8 +152,39 @@ export function makeCourse(
     },
   ];
   const curriculum: Curriculum = assembleCurriculum(structure, (_stage, moduleId) => drafts[moduleId] ?? []);
-  return indexCurriculum(curriculum, wordThemes, contrasts);
+  return indexCurriculum(curriculum, wordThemes, contrasts, packs);
 }
+
+/**
+ * A three-scene pack at the market, built on module x1-a. The first scene
+ * teaches a noun and a plural; its recall exercise also practises a course
+ * item by reference ("Ik wil betalen"), as pack scenes refer to what the course teaches.
+ */
+export const testPacks: Array<Pack> = [
+  {
+    id: 'markt',
+    title: 'At the market',
+    situation: 'Buying fruit at the Saturday market.',
+    buildsOn: ['x1-a'],
+    scenes: [
+      coreLesson('sc-markt-kraam', 'Twee kilo appels', 'Two kilos of apples', {
+        title: 'At the stall',
+        items: [
+          { key: 'twee-kilo-appels', dutch: 'Twee kilo appels', english: 'Two kilos of apples', kind: 'phrase' },
+          { key: 'de-kraam', dutch: 'de kraam', english: 'the stall', kind: 'word' },
+          { key: 'de-appels', dutch: 'de appels', english: 'the apples', kind: 'word', plural: true },
+        ],
+        exercises: stageExercises('Twee kilo appels', 'Two kilos of apples').map((exercise) =>
+          exercise.id === 'type' ? { ...exercise, items: ['twee-kilo-appels', 'x1-a-pay/ik-wil-betalen'] } : exercise,
+        ),
+      }),
+      coreLesson('sc-markt-prijs', 'Wat kost dat', 'What does that cost', { title: 'The price' }),
+      coreLesson('sc-markt-tas', 'Heeft u een tas', 'Do you have a bag', { title: 'A bag' }),
+    ],
+    mission: 'Buy something at a market in Dutch.',
+    cultureNote: 'Markets often take cards now.',
+  },
+];
 
 /**
  * Two small basic-word themes. "Dank je wel" refers to a course item, so it

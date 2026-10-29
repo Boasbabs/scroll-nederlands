@@ -1,3 +1,4 @@
+import { packs } from '../packs/content';
 import { contrasts } from '../sounds/pairs';
 import { wordThemes } from '../words/content';
 import { assembleCurriculum, indexCurriculum, type CurriculumIndex } from './assemble';
@@ -14,7 +15,7 @@ function lessonsForModule(stageId: string, moduleId: string): Array<LessonDraft>
 }
 
 export const curriculum: Curriculum = assembleCurriculum(curriculumStructure, lessonsForModule);
-export const course: CurriculumIndex = indexCurriculum(curriculum, wordThemes, contrasts);
+export const course: CurriculumIndex = indexCurriculum(curriculum, wordThemes, contrasts, packs);
 
 export { exerciseItemIds, flattenLessons, indexCurriculum, type CurriculumIndex } from './assemble';
 export type { Curriculum, Exercise, LearningItem, Lesson } from './types';

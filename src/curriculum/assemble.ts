@@ -1,5 +1,7 @@
-import { isCourseNoun, placeArticles } from '../articles/assemble';
+import { isLessonNoun, placeArticles } from '../articles/assemble';
 import type { Correction } from '../corrections/types';
+import { placePacks, type PlacedPack } from '../packs/assemble';
+import type { Pack } from '../packs/types';
 import { contrastItemId, placeContrasts } from '../sounds/assemble';
 import type { SoundContrast } from '../sounds/types';
 import { placeWords, type PlacedTheme } from '../words/assemble';
@@ -68,9 +70,9 @@ export function exerciseItemIds(lesson: Lesson, exercise: Exercise): Array<strin
 
 export type CurriculumIndex = {
   curriculum: Curriculum;
-  /** The course path. Basic words are not lessons. */
+  /** The course path. Basic words are not lessons, and pack scenes are not on the path. */
   lessons: Array<Lesson>;
-  /** Every schedulable item: the course's, the basic words the course does not teach, the sound contrasts, the articles. */
+  /** Every schedulable item: the course's, the basic words the course does not teach, the packs', the sound contrasts, the articles. */
   items: Array<LearningItem>;
   /** The basic-word list in introduction order, course items included (see src/words). */
   words: Array<LearningItem>;
@@ -80,6 +82,9 @@ export type CurriculumIndex = {
   sounds: Array<LearningItem>;
   /** One de/het item per singular noun, course nouns first (see src/articles). */
   articles: Array<LearningItem>;
+  /** The scenario packs beside the path, each with its scene lessons (see src/packs). */
+  packs: Array<PlacedPack>;
+  /** A course lesson or a pack scene. */
   lesson: (id: string) => Lesson | undefined;
   item: (id: string) => LearningItem | undefined;
   /** The minimal pairs behind a contrast item. */
@@ -92,14 +97,17 @@ export function indexCurriculum(
   source: Curriculum,
   wordThemes: ReadonlyArray<WordTheme> = [],
   contrasts: ReadonlyArray<SoundContrast> = [],
+  packList: ReadonlyArray<Pack> = [],
 ): CurriculumIndex {
   const lessons = flattenLessons(source);
   const courseItems = lessons.flatMap((lesson) => lesson.items);
   const placed = placeWords(wordThemes, courseItems);
   const sounds = placeContrasts(contrasts);
-  const articles = placeArticles([...courseItems.filter(isCourseNoun), ...placed.nouns]);
-  const items = [...courseItems, ...placed.items, ...sounds, ...articles];
-  const lessonById = new Map(lessons.map((lesson) => [lesson.id, lesson]));
+  const packs = placePacks(packList);
+  const packItems = packs.flatMap((pack) => pack.items);
+  const articles = placeArticles([...courseItems.filter(isLessonNoun), ...placed.nouns, ...packItems.filter(isLessonNoun)]);
+  const items = [...courseItems, ...placed.items, ...packItems, ...sounds, ...articles];
+  const lessonById = new Map([...lessons, ...packs.flatMap((pack) => pack.scenes)].map((lesson) => [lesson.id, lesson]));
   const itemById = new Map(items.map((item) => [item.id, item]));
   const contrastById = new Map(contrasts.map((contrast) => [contrastItemId(contrast), contrast]));
   return {
@@ -110,6 +118,7 @@ export function indexCurriculum(
     themes: placed.themes,
     sounds,
     articles,
+    packs,
     lesson: (id) => lessonById.get(id),
     item: (id) => itemById.get(id),
     contrast: (itemId) => contrastById.get(itemId),

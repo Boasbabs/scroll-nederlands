@@ -340,10 +340,10 @@ export function generateExercise(
 
 type AuthoredExercise = { lessonId: string; exercise: Exercise };
 
-/** Authored exercises that practise an item, outside checkpoints (kept fresh for assessment). */
+/** Authored exercises that practise an item, in course lessons and pack scenes, outside checkpoints (kept fresh for assessment). */
 export function authoredExercisesFor(index: CurriculumIndex, itemId: string, mode: PracticeMode): Array<AuthoredExercise> {
   const found: Array<AuthoredExercise> = [];
-  for (const lesson of index.lessons) {
+  for (const lesson of [...index.lessons, ...index.packs.flatMap((pack) => pack.scenes)]) {
     if (lesson.kind === 'checkpoint') continue;
     for (const exercise of lesson.exercises) {
       if (mode === 'micro' && exercise.focusedOnly) continue;

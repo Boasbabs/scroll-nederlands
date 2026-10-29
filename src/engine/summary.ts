@@ -1,8 +1,9 @@
 // A small progress summary for the side panel. No analytics, no leaderboards.
 import type { CurriculumIndex } from '../curriculum/assemble';
-import type { LearningItem } from '../curriculum/types';
+import type { LearningItem, Lesson } from '../curriculum/types';
+import type { PlacedPack } from '../packs/assemble';
 import { DAY, HOUR, itemStrength, type ItemStrength } from './schedule';
-import { getNextLesson, isLessonDone } from './selection';
+import { getNextLesson, getNextScene, isLessonDone, packActivity } from './selection';
 import { dayKey } from './progress';
 import type { LearnerProgress } from './types';
 
@@ -24,6 +25,25 @@ export function summarizeTopic(items: ReadonlyArray<LearningItem>, progress: Lea
   return { ...countStrength(items, progress), due };
 }
 
+/** One pack: its scenes done, the next one, and its own items (the Topics tab). */
+export type PackSummary = {
+  scenes: CountOf;
+  /** The first scene not done yet; none once the pack is finished. */
+  next?: Lesson;
+  /** A scene has been started or finished. */
+  started: boolean;
+  items: TopicSummary;
+};
+
+export function summarizePack(pack: PlacedPack, progress: LearnerProgress, now: number): PackSummary {
+  return {
+    scenes: { completed: pack.scenes.filter((scene) => isLessonDone(progress, scene.id)).length, total: pack.scenes.length },
+    next: getNextScene(pack, progress),
+    started: packActivity(pack, progress) !== undefined,
+    items: summarizeTopic(pack.items, progress, now),
+  };
+}
+
 /** The course's own items: those its lessons teach (not the basic words or sound contrasts beside it). */
 function courseItems(index: CurriculumIndex): Array<LearningItem> {
   return index.lessons.flatMap((lesson) => lesson.items);
@@ -43,6 +63,8 @@ export type ProgressSummary = {
   sounds: StrengthCount;
   /** The nouns' de/het items by strength. */
   articles: StrengthCount;
+  /** The scenario packs: how many are started, and their own items by strength. */
+  packs: { started: number; total: number; items: StrengthCount };
   dueNow: number;
   /** Due within the next 7 days, per day, starting today. */
   forecast: Array<number>;
@@ -78,6 +100,11 @@ export function summarizeProgress(index: CurriculumIndex, progress: LearnerProgr
   const words = countStrength(index.words, progress);
   const sounds = countStrength(index.sounds, progress);
   const articles = countStrength(index.articles, progress);
+  const packs = {
+    started: index.packs.filter((pack) => packActivity(pack, progress) !== undefined).length,
+    total: index.packs.length,
+    items: countStrength(index.packs.flatMap((pack) => pack.items), progress),
+  };
 
   const startOfToday = new Date(now);
   startOfToday.setHours(0, 0, 0, 0);
@@ -117,6 +144,7 @@ export function summarizeProgress(index: CurriculumIndex, progress: LearnerProgr
     words,
     sounds,
     articles,
+    packs,
     dueNow,
     forecast,
     accuracy: { correct, answered },

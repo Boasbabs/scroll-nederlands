@@ -1,6 +1,7 @@
 // What to practise next. Due reviews come before new material.
 import type { CurriculumIndex } from '../curriculum/assemble';
 import type { Lesson } from '../curriculum/types';
+import { PACKS_STAGE, type PlacedPack } from '../packs/assemble';
 import { WORDS_STAGE } from '../words/assemble';
 import { ITEM_STAGES, type LearnerProgress, type PracticeMode } from './types';
 
@@ -50,10 +51,12 @@ export function isLessonDone(progress: LearnerProgress, lessonId: string): boole
  * The course is a path: a lesson opens once every earlier lesson is done,
  * and declared prerequisites are done too. Checkpoints count as done once
  * attempted, so a stage's checkpoint must be tried before the next stage.
+ * A pack scene follows its own pack instead (isSceneUnlocked).
  */
 export function isLessonUnlocked(index: CurriculumIndex, progress: LearnerProgress, lessonId: string): boolean {
   const lesson = index.lesson(lessonId);
   if (!lesson) return false;
+  if (lesson.stageId === PACKS_STAGE) return isSceneUnlocked(index, progress, lessonId);
   const earlierDone = index.lessons.slice(0, lesson.order).every((earlier) => isLessonDone(progress, earlier.id));
   return earlierDone && (lesson.prerequisites ?? []).every((id) => isLessonDone(progress, id));
 }
@@ -61,6 +64,44 @@ export function isLessonUnlocked(index: CurriculumIndex, progress: LearnerProgre
 /** The first lesson in course order that is not done yet. */
 export function getNextLesson(index: CurriculumIndex, progress: LearnerProgress): Lesson | undefined {
   return index.lessons.find((lesson) => !isLessonDone(progress, lesson.id));
+}
+
+/** The pack a scene lesson belongs to. */
+export function packOfScene(index: CurriculumIndex, lessonId: string): PlacedPack | undefined {
+  return index.packs.find((pack) => pack.scenes.some((scene) => scene.id === lessonId));
+}
+
+/** A pack's scenes open in order. A pack never waits on the course path: "best after" is advice. */
+export function isSceneUnlocked(index: CurriculumIndex, progress: LearnerProgress, lessonId: string): boolean {
+  const pack = packOfScene(index, lessonId);
+  if (!pack) return false;
+  const at = pack.scenes.findIndex((scene) => scene.id === lessonId);
+  return pack.scenes.slice(0, at).every((scene) => isLessonDone(progress, scene.id));
+}
+
+/** A pack's first scene not done yet; none once every scene is done. */
+export function getNextScene(pack: PlacedPack, progress: LearnerProgress): Lesson | undefined {
+  return pack.scenes.find((scene) => !isLessonDone(progress, scene.id));
+}
+
+/** When the learner last started or finished one of a pack's scenes; undefined if never. */
+export function packActivity(pack: PlacedPack, progress: LearnerProgress): number | undefined {
+  const times = pack.scenes.flatMap((scene) => {
+    const lesson = progress.lessons[scene.id];
+    return [lesson?.startedAt, lesson?.completedAt].filter((at): at is number => at !== undefined);
+  });
+  return times.length > 0 ? Math.max(...times) : undefined;
+}
+
+/** The pack the learner is in the middle of (a scene started, one still to do), the most recently active first. */
+export function getPackInProgress(index: CurriculumIndex, progress: LearnerProgress): PlacedPack | undefined {
+  let latest: { pack: PlacedPack; at: number } | undefined;
+  for (const pack of index.packs) {
+    const at = packActivity(pack, progress);
+    if (at === undefined || !getNextScene(pack, progress)) continue;
+    if (!latest || at > latest.at) latest = { pack, at };
+  }
+  return latest?.pack;
 }
 
 export function startOfDay(now: number): number {

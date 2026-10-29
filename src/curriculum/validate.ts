@@ -39,7 +39,8 @@ function leaks(text: string, answer: string): boolean {
   return ` ${normalizeAnswer(text)} `.includes(` ${needle} `);
 }
 
-function exerciseIssues(lesson: Lesson, exercise: Exercise): Array<string> {
+/** Problems with one exercise of a lesson or pack scene, as "lesson-id/exercise-id: message". */
+export function exerciseIssues(lesson: Lesson, exercise: Exercise): Array<string> {
   const issues: Array<string> = [];
   if (blank(exercise.prompt)) issues.push('empty prompt');
   if (blank(exercise.explanation)) issues.push('empty explanation');

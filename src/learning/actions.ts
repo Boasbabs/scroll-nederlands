@@ -14,6 +14,7 @@ import {
   getNewContrastId,
   getNewWordIds,
   getNextActivity,
+  getNextScene,
   isLessonUnlocked,
   pickPracticeItems,
   REVIEW_BATCH,
@@ -28,7 +29,7 @@ import { summarizeProgress, type ProgressSummary } from '../engine/summary';
 import type { ExerciseResult, LearnerProgress, PracticeMode } from '../engine/types';
 import type { ImageManifest } from '../images/manifest';
 import { pictureCheck } from '../images/pictures';
-import type { LearnerPreferences, NoteIndex, Store } from '../storage/store';
+import type { LearnerPreferences, MissionIndex, NoteIndex, Store } from '../storage/store';
 
 export type Snapshot = {
   progress: LearnerProgress;
@@ -39,6 +40,8 @@ export type Snapshot = {
   wordsLeftToday: number;
   /** Writing sent for correction, newest first. */
   drafts: Array<Draft>;
+  /** The packs whose mission the learner ticked. */
+  missions: MissionIndex;
 };
 
 /** What a writing exercise's text is kept with while it waits for correction. */
@@ -91,7 +94,7 @@ export function createLearning({ store, course: base, images = {}, now = Date.no
 
   async function snapshot(mode: PracticeMode, excludeItemIds?: ReadonlySet<string>): Promise<Snapshot> {
     await sync();
-    const [stored, prefs, drafts] = await Promise.all([store.readProgress(), store.readPreferences(), store.readDrafts()]);
+    const [stored, prefs, drafts, missions] = await Promise.all([store.readProgress(), store.readPreferences(), store.readDrafts(), store.readMissions()]);
     const at = now();
     // Nouns met before the de/het drill existed: a few of their article items a day join the reviews.
     const progress = catchUpArticles(course, stored, at) === stored ? stored : await store.updateProgress((current) => catchUpArticles(course, current, at));
@@ -105,6 +108,7 @@ export function createLearning({ store, course: base, images = {}, now = Date.no
         course.words.filter((item) => !progress.items[item.id]).length,
       ),
       drafts: Object.values(drafts).sort((a, b) => b.at - a.at),
+      missions,
     };
   }
 
@@ -114,6 +118,28 @@ export function createLearning({ store, course: base, images = {}, now = Date.no
     if (!theme) return undefined;
     const ids = theme.items.map((item) => item.id);
     return new Set([...ids, ...ids.map(articleItemId)]);
+  }
+
+  /**
+   * A pack's practice pool: its own items, the course items of the modules it
+   * builds on, and the de/het item of each noun among them.
+   */
+  function packPool(packId: string): Set<string> | undefined {
+    const pack = course.packs.find((entry) => entry.id === packId);
+    if (!pack) return undefined;
+    const modules = new Set(pack.buildsOn);
+    const courseItems = course.lessons.filter((lesson) => modules.has(lesson.moduleId)).flatMap((lesson) => lesson.items);
+    const ids = [...pack.items, ...courseItems].map((item) => item.id);
+    return new Set([...ids, ...ids.map(articleItemId)]);
+  }
+
+  /** A specific lesson from the roadmap, or a pack's scene. Locked lessons cannot be started. */
+  async function startLesson(lessonId: string, mode: PracticeMode): Promise<SessionPlan> {
+    await sync();
+    const progress = await store.readProgress();
+    if (!isLessonUnlocked(course, progress, lessonId)) throw new Error(`${lessonId} is locked`);
+    await store.updateProgress((current) => markLessonStarted(current, lessonId, now()));
+    return planLesson(course, lessonId, mode, `${now()}`);
   }
 
   /** The plan for an activity the engine suggested, or undefined when there is nothing to do. */
@@ -144,14 +170,7 @@ export function createLearning({ store, course: base, images = {}, now = Date.no
       return plan;
     },
 
-    /** A specific lesson from the roadmap. Locked lessons cannot be started. */
-    async startLesson(lessonId: string, mode: PracticeMode): Promise<SessionPlan> {
-      await sync();
-      const progress = await store.readProgress();
-      if (!isLessonUnlocked(course, progress, lessonId)) throw new Error(`${lessonId} is locked`);
-      await store.updateProgress((current) => markLessonStarted(current, lessonId, now()));
-      return planLesson(course, lessonId, mode, `${now()}`);
-    },
+    startLesson,
 
     /** Due reviews only (the "Review now" button). */
     async startReview(mode: PracticeMode): Promise<SessionPlan | undefined> {
@@ -199,6 +218,26 @@ export function createLearning({ store, course: base, images = {}, now = Date.no
       const ids = getNewWordIds(course, progress, count, topicId);
       return ids.length > 0 ? planWords(course, ids, 'focused', `${now()}`, await drillContext(progress)) : undefined;
     },
+
+    /** A pack's next scene, in focused mode (Today's Continue row, the end of a scene). Nothing once every scene is done. */
+    async startNextScene(packId: string): Promise<SessionPlan | undefined> {
+      const pack = course.packs.find((entry) => entry.id === packId);
+      const scene = pack && getNextScene(pack, await store.readProgress());
+      return scene ? startLesson(scene.id, 'focused') : undefined;
+    },
+
+    /** Practice of one pack (Practise this pack): its due items first, then the least secure, with the course items it builds on. */
+    async startPackPractice(packId: string): Promise<SessionPlan | undefined> {
+      await sync();
+      const pool = packPool(packId);
+      if (!pool) return undefined;
+      const progress = await store.readProgress();
+      const ids = pickPracticeItems(course, progress, now(), REVIEW_BATCH.focused, new Set(), pool);
+      return ids.length > 0 ? planReview(course, progress, ids, 'focused', `${now()}`, await drillContext(progress)) : undefined;
+    },
+
+    /** Ticks or unticks a pack's "Do it for real" mission. Kept apart from progress: it is never scored. */
+    setMission: (packId: string, done: boolean): Promise<MissionIndex> => store.setMission(packId, done ? now() : undefined),
 
     /**
      * Ear training (the Today screen's row): the next sound contrast not met

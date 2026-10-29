@@ -1,7 +1,7 @@
 // The de/het drill (docs/fluent-forever-plan.md, Phase 3): every singular noun,
-// in the course or the basic-word track, gets an article item. It is scheduled
-// apart from the noun's meaning and practised only by choosing de or het
-// (articleDrill in src/engine/exercises.ts).
+// in the course, the basic-word track or a scenario pack, gets an article
+// item. It is scheduled apart from the noun's meaning and practised only by
+// choosing de or het (articleDrill in src/engine/exercises.ts).
 import type { LearningItem } from '../curriculum/types';
 import { normalizeAnswer } from '../engine/answers';
 
@@ -55,9 +55,9 @@ export const COURSE_PLURALS: ReadonlySet<string> = new Set([
   'de openingstijden',
 ]);
 
-/** A course item that is a singular noun: a word with de or het, not in the plural. */
-export function isCourseNoun(item: LearningItem): boolean {
-  return item.kind === 'word' && articleOf(item.dutch) !== undefined && !COURSE_PLURALS.has(normalizeAnswer(item.dutch));
+/** A course or pack item that is a singular noun: a word with de or het, not in the plural. */
+export function isLessonNoun(item: LearningItem): boolean {
+  return item.kind === 'word' && articleOf(item.dutch) !== undefined && !item.plural && !COURSE_PLURALS.has(normalizeAnswer(item.dutch));
 }
 
 export function placeArticles(nouns: ReadonlyArray<LearningItem>): Array<LearningItem> {

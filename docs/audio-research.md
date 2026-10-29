@@ -48,21 +48,21 @@ The short words are "deur", "wel", "Pardon?" and "man, maan". The 4/4 for Ruth i
 - **Dialogue voice (b): Roos, `7qdUFMklKPaaAVMsBTBt`.** She is female for contrast and has a 2-year notice period. Voice b only reads the second speaker's sentences, where Roos is exact. Her isolated-word score (2/4) does not matter there. Melanie scored better on isolated words but has only a 30-day notice period.
 - **Ruth is out.** She bills 2× per character, and her 4/4 short-word score with context does not justify doubling a course that already exceeds a Starter month.
 - **Model: `eleven_v4`, `language_code: "nl"`, `voice_settings: { stability: 0.5, similarity_boost: 0.75 }`.** It costs the same as v2. It enforces Dutch on short items and matches or beats v2 on the short words. It speaks at a learner-friendly pace without a speed control (v4 has none, and no Style or SSML either).
-- **Output:** source `mp3_44100_128`, then ffmpeg:
+- **Output:** source `mp3_44100_128`, kept as the master, then ffmpeg:
   - trim silence to 50 ms before and 150 ms after;
   - two-pass `loudnorm` to -18 LUFS, -1.5 dBTP;
-  - encode mono MP3 at 64 kbps and 44.1 kHz (about 10 KB per second).
+  - encode mono Opus at 32 kbps and 48 kHz in Ogg (about 4 KB per second), bitexact, so the same master always makes the same file. Measured on 150 clips, Opus holds the same speech in 57% of the space of the first run's MP3; MP3 at 32 kbps saves as much but smears the s, sch and g. The first run's clips are mono MP3 at 64 kbps and 44.1 kHz (about 8 KB per second); they stay until a master can remake them.
 - **Slow replay:** `playbackRate` (`SLOW_RATE` 0.7 in `src/audio/speech.ts`, pitch preserved). There are no separate slow clips, since v4 has no speed setting and they would double the cost.
 
 ## Generation pipeline (`scripts/generate-audio.ts`)
 
 1. **Texts.** The script builds the course from `structure.ts` and `content/**`, in this priority order: lesson `targetPhrase`, `items`, exercise `audioText`, exercise `context`, lesson `dialogue`, `examples`, then model answers. Model answers are the cloze sentence with `answers[0]` filled in, the `order` words joined, the `type` `answers[0]`, the `write` `modelAnswer`, and the Dutch side of `match` pairs. A text used in several places belongs to its first group. In a conversation, the second speaker reads with voice b (`clipsB`); further speakers alternate.
-2. **Cache key and file name.** The key is `sha1(text, voice, model, settings, post-processing version)`, and the file is `audio/<16 hex>.mp3`. The manifest `src/audio/clips.json` holds `{ voices, model, settings, clips, clipsB }`, keyed by `clipKey(text)`. It is rebuilt from the current course on every run, so stale entries drop out, and it is saved after every clip.
+2. **Masters, cache keys and file names.** Every take the API returns is kept as a master, `audio-masters/<16 hex>.mp3` (gitignored; `AUDIO_MASTERS_DIR` moves it), keyed by `sha1(text, voice, model, settings)`. A clip's key adds the post-processing version: `audio/<16 hex>.ogg` for version 2, `.mp3` for version 1 (the first run). A clip missing from `public/` is made from its master when there is one; failing that, a version-1 clip of the same take is kept; only a text with neither calls the API. A text keeps the clip it has until the run makes its own. The manifest `src/audio/clips.json` holds `{ voices, model, settings, clips, clipsB }`, keyed by `clipKey(text)`. It is rebuilt from the current course on every run, so stale entries drop out, and it is saved after every clip.
 3. **Requests.**
    - Three in parallel, with a `seed` derived from the key.
    - 429 and 5xx: retried with `retry-after` or exponential backoff and jitter.
    - 401, 402, 403, quota and permission errors: stop the run cleanly. Running the same command again resumes.
-   - `--plan` counts texts and characters without calling the API; `--until <group>` and `--max-chars N` cap a run; `--prune` deletes unused files.
+   - `--plan` counts texts and characters without calling the API; `--encode` makes clips from the masters only, also without the API; `--until <group>` and `--max-chars N` cap a run; `--prune` deletes unused files.
 4. **Verification, group by group.** Scribe v2 (Dutch forced) checks every text of up to 3 words plus a fixed 10% sample of longer ones. A clip is flagged when a short text is not exact, when a longer one has WER > 0.2, or when its length does not fit the text. A flagged clip is regenerated once with another seed and checked again. Clips still flagged go to `docs/audio-qa.md` as a listening list.
 
 ## Quota and generation status
@@ -84,6 +84,7 @@ The short words are "deur", "wel", "Pardon?" and "man, maan". The 4/4 for Ruth i
   | answers | 0 | 691 | 28,032 |
 
 - **To finish:** 4,101 clips and 122,166 characters, plus about 2k for STT checks and 1k for retakes: about 125,000 credits, so two months. The groups run in the order above, so the first month's 90,000 credits should run out about three-quarters of the way through `examples`, leaving about 35,000 for the next month: the rest of the examples and all the model answers. That assumes nothing else uses the month's credits. After each reset, run `pnpm audio:generate`; it resumes and skips existing clips. Until a text has a clip, the browser's nl-NL voice reads it.
+- **Size and masters (29 October).** New clips are Opus, so the remaining 4,101 take about 43 MB and the course's audio comes to about 61 MB in the extension, against about 94 MB as MP3. Every take is kept as a master in `audio-masters/` (about 150 MB for the remaining clips), with the speech-to-text results in `checks.json` beside it, so a new encoding is one `pnpm audio:generate --encode` at no cost. Back that folder up: it holds what the clips cost. The first run's 1,270 takes were not kept, so their MP3s stay as they are.
 - **v1 clips:** the 463 v1 files were moved out of `public/audio/`, to the session scratchpad next to the v1 manifest.
 
 ## Limitations

@@ -699,7 +699,8 @@ The de/het drill shows only the bare noun ("De or het? ___ cv"). Het cv is the C
 
 ### 20.2 Decisions
 - **The scene line under the prompt** ("De or het?", then "the CV you send when you apply for a job", then the noun and de/het) carries the cue, as a generated recall drill shows its scene. No new component, and the noun keeps its place and size.
-- **Only where it is needed:** a cue names the sense without giving the article away, and only nouns that take the other article in another sense get one. Today that is het cv.
+- **Only where it is needed:** a cue names the sense without giving the article away, and only nouns that take the other article in another sense get one. Today that is het cv, de stof ("the fabric clothes and curtains are made of"; het stof is dust), het voetbal, het punt and de pleister.
+- **No drill where both are right in the same sense.** A noun the Woordenlijst lists with both articles (het aanrecht, m/o) has two right answers whatever the cue says, so it gets no de/het drill. Its card keeps the article it was taught with, and its note says the other one is right too ("de aanrecht is right too").
 
 ### 20.3 Motion (Lasseter)
 - No new animation: the line arrives with the drill, as a scene does.

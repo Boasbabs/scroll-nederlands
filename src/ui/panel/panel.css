@@ -998,6 +998,21 @@ button.tn-today-row:active .tn-icon-tile {
 .tn-node[data-state='current'] {
   margin-top: 18px;
 }
+/* Situations best after the module: under the stepper and off its connector, since they sit beside the path.
+   The tile takes the node column, so the title lines up with the lesson titles. */
+.tn-module__situations {
+  margin: 0;
+  padding: 0 16px 4px 26px;
+  list-style: none;
+}
+/* Labelled by kind, as the checkpoint node is, in muted ink: Dodger Blue is too light for text. */
+.tn-situation__kind {
+  color: var(--ink-muted);
+  font-size: var(--text-xs);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
 .tn-float-pill {
   position: sticky;
   bottom: 12px;

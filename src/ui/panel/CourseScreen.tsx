@@ -1,12 +1,18 @@
-// Course path: stage cards → module accordions → a lesson stepper.
-import { useEffect, useRef, useState } from 'react';
+// Course path: stage cards → module accordions → a lesson stepper, then the
+// situations best after that module. They sit beside the path: never a step.
+import { useEffect, useId, useMemo, useRef, useState, type CSSProperties } from 'react';
+import type { CurriculumIndex } from '../../curriculum/assemble';
 import type { CurriculumLevel, Lesson } from '../../curriculum/types';
 import { isLessonDone, isLessonUnlocked } from '../../engine/selection';
+import type { LearnerProgress } from '../../engine/types';
 import type { Snapshot } from '../../learning/actions';
+import { bestAfter, isSet, type PlacedPack } from '../../packs/assemble';
 import { Button } from '../components/Button';
 import { Icon } from '../components/Icon';
+import { IconTile } from '../components/IconTile';
 import { ProgressBar } from '../components/ProgressBar';
 import { useEnv } from '../env';
+import { packMeta } from '../format';
 import type { StartSession } from './PanelApp';
 
 const LEVEL_LABEL: Record<CurriculumLevel, string> = { 'pre-a1': 'Pre-A1', a1: 'A1', 'a1-a2': 'A1–A2', a2: 'A2' };
@@ -44,9 +50,44 @@ function LessonNode({ lesson, state, started, onStart }: { lesson: Lesson; state
   );
 }
 
-export function CourseScreen({ snap, start }: { snap: Snapshot; start: StartSession }) {
-  const { course, learning } = useEnv();
+/** The situations each module is best after, in the Topics tab's order. A set builds on no module, so it stays off the path. */
+function situationsByModule(course: CurriculumIndex): Map<string, Array<PlacedPack>> {
+  const byModule = new Map<string, Array<PlacedPack>>();
+  for (const pack of course.packs) {
+    const after = isSet(pack) ? undefined : bestAfter(course.curriculum, pack);
+    if (after) byModule.set(after.module.id, [...(byModule.get(after.module.id) ?? []), pack]);
+  }
+  return byModule;
+}
+
+/** A situation under its module's lessons, in the Topics tab's row: it opens the pack's page there and never locks. */
+function SituationRow({ pack, progress, at, index, onOpen }: { pack: PlacedPack; progress: LearnerProgress; at: number; index: number; onOpen: () => void }) {
+  const metaId = useId();
+  const scenes = pack.scenes.filter((scene) => isLessonDone(progress, scene.id)).length;
+  return (
+    // Overlapping action: it settles in a beat after the lessons, which arrive at once.
+    <li className="tn-settle-in" style={{ '--i': index + 2 } as CSSProperties}>
+      <button type="button" className="tn-today-row" aria-label={`${pack.title} (situation)`} aria-describedby={metaId} onClick={onOpen}>
+        <IconTile icon="chats" kind="packs" size={32} />
+        <span className="tn-today-row__text">
+          <span className="tn-situation__kind">Situation</span>
+          <span className="tn-today-row__title">{pack.title}</span>
+          <span className="tn-today-row__meta" id={metaId}>
+            {packMeta(pack, progress, at)}
+          </span>
+          <ProgressBar value={scenes} max={pack.scenes.length} thin decorative />
+        </span>
+        <Icon name="chevron" size={20} />
+      </button>
+    </li>
+  );
+}
+
+export function CourseScreen({ snap, start, onOpenPack }: { snap: Snapshot; start: StartSession; onOpenPack: (packId: string) => void }) {
+  const { course, learning, now } = useEnv();
   const { summary, progress } = snap;
+  const at = now();
+  const situations = useMemo(() => situationsByModule(course), [course]);
   const current = summary.current;
   const currentStage = course.curriculum.stages.findIndex((stage) => stage.id === current?.stageId);
   const [openStages, setOpenStages] = useState<ReadonlySet<string>>(() => new Set(current ? [current.stageId] : []));
@@ -120,6 +161,7 @@ export function CourseScreen({ snap, start }: { snap: Snapshot; start: StartSess
                 {stage.modules.map((module, moduleIndex) => {
                   const count = summary.modules[module.id] ?? { completed: 0, total: module.lessons.length };
                   const open = openModules.has(module.id);
+                  const after = situations.get(module.id) ?? [];
                   return (
                     <li key={module.id} className="tn-module">
                       <button
@@ -150,6 +192,14 @@ export function CourseScreen({ snap, start }: { snap: Snapshot; start: StartSess
                             />
                           ))}
                         </ol>
+                      ) : null}
+                      {open && after.length > 0 ? (
+                        // Its own list after the stepper, so the connector stops at the last lesson.
+                        <ul className="tn-module__situations" aria-label={`Situations best after ${module.title}`}>
+                          {after.map((pack, index) => (
+                            <SituationRow key={pack.id} pack={pack} progress={progress} at={at} index={index} onOpen={() => onOpenPack(pack.id)} />
+                          ))}
+                        </ul>
                       ) : null}
                     </li>
                   );

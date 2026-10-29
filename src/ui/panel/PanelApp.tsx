@@ -142,7 +142,17 @@ export function PanelApp({ deps }: { deps: PanelDeps }) {
         </header>
         <main className="tn-shell__main" key={screen}>
           {screen === 'today' ? <TodayScreen snap={snap} start={start} /> : null}
-          {screen === 'course' ? <CourseScreen snap={snap} start={start} /> : null}
+          {screen === 'course' ? (
+            <CourseScreen
+              snap={snap}
+              start={start}
+              // A situation's row on the path opens its page on the Topics tab.
+              onOpenPack={(packId) => {
+                setOpenTopic(packId);
+                setScreen('topics');
+              }}
+            />
+          ) : null}
           {screen === 'topics' ? <TopicsScreen snap={snap} start={start} openId={openTopic} onOpen={setOpenTopic} onChange={() => void refresh()} /> : null}
           {screen === 'review' ? <ReviewScreen snap={snap} start={start} onCourse={() => setScreen('course')} onChange={() => void refresh()} /> : null}
           {screen === 'progress' ? <ProgressScreen snap={snap} /> : null}

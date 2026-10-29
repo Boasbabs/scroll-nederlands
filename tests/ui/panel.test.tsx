@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { course as realCourse } from '../../src/curriculum';
 import { exerciseSteps } from '../../src/engine/plan';
 import { DAY, HOUR } from '../../src/engine/schedule';
+import type { Pack } from '../../src/packs/types';
 import { SITE_IDS, SITES, siteRecord, type SiteId } from '../../src/sites';
 import type { SitePermissions } from '../../src/ui/env';
 import { PanelApp } from '../../src/ui/panel/PanelApp';
@@ -385,6 +386,118 @@ describe('Course', () => {
     await user.click(jumps[0]!);
     expect(placement).toHaveBeenCalledWith('x0');
     expect(await screen.findByText('Question 1')).toBeInTheDocument();
+  });
+});
+
+describe('Situations on the course path', () => {
+  async function pathLearner(packs: Array<Pack> = testPacks) {
+    const setup = setupLearning(makeCourse({}, testWordThemes, [], packs));
+    await setup.store.updatePreferences({ onboarded: true });
+    return setup;
+  }
+
+  it('ends the module a situation is best after with its row, which opens its page on Topics', async () => {
+    const user = userEvent.setup();
+    renderPanel(await pathLearner());
+    await user.click(await screen.findByRole('button', { name: 'Course' }));
+    await user.click(screen.getByRole('button', { name: /Stage X1/ }));
+    expect(screen.queryByRole('button', { name: 'At the market (situation)' })).not.toBeInTheDocument();
+    const head = screen.getByRole('button', { name: /^Module 1: Module B, 0 of 2 lessons done/ });
+    await user.click(head);
+
+    // The lessons keep their own list, so the row is not a step and the connector stops before it.
+    const [stepper, situations] = within(head.closest('li')!).getAllByRole('list');
+    expect(within(stepper!).getAllByRole('button').map((node) => node.getAttribute('aria-label'))).toEqual(['I want coffee: locked', 'I want to pay: locked']);
+    expect(situations).toHaveAccessibleName('Situations best after Module B');
+    const row = within(situations!).getByRole('button', { name: 'At the market (situation)' });
+    expect(row).toHaveAccessibleDescription('3 scenes · 5 phrases and words');
+    // Open, though the module's lessons are still locked: best after is advice.
+    expect(row).toBeEnabled();
+
+    await user.click(row);
+    expect(screen.getByRole('heading', { name: 'At the market' })).toBeInTheDocument();
+    expect(screen.getByText('Best after: Stage X1 · Module B')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Topics' })).toHaveAttribute('aria-current', 'page');
+    await user.click(screen.getByRole('button', { name: 'All topics' }));
+    expect(screen.getByRole('heading', { name: 'Situations' })).toBeInTheDocument();
+  });
+
+  it('says how far the situation is, and leaves the path as it was', async () => {
+    const user = userEvent.setup();
+    const setup = await pathLearner();
+    const [first, ...rest] = setup.course.packs[0]!.scenes;
+    await completeLesson(setup, first!.id);
+    renderPanel(setup);
+    await user.click(await screen.findByRole('button', { name: 'Course' }));
+    await user.click(screen.getByRole('button', { name: /Stage X1/ }));
+    await user.click(screen.getByRole('button', { name: /^Module 1: Module B/ }));
+    expect(screen.getByRole('button', { name: 'At the market (situation)' })).toHaveAccessibleDescription('Scene 2 of 3 · 3 of 5 met');
+
+    for (const scene of rest) await completeLesson(setup, scene.id);
+    cleanup();
+    renderPanel(setup);
+    await user.click(await screen.findByRole('button', { name: 'Course' }));
+    await user.click(screen.getByRole('button', { name: /Stage X1/ }));
+    await user.click(screen.getByRole('button', { name: /^Module 1: Module B, 0 of 2 lessons done/ }));
+    expect(screen.getByRole('button', { name: 'At the market (situation)' })).toHaveAccessibleDescription('All 3 scenes done');
+    // A finished situation unlocks nothing and moves nothing: the path's next lesson is still the first.
+    expect(screen.getByRole('button', { name: 'I want coffee: locked' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Hello there: start' }).closest('li')).toHaveAttribute('data-current');
+    expect(within(screen.getByRole('button', { name: /Stage X1/ }).closest('section')!).getByText('0/2 modules')).toBeInTheDocument();
+  });
+
+  it('keeps a set off the path', async () => {
+    const user = userEvent.setup();
+    renderPanel(await pathLearner([...testPacks, testSet]));
+    await user.click(await screen.findByRole('button', { name: 'Course' }));
+    await user.click(screen.getByRole('button', { name: /Stage X1/ }));
+    for (const head of screen.getAllByRole('button', { name: /^Module \d/ })) {
+      if (head.getAttribute('aria-expanded') === 'false') await user.click(head);
+    }
+    expect(screen.getAllByRole('button', { name: /\(situation\)$/ }).map((row) => row.getAttribute('aria-label'))).toEqual(['At the market (situation)']);
+    expect(screen.queryByText('Look-alikes')).not.toBeInTheDocument();
+  });
+
+  it('places each of the course’s situations after the module it is best after', async () => {
+    const setup = setupLearning(realCourse);
+    await setup.store.updatePreferences({ onboarded: true });
+    renderPanel(setup);
+    fireEvent.click(await screen.findByRole('button', { name: 'Course' }));
+    for (const head of screen.getAllByRole('button', { name: /^Stage \d/ })) {
+      if (head.getAttribute('aria-expanded') === 'false') fireEvent.click(head);
+    }
+    for (const head of screen.getAllByRole('button', { name: /^Module \d/ })) {
+      if (head.getAttribute('aria-expanded') === 'false') fireEvent.click(head);
+    }
+
+    const placed: Record<string, Record<string, Array<string>>> = {};
+    for (const list of screen.getAllByRole('list', { name: /^Situations best after / })) {
+      const stage = within(list.closest('section')!).getByRole('button', { name: /^Stage \d/ }).textContent!.split(' · ')[0]!;
+      const module = list.getAttribute('aria-label')!.replace('Situations best after ', '');
+      placed[stage] = { ...placed[stage], [module]: within(list).getAllByRole('button').map((row) => row.getAttribute('aria-label')!.replace(' (situation)', '')) };
+    }
+    expect(placed).toEqual({
+      'Stage 1': {
+        'Food, drinks and cafés': ['Eating out and drinks'],
+        'Shopping and payment': ['Money, bank and bills', 'Supermarket and labels'],
+        'Time and appointments': ['Children and school'],
+        'Work and occupations': ['Finding work'],
+      },
+      'Stage 2': {
+        Invitations: ['Neighbours, birthdays and holidays'],
+        'Home and neighbourhood': ['Renting a home'],
+        'Travel problems': ['Getting around'],
+        'Health and help': ['Emergencies, police and insurance'],
+      },
+      'Stage 3': {
+        'Service situations': ['Gemeente and paperwork', 'Doctor, pharmacy and insurance'],
+        'Problems and requests': ['Post, services and repairs'],
+        'Work and social life': ['Work: contract, pay and shifts'],
+      },
+    });
+    // Every situation once; False friends, a set, nowhere.
+    expect(screen.getAllByRole('button', { name: /\(situation\)$/ })).toHaveLength(realCourse.packs.filter((pack) => pack.kind !== 'set').length);
+    expect(screen.queryByRole('button', { name: /^False friends/ })).not.toBeInTheDocument();
   });
 });
 

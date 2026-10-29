@@ -456,7 +456,7 @@ export const lessons: Array<LessonDraft> = [
     kind: 'core',
     title: 'Reporting a problem on a form',
     objective: 'Fill in a report form and describe a problem in one or two clear sentences.',
-    situation: 'The streetlight outside your building has been broken for days. You report it on the gemeente website with the form "Melding openbare ruimte" (report a problem in a public space).',
+    situation: 'The streetlight outside your building has been broken for days. You report it on the gemeente website with the form "Melding openbare ruimte" (report a problem in a public space). In the description you write that the streetlight in front of number 8 is broken.',
     targetPhrase: 'De lantaarnpaal voor nummer 8 is kapot.',
     meaningEn: 'The streetlight in front of number 8 is broken.',
     items: [

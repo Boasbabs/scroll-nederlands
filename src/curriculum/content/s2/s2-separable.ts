@@ -116,7 +116,7 @@ export const lessons: Array<LessonDraft> = [
     kind: 'core',
     title: 'Calling: opbellen and terugbellen',
     objective: 'Say you will call someone, and ask someone to call you back.',
-    situation: 'You promise a friend to call her; later you ask a company to call you back.',
+    situation: 'You promise a friend to call her tomorrow; later you ask a company to call you back.',
     targetPhrase: 'Ik bel je morgen op.',
     meaningEn: "I'll call you tomorrow.",
     items: [

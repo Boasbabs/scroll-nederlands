@@ -111,7 +111,7 @@ export const lessons: Array<LessonDraft> = [
     kind: 'core',
     title: "I'm running late",
     objective: 'Write a short message saying you are late and when you will arrive.',
-    situation: 'You are meeting a friend at a café at eight, but your bus is late. You send her a quick message.',
+    situation: 'You are meeting a friend at a café at eight, but your bus is late. You send her a quick message. You will be there at 8:15.',
     targetPhrase: 'Ik ben te laat. Ik ben er om kwart over acht.',
     meaningEn: "I'm running late. I'll be there at quarter past eight.",
     items: [

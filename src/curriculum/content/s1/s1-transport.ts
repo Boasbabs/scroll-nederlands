@@ -245,7 +245,7 @@ export const lessons: Array<LessonDraft> = [
     kind: 'core',
     title: 'Left, right, straight on',
     objective: 'Understand and give simple directions.',
-    situation: 'A tourist with a map stops you on the street and asks for directions.',
+    situation: 'A tourist with a map stops you on the street and asks for directions. She has to turn left just here.',
     targetPhrase: 'Ga hier links.',
     meaningEn: 'Turn left here.',
     items: [

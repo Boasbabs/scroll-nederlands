@@ -111,7 +111,7 @@ export const lessons: Array<LessonDraft> = [
     kind: 'core',
     title: 'Can I have …?',
     objective: 'Ask for things with Mag ik …? and order casually with Doe maar …',
-    situation: 'You are at the counter of a busy lunch café and the barista asks what you would like.',
+    situation: 'You are at the counter of a busy lunch café and the barista asks what you would like. You ask if you can have a cappuccino.',
     targetPhrase: 'Mag ik een cappuccino?',
     meaningEn: 'Can I have a cappuccino?',
     items: [
@@ -665,7 +665,7 @@ export const lessons: Array<LessonDraft> = [
     kind: 'core',
     title: 'Lekker! Eet smakelijk! Proost!',
     objective: 'Use the everyday expressions that go with food and drink.',
-    situation: "You are having dinner at a Dutch friend's home.",
+    situation: "You are having dinner at a Dutch friend's home. The food is on the table, and everyone is about to start eating.",
     targetPhrase: 'Eet smakelijk!',
     meaningEn: 'Enjoy your meal!',
     items: [

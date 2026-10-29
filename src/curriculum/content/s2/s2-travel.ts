@@ -6,7 +6,7 @@ export const lessons: Array<LessonDraft> = [
     kind: 'core',
     title: 'Delays and cancellations',
     objective: 'Understand and explain that a train is delayed or not running.',
-    situation: 'You are on the platform at Utrecht Centraal and the departure board shows a problem.',
+    situation: 'You are on the platform at Utrecht Centraal and the departure board shows a problem. The train is delayed, and you tell the friend you are travelling with.',
     targetPhrase: 'De trein heeft vertraging.',
     meaningEn: 'The train is delayed.',
     items: [

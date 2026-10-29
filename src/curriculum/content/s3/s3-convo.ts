@@ -6,7 +6,7 @@ export const lessons: Array<LessonDraft> = [
     kind: 'core',
     title: 'Checking you understood',
     objective: 'Check that you understood something by repeating it back as a question.',
-    situation: "The doctor's assistant tells you about a follow-up appointment, and you want to be sure you got it right.",
+    situation: "The doctor's assistant tells you about a follow-up appointment, and you want to be sure you got it right. Later, at another desk, you ask the receptionist whether she means you have to come back tomorrow.",
     targetPhrase: 'Bedoelt u dat ik morgen moet terugkomen?',
     meaningEn: 'Do you mean that I have to come back tomorrow?',
     items: [

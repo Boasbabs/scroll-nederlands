@@ -679,7 +679,7 @@ export const lessons: Array<LessonDraft> = [
     kind: 'core',
     title: 'Quarter past, quarter to',
     objective: 'Tell the time with kwart over, kwart voor and minutes over or voor the hour.',
-    situation: 'At a bus stop someone asks you the time, and later a colleague asks when lunch is.',
+    situation: 'At a bus stop someone asks you the time, and later a colleague asks when lunch is. At the bus stop it is 3:15.',
     targetPhrase: 'Het is kwart over drie.',
     meaningEn: "It's quarter past three.",
     items: [

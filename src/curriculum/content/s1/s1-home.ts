@@ -6,7 +6,7 @@ export const lessons: Array<LessonDraft> = [
     kind: 'core',
     title: 'Rooms in a home',
     objective: 'Name the rooms in a home and show someone around.',
-    situation: 'A friend visits your new flat for the first time and you show her around.',
+    situation: 'A friend visits your new flat for the first time and you show her around. First you show her the living room.',
     targetPhrase: 'Dit is de woonkamer.',
     meaningEn: 'This is the living room.',
     items: [
@@ -218,7 +218,7 @@ export const lessons: Array<LessonDraft> = [
     kind: 'core',
     title: 'On, under, next to',
     objective: 'Say where things are with common prepositions.',
-    situation: "You're about to leave the house and your partner can't find the keys.",
+    situation: "You're about to leave the house and your partner can't find the keys. You can see them on the table and tell your partner where they are.",
     targetPhrase: 'De sleutels liggen op de tafel.',
     meaningEn: 'The keys are on the table.',
     items: [
@@ -336,7 +336,7 @@ export const lessons: Array<LessonDraft> = [
     kind: 'core',
     title: 'Where is my phone?',
     objective: 'Name everyday objects and ask where they are.',
-    situation: "You're about to leave for work and can't find your things.",
+    situation: "You're about to leave for work and can't find your things. First you ask your housemate where your phone is.",
     targetPhrase: 'Waar is mijn telefoon?',
     meaningEn: 'Where is my phone?',
     items: [

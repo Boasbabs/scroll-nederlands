@@ -268,7 +268,7 @@ export const lessons: Array<LessonDraft> = [
     kind: 'core',
     title: 'Do you feel like …?',
     objective: 'Ask whether someone feels like doing something, and say what you feel like.',
-    situation: 'It is Friday evening and you message a friend to see if she wants to do something.',
+    situation: 'It is Friday evening and you message a friend to see if she wants to do something. You ask whether she feels like watching a film.',
     targetPhrase: 'Heb je zin om een film te kijken?',
     meaningEn: 'Do you feel like watching a film?',
     items: [

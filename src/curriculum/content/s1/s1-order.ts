@@ -192,7 +192,7 @@ export const lessons: Array<LessonDraft> = [
     kind: 'core',
     title: 'Where do you work?',
     objective: 'Ask questions that start with a question word.',
-    situation: 'At lunch on your first week, you get to know a new colleague.',
+    situation: 'At lunch on your first week, you get to know a new colleague. You ask her where she works.',
     targetPhrase: 'Waar werk je?',
     meaningEn: 'Where do you work?',
     items: [

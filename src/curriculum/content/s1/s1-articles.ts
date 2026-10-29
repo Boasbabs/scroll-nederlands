@@ -414,7 +414,7 @@ export const lessons: Array<LessonDraft> = [
     kind: 'practice',
     title: 'In a second-hand shop',
     objective: 'Point at, ask about and ask for things in a shop using the right article, this/that and plurals.',
-    situation: 'You are in a second-hand shop (kringloopwinkel) buying things for your new flat.',
+    situation: 'You are in a second-hand shop (kringloopwinkel) buying things for your new flat. In the end you ask for the cups right in front of you.',
     targetPhrase: 'Deze kopjes, alstublieft.',
     meaningEn: 'These cups, please.',
     items: [

@@ -171,7 +171,7 @@ export const lessons: Array<LessonDraft> = [
     kind: 'core',
     title: 'It hurts',
     objective: 'Say where it hurts or what kind of pain you have.',
-    situation: 'The GP asks what the problem is, or a friend asks why you are leaving the party early.',
+    situation: 'The GP asks what the problem is, or a friend asks why you are leaving the party early. You have a headache.',
     targetPhrase: 'Ik heb hoofdpijn.',
     meaningEn: 'I have a headache.',
     items: [

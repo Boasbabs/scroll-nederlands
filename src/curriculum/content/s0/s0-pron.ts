@@ -6,7 +6,7 @@ export const lessons: Array<LessonDraft> = [
     kind: 'core',
     title: 'I, you, he, she, it',
     objective: 'Use the singular personal pronouns to talk about yourself and one other person.',
-    situation: 'You are at a birthday party in Utrecht and tell a friend who the other guests are.',
+    situation: 'You are at a birthday party in Utrecht and tell a friend who the other guests are. She asks who the man next to you is: he is called Daan.',
     targetPhrase: 'Hij heet Daan.',
     meaningEn: 'His name is Daan.',
     items: [
@@ -529,7 +529,7 @@ export const lessons: Array<LessonDraft> = [
     kind: 'core',
     title: "I'm hungry: hebben expressions",
     objective: 'Say you are hungry, thirsty, in a hurry or have time, using hebben.',
-    situation: "You arrive at a friend's place straight after work and a long train ride.",
+    situation: "You arrive at a friend's place straight after work and a long train ride. You have not eaten since breakfast.",
     targetPhrase: 'Ik heb honger.',
     meaningEn: "I'm hungry.",
     items: [

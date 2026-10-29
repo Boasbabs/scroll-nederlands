@@ -449,7 +449,7 @@ export const lessons: Array<LessonDraft> = [
     kind: 'practice',
     title: 'Rules and requests at work',
     objective: 'Understand rules and ask what you want, can, must and may do on your first day at work.',
-    situation: 'It is your first day at a new office in Rotterdam. Your colleague Femke shows you around.',
+    situation: 'It is your first day at a new office in Rotterdam. Your colleague Femke shows you around. You ask her whether you have to start at nine.',
     targetPhrase: 'Moet ik om negen uur beginnen?',
     meaningEn: 'Do I have to start at nine?',
     items: [

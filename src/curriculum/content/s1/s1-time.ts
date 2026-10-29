@@ -228,7 +228,7 @@ export const lessons: Array<LessonDraft> = [
     kind: 'core',
     title: 'I have an appointment',
     objective: 'Say when you have an appointment, with the day and the time.',
-    situation: "Your manager asks whether you can come to a meeting on Monday morning, but you have a doctor's appointment.",
+    situation: "Your manager asks whether you can come to a meeting on Monday morning, but you have a doctor's appointment. It is at ten, so you tell your manager when it is.",
     targetPhrase: 'Ik heb een afspraak op maandag om tien uur.',
     meaningEn: "I have an appointment on Monday at ten o'clock.",
     items: [

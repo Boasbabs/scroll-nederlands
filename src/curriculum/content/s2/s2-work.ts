@@ -128,7 +128,7 @@ export const lessons: Array<LessonDraft> = [
     kind: 'core',
     title: 'Meetings and tasks',
     objective: 'Say what is on your schedule and what you have to do at work.',
-    situation: 'A colleague asks if you have time for a quick chat this morning.',
+    situation: 'A colleague asks if you have time for a quick chat this morning. You tell her you have a meeting at ten.',
     targetPhrase: 'Ik heb om tien uur een vergadering.',
     meaningEn: 'I have a meeting at ten.',
     items: [

@@ -54,7 +54,7 @@ export const lessons: Array<LessonDraft> = [
         english: 'Is it right that the shop is closed on Mondays?',
       },
       {
-        dutch: 'Bedoel je dat we morgen thuis werken?',
+        dutch: 'Bedoel je dat we morgen thuiswerken?',
         english: 'Do you mean that we are working from home tomorrow?',
       },
       {

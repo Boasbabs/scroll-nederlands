@@ -349,7 +349,7 @@ export const lessons: Array<LessonDraft> = [
           "He's ill tomorrow.",
         ],
         answer: "He's off work tomorrow.",
-        explanation: 'Vrij zijn = to be off work. Working from home would be thuis werken.',
+        explanation: 'Vrij zijn = to be off work. Working from home would be thuiswerken.',
       },
       {
         id: 'cloze',

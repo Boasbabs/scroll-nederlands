@@ -516,9 +516,10 @@ export const werk: Pack = {
           accept: ['Ik meld mij weer beter.', 'Ik meld me beter.', 'Ik meld mij beter.'],
           note: 'the other half of Ik meld me ziek',
         }),
-        word('zich betermelden', 'to report fit again', {
-          accept: ['betermelden', 'zich beter melden', 'beter melden'],
-          note: 'ik meld me beter, ik heb me betergemeld',
+        word('zich beter melden', 'to report fit again', {
+          key: 'zich-betermelden',
+          accept: ['beter melden'],
+          note: 'ik meld me beter, ik heb me beter gemeld',
         }),
         noun('de bedrijfsarts', 'the company doctor', { note: 'only the company doctor may ask what is wrong with you' }),
         phrase('nog-niet-helemaal-beter', 'Ik ben nog niet helemaal beter.', "I'm not completely better yet."),
@@ -527,14 +528,14 @@ export const werk: Pack = {
         }),
       ],
       wordBreakdown: [
-        { dutch: 'zich betermelden – ik meld me beter', english: 'to report fit again – I report fit (literally: I report myself better)' },
+        { dutch: 'zich beter melden – ik meld me beter', english: 'to report fit again – I report fit (literally: I report myself better)' },
         { dutch: 'weer', english: 'again' },
         { dutch: 'de bedrijfsarts', english: 'the company doctor: het bedrijf + de arts' },
         { dutch: 'nog niet helemaal', english: 'not completely yet' },
         { dutch: 'halve dagen', english: 'half days' },
       ],
       patternExplanation:
-        'Ik meld me weer beter is the other half of Ik meld me ziek: the same reflexive verb, with me straight after it. The infinitive is one word: zich betermelden. Your manager may ask how long you will be ill, but not what is wrong; only the company doctor may ask that.',
+        'Ik meld me weer beter is the other half of Ik meld me ziek: the same reflexive verb, with me straight after it. The verb is two words, as ziek melden is: zich beter melden. The noun is one: de betermelding. Your manager may ask how long you will be ill, but not what is wrong; only the company doctor may ask that.',
       pronunciationTip: 'Bedrijfsarts: buh-DRAIFS-arts, with the ij of vrij. In beter the first e is long: BAY-ter.',
       examples: [
         { dutch: 'Goedemorgen Esther, met Daniel. Ik meld me weer beter.', english: "Good morning Esther, it's Daniel. I'm reporting fit again." },
@@ -579,7 +580,7 @@ export const werk: Pack = {
           answers: ['me', 'mij'],
           hint: 'myself',
           english: "Good morning Esther, it's Daniel. I'm reporting fit again.",
-          explanation: 'Zich betermelden is reflexive: ik meld me, jij meldt je, zij meldt zich. Me comes straight after the verb.',
+          explanation: 'Zich beter melden is reflexive: ik meld me, jij meldt je, zij meldt zich. Me comes straight after the verb.',
         },
         {
           id: 'order',

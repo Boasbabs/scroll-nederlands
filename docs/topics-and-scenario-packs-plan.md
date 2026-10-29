@@ -82,7 +82,7 @@ The rest of Vol 2 is B1 and can wait: the imperfect for storytelling, subordinat
 
 | Phase | What | Status |
 |---|---|---|
-| T1 | Topics tab over the 21 existing word themes | Not started |
+| T1 | Topics tab over the 21 existing word themes | Done |
 | T2 | Pack engine, pack screen, Today and Progress hooks | Not started |
 | T3 | Packs, wave 1: Gemeente, Renting, Money, Doctor | Not started |
 | T4 | Packs, wave 2: Work, Finding work, Getting around, Emergencies, Supermarket | Not started |
@@ -102,6 +102,15 @@ Ships practice by topic with content that already exists.
   - **Learn new:** `startWords` limited to this theme. Add a theme filter to `getNewWordIds`. It counts toward the same `newWordsPerDay` cap, and each theme gives at most one batch a day.
 - **Today unchanged:** the New words row keeps its mixed round-robin batches.
 - **Tests:** the theme filter in selection, the practice pool (due first), the daily cap shared with Today, and the screen (rows, counts, disabled Practise).
+
+### As built (2026-10-29)
+
+- `CurriculumIndex.themes` (from `placeWords`): each theme's items in its own order, course references included.
+- Selection: `getNewWordIds(…, themeId?)`, `themeWordsLeftToday` (daily limit, the theme's unmet words, and `WORD_BATCH.focused` from a theme a day), and `pickPracticeItems(…, pool?)`.
+- `summarizeTopic(items, progress, now)`: strength counts plus due now.
+- Actions: `startTopicPractice(topicId)` (the theme's words and their de/het items, due first) and `startTopicWords(topicId)`.
+- UI: `src/ui/panel/TopicsScreen.tsx`, the `topics` tab and icon, `--ground-topics`. Practise stays hidden until a word is met. The open theme lives in `PanelApp`, so a session comes back to it.
+- Tests: `tests/engine/topics.test.ts` and the Topics block in `tests/ui/panel.test.tsx`. Checked in the preview harness at 400×760; references and motion in `docs/ux-research.md` §16.
 
 ## Phase T2: pack engine
 

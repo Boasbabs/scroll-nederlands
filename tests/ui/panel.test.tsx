@@ -387,3 +387,70 @@ describe('Course', () => {
     expect(await screen.findByText('Question 1')).toBeInTheDocument();
   });
 });
+
+describe('Topics', () => {
+  async function topicsLearner(perDay = 10) {
+    const setup = setupLearning(makeCourse({}, testWordThemes));
+    await setup.store.updatePreferences({ onboarded: true, newWordsPerDay: perDay });
+    return setup;
+  }
+
+  it('lists the word themes with how far along each is', async () => {
+    const user = userEvent.setup();
+    renderPanel(await topicsLearner());
+    await user.click(await screen.findByRole('button', { name: 'Topics' }));
+    expect(screen.getByRole('heading', { name: 'Word themes' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Kitchen' })).toHaveAccessibleDescription('0 of 4 met');
+    expect(screen.getByRole('button', { name: 'Animals' })).toHaveAccessibleDescription('0 of 3 met');
+  });
+
+  it('opens a theme: its counts, its words, and Learn before anything is met', async () => {
+    const user = userEvent.setup();
+    renderPanel(await topicsLearner());
+    await user.click(await screen.findByRole('button', { name: 'Topics' }));
+    await user.click(screen.getByRole('button', { name: 'Kitchen' }));
+
+    expect(screen.getByRole('heading', { name: 'Kitchen' })).toBeInTheDocument();
+    const counts = screen.getByRole('list', { name: 'Words by strength' });
+    expect(within(counts).getAllByRole('listitem').map((chip) => chip.textContent)).toEqual(['4 new', '0 learning', '0 strong']);
+    expect(screen.getByText('de vork')).toBeInTheDocument();
+    expect(screen.getByText('the fork')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /^Practise/ })).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Learn 4 new words' }));
+    expect(await screen.findByRole('heading', { name: 'de vork' })).toBeInTheDocument();
+  });
+
+  it('offers practice once words are met, and says why no more are new today', async () => {
+    const user = userEvent.setup();
+    const setup = await topicsLearner(4);
+    const words = await setup.learning.startTopicWords('kitchen');
+    const results = exerciseSteps(words!).map((planned) => ({ exerciseId: planned.exerciseId, stage: planned.exercise.stage, itemIds: planned.itemIds, correct: true }));
+    await setup.learning.finish(words!, results);
+    renderPanel(setup);
+    await user.click(await screen.findByRole('button', { name: 'Topics' }));
+    expect(screen.getByRole('button', { name: 'Kitchen' })).toHaveAccessibleDescription('4 of 4 met');
+    await user.click(screen.getByRole('button', { name: 'Animals' }));
+    expect(screen.queryByRole('button', { name: /^Learn/ })).not.toBeInTheDocument();
+    expect(screen.getByText(/That's today's 4 new words/)).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'All topics' }));
+    await user.click(screen.getByRole('button', { name: 'Kitchen' }));
+    expect(screen.getByText('You have met every word in this theme.')).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Practise 4 words' }));
+    expect(await screen.findByRole('button', { name: 'Check' })).toBeInTheDocument();
+  });
+
+  it('goes back to the list from the page, and from the tab pressed again', async () => {
+    const user = userEvent.setup();
+    renderPanel(await topicsLearner());
+    await user.click(await screen.findByRole('button', { name: 'Topics' }));
+    await user.click(screen.getByRole('button', { name: 'Kitchen' }));
+    await user.click(screen.getByRole('button', { name: 'All topics' }));
+    expect(screen.getByRole('heading', { name: 'Word themes' })).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Animals' }));
+    await user.click(screen.getByRole('button', { name: 'Topics' }));
+    expect(screen.getByRole('heading', { name: 'Word themes' })).toBeInTheDocument();
+  });
+});

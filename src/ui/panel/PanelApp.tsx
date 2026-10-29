@@ -1,4 +1,4 @@
-// The side panel: onboarding, the four tabs, Settings, and full-panel sessions.
+// The side panel: onboarding, the five tabs, Settings, and full-panel sessions.
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { Speaker } from '../../audio/speech';
 import type { CurriculumIndex } from '../../curriculum/assemble';
@@ -17,6 +17,7 @@ import { CourseScreen } from './CourseScreen';
 import { Onboarding } from './Onboarding';
 import { ProgressScreen, ReviewScreen, TodayScreen } from './screens';
 import { SettingsScreen } from './SettingsScreen';
+import { TopicsScreen } from './TopicsScreen';
 
 export type PanelDeps = {
   learning: Learning;
@@ -31,12 +32,13 @@ export type PanelDeps = {
   backup?: ProgressBackup;
 };
 
-export type Tab = 'today' | 'course' | 'review' | 'progress';
+export type Tab = 'today' | 'course' | 'topics' | 'review' | 'progress';
 type Screen = Tab | 'settings';
 
 const TABS: Array<{ id: Tab; label: string; icon: IconName }> = [
   { id: 'today', label: 'Today', icon: 'home' },
   { id: 'course', label: 'Course', icon: 'book' },
+  { id: 'topics', label: 'Topics', icon: 'topics' },
   { id: 'review', label: 'Review', icon: 'target' },
   { id: 'progress', label: 'Progress', icon: 'chart' },
 ];
@@ -49,6 +51,8 @@ export function PanelApp({ deps }: { deps: PanelDeps }) {
   const now = deps.now ?? Date.now;
   const [snap, setSnap] = useState<Snapshot>();
   const [screen, setScreen] = useState<Screen>('today');
+  /** The Topics tab's open theme: kept through a practice session, so Done comes back to it. */
+  const [openTopic, setOpenTopic] = useState<string>();
   const [session, setSession] = useState<{ id: number; plan: SessionPlan }>();
   const prefsRef = useRef(snap?.prefs);
   prefsRef.current = snap?.prefs;
@@ -99,7 +103,7 @@ export function PanelApp({ deps }: { deps: PanelDeps }) {
   function onAction(action: CompleteAction, outcome: SessionOutcome) {
     if (action === 'next') void start(() => learning.startNext('focused'));
     else if (action === 'again' || action === 'mistakes') void start(() => learning.startPractice('focused', outcome.missedItemIds));
-    else closeSession(action === 'course' ? 'course' : 'today');
+    else closeSession(action === 'course' ? 'course' : screen === 'topics' ? 'topics' : 'today');
   }
 
   let content;
@@ -130,6 +134,7 @@ export function PanelApp({ deps }: { deps: PanelDeps }) {
         <main className="tn-shell__main" key={screen}>
           {screen === 'today' ? <TodayScreen snap={snap} start={start} /> : null}
           {screen === 'course' ? <CourseScreen snap={snap} start={start} /> : null}
+          {screen === 'topics' ? <TopicsScreen snap={snap} start={start} openId={openTopic} onOpen={setOpenTopic} /> : null}
           {screen === 'review' ? <ReviewScreen snap={snap} start={start} onCourse={() => setScreen('course')} onChange={() => void refresh()} /> : null}
           {screen === 'progress' ? <ProgressScreen snap={snap} /> : null}
           {screen === 'settings' ? <SettingsScreen /> : null}
@@ -145,7 +150,11 @@ export function PanelApp({ deps }: { deps: PanelDeps }) {
                 type="button"
                 className="tn-tabbar__tab"
                 aria-current={current ? 'page' : undefined}
-                onClick={() => setScreen(entry.id)}
+                onClick={() => {
+                  // The current Topics tab, pressed again, goes back to its list.
+                  if (current && entry.id === 'topics') setOpenTopic(undefined);
+                  setScreen(entry.id);
+                }}
               >
                 <span className="tn-tabbar__icon">
                   <Icon name={entry.icon} filled={current} />

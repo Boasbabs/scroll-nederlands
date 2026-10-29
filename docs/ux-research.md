@@ -590,3 +590,28 @@ A backup only helps a learner who makes one, so Today reminds them.
 - **After Back up,** the card turns into "Backup saved" with a tick and the file's name, kept on one line so it can be searched for as written. On the next visit to Today it is gone.
 - **Not now and the backup time** are kept in `chrome.storage.local` (`tn.backup`), so they last across panel and browser restarts, but are not part of any backup.
 - **Preview:** `/panel.html?state=backup` is the `today` learner with two more days of practice, so the card shows. The `today` seed itself, with two days, doesn't show it.
+
+## 16. Topics tab (tenth session, 2026-10-29)
+
+The owner wanted vocabulary practice by topic, as Dutched offers by chapter (`docs/topics-and-scenario-packs-plan.md`, Phase T1). The tab lists the 21 basic-word themes now; the scenario packs join it later.
+
+### 16.1 References (Mobbin)
+- [Duolingo – Words practice](https://mobbin.com/screens/a47d0400-435b-4be7-b1ba-16cc97ad36a9): one START button above the list, each word with a speaker, its meaning and a red dot on weak words.
+- [Preply – Vocabulary practice](https://mobbin.com/screens/a839b88a-b538-45da-b6b3-6ea5ae43b30c): a "Practice your vocabulary" card, then count chips "11 new · 15 learning · 0 learned" over word rows with a New pill.
+- [Quizlet – Set progress](https://mobbin.com/screens/f5c83f4d-eded-4850-ac6a-9675f4b1141f): Not studied / Still learning / Mastered counts above the terms, each term with audio.
+- [Monzo – Learn list](https://mobbin.com/screens/3de45a06-2a6b-412c-8d28-c129deeffa68) and [Uxcel Go – Course list](https://mobbin.com/screens/dba87d9e-9955-49be-be73-686477e601ee): a list of topics as rows with a tile, a title and "0 of 4 complete".
+
+### 16.2 Decisions
+- **A fifth tab, between Course and Review:** Today · Course · Topics · Review · Progress, with Phosphor's squares-four glyph. Five fits the panel's width with the labels kept; the tile and grid divide by five.
+- **The list reuses the To do today row:** tile, title, "12 of 29 met · 3 due" and a thin bar. The count is in the meta line only, so the bar does not repeat it.
+- **A theme's page:** "All topics" back, then a card with the title, three strength chips in the Progress tab's colours (new grey, learning orange, strong green), the bar, and the buttons. **Practise** is primary once a word is met ("Practise · 3 due", or "Practise 10 words"); **Learn 5 new words** is secondary then, or primary before anything is met. Below, every word with a speaker, its meaning and its strength as a dot and a label, the dot hollow for new.
+- **Why Learn is missing** is said in a line: new words off, today's limit used ("raise the limit in Settings"), or this theme's batch already learned today.
+- **Pressing Topics again** goes back to the list, as tab bars return to the root. A session started from a theme comes back to its page.
+
+### 16.3 Motion (Lasseter)
+- Staging: the theme's page replaces the list and its cards settle in a beat apart, with the existing `.tn-screen` entrance.
+- Overlapping action: list rows settle in one stagger step apart, the first eight only, so a long list does not keep arriving.
+- Anticipation, then follow-through: the strength chips rise in after the title with `tn-rise-in` (a small dip, a rise, a slight overshoot). `tn-pop` spins and was too much for text.
+- Squash and stretch: All topics squashes on press and springs back; its arrow nudges back on hover before the move.
+- Reduced motion turns all of it into fades (`motion.css`).
+

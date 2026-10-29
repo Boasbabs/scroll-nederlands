@@ -114,6 +114,7 @@
      at 15:1, muted text 5.5:1, Warm Blue text 4.6:1 and the focus ring 3:1 (docs/colour-system.md §6). */
   --ground-today: color-mix(in srgb, var(--denim-blue) 24%, white);
   --ground-course: color-mix(in srgb, var(--dark-cerulean) 10%, white);
+  --ground-topics: color-mix(in srgb, var(--denim-blue) 14%, white);
   --ground-review: color-mix(in srgb, var(--mid-blue) 12%, white);
   --ground-progress: color-mix(in srgb, var(--dodger-blue) 14%, white);
   --ground-settings: color-mix(in srgb, var(--mid-blue) 6%, color-mix(in srgb, var(--ink) 4%, white));

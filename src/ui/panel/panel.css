@@ -23,6 +23,7 @@ body {
 /* One light ground per surface (theme.css), as Finch gives each tab its own; the header sits on it. */
 .tn-shell[data-ground='today'] { --ground: var(--ground-today); }
 .tn-shell[data-ground='course'] { --ground: var(--ground-course); }
+.tn-shell[data-ground='topics'] { --ground: var(--ground-topics); }
 .tn-shell[data-ground='review'] { --ground: var(--ground-review); }
 .tn-shell[data-ground='progress'] { --ground: var(--ground-progress); }
 .tn-shell[data-ground='settings'] { --ground: var(--ground-settings); }
@@ -71,7 +72,7 @@ body {
 .tn-tabbar {
   position: relative;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   padding: 0 6px;
   background: var(--surface);
   box-shadow: 0 -1px 0 var(--raise-edge), 0 -10px 24px -18px rgba(22, 23, 29, 0.35);
@@ -82,7 +83,7 @@ body {
   top: 6px;
   bottom: 6px;
   left: 6px;
-  width: calc((100% - 12px) / 4);
+  width: calc((100% - 12px) / 5);
   transform: translateX(calc(var(--tab, 0) * 100%));
   /* The slide starts after the tile's anticipation dip (arcs, slow in and out). */
   transition:
@@ -351,6 +352,123 @@ button.tn-today-row:active .tn-icon-tile {
 .tn-today-row > svg:last-child {
   flex: none;
   color: var(--ink-faint);
+}
+
+/* ---------- Topics tab ---------- */
+.tn-section__lead {
+  padding: 0 4px;
+  color: var(--ink-muted);
+  font-size: var(--text-sm);
+}
+/* Back to the list: the arrow leads, and the press squashes the line into the ground. */
+.tn-topic__back {
+  display: inline-flex;
+  align-items: center;
+  justify-self: start;
+  gap: 4px;
+  min-height: 36px;
+  padding: 0 8px 0 4px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: none;
+  color: var(--primary);
+  font-weight: 800;
+  transition: transform var(--t-release) var(--ease-spring);
+}
+.tn-topic__back:active {
+  transform: translateY(1px) scale(1.03, 0.92);
+  transition-duration: var(--t-tap);
+  transition-timing-function: var(--ease-out);
+}
+/* The arrow nudges back first on hover: anticipation of the move it starts. */
+.tn-topic__back > svg {
+  transition: transform var(--t-quick) var(--ease-out);
+}
+.tn-topic__back:hover > svg {
+  transform: translateX(-2px);
+}
+.tn-topic__head .tn-btn + .tn-btn {
+  margin-top: -2px;
+}
+.tn-topic__counts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+/* The strength chips follow the title in, one beat each (secondary action, overlapping action). */
+.tn-topic__counts > li {
+  --chip: var(--ink-soft);
+  padding: 2px 10px;
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--chip) 14%, var(--surface));
+  color: var(--ink);
+  font-size: var(--text-sm);
+  font-weight: 800;
+  animation: tn-rise-in var(--t-slow) var(--ease-out) backwards;
+}
+.tn-topic__counts > li:nth-child(1) { animation-delay: calc(2 * var(--stagger)); }
+.tn-topic__counts > li:nth-child(2) { animation-delay: calc(3 * var(--stagger)); }
+.tn-topic__counts > li:nth-child(3) { animation-delay: calc(4 * var(--stagger)); }
+.tn-topic__counts > li[data-strength='learning'],
+.tn-word-row[data-strength='learning'] { --chip: var(--now); }
+.tn-topic__counts > li[data-strength='strong'],
+.tn-word-row[data-strength='strong'] { --chip: var(--correct); }
+.tn-topic__note {
+  color: var(--ink-muted);
+  font-size: var(--text-sm);
+}
+.tn-panel-card.tn-topic__words {
+  margin: 0;
+  padding: 2px 16px;
+  list-style: none;
+}
+.tn-word-row {
+  --chip: var(--ink-soft);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 56px;
+  padding: 8px 0;
+  border-top: 1px solid var(--line);
+}
+.tn-word-row:first-child {
+  border-top: 0;
+}
+.tn-word-row__text {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+}
+.tn-word-row__dutch {
+  font-weight: 800;
+}
+.tn-word-row__english {
+  color: var(--ink-muted);
+  font-size: var(--text-sm);
+}
+/* A dot in the strength's colour before the word, as the Progress tab colours the same three states. */
+.tn-word-row__status {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 6px;
+  color: var(--ink-muted);
+  font-size: var(--text-xs);
+  font-weight: 800;
+}
+.tn-word-row__status::before {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--chip);
+  content: '';
+}
+.tn-word-row[data-strength='new'] .tn-word-row__status::before {
+  border: 2px solid var(--chip);
+  background: none;
 }
 
 /* ---------- Review tab ---------- */

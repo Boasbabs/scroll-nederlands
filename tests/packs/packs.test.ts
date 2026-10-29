@@ -20,6 +20,14 @@ describe('the bundled packs', () => {
     expect(packs.map((pack) => pack.id).sort()).toEqual(written.map((pack) => pack.id).sort());
   });
 
+  it('include the false-friends set, with the words it shares listed among its own', () => {
+    const set = course.packs.find((pack) => pack.id === 'valse-vrienden')!;
+    expect(set.kind).toBe('set');
+    const members = set.members.map((item) => item.id);
+    expect(members).toEqual(expect.arrayContaining(['w-adjectives/slim', 'w-people/kind', 'w-food/worst', 'sc-baan-solliciteren/solliciteren']));
+    expect(members).toHaveLength(set.items.length + set.shared!.length);
+  });
+
   it('stay beside the course: no scene on the path, the course unchanged', () => {
     expect(course.packs.map((pack) => pack.id)).toEqual(packs.map((pack) => pack.id));
     expect(course.lessons).toHaveLength(272);

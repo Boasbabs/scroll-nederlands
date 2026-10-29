@@ -136,6 +136,29 @@ describe('a word session', () => {
     }
   });
 
+  it('keeps a word’s synonyms out of its wrong options', () => {
+    const sudden = (key: string, english: string, accept: Array<string>) =>
+      ({ key, dutch: key, english, pos: 'other', accept, example: { dutch: `${key} gaat het licht uit.`, english: 'The light goes out.' } }) as const;
+    const linking = makeCourse({}, [
+      ...testWordThemes,
+      {
+        id: 'linking',
+        title: 'Linking words',
+        tier: 2,
+        words: [
+          sudden('opeens', 'all of a sudden', ['plotseling', 'ineens']),
+          sudden('plotseling', 'suddenly', ['opeens', 'ineens']),
+          { key: 'zelfs', dutch: 'zelfs', english: 'even', pos: 'other', example: { dutch: 'Zelfs mijn oma heeft een telefoon.', english: 'Even my gran has a phone.' } },
+          { key: 'bijna', dutch: 'bijna', english: 'almost', pos: 'other', example: { dutch: 'Het is bijna acht uur.', english: 'It is almost eight o’clock.' } },
+        ],
+      },
+    ]);
+    for (const seed of ['a', 'b', 'c']) {
+      const recognition = exerciseSteps(planWords(linking, ['w-linking/opeens'], 'focused', seed))[0]!.exercise;
+      expect(recognition.kind === 'choice' && [...recognition.options].sort()).toEqual(['all of a sudden', 'almost', 'even']);
+    }
+  });
+
   it('starts each word on its schedule and counts the answers for the day', () => {
     const plan = planWords(index, ['w-kitchen/vork', 'w-kitchen/mes'], 'focused', 'seed');
     const results = answers(plan).map((result) => (result.itemIds[0] === 'w-kitchen/mes' && result.stage === 'recognition' ? { ...result, correct: false } : result));

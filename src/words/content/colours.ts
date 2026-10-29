@@ -22,7 +22,7 @@ export const colours: WordTheme = {
     noun('het plastic', 'the plastic'),
     noun('de wol', 'the wool'),
     noun('het leer', 'the leather'),
-    noun('de stof', 'the fabric; the dust'),
+    noun('de stof', 'the fabric', { note: 'dust is het stof', articleCue: 'the fabric clothes and curtains are made of' }),
     noun('het goud', 'the gold'),
     noun('het zilver', 'the silver'),
   ],

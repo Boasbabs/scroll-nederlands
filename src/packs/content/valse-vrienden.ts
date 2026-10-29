@@ -516,7 +516,7 @@ export const valseVrienden: Pack = {
           stage: 'independentRecall',
           kind: 'type',
           items: ['eng'],
-          prompt: `Type the Dutch for "scary". ${LOOKS_ENGLISH}`,
+          prompt: 'Type the Dutch for "scary". It looks like the short form of "English".',
           answers: ['eng'],
           explanation: 'Eng: scary, creepy. Een enge film: a scary film.',
         },

@@ -120,7 +120,20 @@ Two read-only reviews, written to the brief of a native-level editor and NT2 tea
 - **Missing answers:** over 200 natural answers that the typed drills rejected are now accepted, and the services complaint letter takes more everyday wording.
 - **het cv:** its de/het drill now says the CV is meant (`articleCue`, `docs/ux-research.md` §20), because de cv is the central heating.
 
-The nine packs of waves 1 and 2 have not had this review yet.
+The nine packs of waves 1 and 2 had the same review next.
+
+### Dutch review of waves 1 and 2 (2026-10-29)
+
+Four read-only reviews, written to the same brief, covered gemeente, huren and geld; zorg and nood; werk and baan; onderweg and boodschappen. Each finding was checked before it went in (Woordenlijst entries, NS's fares, the CJIB's new reminder), and the fixes went in one concern per commit:
+
+- **Wrong:** a missed check-out on a bank card costs the correctietarief, €33,30 on NS trains in 2026; the €20 instaptarief is only an OV-chipkaart's, so the as-built note above no longer holds (onderweg). The fire drill sent the learner out through a smoky stairwell and is now a kitchen fire, "bel de brandweer" names 112, and the locksmith's arrival had two right options (nood). A GP visit is free but a lab test counts toward het eigen risico (zorg). A newcomer files the M-form by 1 July for the year of arrival, and €2,800 gross is about €2,500 net in 2026 (geld). Gehuwd has the uu of nu, and DigiD is stressed at the end (gemeente).
+- **Spelling (Woordenlijst, Onze Taal):** hoelang is one word for a duration (both spellings accepted), zich beter melden is two words like ziek melden (its key kept), and ID-kaart, tikkie, thuiswerken and achter in de winkel are written as listed.
+- **Lines the learner only hears:** a scene's main item is drilled from its situation ("What do you say?"), so the four that are someone else's line (the cashier's "Heeft u een klantenkaart?", the 112 operator's "Waar bent u precies?", the clerk's "Wilt u hier tekenen?", the website's "Log in met uw DigiD.") are now `recognitionOnly`, which the pack helpers pass through as they do `articleCue`. Five situations now lead to their main line.
+- **Unnatural or imprecise lines,** one commit per pack: tekenen at the counter and a move letter that says verwerkt (gemeente); notice in writing (huren); de rekening for a company bill (geld); tegen or voor for medicine, and zelf to A&E (zorg); "Wat vervelend" as sympathy, "kan u" no longer a wrong tile (nood); "Reservering vakantiegeld" on the payslip (werk); a quoted question and proefdraaien (baan); the CJIB's free reminder since 1 July 2026 and checking in at the station (onderweg); allergens that stand out, usually in bold, and the deposit slip cashed at the till (boodschappen).
+- **Missing answers:** the typed drills accept about 600 more natural answers (an exercise and its item counted apart) that they rejected or "corrected", many for the main lines, and 20 examples are rewritten so their generated gap has one answer. Every scene keeps four examples.
+- **The NT2 points listed above:** zich betermelden is zich beter melden; het NL-Alert stays without an article for the system, with een or het NL-Alert accepted for one message; tablet without an article is right (m/v/o); "van dienst ruilen" is correct and stays, with "diensten ruilen" accepted; "een proefdag doen" is natural (also lopen); the payslip labels are real, apart from the holiday-pay line.
+- **Declined:** "De brandweer, alsjeblieft." stays a slip that steers to the u of a 112 call; de controleur, the tram and metro inspector, is not taken for de conducteur; Albert Heijn's "bonus" is not taken for an offer; de getuige gets no de/het cue, as het getuige is archaic; chat messages such as "Hoi Esther, ik …" keep their lowercase start, as settled for wave 3.
+- **Left for the course,** outside these packs: "Hoe lang" for a duration in s1-countries, s2-health, s3-convo and s3-work; "thuis werken" in s2-work and s3-convo; "zich ziekmelden" in s3-work; and course main items that are someone else's line, such as "Pinnen of contant?" in s1-shop-paying.
 
 ## Phase T1: Topics tab over the existing word themes
 
@@ -337,7 +350,7 @@ Scenes: At the bank · Paying and getting paid back · Bills and reminders · Ta
 
 | Phrase | English |
 |---|---|
-| Hoe lang heeft u dit al? | How long have you had this? |
+| Hoelang heeft u dit al? | How long have you had this? |
 | Ik heb al drie dagen koorts. | I've had a fever for three days. |
 | Drie keer per dag één tablet. | One tablet three times a day. |
 | Wordt dit vergoed? | Is this covered? |

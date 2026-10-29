@@ -444,6 +444,7 @@ export const lessons: Array<LessonDraft> = [
         dutch: 'Woon je hier al lang?',
         english: 'Have you lived here long?',
         kind: 'phrase',
+        recognitionOnly: true,
         accept: ['Woon jij hier al lang?'],
       },
       {

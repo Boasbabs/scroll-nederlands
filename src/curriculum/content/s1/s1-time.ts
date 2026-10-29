@@ -381,6 +381,7 @@ export const lessons: Array<LessonDraft> = [
         dutch: 'De winkel is open van negen tot zes.',
         english: 'The shop is open from nine to six.',
         kind: 'phrase',
+        recognitionOnly: true,
       },
       { key: 'de-winkel', dutch: 'de winkel', english: 'the shop', kind: 'word' },
       {

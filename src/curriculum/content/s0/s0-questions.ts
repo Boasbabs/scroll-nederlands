@@ -349,6 +349,7 @@ export const lessons: Array<LessonDraft> = [
         dutch: 'Waar ben je? Ik ben thuis.',
         english: "Where are you? I'm at home.",
         kind: 'phrase',
+        recognitionOnly: true,
       },
       { key: 'vanavond', dutch: 'vanavond', english: 'tonight, this evening', kind: 'word' },
       { key: 'het-adres', dutch: 'het adres', english: 'the address', kind: 'word', note: 'one d and one s, unlike English "address"' },

@@ -253,6 +253,7 @@ export const lessons: Array<LessonDraft> = [
         dutch: 'Wat wilt u drinken?',
         english: 'What would you like to drink? (polite)',
         kind: 'phrase',
+        recognitionOnly: true,
       },
       {
         key: 'verder-nog-iets',

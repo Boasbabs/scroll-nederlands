@@ -126,6 +126,7 @@ export const lessons: Array<LessonDraft> = [
         dutch: 'Let op: de lift is buiten gebruik.',
         english: 'Attention: the lift is out of order.',
         kind: 'phrase',
+        recognitionOnly: true,
       },
       {
         key: 'let-op',
@@ -244,6 +245,7 @@ export const lessons: Array<LessonDraft> = [
         dutch: 'Let op: op dinsdag 12 maart is er geen warm water.',
         english: 'Note: on Tuesday 12 March there will be no hot water.',
         kind: 'phrase',
+        recognitionOnly: true,
       },
       {
         key: 'de-bewoners',

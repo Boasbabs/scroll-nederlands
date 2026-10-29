@@ -597,6 +597,7 @@ export const lessons: Array<LessonDraft> = [
         dutch: 'Wat is uw achternaam?',
         english: "What's your surname? (polite)",
         kind: 'phrase',
+        recognitionOnly: true,
       },
       { key: 'de-voornaam', dutch: 'de voornaam', english: 'the first name', kind: 'word' },
       {

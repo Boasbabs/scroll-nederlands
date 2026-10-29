@@ -591,6 +591,7 @@ export const lessons: Array<LessonDraft> = [
         dutch: 'Lissabon is een mooie, oude stad.',
         english: 'Lisbon is a beautiful old city.',
         kind: 'phrase',
+        recognitionOnly: true,
       },
       {
         key: 'typisch-nederlands-weer',

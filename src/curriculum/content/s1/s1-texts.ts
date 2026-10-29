@@ -15,6 +15,7 @@ export const lessons: Array<LessonDraft> = [
         dutch: 'Hoi! Ik ben om zes uur thuis. Groetjes',
         english: "Hi! I'll be home at six. Cheers",
         kind: 'phrase',
+        recognitionOnly: true,
         accept: ['Hoi! Om zes uur ben ik thuis. Groetjes'],
       },
       {
@@ -255,6 +256,7 @@ export const lessons: Array<LessonDraft> = [
         dutch: 'Vandaag gesloten',
         english: 'Closed today',
         kind: 'phrase',
+        recognitionOnly: true,
       },
       {
         key: 'de-ingang',
@@ -368,6 +370,7 @@ export const lessons: Array<LessonDraft> = [
         dutch: 'Hallo, met Pieter van de fietsenwinkel.',
         english: 'Hello, this is Pieter from the bike shop.',
         kind: 'phrase',
+        recognitionOnly: true,
       },
       {
         key: 'de-fietsenwinkel',

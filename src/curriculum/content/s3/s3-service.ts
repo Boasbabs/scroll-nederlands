@@ -731,6 +731,7 @@ export const lessons: Array<LessonDraft> = [
         dutch: 'Sinds wanneer heeft u last van uw knie?',
         english: 'How long has your knee been bothering you?',
         kind: 'phrase',
+        recognitionOnly: true,
       },
       {
         key: 'last-hebben-van',

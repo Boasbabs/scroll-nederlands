@@ -15,6 +15,7 @@ export const lessons: Array<LessonDraft> = [
         dutch: 'De trein naar Utrecht Centraal vertrekt van spoor 7.',
         english: 'The train to Utrecht Centraal departs from platform 7.',
         kind: 'phrase',
+        recognitionOnly: true,
       },
       {
         key: 'de-vertrektijd',
@@ -160,6 +161,7 @@ export const lessons: Array<LessonDraft> = [
         dutch: 'De winkel sluit over tien minuten.',
         english: 'The shop closes in ten minutes.',
         kind: 'phrase',
+        recognitionOnly: true,
       },
       {
         key: 'dichtgaan',
@@ -308,6 +310,7 @@ export const lessons: Array<LessonDraft> = [
         dutch: 'U spreekt met Sanne Bakker.',
         english: 'This is Sanne Bakker speaking.',
         kind: 'phrase',
+        recognitionOnly: true,
       },
       {
         key: 'met-wie-spreek-ik',
@@ -476,6 +479,7 @@ export const lessons: Array<LessonDraft> = [
         dutch: 'Oké, dan zien we elkaar vrijdag om half zes.',
         english: "OK, so we'll see each other on Friday at half past five.",
         kind: 'phrase',
+        recognitionOnly: true,
       },
       {
         key: 'elkaar',
@@ -670,6 +674,7 @@ export const lessons: Array<LessonDraft> = [
         dutch: 'Let op: deze trein stopt niet in Leiden.',
         english: 'Please note: this train does not stop in Leiden.',
         kind: 'phrase',
+        recognitionOnly: true,
       },
       {
         key: 'de-halte',

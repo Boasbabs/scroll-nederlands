@@ -116,6 +116,7 @@ export const lessons: Array<LessonDraft> = [
         dutch: 'Dat is twee euro vijftig.',
         english: "That's two euros fifty (€2,50).",
         kind: 'phrase',
+        recognitionOnly: true,
       },
       {
         key: 'twee-euro',
@@ -476,6 +477,7 @@ export const lessons: Array<LessonDraft> = [
         dutch: 'Pinnen of contant?',
         english: 'Card or cash?',
         kind: 'phrase',
+        recognitionOnly: true,
       },
       { key: 'pinnen-graag', dutch: 'Pinnen, graag.', english: 'By card, please.', kind: 'phrase' },
       {

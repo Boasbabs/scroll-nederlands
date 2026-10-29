@@ -15,6 +15,7 @@ export const lessons: Array<LessonDraft> = [
         dutch: 'We zijn open van maandag tot en met zaterdag.',
         english: "We're open from Monday through Saturday.",
         kind: 'phrase',
+        recognitionOnly: true,
       },
       {
         key: 'de-openingstijden',
@@ -148,6 +149,7 @@ export const lessons: Array<LessonDraft> = [
         dutch: 'Te huur: appartement met balkon, dicht bij het station.',
         english: 'For rent: apartment with a balcony, close to the station.',
         kind: 'phrase',
+        recognitionOnly: true,
       },
       {
         key: 'te-huur',
@@ -309,6 +311,7 @@ export const lessons: Array<LessonDraft> = [
         dutch: 'Zet uw container voor half acht aan de straat.',
         english: 'Put your bin out on the street before half past seven.',
         kind: 'phrase',
+        recognitionOnly: true,
       },
       {
         key: 'de-container',
@@ -454,6 +457,7 @@ export const lessons: Array<LessonDraft> = [
         dutch: 'Graag uiterlijk vrijdag een reactie.',
         english: 'Please reply by Friday at the latest.',
         kind: 'phrase',
+        recognitionOnly: true,
       },
       {
         key: 'uiterlijk',
@@ -608,6 +612,7 @@ export const lessons: Array<LessonDraft> = [
         dutch: 'Let op: op Koningsdag (27 april) zijn wij gesloten.',
         english: "Please note: we are closed on King's Day (27 April).",
         kind: 'phrase',
+        recognitionOnly: true,
       },
       {
         key: 'vanaf',

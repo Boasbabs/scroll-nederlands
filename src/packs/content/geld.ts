@@ -186,7 +186,7 @@ export const geld: Pack = {
             'Kunt u mij een betaalverzoek sturen?',
           ],
         }),
-        noun('het betaalverzoek', 'the payment request', { note: 'a link you pay with a tap; many call it een Tikkie, after an app' }),
+        noun('het betaalverzoek', 'the payment request', { note: 'a link you pay with a tap; many call it een tikkie, after the Tikkie app' }),
         word('overmaken', 'to transfer (money)', { note: 'ik maak het over, ik heb het overgemaakt' }),
         word('terugbetalen', 'to pay back', { note: 'ik betaal je terug, ik heb je terugbetaald' }),
         noun('het bedrag', 'the amount', { note: 'het totale bedrag = the total amount' }),

@@ -539,7 +539,7 @@ export const werk: Pack = {
       examples: [
         { dutch: 'Goedemorgen Esther, met Daniel. Ik meld me weer beter.', english: "Good morning Esther, it's Daniel. I'm reporting fit again." },
         { dutch: 'Volgende week heb ik een afspraak met de bedrijfsarts.', english: 'Next week I have an appointment with the company doctor.' },
-        { dutch: 'Ik ben nog niet helemaal beter, maar ik kan wel thuis werken.', english: "I'm not completely better yet, but I can work from home." },
+        { dutch: 'Ik ben nog niet helemaal beter, maar ik kan wel thuiswerken.', english: "I'm not completely better yet, but I can work from home." },
         { dutch: 'Ik begin eerst met halve dagen, op advies van de bedrijfsarts.', english: "I'm starting with half days first, on the company doctor's advice." },
       ],
       speakingPrompt: 'Call your manager, with your own name: Goedemorgen, met Daniel. Ik meld me weer beter.',

@@ -347,11 +347,11 @@ export const gemeente: Pack = {
           kind: 'choice',
           items: ['aanvragen'],
           prompt: 'You call the gemeente to apply for a new passport. Listen to the menu. Which key do you press?',
-          audioText: 'Welkom bij de gemeente Dijkstad. Wilt u een paspoort of id-kaart aanvragen? Toets 1. Voor verhuizen en inschrijven, toets 2. Voor afval, toets 3. Voor alle andere vragen blijft u aan de lijn.',
+          audioText: 'Welkom bij de gemeente Dijkstad. Wilt u een paspoort of ID-kaart aanvragen? Toets 1. Voor verhuizen en inschrijven, toets 2. Voor afval, toets 3. Voor alle andere vragen blijft u aan de lijn.',
           listenOnly: true,
           options: ['1', '2', '3', 'Stay on the line'],
           answer: '1',
-          explanation: 'Een paspoort of id-kaart aanvragen: toets 1. Moving and registering is 2, rubbish is 3.',
+          explanation: 'Een paspoort of ID-kaart aanvragen: toets 1. Moving and registering is 2, rubbish is 3.',
         },
         {
           id: 'rec',

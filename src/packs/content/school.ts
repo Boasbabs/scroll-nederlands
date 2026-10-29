@@ -18,7 +18,7 @@ export const school: Pack = {
   buildsOn: ['s1-me', 's1-time'],
   mission: 'Read the next nieuwsbrief from your child’s school in Dutch, then tell your child one thing from it, such as a trip or a study day.',
   cultureNote:
-    'School is compulsory (leerplicht) from the first school day of the month after a child turns five, but most children start at four. Taking a child out of school during term needs the directeur’s permission, which is given only in a few cases, such as a family wedding or a funeral.',
+    'School is compulsory (leerplicht) from the first school day of the month after a child turns five, but most children start at four. Taking a child out of school during term needs the directeur’s permission, which is given only in a few cases, such as the wedding of a close relative or a funeral.',
   scenes: [
     {
       id: 'sc-school-start',
@@ -72,7 +72,7 @@ export const school: Pack = {
         {
           speaker: 'Directeur',
           dutch: 'Dat hoeft nog niet. De leerplicht begint pas in de maand na haar vijfde verjaardag. Maar bijna alle kinderen komen al met vier.',
-          english: 'Not yet. Compulsory schooling only starts in the month after her fifth birthday. But almost all children come from four.',
+          english: 'Not yet. Compulsory schooling only starts in the month after her fifth birthday. But almost all children start at four.',
         },
         { speaker: 'Jij', dutch: 'En moet ik iets betalen?', english: 'And do I have to pay anything?' },
         {
@@ -167,7 +167,7 @@ export const school: Pack = {
           prompt: 'Your sister is getting married abroad in October, during term. Who do you ask for leave (verlof) to take Sami out of school?',
           options: ['De directeur', 'De leraar van Sami', 'Niemand: dat mag altijd'],
           answer: 'De directeur',
-          explanation: 'Leave in term time (verlof) is asked from the directeur, not the class teacher, and it is given only in a few cases, such as a family wedding.',
+          explanation: 'Leave in term time (verlof) is asked from the directeur, not the class teacher. It is given only in a few cases, such as the wedding of a close relative, and usually for a day or two, not the whole trip.',
         },
         {
           id: 'transfer',
@@ -211,7 +211,7 @@ export const school: Pack = {
       pronunciationTip: 'Juf: the j sounds like an English y, so "yuf". Meester has a long ee: MAY-stur. In uit, say the ui of huis.',
       examples: [
         { dutch: 'Lina vindt de juf heel lief.', english: 'Lina thinks her teacher is really kind.' },
-        { dutch: 'De gymles is op dinsdag, dus Sami neemt gymschoenen mee.', english: 'PE is on Tuesday, so Sami takes gym shoes.' },
+        { dutch: 'De gymles is op dinsdag, dus Sami neemt zijn gymschoenen mee.', english: 'PE is on Tuesday, so Sami takes his gym shoes.' },
         { dutch: 'Het schoolreisje gaat dit jaar naar de dierentuin.', english: 'This year the school trip goes to the zoo.' },
         { dutch: 'De luizencontrole is na elke vakantie.', english: 'The head-lice check is after every holiday.' },
       ],
@@ -236,7 +236,7 @@ export const school: Pack = {
           kind: 'choice',
           items: ['gymles', 'meester'],
           prompt: 'Meester Tim stops you at the classroom door. Listen. What does Sami need tomorrow?',
-          audioText: 'Goedemorgen! Morgen hebben we gymles. Wil je Sami gymschoenen meegeven? En let op: woensdag gaat de school om twaalf uur uit.',
+          audioText: 'Goedemorgen! Morgen hebben we gymles. Wil je Sami zijn gymschoenen meegeven? En let op: woensdag gaat de school om twaalf uur uit.',
           listenOnly: true,
           options: ['Gym shoes', 'A packed lunch', 'His homework', 'A raincoat'],
           answer: 'Gym shoes',
@@ -564,8 +564,8 @@ export const school: Pack = {
           items: ['studiedag'],
           prompt: 'Read the school newsletter again. Why does Sami need the bso all day on Friday 13 June?',
           passage: NEWSLETTER,
-          options: ['It is a training day: the children are free', 'It is the day of the school trip', 'The summer holiday starts'],
-          answer: 'It is a training day: the children are free',
+          options: ['It is a training day: the children have the day off', 'It is the day of the school trip', 'The summer holiday starts'],
+          answer: 'It is a training day: the children have the day off',
           explanation: 'Vrijdag 13 juni is een studiedag: the teachers have a training day, so the children have no school.',
           focusedOnly: true,
         },

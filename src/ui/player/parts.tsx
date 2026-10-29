@@ -48,7 +48,7 @@ export function Bubble({
   translated?: boolean;
 }) {
   const [translated, setTranslated] = useState(startTranslated);
-  const mine = line.speaker === 'You';
+  const mine = isLearner(line.speaker);
   return (
     <div className={`tn-bubble-row${mine ? ' tn-bubble-row--mine' : ''}`}>
       {!mine ? (
@@ -84,6 +84,11 @@ export function Bubble({
   );
 }
 
+/** The learner's own lines, shown on the right: lessons call the learner "You" or "Jij". */
+export function isLearner(speaker: string): boolean {
+  return speaker === 'You' || speaker === 'Jij';
+}
+
 /** The voice for each speaker: the second distinct speaker gets the second voice. */
 export function voicesFor(lines: ReadonlyArray<DialogueLine>): (speaker: string) => 'a' | 'b' {
   const speakers = [...new Set(lines.map((line) => line.speaker))];
@@ -91,13 +96,15 @@ export function voicesFor(lines: ReadonlyArray<DialogueLine>): (speaker: string)
 }
 
 export function Conversation({ lines, reply }: { lines: ReadonlyArray<DialogueLine>; reply?: { text: string; mark?: 'correct' | 'wrong' } }) {
-  const voice = voicesFor([...lines, { speaker: 'You', dutch: '', english: '' }]);
+  // The reply is the learner's, under the name the conversation already gives them.
+  const me = lines.find((line) => isLearner(line.speaker))?.speaker ?? 'You';
+  const voice = voicesFor([...lines, { speaker: me, dutch: '', english: '' }]);
   return (
     <div className="tn-chat">
       {lines.map((line, i) => (
         <Bubble key={i} line={line} voice={voice(line.speaker)} />
       ))}
-      {reply ? <Bubble line={{ speaker: 'You', dutch: reply.text, english: '' }} voice={voice('You')} mark={reply.mark} /> : null}
+      {reply ? <Bubble line={{ speaker: me, dutch: reply.text, english: '' }} voice={voice(me)} mark={reply.mark} /> : null}
     </div>
   );
 }

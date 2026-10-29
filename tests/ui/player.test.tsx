@@ -2,7 +2,7 @@ import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { Exercise } from '../../src/curriculum/types';
 import { exerciseSteps } from '../../src/engine/plan';
-import { Highlighted } from '../../src/ui/player/parts';
+import { Conversation, Highlighted } from '../../src/ui/player/parts';
 import { SessionComplete } from '../../src/ui/player/SessionComplete';
 import { SessionPlayer } from '../../src/ui/player/SessionPlayer';
 import { makeCourse, stageExercises, testPacks } from '../fixtures/curriculum';
@@ -232,5 +232,19 @@ describe('highlighted examples', () => {
   it('marks the words of the items, but never an article on its own', () => {
     const { container } = renderUi(makeEnv(setupLearning()), <Highlighted text="Trek een nummertje bij de ingang van het loket." targets={['het nummertje', 'het loket']} />);
     expect([...container.querySelectorAll('.tn-target')].map((word) => word.textContent)).toEqual(['nummertje', 'loket.']);
+  });
+});
+
+describe('conversations', () => {
+  it('puts the learner’s lines on the right, called You or Jij, and the reply under the same name', () => {
+    const lines = [
+      { speaker: 'Medewerker', dutch: 'Heeft u een afspraak?', english: 'Do you have an appointment?' },
+      { speaker: 'Jij', dutch: 'Ja, om tien uur.', english: 'Yes, at ten.' },
+      { speaker: 'Medewerker', dutch: 'Mag ik uw identiteitsbewijs?', english: 'May I have your proof of identity?' },
+    ];
+    const { container } = renderUi(makeEnv(setupLearning()), <Conversation lines={lines} reply={{ text: 'Hier is mijn paspoort.' }} />);
+    const mine = [...container.querySelectorAll('.tn-bubble-row--mine')].map((row) => row.querySelector('.tn-bubble__speaker')?.textContent);
+    expect(mine).toEqual(['Jij', 'Jij']);
+    expect(container.querySelectorAll('.tn-bubble-row:not(.tn-bubble-row--mine)')).toHaveLength(2);
   });
 });

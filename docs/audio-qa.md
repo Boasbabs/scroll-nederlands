@@ -2,11 +2,11 @@
 
 Speech-to-text check of the clips made by `pnpm audio:generate` (Google Speech-to-Text v1, Dutch (nl-NL) forced, last run 2026-10-29). Checked: every text of up to 3 words and a fixed 10% sample of longer ones. A clip is flagged when a short text does not round-trip exactly (after lower-casing, removing punctuation and accents, spelling out numbers and clock times, and treating "ij" and "ei" as the same sound), when a longer text has a word error rate above 0.2, or when its length does not fit its text. A flagged clip is regenerated once (Google's takes differ each time) and checked again. STT cannot judge accent, and it often mishears isolated sounds and one-syllable words (isolated "man" and "maan" for every voice), so the list below is a listening list, not a list of errors.
 
-- Clips checked: 2463 (2159 short, 304 longer)
+- Clips checked: 2464 (2160 short, 304 longer)
 - Flagged on the first take and regenerated: 203
 - Still flagged after the retake (need a human listen): 118
-- Clips in the manifest: 4987 for voice a and 378 for voice b, of 5366 course texts
-- Course texts with no clip (the browser's voice reads them): 1
+- Clips in the manifest: 4988 for voice a and 378 for voice b, of 5366 course texts
+- Course texts with no clip (the browser's voice reads them): 0
 
 ## Still flagged
 
@@ -221,4 +221,4 @@ Speech-to-text check of the clips made by `pnpm audio:generate` (Google Speech-t
 
 ## No clip
 
-- "ja" (a, items): silent on all 5 takes
+None: every course text has a clip.

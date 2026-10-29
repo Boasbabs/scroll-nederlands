@@ -388,14 +388,15 @@ export const lessons: Array<LessonDraft> = [
     title: 'At the bike repair shop',
     objective: 'Handle a short service conversation from start to finish with little support.',
     situation: 'Your back tyre is flat. You take your bike to the fietsenmaker (bike repair shop) and need to explain the problem, ask how long it takes and what it costs.',
-    targetPhrase: 'Ik heb een lekke band. Hoe lang duurt het?',
+    targetPhrase: 'Ik heb een lekke band. Hoelang duurt het?',
     meaningEn: 'I have a flat tyre. How long will it take?',
     items: [
       {
         key: 'ik-heb-een-lekke-band-hoe',
-        dutch: 'Ik heb een lekke band. Hoe lang duurt het?',
+        dutch: 'Ik heb een lekke band. Hoelang duurt het?',
         english: 'I have a flat tyre. How long will it take?',
         kind: 'phrase',
+        accept: ['Ik heb een lekke band. Hoe lang duurt het?'],
       },
       {
         key: 'klaar',
@@ -416,12 +417,12 @@ export const lessons: Array<LessonDraft> = [
     wordBreakdown: [
       { dutch: 'Zeg het maar.', english: 'How can I help? (literally: just say it)' },
       { dutch: 'een lekke band', english: 'a flat tyre' },
-      { dutch: 'Hoe lang duurt het?', english: 'How long does it take?' },
+      { dutch: 'Hoelang duurt het?', english: 'How long does it take?' },
       { dutch: 'ongeveer', english: 'about, roughly' },
       { dutch: 'klaar', english: 'ready, done' },
       { dutch: 'ophalen', english: 'to pick up, collect' },
     ],
-    patternExplanation: 'Service conversations follow a script: greeting, the problem, questions (Hoe lang duurt het? Wat kost het?), an arrangement (Wanneer kan ik hem ophalen?) and thanks. You know every piece; now practise stringing them together without notes.',
+    patternExplanation: 'Service conversations follow a script: greeting, the problem, questions (Hoelang duurt het? Wat kost het?), an arrangement (Wanneer kan ik hem ophalen?) and thanks. You know every piece; now practise stringing them together without notes.',
     pronunciationTip: 'Lekke: short e as in "bed", then a clear k: "LEK-kuh". Duurt: the uu is the Dutch u held longer, "ee" with rounded lips.',
     examples: [
       { dutch: 'Wat kost dat ongeveer?', english: 'About how much does that cost?' },
@@ -436,7 +437,7 @@ export const lessons: Array<LessonDraft> = [
       },
       {
         speaker: 'Jij',
-        dutch: 'Goedemorgen. Ik heb een lekke band. Hoe lang duurt het?',
+        dutch: 'Goedemorgen. Ik heb een lekke band. Hoelang duurt het?',
         english: 'Good morning. I have a flat tyre. How long will it take?',
       },
       {
@@ -485,7 +486,7 @@ export const lessons: Array<LessonDraft> = [
         kind: 'cloze',
         prompt: 'Explain the problem.',
         items: ['ik-heb-een-lekke-band-hoe', 's3-experience-practice/een-lekke-band'],
-        sentence: 'Ik heb een ___ band. Hoe lang duurt het?',
+        sentence: 'Ik heb een ___ band. Hoelang duurt het?',
         answers: ['lekke'],
         hint: 'l____ (flat)',
         english: 'I have a flat tyre. How long will it take?',

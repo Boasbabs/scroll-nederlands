@@ -551,7 +551,7 @@ export const lessons: Array<LessonDraft> = [
       },
       {
         speaker: 'You',
-        dutch: 'En hoe lang moet ik ze innemen?',
+        dutch: 'En hoelang moet ik ze innemen?',
         english: 'And for how long do I need to take them?',
       },
       {

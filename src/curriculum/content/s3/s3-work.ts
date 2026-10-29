@@ -386,9 +386,10 @@ export const lessons: Array<LessonDraft> = [
       { key: 'beterschap', dutch: 'Beterschap!', english: 'Get well soon!', kind: 'word' },
       {
         key: 'hoe-lang-duurt-het',
-        dutch: 'Hoe lang duurt het?',
+        dutch: 'Hoelang duurt het?',
         english: 'How long will it last?',
         kind: 'phrase',
+        accept: ['Hoe lang duurt het?'],
       },
       {
         key: 'uitrusten',
@@ -405,7 +406,7 @@ export const lessons: Array<LessonDraft> = [
       },
       { dutch: 'de koorts', english: 'the fever' },
       { dutch: 'Beterschap!', english: 'Get well soon!' },
-      { dutch: 'Hoe lang duurt het?', english: 'How long will it last?' },
+      { dutch: 'Hoelang duurt het?', english: 'How long will it last?' },
       { dutch: 'uitrusten', english: 'to rest' },
     ],
     patternExplanation: 'Ik meld me ziek is the standard phrase. In the Netherlands you do not have to say what is wrong, but you do say when you expect to be back: Ik denk dat ik morgen weer kan werken. When you are better, you report back: ik meld me beter.',
@@ -437,7 +438,7 @@ export const lessons: Array<LessonDraft> = [
       },
       {
         speaker: 'Kees',
-        dutch: 'Wat vervelend. Beterschap! Weet je al hoe lang het duurt?',
+        dutch: 'Wat vervelend. Beterschap! Weet je al hoelang het duurt?',
         english: "Oh, that's a shame. Get well soon! Do you know yet how long it will last?",
       },
       {
@@ -639,7 +640,7 @@ export const lessons: Array<LessonDraft> = [
       },
       {
         speaker: 'Jij',
-        dutch: 'Lekker! Hoe lang ben je vrij?',
+        dutch: 'Lekker! Hoelang ben je vrij?',
         english: 'Lovely! How long are you off?',
       },
       {

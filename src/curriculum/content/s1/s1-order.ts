@@ -519,7 +519,7 @@ export const lessons: Array<LessonDraft> = [
           'Where you lived before',
         ],
         answer: 'Whether you have lived here a long time',
-        explanation: 'Al lang = for a long time (so far). Present tense + al, like Hoe lang woon je hier al?',
+        explanation: 'Al lang = for a long time (so far). Present tense + al, like Hoelang woon je hier al?',
       },
       {
         id: 'order',

@@ -10,9 +10,10 @@ import { gemeente } from './gemeente';
 import { huren } from './huren';
 import { nood } from './nood';
 import { onderweg } from './onderweg';
+import { school } from './school';
 import { uit } from './uit';
 import { valseVrienden } from './valse-vrienden';
 import { werk } from './werk';
 import { zorg } from './zorg';
 
-export const packs: Array<Pack> = [gemeente, huren, geld, zorg, werk, baan, onderweg, boodschappen, uit, diensten, nood, valseVrienden];
+export const packs: Array<Pack> = [gemeente, huren, geld, zorg, werk, baan, onderweg, boodschappen, uit, diensten, nood, school, valseVrienden];

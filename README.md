@@ -36,7 +36,6 @@ Other commands:
 | `pnpm vite --config preview/vite.config.ts --port 5299` | UI preview harness: `/panel.html?state=fresh\|today\|caughtup\|path\|recall` (side panel with a seeded learner) and `/nudge.html` (in-page card on a fake feed) |
 | `pnpm audio:generate` | Generate the missing clips with Google's Chirp 3: HD voices and check them with Speech-to-Text (needs `GOOGLE_CLOUD_API_KEY` in `.env.local`; see `docs/audio-research.md`) |
 | `pnpm audio:generate --encode` | Make clips from the kept masters in `audio-masters/` only, for example after a change of encoding (no API calls) |
-| `pnpm voice:test` | Hear Google's Chirp 3: HD voices on the course's riskiest texts beside its own clips, with a Speech-to-Text score; listen in `voice-test/index.html` (needs `GOOGLE_CLOUD_API_KEY`; `--list` shows the voices; see `docs/audio-research.md`) |
 | `pnpm audio:generate --recorded` | Process a speaker's recordings from `recordings/<speaker>/` into `public/audio/recorded/` with ffmpeg (no API calls) |
 
 ## What it does
@@ -106,7 +105,6 @@ src/
 scripts/
   generate-audio.ts      Google Chirp 3: HD clips by group (target, items, words, pairs, …), kept as FLAC masters, encoded as Opus, checked by Speech-to-Text; --plan counts and --encode re-encodes, no API calls
   recordings.ts          Human takes from recordings/<speaker>/ → ffmpeg → public/audio/recorded/ (--recorded)
-  voice-test.ts          Google Chirp 3: HD voices beside the course's clips, scored and laid out to listen (voice:test)
   google-cloud.ts        Google Text-to-Speech and Speech-to-Text client; the key goes in a header only
   fetch-images.ts        The owner's picture picks → license-checked 480×360 WebP files and the manifest
   ts-resolve.mjs         Lets Node's type stripping load the app's extensionless imports (the scripts use it)

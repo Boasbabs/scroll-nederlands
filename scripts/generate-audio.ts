@@ -157,7 +157,7 @@ export type AudioManifest = ClipManifest & {
 };
 
 /** Up to three words: the check wants these back exactly. */
-export const isShort = (text: string) => text.split(' ').length <= 3;
+const isShort = (text: string) => text.split(' ').length <= 3;
 const hash = (value: unknown) => createHash('sha1').update(JSON.stringify(value)).digest('hex').slice(0, 16);
 
 /**
@@ -295,13 +295,13 @@ async function loadLessons(): Promise<Array<LessonDraft>> {
 }
 
 /** The loudest sample of a file, in dB below full scale. */
-export async function peak(file: string): Promise<number> {
+async function peak(file: string): Promise<number> {
   const { stderr } = await run('ffmpeg', ['-hide_banner', '-nostats', '-i', file, '-af', 'volumedetect', '-f', 'null', '-']);
   return Number(/max_volume: (-?[\d.]+) dB/.exec(stderr)?.[1] ?? -Infinity);
 }
 
 /** Mono FLAC at 16 kHz, which Speech-to-Text v1 reads whatever the clip's own format. */
-export async function toFlac(file: string): Promise<Buffer> {
+async function toFlac(file: string): Promise<Buffer> {
   const { stdout } = await run('ffmpeg', ['-v', 'error', '-i', file, '-ac', '1', '-ar', '16000', '-c:a', 'flac', '-f', 'flac', 'pipe:1'], { encoding: 'buffer', maxBuffer: 50e6 });
   return stdout;
 }
@@ -425,13 +425,13 @@ async function transcribe(file: string): Promise<string> {
  * five. A clip far longer or shorter than its text (a repeat or a cut-off) is
  * flagged whatever the transcript says.
  */
-export function isFlagged(text: string, wer: number, seconds: number): boolean {
+function isFlagged(text: string, wer: number, seconds: number): boolean {
   const letters = text.replace(/[^\p{L}\p{N}]/gu, '').length;
   if (seconds > 2 + letters * 0.15 || seconds < letters * 0.025) return true;
   return wer > (isShort(text) ? 0 : 0.2);
 }
 
-export async function duration(file: string): Promise<number> {
+async function duration(file: string): Promise<number> {
   const { stdout } = await run('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', file]);
   return Number(stdout.trim());
 }

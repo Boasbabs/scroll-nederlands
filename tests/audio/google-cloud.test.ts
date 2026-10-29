@@ -28,14 +28,11 @@ describe('the Google Cloud client', () => {
     });
   });
 
-  it('lists a locale’s voices, from a regional endpoint when one is set', async () => {
-    const { calls, send } = fakeFetch([json({ voices: [{ name: 'nl-NL-Chirp3-HD-Kore', ssmlGender: 'FEMALE', naturalSampleRateHertz: 24000 }] })]);
-    const voices = await googleCloud({ key: 'k', fetch: send, ttsEndpoint: 'https://eu-texttospeech.googleapis.com' }).voices('nl-NL');
+  it('asks a regional endpoint when one is set', async () => {
+    const { calls, send } = fakeFetch([json({ audioContent: '' })]);
+    await googleCloud({ key: 'k', fetch: send, ttsEndpoint: 'https://eu-texttospeech.googleapis.com' }).synthesize('ja', 'nl-NL-Chirp3-HD-Erinome');
 
-    expect(voices).toEqual([{ name: 'nl-NL-Chirp3-HD-Kore', gender: 'FEMALE', sampleRate: 24000 }]);
-    expect(calls[0]!.url).toBe('https://eu-texttospeech.googleapis.com/v1/voices?languageCode=nl-NL');
-    expect(calls[0]!.init.method).toBe('GET');
-    expect(calls[0]!.init.body).toBeUndefined();
+    expect(calls[0]!.url).toBe('https://eu-texttospeech.googleapis.com/v1/text:synthesize');
   });
 
   it('sends FLAC to Speech-to-Text with Dutch forced, and joins what it heard', async () => {

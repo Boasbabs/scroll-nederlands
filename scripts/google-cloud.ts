@@ -1,10 +1,7 @@
 // Google Cloud Text-to-Speech (Chirp 3: HD voices) and Speech-to-Text, for the course's clips
-// (scripts/generate-audio.ts) and the voice test (scripts/voice-test.ts). The API key is only
-// ever sent in the X-Goog-Api-Key header.
+// (scripts/generate-audio.ts). The API key is only ever sent in the X-Goog-Api-Key header.
 // GOOGLE_TTS_ENDPOINT and GOOGLE_STT_ENDPOINT pick a regional endpoint, such as
 // https://eu-texttospeech.googleapis.com.
-
-export type GoogleVoice = { name: string; gender: string; sampleRate: number };
 
 /** fatal: the key, the project or the quota is wrong, so further calls would fail the same way. */
 export class GoogleApiError extends Error {
@@ -36,12 +33,12 @@ type Options = {
 };
 
 export function googleCloud({ key, ttsEndpoint = 'https://texttospeech.googleapis.com', sttEndpoint = 'https://speech.googleapis.com', fetch: send = fetch, retryDelay = 500 }: Options) {
-  async function call<T>(url: string, json?: unknown): Promise<T> {
+  async function call<T>(url: string, json: unknown): Promise<T> {
     for (let attempt = 1; ; attempt++) {
       const response = await send(url, {
-        method: json ? 'POST' : 'GET',
-        headers: { 'X-Goog-Api-Key': key, ...(json ? { 'Content-Type': 'application/json' } : {}) },
-        ...(json ? { body: JSON.stringify(json) } : {}),
+        method: 'POST',
+        headers: { 'X-Goog-Api-Key': key, 'Content-Type': 'application/json' },
+        body: JSON.stringify(json),
       });
       if (response.ok) return (await response.json()) as T;
       const body = (await response.text()).split(key).join('<key>');
@@ -62,14 +59,6 @@ export function googleCloud({ key, ttsEndpoint = 'https://texttospeech.googleapi
   }
 
   return {
-    /** The voices for a locale, such as nl-NL. */
-    async voices(languageCode: string): Promise<Array<GoogleVoice>> {
-      const body = await call<{ voices?: Array<{ name: string; ssmlGender: string; naturalSampleRateHertz: number }> }>(
-        `${ttsEndpoint}/v1/voices?languageCode=${encodeURIComponent(languageCode)}`,
-      );
-      return (body.voices ?? []).map((voice) => ({ name: voice.name, gender: voice.ssmlGender, sampleRate: voice.naturalSampleRateHertz }));
-    },
-
     /** One take as a WAV file (LINEAR16 with its header) at 24 kHz, the Chirp 3: HD voices' own rate. */
     async synthesize(text: string, voice: string, speakingRate = 1): Promise<Buffer> {
       const languageCode = voice.split('-').slice(0, 2).join('-');

@@ -181,7 +181,7 @@ describe('Today', () => {
     await setup.store.updatePreferences({ onboarded: true, newWordsPerDay: 3 });
     renderPanel(setup);
     const learn = await screen.findByRole('button', { name: 'Learn 3 words' });
-    expect(learn).toHaveAccessibleDescription('Basic words · 0 of 7 met');
+    expect(learn).toHaveAccessibleDescription('Core words · 0 of 7 met');
     await user.click(learn);
     expect(await screen.findByRole('heading', { name: 'de vork' })).toBeInTheDocument();
     // Dutch first: the English waits behind Show meaning.
@@ -230,7 +230,7 @@ describe('Today', () => {
     await setup.store.updatePreferences({ onboarded: true, newWordsPerDay: 0 });
     renderPanel(setup);
     expect(await screen.findByRole('button', { name: 'Quick practice' })).toBeInTheDocument();
-    expect(screen.queryByText(/Basic words/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Core words/)).not.toBeInTheDocument();
   });
 });
 
@@ -622,5 +622,34 @@ describe('Tricky words', () => {
 
     await user.click(screen.getByRole('button', { name: 'Today' }));
     expect(await screen.findByRole('button', { name: 'Continue: Look-alikes' })).toHaveAccessibleDescription('Part 2 of 3 · At the table');
+  });
+});
+
+describe('More words', () => {
+  const ideas = {
+    id: 'ideas',
+    title: 'Everyday ideas',
+    tier: 2 as const,
+    words: [
+      { key: 'probleem', dutch: 'het probleem', english: 'the problem', pos: 'noun' as const, example: { dutch: 'Dat is geen groot probleem.', english: 'That is not a big problem.' } },
+      { key: 'reden', dutch: 'de reden', english: 'the reason', pos: 'noun' as const, example: { dutch: 'Wat is de reden?', english: 'What is the reason?' } },
+      { key: 'kans', dutch: 'de kans', english: 'the chance', pos: 'noun' as const, example: { dutch: 'Je hebt een goede kans.', english: 'You have a good chance.' } },
+      { key: 'idee', dutch: 'het idee', english: 'the idea', pos: 'noun' as const, example: { dutch: 'Wat een goed idee!', english: 'What a good idea!' } },
+    ],
+  };
+
+  it('lists tier 2 after the word themes, and teaches it at once with its sentences', async () => {
+    const user = userEvent.setup();
+    const setup = setupLearning(makeCourse({}, [...testWordThemes, ideas]));
+    await setup.store.updatePreferences({ onboarded: true, newWordsPerDay: 10 });
+    renderPanel(setup);
+    await user.click(await screen.findByRole('button', { name: 'Topics' }));
+    const headings = screen.getAllByRole('heading', { level: 2 }).map((heading) => heading.textContent);
+    expect(headings.slice(-2)).toEqual(['Word themes', 'More words']);
+
+    await user.click(screen.getByRole('button', { name: 'Everyday ideas' }));
+    await user.click(screen.getByRole('button', { name: 'Learn 4 new words' }));
+    expect(await screen.findByRole('heading', { name: 'het probleem' })).toBeInTheDocument();
+    expect(screen.getByText('probleem.', { selector: 'strong' })).toBeInTheDocument();
   });
 });

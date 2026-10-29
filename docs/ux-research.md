@@ -670,3 +670,22 @@ Phase T5 of `docs/topics-and-scenario-packs-plan.md` adds a set beside the situa
 - No new animation. Overlapping action: the set's row settles in with the list's stagger, one step after the last situation, so the three groups arrive in reading order (`tn-settle-in`, capped at eight steps).
 - The set's page reuses the pack page's motion (§17.3): staging for the page, overlapping action for the steps, squash and stretch on press, the mission tick's pop.
 - Reduced motion turns all of it into fades (`motion.css`).
+
+## 19. Words 626–1,000 (twelfth session, 2026-10-29)
+
+Phase T6 of `docs/topics-and-scenario-packs-plan.md` adds a second tier of 375 words to the word track. They are mostly words a picture cannot show, so each comes with a sentence that uses it.
+
+### 19.1 References (Mobbin)
+- [Speak – Course](https://mobbin.com/screens/54c58cdc-4f98-4999-92ca-a598df8fc335): "Unit 1 · The Basics", then "Unit 2 · Survival French" below it under its own heading, open rather than locked.
+- [Babbel – All items](https://mobbin.com/screens/f49fcd5e-25cb-41ba-9646-9a77fe40540c): the same word list split by stage with filter chips, which hides the other stages.
+- [Uxcel Go – Courses](https://mobbin.com/screens/988cea8f-2e57-4d7e-9454-39fe40ec47c9): a level ("Beginner", "Advanced") in each row's meta line.
+
+### 19.2 Decisions
+- **More words, after Word themes,** with the lead "Words 626 to 1,000. Today adds them once most core words are met; open a theme to start it now." A headed group below the basics, as Speak lists its second unit, rather than Babbel's chips: the Topics list is short enough to show both, and a learner should see the next themes exist. Not locked: a tier-2 theme opened here teaches at once.
+- **Core words, not Basic words:** the Today row ("Core words · 120 of 1,000 met"), the Progress meter, the end-of-session bar and the Settings group all count the 1,000. "Basic" no longer fits words like *verantwoordelijkheid*.
+- **A word's sentence on its card:** under the word, the sentence with the word in bold and a speaker, read like a lesson example; its English shows with the meaning. The recall drill then blanks the word out of the same sentence, so the word is learned in context, not from a gloss.
+
+### 19.3 Motion (Lasseter)
+- No new animation. Overlapping action: More words' rows join the list's stagger after the word themes (capped at eight steps, so they settle with the rest).
+- The sentence on a word card appears with the card (staging), and its English with the meaning's reveal, as on a lesson card.
+- Reduced motion turns all of it into fades (`motion.css`).

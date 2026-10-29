@@ -1,8 +1,8 @@
 // Topics tab: the scenario packs (Situations), the word sets (Tricky words)
-// and the basic-word themes, each with its progress. A pack's page plays its
-// scenes in order and holds its mission; a set's page is the same, part by
-// part; a theme's page practises the words already met or brings in new ones,
-// within the daily limit.
+// and the word themes (tier 2 under More words), each with its progress. A
+// pack's page plays its scenes in order and holds its mission; a set's page
+// is the same, part by part; a theme's page practises the words already met
+// or brings in new ones, within the daily limit.
 import { useEffect, useId, useRef, useState, type CSSProperties } from 'react';
 import type { LearningItem, Lesson } from '../../curriculum/types';
 import { isSet, type PlacedPack } from '../../packs/assemble';
@@ -51,6 +51,9 @@ function TopicList({ snap, onOpen }: { snap: Snapshot; onOpen: (id: string) => v
   const at = now();
   const situations = course.packs.filter((pack) => !isSet(pack));
   const sets = course.packs.filter(isSet);
+  // Tier 2 (words 626–1,000) under its own heading, after the basic themes.
+  const basics = course.themes.filter((theme) => theme.tier === 1);
+  const more = course.themes.filter((theme) => theme.tier === 2);
   const row = (pack: PlacedPack, index: number) => <PackRow key={pack.id} pack={pack} progress={snap.progress} at={at} index={index} onOpen={onOpen} />;
   return (
     <div className="tn-screen">
@@ -72,11 +75,22 @@ function TopicList({ snap, onOpen }: { snap: Snapshot; onOpen: (id: string) => v
         <h2 className="tn-section__title">Word themes</h2>
         <p className="tn-section__lead">Practise one theme&rsquo;s words, or learn new ones from it.</p>
         <ul className="tn-panel-card tn-today-list">
-          {course.themes.map((theme, i) => (
+          {basics.map((theme, i) => (
             <TopicRow key={theme.id} theme={theme} snap={snap} at={at} index={course.packs.length + i} onOpen={onOpen} />
           ))}
         </ul>
       </section>
+      {more.length > 0 ? (
+        <section className="tn-section">
+          <h2 className="tn-section__title">More words</h2>
+          <p className="tn-section__lead">Words 626 to 1,000. Today adds them once most core words are met; open a theme to start it now.</p>
+          <ul className="tn-panel-card tn-today-list">
+            {more.map((theme, i) => (
+              <TopicRow key={theme.id} theme={theme} snap={snap} at={at} index={course.packs.length + basics.length + i} onOpen={onOpen} />
+            ))}
+          </ul>
+        </section>
+      ) : null}
     </div>
   );
 }

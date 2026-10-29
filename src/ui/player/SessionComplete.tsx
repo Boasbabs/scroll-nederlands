@@ -223,7 +223,7 @@ export function SessionComplete({ plan, outcome, stats, onAction }: SessionCompl
       subtitle = plural(newCount, 'new word');
       if (summary) {
         const met = summary.words.total - summary.words.new;
-        bar = { from: Math.max(0, met - newCount), to: met, max: summary.words.total, label: 'Basic words met' };
+        bar = { from: Math.max(0, met - newCount), to: met, max: summary.words.total, label: 'Core words met' };
       }
     } else if (sounds) {
       title = 'Ear training done!';

@@ -286,7 +286,11 @@ function WordPicture({ item }: { item: LearningItem }) {
   );
 }
 
-/** A new basic word: the Dutch with its article, audio and meaning. */
+/**
+ * A new basic word: the Dutch with its article, audio and meaning. A word a
+ * picture cannot show (tier 2) comes with its sentence, read like a lesson
+ * example; its drills blank the word out of it.
+ */
 export function WordCard({ item, onContinue }: { item: LearningItem; onContinue: () => void }) {
   const { prefs } = useEnv();
   const [meaning, showMeaning] = useMeaning();
@@ -300,6 +304,19 @@ export function WordCard({ item, onContinue }: { item: LearningItem; onContinue:
         </h2>
         <AudioHeader text={item.dutch} autoPlay={prefs.autoplayAudio} />
         <HetIntro itemIds={[item.id]} />
+        {item.example ? (
+          <ul className="tn-examples">
+            <li className="tn-example">
+              <AudioButton text={item.example.dutch} size="small" />
+              <span>
+                <span className="tn-example__dutch" lang="nl">
+                  <Highlighted text={item.example.dutch} targets={[item.dutch]} />
+                </span>
+                {meaning ? <span className="tn-example__english">{item.example.english}</span> : null}
+              </span>
+            </li>
+          </ul>
+        ) : null}
         {meaning ? (
           <>
             <p className="tn-translation">{item.english}</p>

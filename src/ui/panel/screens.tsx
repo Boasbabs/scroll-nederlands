@@ -13,7 +13,7 @@ import { Icon, type IconName } from '../components/Icon';
 import { IconTile, type TileKind } from '../components/IconTile';
 import { ProgressBar } from '../components/ProgressBar';
 import { useEnv } from '../env';
-import { formatDay, formatIn, packTerms, plural } from '../format';
+import { count, formatDay, formatIn, packTerms, plural } from '../format';
 import type { StartSession } from './PanelApp';
 
 type ScreenProps = { snap: Snapshot; start: StartSession };
@@ -104,13 +104,13 @@ function NewWordsRow({ snap, start }: ScreenProps) {
   const met = words.total - words.new;
   const batch = Math.min(WORD_BATCH.focused, snap.wordsLeftToday);
   if (words.new === 0) return <TodayRow icon="done" title="New words" meta="You have met every basic word." />;
-  if (batch === 0) return <TodayRow icon="done" title="New words" meta={`Done for today · ${met} of ${words.total} met`} />;
+  if (batch === 0) return <TodayRow icon="done" title="New words" meta={`Done for today · ${count(met)} of ${count(words.total)} met`} />;
   return (
     <TodayRow
       icon="words"
       kind="words"
       title={`Learn ${plural(batch, 'word')}`}
-      meta={`Basic words · ${met} of ${words.total} met`}
+      meta={`Core words · ${count(met)} of ${count(words.total)} met`}
       bar={{ value: met, max: words.total }}
       onClick={() => void start(() => learning.startWords('focused'))}
     />
@@ -406,14 +406,14 @@ export function ProgressScreen({ snap }: { snap: Snapshot }) {
 
       {summary.words.total > 0 ? (
         <section className="tn-section">
-          <h2 className="tn-section__title">Basic words</h2>
+          <h2 className="tn-section__title">Core words</h2>
           <div className="tn-panel-card tn-meter">
             <IconTile icon="words" kind="words" />
             <div className="tn-meter__text">
               <p className="tn-progress-line">
-                <strong className="tn-display">{summary.words.total - summary.words.new}</strong> of {summary.words.total} met · {summary.words.strong} strong
+                <strong className="tn-display">{count(summary.words.total - summary.words.new)}</strong> of {count(summary.words.total)} met · {count(summary.words.strong)} strong
               </p>
-              <ProgressBar value={summary.words.total - summary.words.new} max={summary.words.total} label="Basic words met" count />
+              <ProgressBar value={summary.words.total - summary.words.new} max={summary.words.total} label="Core words met" count />
             </div>
           </div>
         </section>

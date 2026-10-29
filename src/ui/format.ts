@@ -36,6 +36,11 @@ export function formatDuration(ms: number): string {
   return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
 }
 
+/** "1,000": counts as English writes them. */
+export function count(value: number): string {
+  return value.toLocaleString('en-GB');
+}
+
 /** "1 review", "12 reviews". */
 export function plural(count: number, one: string, many = `${one}s`): string {
   return `${count} ${count === 1 ? one : many}`;

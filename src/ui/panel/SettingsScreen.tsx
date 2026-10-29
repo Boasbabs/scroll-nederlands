@@ -278,7 +278,7 @@ export function SettingsScreen({ images = bundledImages }: { images?: ImageManif
         </div>
       </Group>
 
-      <Group title="Basic words">
+      <Group title="Core words">
         <div className="tn-row tn-row--stack">
           <div className="tn-row__head">
             <RowTile icon="words" />

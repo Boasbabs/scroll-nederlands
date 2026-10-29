@@ -110,6 +110,18 @@ The waves follow need: registration, housing, money and health come first in a n
 - **Engine for sets:** `Pack.kind`, an optional mission, `Pack.shared` and `PlacedPack.members`; `validatePacks` skips the situation's parts for a set and checks its shared words; Progress counts situations only. **UI:** Tricky words on Topics, "part" and "set" in place of "scene" and "pack", each word's note on the set's page (`docs/ux-research.md` §18).
 - **For the NT2 review,** beyond every article: "Maak er maar dertig van." and "Doe maar dertig." for a tip, "Nog zin in een toetje?" after "Was alles naar wens?", "de wifi" (left out), "terechtkunnen" (avoided), "in de wacht staan" as a word item, de Dodenherdenking with a capital, "hè" with an accent, "de bso" in lower case, "aanmelden" for a child at school, "afmelden" for a sick child, and "proper" described as more Belgian.
 
+### Dutch review of wave 3 and the false friends (2026-10-29)
+
+Two read-only reviews, written to the brief of a native-level editor and NT2 teacher, covered uit and diensten, then sociaal, school and valse-vrienden. Their fixes went in one concern per commit:
+
+- **Wrong:** after "Beste …," a letter's first sentence takes a capital (diensten, and the same slip in huren and baan); in the Netherlands "Ik ben druk" does mean busy (sociaal); thuisblijven is one word, tienminutengesprek is stressed on NUU, and de ouderavond is "the information evening for parents", so the match no longer has two answers (school); a house fire, not a smoky stairwell, calls for "Iedereen naar buiten!" (valse-vrienden).
+- **False friends:** de room is dairy cream (face cream is crème); English "proper" is mostly juist or goed; eng gets its own cue; the raar note warns that rare is Dutch too (een rare vraag); chef, controleren and solliciteren are only half false; broodje worst is a bread roll with sausage.
+- **Unnatural lines:** "Heeft u nog zin in een toetje?", "…maar u kunt het eten wel afhalen.", the vegetariër and elektricien tips, the New Year wish and de Dodenherdenking, Femke's voicemail, flowers in place of a present, leave for a close relative's wedding, "zijn gymschoenen" and "the day off".
+- **Missing answers:** over 200 natural answers that the typed drills rejected are now accepted, and the services complaint letter takes more everyday wording.
+- **het cv:** its de/het drill now says the CV is meant (`articleCue`, `docs/ux-research.md` §20), because de cv is the central heating.
+
+The nine packs of waves 1 and 2 have not had this review yet.
+
 ## Phase T1: Topics tab over the existing word themes
 
 Ships practice by topic with content that already exists.

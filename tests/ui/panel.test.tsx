@@ -6,7 +6,7 @@ import { DAY, HOUR } from '../../src/engine/schedule';
 import { SITE_IDS, SITES, siteRecord, type SiteId } from '../../src/sites';
 import type { SitePermissions } from '../../src/ui/env';
 import { PanelApp } from '../../src/ui/panel/PanelApp';
-import { makeCourse, testContrasts, testPacks, testWordThemes } from '../fixtures/curriculum';
+import { makeCourse, testContrasts, testPacks, testSet, testWordThemes } from '../fixtures/curriculum';
 import { setupLearning, silentSpeaker, T0 } from './harness';
 
 type Setup = ReturnType<typeof setupLearning>;
@@ -561,5 +561,66 @@ describe('Situations', () => {
     await user.click(screen.getByRole('button', { name: 'Today' }));
     await user.click(screen.getByRole('button', { name: 'Continue: At the market' }));
     expect(await screen.findByRole('heading', { name: /Wat kost dat/ })).toBeInTheDocument();
+  });
+});
+
+describe('Tricky words', () => {
+  async function setLearner() {
+    const setup = setupLearning(makeCourse({}, testWordThemes, [], [...testPacks, testSet]));
+    await setup.store.updatePreferences({ onboarded: true });
+    return setup;
+  }
+
+  it('lists the sets between Situations and Word themes, part by part', async () => {
+    const user = userEvent.setup();
+    renderPanel(await setLearner());
+    await user.click(await screen.findByRole('button', { name: 'Topics' }));
+    const headings = screen.getAllByRole('heading', { level: 2 }).map((heading) => heading.textContent);
+    expect(headings.slice(-3)).toEqual(['Situations', 'Tricky words', 'Word themes']);
+    expect(screen.getByRole('button', { name: 'Look-alikes' })).toHaveAccessibleDescription('3 parts · 5 phrases and words');
+  });
+
+  it('opens a set: its parts, its words with their notes, and no mission when it has none', async () => {
+    const user = userEvent.setup();
+    renderPanel(await setLearner());
+    await user.click(await screen.findByRole('button', { name: 'Topics' }));
+    await user.click(screen.getByRole('button', { name: 'Look-alikes' }));
+
+    expect(screen.getByRole('heading', { name: 'Look-alikes' })).toBeInTheDocument();
+    expect(screen.queryByText(/^Best after/)).not.toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Parts' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Part 1: Odd ones' })).toHaveAccessibleDescription('Up next');
+    expect(screen.getByRole('button', { name: 'Part 2: At the table' })).toHaveAccessibleDescription('After part 1');
+    expect(screen.queryByRole('heading', { name: 'Do it for real' })).not.toBeInTheDocument();
+    // The shared word is listed with the set's own, and a word's note follows its meaning.
+    expect(screen.getByText('de vork')).toBeInTheDocument();
+    expect(screen.getByText('strange · not "rare": that is zeldzaam')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Start part 1' }));
+    expect(await screen.findByRole('heading', { name: /Wat raar/ })).toBeInTheDocument();
+  });
+
+  it('ends a part with the next part, and continues the set from Today', async () => {
+    const user = userEvent.setup();
+    const setup = await setLearner();
+    const startLesson = setup.learning.startLesson;
+    setup.learning.startLesson = async (lessonId, mode) => {
+      const plan = await startLesson(lessonId, mode);
+      return { ...plan, steps: plan.steps.filter((step) => step.type === 'exercise').slice(0, 1) };
+    };
+    renderPanel(setup);
+    await user.click(await screen.findByRole('button', { name: 'Topics' }));
+    await user.click(screen.getByRole('button', { name: 'Look-alikes' }));
+    await user.click(screen.getByRole('button', { name: 'Start part 1' }));
+    await user.click(await screen.findByRole('radio', { name: /How strange/ }));
+    await user.click(screen.getByRole('button', { name: 'Check' }));
+    await user.click(screen.getByRole('button', { name: 'Continue' }));
+    expect(await screen.findByText('Part complete!')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Next part' })).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Back to the set' }));
+    expect(await screen.findByRole('button', { name: 'Practise this set' })).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Today' }));
+    expect(await screen.findByRole('button', { name: 'Continue: Look-alikes' })).toHaveAccessibleDescription('Part 2 of 3 · At the table');
   });
 });

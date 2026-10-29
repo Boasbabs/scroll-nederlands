@@ -4,6 +4,7 @@ import { DAY } from '../../engine/schedule';
 import { getNextScene, getPackInProgress, isLessonDone, REVIEW_BATCH, WORD_BATCH } from '../../engine/selection';
 import { itemsByStrength } from '../../engine/summary';
 import type { Snapshot } from '../../learning/actions';
+import { isSet } from '../../packs/assemble';
 import { contrastLabel } from '../../sounds/assemble';
 import { backupFileName } from '../../storage/backup';
 import { Button } from '../components/Button';
@@ -12,7 +13,7 @@ import { Icon, type IconName } from '../components/Icon';
 import { IconTile, type TileKind } from '../components/IconTile';
 import { ProgressBar } from '../components/ProgressBar';
 import { useEnv } from '../env';
-import { formatDay, formatIn, plural } from '../format';
+import { formatDay, formatIn, packTerms, plural } from '../format';
 import type { StartSession } from './PanelApp';
 
 type ScreenProps = { snap: Snapshot; start: StartSession };
@@ -116,7 +117,7 @@ function NewWordsRow({ snap, start }: ScreenProps) {
   );
 }
 
-/** The pack the learner is in the middle of: its next scene starts from here. */
+/** The pack (or set) the learner is in the middle of: its next scene starts from here. */
 function ContinuePackRow({ snap, start }: ScreenProps) {
   const { learning, course } = useEnv();
   const pack = getPackInProgress(course, snap.progress);
@@ -125,10 +126,10 @@ function ContinuePackRow({ snap, start }: ScreenProps) {
   const done = pack.scenes.filter((scene) => isLessonDone(snap.progress, scene.id)).length;
   return (
     <TodayRow
-      icon="chats"
+      icon={isSet(pack) ? 'translate' : 'chats'}
       kind="packs"
       title={`Continue: ${pack.title}`}
-      meta={`Scene ${pack.scenes.indexOf(next) + 1} of ${pack.scenes.length} · ${next.title}`}
+      meta={`${packTerms(pack).Step} ${pack.scenes.indexOf(next) + 1} of ${pack.scenes.length} · ${next.title}`}
       bar={{ value: done, max: pack.scenes.length }}
       onClick={() => void start(() => learning.startNextScene(pack.id))}
     />

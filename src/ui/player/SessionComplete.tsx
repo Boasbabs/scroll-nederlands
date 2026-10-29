@@ -12,7 +12,7 @@ import { Confetti } from '../components/Decor';
 import { Icon } from '../components/Icon';
 import { ProgressBar } from '../components/ProgressBar';
 import { useEnv } from '../env';
-import { formatDuration, formatIn, plural } from '../format';
+import { formatDuration, formatIn, packTerms, plural } from '../format';
 
 /**
  * What the learner chose on the end screen; the surface decides what it means.
@@ -233,10 +233,10 @@ export function SessionComplete({ plan, outcome, stats, onAction }: SessionCompl
         bar = { from: Math.max(0, met - newCount), to: met, max: summary.sounds.total, label: 'Sound pairs met' };
       }
     } else if (pack && lesson) {
-      title = 'Scene complete!';
+      title = `${packTerms(pack).Step} complete!`;
       if (snap) {
         const done = pack.scenes.filter((scene) => isLessonDone(snap.progress, scene.id)).length;
-        bar = { from: Math.max(0, done - (newCount > 0 ? 1 : 0)), to: done, max: pack.scenes.length, label: `${pack.title}: scenes done` };
+        bar = { from: Math.max(0, done - (newCount > 0 ? 1 : 0)), to: done, max: pack.scenes.length, label: `${pack.title}: ${packTerms(pack).step}s done` };
       }
     } else if (lesson && summary?.modules[lesson.moduleId]) {
       const count = summary.modules[lesson.moduleId]!;
@@ -256,15 +256,16 @@ export function SessionComplete({ plan, outcome, stats, onAction }: SessionCompl
     };
     // A scene leads on to the pack's next scene, in order; the last one back to the pack and its mission.
     const following = pack && lesson ? pack.scenes[pack.scenes.indexOf(lesson) + 1] : undefined;
-    actions = pack ? (
+    const terms = pack && packTerms(pack);
+    actions = terms ? (
       <>
         {following ? (
           <Button block onClick={() => onAction('scene')} data-primary>
-            Next scene
+            Next {terms.step}
           </Button>
         ) : null}
         <Button block variant={following ? 'secondary' : 'primary'} onClick={() => onAction('pack')} data-primary={following ? undefined : true}>
-          Back to the pack
+          Back to the {terms.whole}
         </Button>
       </>
     ) : (

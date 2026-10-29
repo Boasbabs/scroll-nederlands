@@ -1,6 +1,8 @@
 // Small formatting helpers for times and counts shown to the learner.
 import { dayKey } from '../engine/progress';
 import { DAY, HOUR, MINUTE } from '../engine/schedule';
+import { isSet } from '../packs/assemble';
+import type { Pack } from '../packs/types';
 
 /** "15:30" in the learner's local time (24-hour, as in the Netherlands). */
 export function formatClock(at: number): string {
@@ -37,4 +39,9 @@ export function formatDuration(ms: number): string {
 /** "1 review", "12 reviews". */
 export function plural(count: number, one: string, many = `${one}s`): string {
   return `${count} ${count === 1 ? one : many}`;
+}
+
+/** What a pack's steps and the pack are called: a situation is played scene by scene, a set (false friends) part by part. */
+export function packTerms(pack: Pick<Pack, 'kind'>): { step: string; Step: string; whole: string } {
+  return isSet(pack) ? { step: 'part', Step: 'Part', whole: 'set' } : { step: 'scene', Step: 'Scene', whole: 'pack' };
 }

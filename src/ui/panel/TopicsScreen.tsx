@@ -1,10 +1,11 @@
-// Topics tab: the scenario packs (Situations) and the basic-word themes, each
-// with its progress. A pack's page plays its scenes in order and holds its
-// mission; a theme's page practises the words already met or brings in new
-// ones, within the daily limit.
+// Topics tab: the scenario packs (Situations), the word sets (Tricky words)
+// and the basic-word themes, each with its progress. A pack's page plays its
+// scenes in order and holds its mission; a set's page is the same, part by
+// part; a theme's page practises the words already met or brings in new ones,
+// within the daily limit.
 import { useEffect, useId, useRef, useState, type CSSProperties } from 'react';
 import type { LearningItem, Lesson } from '../../curriculum/types';
-import type { PlacedPack } from '../../packs/assemble';
+import { isSet, type PlacedPack } from '../../packs/assemble';
 import { itemStrength, type ItemStrength } from '../../engine/schedule';
 import { isLessonDone, REVIEW_BATCH, themeWordsLeftToday, WORD_BATCH, wordsLeftToday } from '../../engine/selection';
 import { summarizePack, summarizeTopic } from '../../engine/summary';
@@ -17,7 +18,7 @@ import { Icon } from '../components/Icon';
 import { IconTile } from '../components/IconTile';
 import { ProgressBar } from '../components/ProgressBar';
 import { useEnv } from '../env';
-import { plural } from '../format';
+import { packTerms, plural } from '../format';
 import type { StartSession } from './PanelApp';
 
 type TopicsProps = {
@@ -48,18 +49,23 @@ export function TopicsScreen({ snap, start, openId, onOpen, onChange }: TopicsPr
 function TopicList({ snap, onOpen }: { snap: Snapshot; onOpen: (id: string) => void }) {
   const { course, now } = useEnv();
   const at = now();
-  const packs = course.packs.length;
+  const situations = course.packs.filter((pack) => !isSet(pack));
+  const sets = course.packs.filter(isSet);
+  const row = (pack: PlacedPack, index: number) => <PackRow key={pack.id} pack={pack} progress={snap.progress} at={at} index={index} onOpen={onOpen} />;
   return (
     <div className="tn-screen">
-      {packs > 0 ? (
+      {situations.length > 0 ? (
         <section className="tn-section">
           <h2 className="tn-section__title">Situations</h2>
           <p className="tn-section__lead">Real life in the Netherlands, scene by scene.</p>
-          <ul className="tn-panel-card tn-today-list">
-            {course.packs.map((pack, i) => (
-              <PackRow key={pack.id} pack={pack} progress={snap.progress} at={at} index={i} onOpen={onOpen} />
-            ))}
-          </ul>
+          <ul className="tn-panel-card tn-today-list">{situations.map((pack, i) => row(pack, i))}</ul>
+        </section>
+      ) : null}
+      {sets.length > 0 ? (
+        <section className="tn-section">
+          <h2 className="tn-section__title">Tricky words</h2>
+          <p className="tn-section__lead">Short sets on the words that trip up English speakers.</p>
+          <ul className="tn-panel-card tn-today-list">{sets.map((pack, i) => row(pack, situations.length + i))}</ul>
         </section>
       ) : null}
       <section className="tn-section">
@@ -67,7 +73,7 @@ function TopicList({ snap, onOpen }: { snap: Snapshot; onOpen: (id: string) => v
         <p className="tn-section__lead">Practise one theme&rsquo;s words, or learn new ones from it.</p>
         <ul className="tn-panel-card tn-today-list">
           {course.themes.map((theme, i) => (
-            <TopicRow key={theme.id} theme={theme} snap={snap} at={at} index={packs + i} onOpen={onOpen} />
+            <TopicRow key={theme.id} theme={theme} snap={snap} at={at} index={course.packs.length + i} onOpen={onOpen} />
           ))}
         </ul>
       </section>
@@ -75,24 +81,25 @@ function TopicList({ snap, onOpen }: { snap: Snapshot; onOpen: (id: string) => v
   );
 }
 
-/** A pack's line: where the learner is in its scenes, and its words met. */
+/** A pack's line: where the learner is in its scenes (a set's parts), and its words met. */
 function packMeta(pack: PlacedPack, progress: LearnerProgress, at: number): string {
   const summary = summarizePack(pack, progress, at);
+  const { step, Step } = packTerms(pack);
   const met = summary.items.total - summary.items.new;
   const due = summary.items.due > 0 ? ` · ${summary.items.due} due` : '';
-  if (!summary.next) return `All ${summary.scenes.total} scenes done${due}`;
-  if (!summary.started) return `${plural(summary.scenes.total, 'scene')} · ${summary.items.total} phrases and words`;
-  return `Scene ${summary.scenes.completed + 1} of ${summary.scenes.total} · ${met} of ${summary.items.total} met${due}`;
+  if (!summary.next) return `All ${summary.scenes.total} ${step}s done${due}`;
+  if (!summary.started) return `${plural(summary.scenes.total, step)} · ${summary.items.total} phrases and words`;
+  return `${Step} ${summary.scenes.completed + 1} of ${summary.scenes.total} · ${met} of ${summary.items.total} met${due}`;
 }
 
-/** A pack as a line of the list, in the Today tab's row style; its bar counts scenes. */
+/** A pack as a line of the list, in the Today tab's row style; its bar counts scenes. A set's tile shows two languages. */
 function PackRow({ pack, progress, at, index, onOpen }: { pack: PlacedPack; progress: LearnerProgress; at: number; index: number; onOpen: (id: string) => void }) {
   const metaId = useId();
   const scenes = pack.scenes.filter((scene) => isLessonDone(progress, scene.id)).length;
   return (
     <li className="tn-settle-in" style={{ '--i': Math.min(index, LAST_STAGGERED) } as CSSProperties}>
       <button type="button" className="tn-today-row" aria-label={pack.title} aria-describedby={metaId} onClick={() => onOpen(pack.id)}>
-        <IconTile icon="chats" kind="packs" />
+        <IconTile icon={isSet(pack) ? 'translate' : 'chats'} kind="packs" />
         <span className="tn-today-row__text">
           <span className="tn-today-row__title">{pack.title}</span>
           <span className="tn-today-row__meta" id={metaId}>
@@ -192,8 +199,12 @@ function TopicPage({ theme, snap, start, onBack }: { theme: PlacedTheme; snap: S
   );
 }
 
-/** A topic's items, each with audio, its meaning and its strength as a dot and a label. */
-function ItemList({ items, progress }: { items: ReadonlyArray<LearningItem>; progress: LearnerProgress }) {
+/**
+ * A topic's items, each with audio, its meaning and its strength as a dot and
+ * a label. A set adds each word's note after its meaning, as the lesson's key
+ * phrases do: the note is what to say for the English look-alike.
+ */
+function ItemList({ items, progress, notes = false }: { items: ReadonlyArray<LearningItem>; progress: LearnerProgress; notes?: boolean }) {
   return (
     <ul className="tn-panel-card tn-topic__words">
       {items.map((item) => {
@@ -205,7 +216,10 @@ function ItemList({ items, progress }: { items: ReadonlyArray<LearningItem>; pro
               <span className="tn-word-row__dutch" lang="nl">
                 {item.dutch}
               </span>
-              <span className="tn-word-row__english">{item.english}</span>
+              <span className="tn-word-row__english">
+                {item.english}
+                {notes && item.note ? ` · ${item.note}` : null}
+              </span>
             </span>
             <span className="tn-word-row__status">{STRENGTH_LABEL[strength]}</span>
           </li>
@@ -233,25 +247,25 @@ function sceneState(scene: Lesson, next: Lesson | undefined, progress: LearnerPr
   return scene.id === next?.id ? 'next' : 'locked';
 }
 
-const SCENE_META: Record<SceneState, (number: number) => string> = {
+const SCENE_META: Record<SceneState, (number: number, step: string) => string> = {
   done: () => 'Done · play again',
   next: () => 'Up next',
-  locked: (number) => `After scene ${number - 1}`,
+  locked: (number, step) => `After ${step} ${number - 1}`,
 };
 
-/** One scene as a step: a disc with its number (a tick once done, a lock until its turn), its title, what it is now. */
-function SceneRow({ scene, number, state, onStart }: { scene: Lesson; number: number; state: SceneState; onStart: () => void }) {
+/** One scene (a set's part) as a step: a disc with its number (a tick once done, a lock until its turn), its title, what it is now. */
+function SceneRow({ scene, number, state, terms, onStart }: { scene: Lesson; number: number; state: SceneState; terms: ReturnType<typeof packTerms>; onStart: () => void }) {
   const metaId = useId();
   return (
     <li className="tn-pack-step" data-state={state}>
-      <button type="button" className="tn-pack-step__row" disabled={state === 'locked'} aria-label={`Scene ${number}: ${scene.title}`} aria-describedby={metaId} onClick={onStart}>
+      <button type="button" className="tn-pack-step__row" disabled={state === 'locked'} aria-label={`${terms.Step} ${number}: ${scene.title}`} aria-describedby={metaId} onClick={onStart}>
         <span className="tn-pack-step__disc" aria-hidden="true">
           {state === 'done' ? <Icon name="check" size={16} /> : state === 'locked' ? <Icon name="lock" size={14} /> : number}
         </span>
         <span className="tn-pack-step__text">
           <span className="tn-pack-step__title">{scene.title}</span>
           <span className="tn-pack-step__meta" id={metaId}>
-            {SCENE_META[state](number)}
+            {SCENE_META[state](number, terms.step)}
           </span>
         </span>
         {state === 'locked' ? null : <Icon name="chevron" size={20} />}
@@ -264,7 +278,7 @@ function SceneRow({ scene, number, state, onStart }: { scene: Lesson; number: nu
  * "Do it for real": the learner ticks the mission off themselves. The tick is
  * shown at once and saved apart from progress; it is never scored.
  */
-function MissionCard({ pack, done, onChange }: { pack: PlacedPack; done: boolean; onChange: () => void }) {
+function MissionCard({ pack, mission, done, onChange }: { pack: PlacedPack; mission: string; done: boolean; onChange: () => void }) {
   const { learning } = useEnv();
   const [ticked, setTicked] = useState(done);
   // Only a tick made here pops; one that was already there just shows.
@@ -278,7 +292,7 @@ function MissionCard({ pack, done, onChange }: { pack: PlacedPack; done: boolean
   }
   return (
     <div className="tn-panel-card tn-mission" data-done={ticked || undefined}>
-      <p className="tn-mission__text">{pack.mission}</p>
+      <p className="tn-mission__text">{mission}</p>
       <button type="button" className="tn-mission__tick" aria-pressed={ticked} onClick={toggle}>
         <span className={`tn-mission__box${ticked && popped ? ' tn-tick' : ''}`} aria-hidden="true">
           {ticked ? <Icon name="check" size={16} /> : null}
@@ -305,6 +319,7 @@ function PackPage({ pack, snap, start, onBack, onChange }: { pack: PlacedPack; s
   const next = summary.next;
   const nextNumber = next ? pack.scenes.indexOf(next) + 1 : 0;
   const context = bestAfter(course, pack);
+  const terms = packTerms(pack);
   const play = (scene: Lesson) => () => void start(() => learning.startLesson(scene.id, 'focused'));
   const practise = met > 0 ? () => void start(() => learning.startPackPractice(pack.id)) : undefined;
 
@@ -321,33 +336,35 @@ function PackPage({ pack, snap, start, onBack, onChange }: { pack: PlacedPack; s
           {pack.title}
         </h2>
         <p className="tn-pack__situation">{pack.situation}</p>
-        <ProgressBar value={summary.scenes.completed} max={summary.scenes.total} label={`${pack.title}: scenes done`} count />
+        <ProgressBar value={summary.scenes.completed} max={summary.scenes.total} label={`${pack.title}: ${terms.step}s done`} count />
         {next ? (
           <Button block onClick={play(next)}>
-            {progress.lessons[next.id]?.startedAt ? 'Continue' : 'Start'} scene {nextNumber}
+            {progress.lessons[next.id]?.startedAt ? 'Continue' : 'Start'} {terms.step} {nextNumber}
           </Button>
         ) : null}
         {practise ? (
           <Button block variant={next ? 'secondary' : 'primary'} onClick={practise}>
-            {summary.items.due > 0 ? `Practise this pack · ${summary.items.due} due` : 'Practise this pack'}
+            {summary.items.due > 0 ? `Practise this ${terms.whole} · ${summary.items.due} due` : `Practise this ${terms.whole}`}
           </Button>
         ) : null}
-        {next ? null : <p className="tn-topic__note">You have done every scene. Practise to keep it fresh.</p>}
+        {next ? null : <p className="tn-topic__note">You have done every {terms.step}. Practise to keep it fresh.</p>}
       </section>
 
       <section className="tn-section">
-        <h3 className="tn-section__title">Scenes</h3>
+        <h3 className="tn-section__title">{terms.Step}s</h3>
         <ol className="tn-panel-card tn-pack-steps">
           {pack.scenes.map((scene, i) => (
-            <SceneRow key={scene.id} scene={scene} number={i + 1} state={sceneState(scene, next, progress)} onStart={play(scene)} />
+            <SceneRow key={scene.id} scene={scene} number={i + 1} state={sceneState(scene, next, progress)} terms={terms} onStart={play(scene)} />
           ))}
         </ol>
       </section>
 
-      <section className="tn-section">
-        <h3 className="tn-section__title">Do it for real</h3>
-        <MissionCard pack={pack} done={pack.id in snap.missions} onChange={onChange} />
-      </section>
+      {pack.mission ? (
+        <section className="tn-section">
+          <h3 className="tn-section__title">Do it for real</h3>
+          <MissionCard pack={pack} mission={pack.mission} done={pack.id in snap.missions} onChange={onChange} />
+        </section>
+      ) : null}
 
       {pack.cultureNote ? (
         <section className="tn-section">
@@ -361,7 +378,7 @@ function PackPage({ pack, snap, start, onBack, onChange }: { pack: PlacedPack; s
 
       <section className="tn-section">
         <h3 className="tn-section__title">Phrases and words</h3>
-        <ItemList items={pack.items} progress={progress} />
+        <ItemList items={pack.members} progress={progress} notes={isSet(pack)} />
       </section>
     </div>
   );

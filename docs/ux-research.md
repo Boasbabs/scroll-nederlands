@@ -647,3 +647,26 @@ Phase T2 of `docs/topics-and-scenario-packs-plan.md`: packs are real-life situat
 - Squash and stretch with exaggeration, then overlapping action: a mission ticked here pops its box (`tn-tick-pop`) and the tick draws in after it (`tn-tick-draw`). A tick that was already there just shows.
 - Slow in and slow out: the mission card's green tint fades in with `--ease-out`.
 - Reduced motion turns all of it into fades (`motion.css`).
+
+## 18. Word sets: false friends (twelfth session, 2026-10-29)
+
+Phase T5 of `docs/topics-and-scenario-packs-plan.md` adds a set beside the situations: the Dutch words that look like English ones but mean something else. It is played like a pack, in short parts, but it is not a situation, so it has no text, listening or writing task, and its page lists the words it shares with the word track and the packs.
+
+### 18.1 References (Mobbin)
+- [Vocabulary – Practice](https://mobbin.com/screens/32da9e8a-293b-4797-9b3a-752a60aaf793): separate headed groups for different kinds of practice ("Challenges", "Categories") on one screen.
+- [Preply – Collections](https://mobbin.com/screens/0f799a6c-d230-4e54-8016-bae17eaa89e6): word collections as rows with a lead line and "11 words, A1" under each title.
+- [Vocabulary – Word cards](https://mobbin.com/screens/fdf0f6c0-6a14-4d49-ad5c-abaa64b1a1a7): a word, its meaning, and a usage line under it in smaller text.
+- [Wispr Flow – Dictionary](https://mobbin.com/screens/e5acebf2-50cc-4271-ae9d-f9164a9b799f): one term mapped to another in a list row ("btw → by the way").
+
+### 18.2 Decisions
+- **Tricky words, between Situations and Word themes,** under its own heading and lead ("Short sets on the words that trip up English speakers."), as Vocabulary separates kinds of practice. A set is not a situation, so it does not sit in that list, and it is closer to the situations (parts in order, a page) than to a theme.
+- **The same row, a different glyph:** the packs' Dodger Blue tile with Phosphor's translate glyph instead of the chats bubble, so a set reads as part of the packs family and as being about two languages. "4 parts · 25 phrases and words", then "Part 2 of 4 · 8 of 25 met", then "All 4 parts done".
+- **Parts, not scenes:** a set has no story, so its page, its steps, the Today row and the end screen say part and set ("Start part 1", "After part 1", "Practise this set", "Part complete!", "Next part", "Back to the set"). Everything else is the pack's page.
+- **The words show their note:** each word's meaning is followed by what to use for the English look-alike ("cheeky, rude · not "brutal": that is wreed"), the line the lesson's key phrases already show. Words the set shares with the word track or a pack (slim, kind, worst, solliciteren) are listed with its own, after the part that first practises them.
+- **No "Best after" line and no situations count:** a set builds on no course module, and the Progress tab's Situations meter counts situations only. A mission is optional for a set; this one has a light noticing task, so Do it for real stays.
+- **Today:** a set in progress gets the Continue row like a pack ("Part 2 of 4 · Food and shops"); it reads naturally with "part".
+
+### 18.3 Motion (Lasseter)
+- No new animation. Overlapping action: the set's row settles in with the list's stagger, one step after the last situation, so the three groups arrive in reading order (`tn-settle-in`, capped at eight steps).
+- The set's page reuses the pack page's motion (§17.3): staging for the page, overlapping action for the steps, squash and stretch on press, the mission tick's pop.
+- Reduced motion turns all of it into fades (`motion.css`).

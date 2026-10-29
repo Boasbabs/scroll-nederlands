@@ -98,6 +98,24 @@ Google's Chirp 3: HD voices cost about $30 per million characters, with the firs
 - **Output.** `voice-test/` (gitignored): Google's takes, the clips, `results.json`, `report.md`, and `index.html`, a page to listen across each text. A default run sends 2,274 characters; a second run reuses takes and transcripts.
 - **Not decided yet.** If Google wins, every clip is remade with it (one voice per part, never two providers for the same part), and `scripts/generate-audio.ts` gets Google as its provider. Until then, the ElevenLabs run on 1 November goes ahead as planned.
 
+### Results (29 October, EU endpoint)
+
+On the 20 texts that both have, at pace 1 (14 short texts, 6 sentences):
+
+| Voice | Short texts back exactly | Sentences heard | Silent takes |
+|---|---|---|---|
+| ElevenLabs (Serge de Beer, Roos) | 13 of 14 | 6 of 6 | 0 |
+| Google Erinome (female) | 13 of 14 | 6 of 6 | 0 |
+| Google Charon (male) | 12 of 14 | 6 of 6 | 1 |
+| Google Iapetus (male) | 11 of 14 | 6 of 6 | 2 |
+
+- **Sentences are a tie.** Every voice was heard on every shared sentence.
+- **Google drops single words.** 9 of Google's 150 takes came back silent, a quarter second of nothing, all of one-word texts ("goed" 4 times, "wel" and "man" twice, "leuk" once), 8 of them from the two male voices. A probe of 72 more takes showed it is random: 8 of 27 bare one-word takes came back silent, against 3 of 45 written "goed.", "Goed." or "de man". Serge de Beer read all 13 shared short words right. A silence check with retries would catch these, but Google cannot voice the word track as it comes.
+- **Spelling.** At pace 1, every Google voice read "S-M-I-T-H." as the word "Smith"; letters with commas ("S, A, N, N, E.") came back spelled out.
+- **Pace.** At pace 1 Google speaks 10.5 to 11.0 letters a second on the shared texts, against 10.3 to 11.5 for ElevenLabs. Pace 0.9 made the check miss more, so it buys nothing.
+- **Not measured.** Speech-to-Text also heard nothing in a few spoken single words ("man" from every voice), a known weakness of recognisers on isolated words, so those count against a voice without proving it wrong. Accent and naturalness need a Dutch listener on `voice-test/index.html`.
+- **Cost.** 2,580 characters and 170 Speech-to-Text calls, inside the free allowance.
+
 ## Limitations
 
 - **STT measures intelligibility, not accent.** It cannot tell nl-NL from nl-BE, and it mishears isolated sounds and one-syllable words, so the QA list is a listening list. The Netherlands accent rests on library metadata (all 6 voices are labelled nl-NL, standard), not on a native listener. A Dutch speaker should spot-check about 20 clips per voice: the hard g/sch, ui/eu/ij, w, v/z devoicing and r.

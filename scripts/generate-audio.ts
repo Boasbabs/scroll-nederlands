@@ -163,9 +163,11 @@ async function loadBeside(): Promise<BesideTexts> {
   return besideTexts(wordThemes, contrasts);
 }
 
+/** The course's lessons in order, then the scenario packs' scenes: in each group the course is voiced first. */
 async function loadLessons(): Promise<Array<LessonDraft>> {
   const { curriculumStructure } = (await load('src/curriculum/structure.ts')) as typeof import('../src/curriculum/structure.ts');
   const { assembleCurriculum, flattenLessons } = (await load('src/curriculum/assemble.ts')) as typeof import('../src/curriculum/assemble.ts');
+  const { packs } = (await load('src/packs/content/index.ts')) as typeof import('../src/packs/content/index.ts');
   const drafts = new Map<string, Array<LessonDraft>>();
   for (const stage of curriculumStructure) {
     for (const module of stage.modules) {
@@ -174,7 +176,8 @@ async function loadLessons(): Promise<Array<LessonDraft>> {
       drafts.set(module.id, ((await load(file)) as { lessons: Array<LessonDraft> }).lessons);
     }
   }
-  return flattenLessons(assembleCurriculum(curriculumStructure, (_stage, moduleId) => drafts.get(moduleId) ?? []));
+  const lessons = flattenLessons(assembleCurriculum(curriculumStructure, (_stage, moduleId) => drafts.get(moduleId) ?? []));
+  return [...lessons, ...packs.flatMap((pack) => pack.scenes)];
 }
 
 async function elevenlabs(pathname: string, init: { json?: unknown; form?: FormData; query?: Record<string, string> }): Promise<Response> {

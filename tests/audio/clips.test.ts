@@ -12,6 +12,8 @@ const manifest = Object.values(import.meta.glob<AudioManifest>('../../src/audio/
 const recorded = Object.values(import.meta.glob<RecordedManifest>('../../src/audio/recorded.json', { eager: true, import: 'default' }))[0];
 // Vitest runs from the repository root.
 const publicDir = path.resolve('public');
+/** Every lesson the extension plays: the course, then the pack scenes (as the script loads them). */
+const played = [...course.lessons, ...course.packs.flatMap((pack) => pack.scenes)];
 
 describe.skipIf(!manifest)('the generated audio manifest', () => {
   const clips = manifest?.clips ?? {};
@@ -37,7 +39,7 @@ describe.skipIf(!manifest)('the generated audio manifest', () => {
   });
 
   it('has no stale entries: every key is a text the course plays in that voice', () => {
-    const texts = collectClipTexts(course.lessons, besideTexts(wordThemes, contrasts));
+    const texts = collectClipTexts(played, besideTexts(wordThemes, contrasts));
     const voiceA = new Set(texts.filter((text) => text.voice === 'a').map((text) => text.text));
     const voiceB = new Set(texts.filter((text) => text.voice === 'b').map((text) => text.text));
     expect(Object.keys(clips).filter((key) => !voiceA.has(key))).toEqual([]);
@@ -60,7 +62,7 @@ describe('the human takes manifest', () => {
   });
 
   it('keys takes by texts the course plays', () => {
-    const texts = new Set(collectClipTexts(course.lessons, besideTexts(wordThemes, contrasts)).map((text) => text.text));
+    const texts = new Set(collectClipTexts(played, besideTexts(wordThemes, contrasts)).map((text) => text.text));
     expect(Object.keys(takes).filter((key) => !texts.has(key))).toEqual([]);
   });
 

@@ -84,7 +84,7 @@ The rest of Vol 2 is B1 and can wait: the imperfect for storytelling, subordinat
 |---|---|---|
 | T1 | Topics tab over the 21 existing word themes | Done |
 | T2 | Pack engine, pack screen, Today and Progress hooks | Done |
-| T3 | Packs, wave 1: Gemeente, Renting, Money, Doctor | Not started |
+| T3 | Packs, wave 1: Gemeente, Renting, Money, Doctor | In progress: Gemeente done |
 | T4 | Packs, wave 2: Work, Finding work, Getting around, Emergencies, Supermarket | Not started |
 | T5 | Packs, wave 3: Eating out, Services, Neighbours, School, plus the false-friends set | Not started |
 | T6 | Word track tier 2 (words 626–1,000) | Not started |

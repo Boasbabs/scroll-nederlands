@@ -42,8 +42,16 @@ describe('the de/het items', () => {
     }
   });
 
-  it('number about 485: 131 course nouns and 354 from the word track', () => {
-    expect(course.articles.filter((item) => !nounIdOf(item.id).startsWith('w-'))).toHaveLength(131);
-    expect(course.articles.filter((item) => nounIdOf(item.id).startsWith('w-'))).toHaveLength(354);
+  it('cover the packs’ nouns except their plurals', () => {
+    for (const item of course.packs.flatMap((pack) => pack.items)) {
+      const noun = item.kind === 'word' && articleOf(item.dutch) !== undefined && !item.plural;
+      expect(course.item(articleItemId(item.id)) !== undefined, item.dutch).toBe(noun);
+    }
+  });
+
+  it('number 131 course nouns and 354 from the word track, besides the packs’', () => {
+    const from = (prefix: string) => (item: { id: string }) => nounIdOf(item.id).startsWith(prefix);
+    expect(course.articles.filter((item) => !from('w-')(item) && !from('sc-')(item))).toHaveLength(131);
+    expect(course.articles.filter(from('w-'))).toHaveLength(354);
   });
 });

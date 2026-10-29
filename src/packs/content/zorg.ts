@@ -337,7 +337,7 @@ export const zorg: Pack = {
         noun('de bijsluiter', 'the package leaflet', { note: 'the leaflet in the box: how to take it, and the side effects' }),
         noun('de pijnstiller', 'the painkiller', { note: 'such as paracetamol; no prescription needed' }),
         noun('de zalf', 'the ointment'),
-        noun('de pleister', 'the plaster', { note: 'een pleister plakken: to put on a plaster' }),
+        noun('de pleister', 'the plaster', { note: 'een pleister plakken: to put on a plaster; plaster on a wall is het pleister', articleCue: 'the plaster you put on a cut' }),
       ],
       wordBreakdown: [
         { dutch: 'Ik kom … ophalen', english: "I've come to collect …" },

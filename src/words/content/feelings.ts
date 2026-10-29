@@ -1,4 +1,4 @@
-import { adj, noun, other, verb } from '../build';
+import { adj, noun, verb } from '../build';
 import type { WordTheme } from '../types';
 
 export const feelings: WordTheme = {
@@ -68,6 +68,6 @@ export const feelings: WordTheme = {
     }),
     noun('het verdriet', 'the sadness, the grief', { example: { dutch: 'Haar hond is dood. Ze heeft veel verdriet.', english: "Her dog has died. She's very sad." } }),
     verb('spijt hebben', 'to regret', { example: { dutch: 'Ik ga het proberen. Ik wil later geen spijt hebben.', english: "I'm going to give it a try. I don't want any regrets later." } }),
-    other('heimwee', 'homesickness', { note: 'takes de or het, so it has no de/het drill', example: { dutch: 'Ik woon graag in Nederland, maar soms heb ik heimwee.', english: "I like living in the Netherlands, but sometimes I'm homesick." } }),
+    noun('het heimwee', 'the homesickness', { accept: ['de heimwee'], note: 'de heimwee is right too', example: { dutch: 'Ik woon graag in Nederland, maar soms heb ik heimwee.', english: "I like living in the Netherlands, but sometimes I'm homesick." } }),
   ],
 };

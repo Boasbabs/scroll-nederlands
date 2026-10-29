@@ -786,7 +786,7 @@ Wyner's next step after the 625 basic words is the 1,000 most frequent words. Th
 - **Engine:** `WordTheme.tier` and `NewWord.example`; tier 2 follows the whole of tier 1 in the mixed list and opens once 90% of tier 1 is met (`TIER_TWO_AFTER`), and a theme opened in Topics teaches at once. The audio script voices the examples; until the ElevenLabs quota resets on 1 November, the browser's nl-NL voice reads them.
 - **UI:** More words on Topics, the sentence on a word's card, and **Core words** for Basic words on Today, Progress, the end screen and Settings, with counts written "1,000", bars included (`docs/ux-research.md` §19).
 - **Spelling:** "Kerst" takes a capital as in the sociaal pack; the openbaar note writes "het ov" as the Woordenlijst does, while the card keeps its own name, OV-chipkaart.
-- **Tests:** 1,000 words (625 in tier 1, 375 in tier 2), every tier-2 word new and found in its own sentence, and 488 word-track nouns in the de/het drills (heimwee takes de or het, so it has none); the course is unchanged at 272 lessons and 1,024 items.
+- **Tests:** 1,000 words (625 in tier 1, 375 in tier 2), every tier-2 word new and found in its own sentence, and 480 word-track nouns in the de/het drills (the nine that take de or het have none); the course is unchanged at 272 lessons and 1,024 items.
 - **For the NT2 review:** glosses picked to keep near-synonyms apart (beslissen and besluiten, onthouden and herinneren, slagen and lukken, verbaasd and verrast, de rust "the peace and quiet" beside de rest), female job titles in notes and `accept`, and the sentences built on idioms ("liefde op het eerste gezicht", "Ik kan het echt haten als het regent").
 
 ### Dutch review of the tier-2 words (2026-10-29)
@@ -796,7 +796,7 @@ Four read-only reviews, written to the same editor's brief, covered all 375 word
 - **Gaps with a second right answer:** at independent recall the learner sees only the Dutch sentence, and about 180 sentences also took a word they already know ("Wil je de ___ van mijn broodje?" took rest as well as helft). Each is rewritten around a clue or a fixed phrase only its word fits, or the other word is accepted where it is just as right (boos for kwaad, simpel for eenvoudig, de coach for de trainer).
 - **Engine:** a noun's gap keeps its article in view, so its accepted forms now count without their article ("keus", the female job titles), and words can list near-synonyms (`near`) that never appear as each other's wrong options (gevolg and resultaat, nogal and best).
 - **Glosses:** nogal, best, pas, verder, bekend, spannend, verbaasd, verschijnen, stellen, schreeuwen, noemen, lukken and regelen are sharper; beslissen and besluiten, and de club and de vereniging, accept each other.
-- **heimwee** takes de or het (Woordenlijst: m/v/o), so it is taught without an article and has no de/het drill.
+- **heimwee** takes de or het (Woordenlijst: m/v/o), so it has no de/het drill: it is taught as het heimwee, with de heimwee accepted.
 
 Left for the owner: the answer checker takes a one-letter slip as a typo even when it makes another word (slecht for slechts, trouwen for trouwens), and tier 1 has a noun the Woordenlijst lists with both articles, het aanrecht (m/o), whose de/het drill marks "de" wrong.
 

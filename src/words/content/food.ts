@@ -39,7 +39,7 @@ export const food: WordTheme = {
     noun('het koekje', 'the biscuit'),
     noun('de stroopwafel', 'the syrup waffle'),
     noun('de chocola', 'the chocolate'),
-    noun('het snoep', 'the sweets'),
+    noun('het snoep', 'the sweets', { accept: ['de snoep'], note: 'de snoep is right too' }),
     noun('het ijs', 'the ice cream', { note: 'also: ice' }),
   ],
 };

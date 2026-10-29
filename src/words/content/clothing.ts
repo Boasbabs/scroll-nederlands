@@ -9,7 +9,7 @@ export const clothing: WordTheme = {
     course('de jas'),
     noun('de broek', 'the trousers'),
     noun('de schoen', 'the shoe'),
-    noun('het T-shirt', 'the T-shirt'),
+    noun('het T-shirt', 'the T-shirt', { accept: ['de T-shirt'], note: 'de T-shirt is right too' }),
     noun('de trui', 'the jumper'),
     noun('het overhemd', 'the shirt'),
     noun('de jurk', 'the dress'),

@@ -49,9 +49,24 @@ describe('the de/het items', () => {
     }
   });
 
-  it('number 131 course nouns and 488 from the word track (354 in tier 1, 134 in tier 2), besides the packs’', () => {
+  // The Woordenlijst lists each of these as m/o, m/v/o or v/o (checked 2026-10-29).
+  it('give none to the nouns that take de or het', () => {
+    expect(course.items.filter((item) => takesEitherArticle(item)).map((item) => item.id)).toEqual([
+      'w-home/deken',
+      'w-home/gordijn',
+      'w-food/snoep',
+      'w-kitchen/aanrecht',
+      'w-clothing/t-shirt',
+      'w-fruit-veg/knoflook',
+      'w-ideas/idee',
+      'w-ideas/risico',
+      'w-feelings/heimwee',
+    ]);
+  });
+
+  it('number 131 course nouns and 480 from the word track (348 in tier 1, 132 in tier 2), besides the packs’', () => {
     const from = (prefix: string) => (item: { id: string }) => nounIdOf(item.id).startsWith(prefix);
     expect(course.articles.filter((item) => !from('w-')(item) && !from('sc-')(item))).toHaveLength(131);
-    expect(course.articles.filter(from('w-'))).toHaveLength(488);
+    expect(course.articles.filter(from('w-'))).toHaveLength(480);
   });
 });

@@ -26,7 +26,7 @@ export const kitchen: WordTheme = {
     noun('de kom', 'the bowl'),
     noun('het blik', 'the tin, the can'),
     noun('de pot', 'the jar, the pot'),
-    noun('het aanrecht', 'the worktop'),
+    noun('het aanrecht', 'the worktop', { accept: ['de aanrecht'], note: 'de aanrecht is right too' }),
     noun('de theedoek', 'the tea towel'),
     noun('de snijplank', 'the chopping board'),
     noun('het servet', 'the napkin'),

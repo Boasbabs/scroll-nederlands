@@ -24,7 +24,7 @@ export const fruitVeg: WordTheme = {
     noun('de meloen', 'the melon'),
     noun('de champignon', 'the mushroom'),
     noun('de ananas', 'the pineapple'),
-    noun('de knoflook', 'the garlic'),
+    noun('de knoflook', 'the garlic', { accept: ['het knoflook'], note: 'het knoflook is right too' }),
     noun('de boon', 'the bean'),
     noun('de erwt', 'the pea'),
     noun('de spinazie', 'the spinach'),

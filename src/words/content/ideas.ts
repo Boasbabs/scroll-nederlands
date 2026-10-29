@@ -14,6 +14,8 @@ export const ideas: WordTheme = {
       example: { dutch: 'Wat is de reden van uw bezoek?', english: 'What is the reason for your visit?' },
     }),
     noun('het idee', 'the idea', {
+      accept: ['de idee'],
+      note: 'de idee is right too',
       example: { dutch: 'Ik heb geen idee waar mijn sleutels zijn.', english: 'I have no idea where my keys are.' },
     }),
     noun('de keuze', 'the choice', {
@@ -181,7 +183,8 @@ export const ideas: WordTheme = {
       example: { dutch: 'Ik had geluk: de trein was ook te laat.', english: 'I was lucky: the train was late too.' },
     }),
     noun('het risico', 'the risk', {
-      accept: ["de risico's"],
+      accept: ['de risico', "de risico's"],
+      note: 'de risico is right too',
       example: { dutch: 'Ik neem geen risico: de paraplu gaat mee.', english: "I'm not taking any risks: the umbrella is coming with me." },
     }),
     noun('de controle', 'the check', {

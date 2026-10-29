@@ -64,7 +64,7 @@ const MASTER_EXT = 'flac';
 const CONCURRENCY = 3;
 /** A Text-to-Speech take peaks near full scale; one whose peak stays below this came back silent. */
 export const SILENT_PEAK_DB = -30;
-/** Takes asked for a text in all before the browser's voice is left to read it. */
+/** Takes asked for each spoken form of a text before the next form, or the browser's voice, takes over. */
 export const TRIES = 5;
 
 /**
@@ -169,33 +169,50 @@ export function spokenText(text: string): string {
   return text.replace(/(?<![\p{L}\p{N}-])\p{L}(?:-\p{L})+(?![\p{L}\p{N}-])/gu, (letters) => letters.split('-').join(', '));
 }
 
+/**
+ * What the voice may be sent for a text, in the order tried. A single word goes bare first, and
+ * then, if every take of it came back silent, as a sentence: "ja" as "Ja.". Google voices a
+ * written word far more reliably (docs/audio-research.md), and Erinome never said a bare "ja".
+ */
+export function spokenForms(text: string): Array<string> {
+  const spoken = spokenText(text);
+  if (/\s/.test(spoken)) return [spoken];
+  // Dutch capitalises the digraph ij as one letter: "IJs".
+  const sentence = `${spoken.replace(/^(ij|\p{L})/u, (first) => first.toUpperCase())}${/[.!?]$/.test(spoken) ? '' : '.'}`;
+  return sentence === spoken ? [spoken] : [spoken, sentence];
+}
+
 /** What the API's audio depends on: what was sent, to which voice. Post-processing is left out, so a new encoding reuses the masters. */
-function synthesisInputs(clip: ClipText): Array<unknown> {
-  return [spokenText(clip.text), VOICES[clip.voice].id, MODEL, SETTINGS];
+function synthesisInputs(clip: ClipText, sent: string): Array<unknown> {
+  return [sent, VOICES[clip.voice].id, MODEL, SETTINGS];
 }
 
-/** The take as the API returned it (losslessly), in the masters folder. */
-export function masterName(clip: ClipText): string {
-  return `${hash(synthesisInputs(clip))}.${MASTER_EXT}`;
+/** The take as the API returned it (losslessly), in the masters folder, for what was sent (the first spoken form unless named). */
+export function masterName(clip: ClipText, sent = spokenText(clip.text)): string {
+  return `${hash(synthesisInputs(clip, sent))}.${MASTER_EXT}`;
 }
 
-/** The post-processed clip the extension plays, under public/, as a post-processing version writes it. */
-export function clipFile(clip: ClipText, version = POST_VERSION): string {
-  return `audio/${hash([...synthesisInputs(clip), version])}.ogg`;
+/** The post-processed clip the extension plays, under public/, as a post-processing version writes it from what was sent. */
+export function clipFile(clip: ClipText, version = POST_VERSION, sent = spokenText(clip.text)): string {
+  return `audio/${hash([...synthesisInputs(clip, sent), version])}.ogg`;
 }
 
 /**
  * Where a clip comes from on this run, cheapest first: it is in public/ already, it can be made
- * from its master, or (the only case that calls the API) it is synthesized. `file` is the clip
- * the text plays once the run has made it.
+ * from its master, or (the only case that calls the API) it is synthesized. Each spoken form is
+ * looked for in turn, so a word its sentence form voiced is found again. `file` is the clip the
+ * text plays once the run has made it, and `sent` the form it is made from.
  */
-export type ClipPlan = { source: 'ready' | 'master' | 'synthesize'; file: string };
+export type ClipPlan = { source: 'ready' | 'master' | 'synthesize'; file: string; sent: string };
 
 export function planClip(clip: ClipText, has: { clip: (file: string) => boolean; master: (name: string) => boolean }): ClipPlan {
-  const file = clipFile(clip);
-  if (has.clip(file)) return { source: 'ready', file };
-  if (has.master(masterName(clip))) return { source: 'master', file };
-  return { source: 'synthesize', file };
+  const forms = spokenForms(clip.text);
+  for (const sent of forms) {
+    const file = clipFile(clip, POST_VERSION, sent);
+    if (has.clip(file)) return { source: 'ready', file, sent };
+    if (has.master(masterName(clip, sent))) return { source: 'master', file, sent };
+  }
+  return { source: 'synthesize', file: clipFile(clip), sent: forms[0]! };
 }
 
 /**
@@ -208,16 +225,26 @@ export function keptClips(before: Partial<AudioManifest> | undefined, voice: Cli
 }
 
 /**
- * Asks for takes until one speaks, `tries` at most. Now and then Google returns a quarter second
- * of near silence for a one-word text, at random; the ffmpeg chain would amplify it into noise.
- * `silent` counts the silent takes (each one billed); no `take` means every try was silent.
+ * Asks for takes of each spoken form in turn until one speaks, `tries` at most per form. Now and
+ * then Google returns a quarter second of near silence for a one-word text; the ffmpeg chain would
+ * amplify it into noise. `sent` is the form that spoke, `silent` counts the silent takes (each one
+ * billed); no `take` means every try of every form was silent.
  */
-export async function spokenTake<T>(synthesize: () => Promise<T>, peakOf: (take: T) => Promise<number>, tries = TRIES): Promise<{ take?: T; silent: number }> {
-  for (let silent = 0; silent < tries; silent++) {
-    const take = await synthesize();
-    if ((await peakOf(take)) >= SILENT_PEAK_DB) return { take, silent };
+export async function spokenTake<T>(
+  forms: ReadonlyArray<string>,
+  synthesize: (sent: string) => Promise<T>,
+  peakOf: (take: T) => Promise<number>,
+  tries = TRIES,
+): Promise<{ sent?: string; take?: T; silent: number }> {
+  let silent = 0;
+  for (const sent of forms) {
+    for (let tried = 0; tried < tries; tried++) {
+      const take = await synthesize(sent);
+      if ((await peakOf(take)) >= SILENT_PEAK_DB) return { sent, take, silent };
+      silent++;
+    }
   }
-  return { silent: tries };
+  return { silent };
 }
 
 // ---------------------------------------------------------------------------
@@ -507,30 +534,31 @@ async function main() {
   // Short items always; a fixed 10% sample of the rest unless --verify all. The sample follows the master, so it stays with the encoding.
   const sampled = (clip: ClipText) => verify === 'all' || isShort(clip.text) || Number.parseInt(masterName(clip).slice(0, 4), 16) % 10 === 0;
 
-  /** Makes the clip from its master: no API call. */
-  const encode = (clip: ClipText) => postProcess(path.join(mastersDir, masterName(clip)), at(clipFile(clip)));
+  /** Makes the clip from the master of what was sent: no API call. */
+  const encode = (clip: ClipText, sent: string) => postProcess(path.join(mastersDir, masterName(clip, sent)), at(clipFile(clip, POST_VERSION, sent)));
   /**
-   * Asks for takes until one speaks, keeps it losslessly as the clip's master (a retake replaces it)
-   * and makes the clip from it. False when every take came back silent: nothing is kept.
+   * Asks for takes until one speaks, keeps it losslessly as the master of what was sent (a retake
+   * replaces it) and makes the clip from it. Returns the clip, or nothing when every take of every
+   * spoken form came back silent: then nothing is kept.
    */
-  const generate = async (clip: ClipText): Promise<boolean> => {
-    const text = spokenText(clip.text);
-    const master = path.join(mastersDir, masterName(clip));
-    const [wav, flac] = [`${master}.tmp.wav`, `${master}.tmp.flac`];
+  const generate = async (clip: ClipText): Promise<string | undefined> => {
+    const temp = path.join(mastersDir, masterName(clip));
+    const [wav, flac] = [`${temp}.tmp.wav`, `${temp}.tmp.flac`];
     try {
-      const { take, silent } = await spokenTake(async () => {
+      const { sent, take, silent } = await spokenTake(spokenForms(clip.text), async (text) => {
         const audio = await google().synthesize(text, VOICES[clip.voice].id, SETTINGS.speakingRate);
         billed += text.length;
         await writeFile(wav, audio);
         return wav;
       }, peak);
       silentTakes += silent;
-      if (!take) return false;
+      if (!take || sent === undefined) return undefined;
       await run('ffmpeg', ['-v', 'error', '-y', '-i', take, '-c:a', 'flac', flac]);
       // The clip first, then the master, so the two always hold the same take.
-      await postProcess(flac, at(clipFile(clip)));
-      await rename(flac, master);
-      return true;
+      const file = clipFile(clip, POST_VERSION, sent);
+      await postProcess(flac, at(file));
+      await rename(flac, path.join(mastersDir, masterName(clip, sent)));
+      return file;
     } finally {
       await rm(wav, { force: true });
       await rm(flac, { force: true });
@@ -550,8 +578,9 @@ async function main() {
       let wer = wordErrorRate(clip.text, transcript);
       let retaken = false;
       // One retake (Google's takes differ each time), then a human listens.
-      if (isFlagged(clip.text, wer, await duration(at(file))) && (await generate(clip))) {
-        file = clipFile(clip);
+      const retake = isFlagged(clip.text, wer, await duration(at(file))) ? await generate(clip) : undefined;
+      if (retake) {
+        file = retake;
         register(clip, file);
         await save();
         transcript = await transcribe(at(file));
@@ -567,7 +596,7 @@ async function main() {
   };
 
   // Group by group, each checked right after it is generated, so a quota stop leaves finished, checked groups.
-  let made = 0;
+  let generated = 0;
   let encoded = 0;
   for (const group of reportOnly ? [] : groups) {
     const fresh: Array<ClipText> = [];
@@ -577,26 +606,28 @@ async function main() {
       return clip.group === group && (source === 'master' || source === 'synthesize');
     });
     await pool(todo, () => Boolean(stopped), async (clip) => {
-      const { source, file } = plan(clip);
+      const { source, file, sent } = plan(clip);
       if (source === 'synthesize' && encodeOnly) return;
-      if (source === 'synthesize' && billed + spokenText(clip.text).length > maxChars) {
+      if (source === 'synthesize' && billed + sent.length > maxChars) {
         stopped = `--max-chars ${maxChars} reached`;
         return;
       }
       try {
         if (source === 'master') {
-          await encode(clip);
+          await encode(clip, sent);
           fromMasters++;
           encoded++;
+          register(clip, file);
         } else {
-          if (!(await generate(clip))) {
-            missed.set(clip, `silent on all ${TRIES} takes`);
+          const made = await generate(clip);
+          if (!made) {
+            missed.set(clip, `silent on all ${spokenForms(clip.text).length * TRIES} takes (${spokenForms(clip.text).join(', ')})`);
             return;
           }
           fresh.push(clip);
-          if (++made % 100 === 0) console.log(`${made} clips, ${billed} characters billed`);
+          register(clip, made);
+          if (++generated % 100 === 0) console.log(`${generated} clips, ${billed} characters billed`);
         }
-        register(clip, file);
         await save();
       } catch (error) {
         missed.set(clip, (error as Error).message);
@@ -617,7 +648,7 @@ async function main() {
   await save();
   await saving;
   console.log(
-    `Generated ${made} clips, ${billed} characters billed (${silentTakes} of them silent takes, asked again); made ${encoded} from masters. Manifest: ${Object.keys(manifest.clips).length} a, ${Object.keys(manifest.clipsB).length} b.`,
+    `Generated ${generated} clips, ${billed} characters billed (${silentTakes} of them silent takes, asked again); made ${encoded} from masters. Manifest: ${Object.keys(manifest.clips).length} a, ${Object.keys(manifest.clipsB).length} b.`,
   );
   if (encodeOnly) {
     const waiting = all.filter((clip) => plan(clip).source === 'synthesize').length;
@@ -699,7 +730,7 @@ async function writeQa(stored: Array<Check>, coverage: string, unvoiced: Readonl
     '',
     '## No clip',
     '',
-    tried.map((c) => `- "${c.text}" (${c.voice}, ${c.group}): ${c.why}`).join('\n') || 'None of the texts this run tried.',
+    tried.map((c) => `- "${c.text}" (${c.voice}, ${c.group}): ${c.why}`).join('\n') || (untried ? 'None of the texts this run tried.' : 'None: every course text has a clip.'),
     // A run stopped early leaves whole groups untried: those are counted, not listed.
     ...(untried ? ['', `${untried} more not tried on this run (it stopped early, or ran with --until or --report): \`pnpm audio:generate\` makes them.`] : []),
     '',

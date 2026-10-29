@@ -11,6 +11,7 @@ import {
   planClip,
   SETTINGS,
   SILENT_PEAK_DB,
+  spokenForms,
   spokenTake,
   spokenText,
   TRIES,
@@ -88,12 +89,26 @@ describe('naming clips and their masters', () => {
 
   it('makes a clip from what is on disk, cheapest first, and calls the API only when nothing is', () => {
     const plan = (clips: Array<string>, masters: Array<string>) => planClip(avonds, { clip: (file) => clips.includes(file), master: (name) => masters.includes(name) });
-    expect(plan([clipFile(avonds)], [masterName(avonds)])).toEqual({ source: 'ready', file: clipFile(avonds) });
+    const sent = "'s avonds";
+    expect(plan([clipFile(avonds)], [masterName(avonds)])).toEqual({ source: 'ready', file: clipFile(avonds), sent });
     // An older encoding of the take is remade from the master.
-    expect(plan([clipFile(avonds, 1)], [masterName(avonds)])).toEqual({ source: 'master', file: clipFile(avonds) });
+    expect(plan([clipFile(avonds, 1)], [masterName(avonds)])).toEqual({ source: 'master', file: clipFile(avonds), sent });
     // The ElevenLabs run's MP3 of the same text is another voice: Google voices the text again.
-    expect(plan(['audio/db012cff92f77e47.mp3'], [])).toEqual({ source: 'synthesize', file: clipFile(avonds) });
-    expect(plan([], [])).toEqual({ source: 'synthesize', file: clipFile(avonds) });
+    expect(plan(['audio/db012cff92f77e47.mp3'], [])).toEqual({ source: 'synthesize', file: clipFile(avonds), sent });
+    expect(plan([], [])).toEqual({ source: 'synthesize', file: clipFile(avonds), sent });
+  });
+
+  it('finds a word its sentence form voiced, under that form’s names', () => {
+    const ja: ClipText = { text: 'ja', voice: 'a', group: 'items' };
+    const plan = (clips: Array<string>, masters: Array<string>) => planClip(ja, { clip: (file) => clips.includes(file), master: (name) => masters.includes(name) });
+    const [bare, sentence] = [clipFile(ja), clipFile(ja, undefined, 'Ja.')];
+    expect(bare).not.toBe(sentence);
+    expect(masterName(ja, 'Ja.')).not.toBe(masterName(ja));
+    expect(plan([sentence], [masterName(ja, 'Ja.')])).toEqual({ source: 'ready', file: sentence, sent: 'Ja.' });
+    expect(plan([], [masterName(ja, 'Ja.')])).toEqual({ source: 'master', file: sentence, sent: 'Ja.' });
+    // A take of the bare word, should one ever speak, comes first.
+    expect(plan([bare, sentence], [])).toEqual({ source: 'ready', file: bare, sent: 'ja' });
+    expect(plan([], [])).toEqual({ source: 'synthesize', file: bare, sent: 'ja' });
   });
 
   it('keeps a part’s clips from before the run only if the same model and voice made them', () => {
@@ -123,6 +138,15 @@ describe('what the voice is sent', () => {
     expect(texts.map(spokenText)).toEqual(texts);
   });
 
+  it('has a sentence form for a single word, to send when every bare take was silent', () => {
+    expect(spokenForms('ja')).toEqual(['ja', 'Ja.']);
+    expect(spokenForms('pardon?')).toEqual(['pardon?', 'Pardon?']);
+    expect(spokenForms('ijs')).toEqual(['ijs', 'IJs.']);
+    expect(spokenForms('Goedemorgen!')).toEqual(['Goedemorgen!']);
+    expect(spokenForms('de man')).toEqual(['de man']);
+    expect(spokenForms('Smith. S-M-I-T-H.')).toEqual(['Smith. S, M, I, T, H.']);
+  });
+
   it('changes only the few spelled names in the course, whose texts stay as written', () => {
     const changed = collectClipTexts(played, besideTexts(wordThemes, contrasts)).filter((clip) => spokenText(clip.text) !== clip.text);
     expect(changed.map((clip) => clip.text)).toContain('Smith. S-M-I-T-H.');
@@ -131,28 +155,36 @@ describe('what the voice is sent', () => {
 });
 
 describe('the silence check', () => {
-  /** Takes that are just their peak in dB, handed out in order. */
+  /** Takes that are just their peak in dB, handed out in order, and what each was asked for. */
   const takes = (peaks: Array<number>) => {
-    let asked = 0;
-    return { synthesize: async () => peaks[asked++]!, peakOf: async (peak: number) => peak, asked: () => asked };
+    const asked: Array<string> = [];
+    return { synthesize: async (sent: string) => peaks[asked.push(sent) - 1]!, peakOf: async (peak: number) => peak, asked };
   };
 
   it('keeps the first take that speaks', async () => {
     const google = takes([-3.2, -2]);
-    expect(await spokenTake(google.synthesize, google.peakOf)).toEqual({ take: -3.2, silent: 0 });
-    expect(google.asked()).toBe(1);
+    expect(await spokenTake(['wel'], google.synthesize, google.peakOf)).toEqual({ sent: 'wel', take: -3.2, silent: 0 });
+    expect(google.asked).toEqual(['wel']);
   });
 
   it('asks again after a silent take, also one peaking just above -50 dB that trimming would keep', async () => {
     const google = takes([-61, -48.5, SILENT_PEAK_DB - 0.1, SILENT_PEAK_DB]);
-    expect(await spokenTake(google.synthesize, google.peakOf)).toEqual({ take: SILENT_PEAK_DB, silent: 3 });
+    expect(await spokenTake(['wel'], google.synthesize, google.peakOf)).toEqual({ sent: 'wel', take: SILENT_PEAK_DB, silent: 3 });
   });
 
-  it('gives up after four more tries and keeps nothing, so the browser’s voice reads the text', async () => {
+  it('gives up on a form after four more tries and keeps nothing, so the browser’s voice reads the text', async () => {
     expect(TRIES).toBe(5);
     const google = takes([-43, -50, -55, -61, -47, -1]);
-    expect(await spokenTake(google.synthesize, google.peakOf)).toEqual({ silent: 5 });
-    expect(google.asked()).toBe(5);
+    expect(await spokenTake(['de man'], google.synthesize, google.peakOf)).toEqual({ silent: 5 });
+    expect(google.asked).toHaveLength(5);
+  });
+
+  it('sends a word that stays silent again as a sentence, five tries more', async () => {
+    const google = takes([-55, -61, -47, -58, -52, -3]);
+    expect(await spokenTake(spokenForms('ja'), google.synthesize, google.peakOf)).toEqual({ sent: 'Ja.', take: -3, silent: 5 });
+    expect(google.asked).toEqual(['ja', 'ja', 'ja', 'ja', 'ja', 'Ja.']);
+    const silent = takes(Array.from({ length: 11 }, () => -60));
+    expect(await spokenTake(spokenForms('ja'), silent.synthesize, silent.peakOf)).toEqual({ silent: 10 });
   });
 });
 

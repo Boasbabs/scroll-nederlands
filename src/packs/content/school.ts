@@ -342,7 +342,7 @@ export const school: Pack = {
       ],
       patternExplanation:
         'After a word like met, use the object pronouns: met haar, met hem. Hoe gaat het met haar? asks how she is doing. When a sentence starts with thuis or vandaag, the verb comes next and then the subject: Thuis spreken we Engels.',
-      pronunciationTip: 'Tienminutengesprek is stressed at the start: TEEN-mee-nuu-tuh-khuh-sprek. Rapport is stressed at the end, and the t is said: rah-PORT.',
+      pronunciationTip: 'Tienminutengesprek is stressed on nu, as in minuten: teen-mee-NUU-tuh-khuh-sprek. Rapport is stressed at the end, and the t is said: rah-PORT.',
       examples: [
         { dutch: 'Het tienminutengesprek is op donderdag om half vier.', english: 'The parent–teacher meeting is on Thursday at half past three.' },
         { dutch: 'Vrijdag krijgen de kinderen het rapport.', english: 'On Friday the children get their reports.' },

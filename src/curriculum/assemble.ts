@@ -80,7 +80,7 @@ export type CurriculumIndex = {
   themes: Array<PlacedTheme>;
   /** The sound contrasts for ear training, in introduction order (see src/sounds). */
   sounds: Array<LearningItem>;
-  /** One de/het item per singular noun, course nouns first (see src/articles). */
+  /** One de/het item per singular noun that takes one article, course nouns first (see src/articles). */
   articles: Array<LearningItem>;
   /** The scenario packs beside the path, each with its scene lessons (see src/packs). */
   packs: Array<PlacedPack>;

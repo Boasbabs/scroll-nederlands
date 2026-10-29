@@ -46,7 +46,11 @@ export type LearningItemDraft = {
   /** A short English meaning, usable as a recall prompt. */
   english: string;
   kind: ItemKind;
-  /** Other correct Dutch forms accepted when the learner types it. */
+  /**
+   * Other correct Dutch forms accepted when the learner types it. A noun that
+   * takes de or het lists itself with the other article ("de aanrecht"), so
+   * it gets no de/het item.
+   */
   accept?: Array<string>;
   /** One short usage note shown after answering, e.g. "until about 12 o'clock". */
   note?: string;

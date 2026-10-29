@@ -32,7 +32,7 @@ export type PlacedWords = {
   /** The whole list in introduction order, tier 1 before tier 2: new items and the course items referenced. */
   words: Array<LearningItem>;
   themes: Array<PlacedTheme>;
-  /** New items that are singular nouns (each gets a de/het article item, src/articles). */
+  /** New items that are singular nouns (each gets a de/het article item unless it takes de or het, src/articles). */
   nouns: Array<LearningItem>;
   /** References that match no course item (the validator reports them). */
   unresolved: Array<string>;

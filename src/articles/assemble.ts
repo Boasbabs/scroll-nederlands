@@ -1,7 +1,8 @@
 // The de/het drill (docs/fluent-forever-plan.md, Phase 3): every singular noun,
 // in the course, the basic-word track or a scenario pack, gets an article
-// item. It is scheduled apart from the noun's meaning and practised only by
-// choosing de or het (articleDrill in src/engine/exercises.ts).
+// item, unless it takes de or het. It is scheduled apart from the noun's
+// meaning and practised only by choosing de or het (articleDrill in
+// src/engine/exercises.ts).
 import type { LearningItem } from '../curriculum/types';
 import { normalizeAnswer } from '../engine/answers';
 
@@ -38,6 +39,18 @@ export function withoutArticle(dutch: string): string {
 }
 
 /**
+ * A noun that takes de or het (the Woordenlijst lists het aanrecht as m/o)
+ * accepts itself with the other article ("de aanrecht"). Its de/het drill
+ * would have two right answers, so it gets none.
+ */
+export function takesEitherArticle(noun: Pick<LearningItem, 'dutch' | 'accept'>): boolean {
+  const article = articleOf(noun.dutch);
+  if (!article) return false;
+  const other = normalizeAnswer(`${article === 'de' ? 'het' : 'de'} ${withoutArticle(noun.dutch)}`);
+  return (noun.accept ?? []).some((form) => normalizeAnswer(form) === other);
+}
+
+/**
  * The course's plural words. A plural always takes de, so it gets no article
  * item. (The word track marks its own plurals.)
  */
@@ -60,20 +73,23 @@ export function isLessonNoun(item: LearningItem): boolean {
   return item.kind === 'word' && articleOf(item.dutch) !== undefined && !item.plural && !COURSE_PLURALS.has(normalizeAnswer(item.dutch));
 }
 
+/** The singular nouns' article items, leaving out the nouns that take de or het. */
 export function placeArticles(nouns: ReadonlyArray<LearningItem>): Array<LearningItem> {
-  return nouns.map(
-    (noun): LearningItem => ({
-      key: `${noun.key}${SUFFIX}`,
-      // The noun with its article, as "Review these" lists show it.
-      dutch: noun.dutch,
-      english: `${noun.english} (de or het)`,
-      kind: 'word',
-      recognitionOnly: true,
-      id: articleItemId(noun.id),
-      lessonId: ARTICLES_STAGE,
-      moduleId: ARTICLES_STAGE,
-      stageId: ARTICLES_STAGE,
-      primary: false,
-    }),
-  );
+  return nouns
+    .filter((noun) => !takesEitherArticle(noun))
+    .map(
+      (noun): LearningItem => ({
+        key: `${noun.key}${SUFFIX}`,
+        // The noun with its article, as "Review these" lists show it.
+        dutch: noun.dutch,
+        english: `${noun.english} (de or het)`,
+        kind: 'word',
+        recognitionOnly: true,
+        id: articleItemId(noun.id),
+        lessonId: ARTICLES_STAGE,
+        moduleId: ARTICLES_STAGE,
+        stageId: ARTICLES_STAGE,
+        primary: false,
+      }),
+    );
 }

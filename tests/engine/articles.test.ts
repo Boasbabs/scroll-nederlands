@@ -1,5 +1,5 @@
 // Phase 3: de/het items beside every singular noun, their drill and how they join the schedule.
-import { ARTICLES_STAGE, articleItemId, articleOf, isArticleItemId, nounIdOf, withoutArticle } from '../../src/articles/assemble';
+import { ARTICLES_STAGE, articleItemId, articleOf, isArticleItemId, nounIdOf, takesEitherArticle, withoutArticle } from '../../src/articles/assemble';
 import { ARTICLES_PER_DAY, articlesStartedToday, catchUpArticles, introduceArticles, pendingArticleIds } from '../../src/engine/articles';
 import { chooseReviewExercise, generateExercise, seededRandom } from '../../src/engine/exercises';
 import { exerciseSteps, introStepIds, planLesson, planWords } from '../../src/engine/plan';
@@ -64,6 +64,26 @@ describe('article items', () => {
     expect(course.item('x0-a-hello/de-huizen#article')).toBeUndefined();
     expect(course.item('x0-a-hello/het-is-laat#article')).toBeUndefined();
     expect(course.item('w-people/mensen#article')).toBeUndefined();
+  });
+
+  it('leave out a noun that takes de or het, which accepts itself with the other article', () => {
+    const home: WordTheme = {
+      id: 'home',
+      title: 'Home',
+      words: [
+        { key: 'aanrecht', dutch: 'het aanrecht', english: 'the worktop', pos: 'noun', accept: ['de aanrecht'] },
+        { key: 'wc', dutch: 'de wc', english: 'the toilet', pos: 'noun', accept: ['het toilet'] },
+      ],
+    };
+    const afval = { key: 'het-afval', dutch: 'het afval', english: 'the rubbish', kind: 'word' as const, accept: ['afval', 'De afval'] };
+    const course = makeCourse({ 'x0-a-hello': { items: [nounLesson['x0-a-hello'].items[0]!, afval] } }, [...testWordThemes, home]);
+    expect(takesEitherArticle(course.item('w-home/aanrecht')!)).toBe(true);
+    expect(course.item('w-home/aanrecht#article')).toBeUndefined();
+    expect(course.item('x0-a-hello/het-afval#article')).toBeUndefined();
+    // Het toilet is another noun for the same thing, so de wc keeps its drill.
+    expect(takesEitherArticle(course.item('w-home/wc')!)).toBe(false);
+    expect(course.item('w-home/wc#article')).toBeDefined();
+    expect(course.articles).toHaveLength(6 + 1);
   });
 
   it('read the article and the bare noun from the Dutch', () => {

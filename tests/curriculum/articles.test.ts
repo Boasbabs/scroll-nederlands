@@ -1,5 +1,5 @@
 // The bundled course's de/het items (Phase 3): one per singular noun, none for plurals or phrases.
-import { articleItemId, articleOf, COURSE_PLURALS, isArticleItemId, nounIdOf } from '../../src/articles/assemble';
+import { articleItemId, articleOf, COURSE_PLURALS, isArticleItemId, nounIdOf, takesEitherArticle } from '../../src/articles/assemble';
 import { course } from '../../src/curriculum';
 import { normalizeAnswer } from '../../src/engine/answers';
 import { wordThemes } from '../../src/words/content';
@@ -20,11 +20,11 @@ describe('the de/het items', () => {
     }
   });
 
-  it('cover the course’s nouns except its plurals', () => {
+  it('cover the course’s nouns except its plurals and those that take de or het', () => {
     const nouns = courseItems.filter((item) => item.kind === 'word' && articleOf(item.dutch));
     for (const noun of nouns) {
       const plural = COURSE_PLURALS.has(normalizeAnswer(noun.dutch));
-      expect(course.item(articleItemId(noun.id)) === undefined, noun.dutch).toBe(plural);
+      expect(course.item(articleItemId(noun.id)) === undefined, noun.dutch).toBe(plural || takesEitherArticle(noun));
     }
     // Every listed plural is a course word, so a typo cannot hide one.
     for (const plural of COURSE_PLURALS) expect(nouns.some((noun) => normalizeAnswer(noun.dutch) === plural), plural).toBe(true);
@@ -32,19 +32,19 @@ describe('the de/het items', () => {
     expect(courseItems.filter((item) => item.kind !== 'word' && course.item(articleItemId(item.id)))).toEqual([]);
   });
 
-  it('cover the word track’s nouns except its plurals', () => {
+  it('cover the word track’s nouns except its plurals and those that take de or het', () => {
     for (const theme of wordThemes) {
       for (const entry of theme.words) {
         if (isCourseWord(entry)) continue;
         const has = course.item(articleItemId(`w-${theme.id}/${entry.key}`)) !== undefined;
-        expect(has, entry.dutch).toBe(entry.pos === 'noun' && !entry.plural);
+        expect(has, entry.dutch).toBe(entry.pos === 'noun' && !entry.plural && !takesEitherArticle(entry));
       }
     }
   });
 
-  it('cover the packs’ nouns except their plurals', () => {
+  it('cover the packs’ nouns except their plurals and those that take de or het', () => {
     for (const item of course.packs.flatMap((pack) => pack.items)) {
-      const noun = item.kind === 'word' && articleOf(item.dutch) !== undefined && !item.plural;
+      const noun = item.kind === 'word' && articleOf(item.dutch) !== undefined && !item.plural && !takesEitherArticle(item);
       expect(course.item(articleItemId(item.id)) !== undefined, item.dutch).toBe(noun);
     }
   });

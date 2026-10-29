@@ -14,7 +14,7 @@ export type NewWord = {
   pos: PartOfSpeech;
   /** A noun used in the plural (always de), e.g. "de hersenen". */
   plural?: boolean;
-  /** Other correct Dutch forms accepted when typed. */
+  /** Other correct Dutch forms accepted when typed. A noun that takes de or het lists itself with the other article, so it gets no de/het item. */
   accept?: Array<string>;
   /** One short usage note shown with the word. */
   note?: string;

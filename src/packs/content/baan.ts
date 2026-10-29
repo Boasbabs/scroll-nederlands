@@ -208,7 +208,7 @@ export const baan: Pack = {
         { dutch: 'In de sollicitatiebrief schrijf je waarom je de baan wilt.', english: 'In the cover letter you write why you want the job.' },
         { dutch: "Het cv is kort: één of twee pagina's.", english: 'The CV is short: one or two pages.' },
       ],
-      speakingPrompt: 'Read your email aloud before you send it: Beste mevrouw De Boer, ik wil graag solliciteren op de vacature voor kok. In de bijlage vindt u mijn cv.',
+      speakingPrompt: 'Read your email aloud before you send it: Beste mevrouw De Boer, Ik wil graag solliciteren op de vacature voor kok. In de bijlage vindt u mijn cv.',
       revisits: ['s2-write-formal', 's3-read-email'],
       skills: ['reading', 'writing'],
       covers: [],

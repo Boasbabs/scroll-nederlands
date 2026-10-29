@@ -651,7 +651,7 @@ export const diensten: Pack = {
           ],
           minWords: 15,
           modelAnswer:
-            'Beste klantenservice, ik wil een klacht indienen. Op 2 juli heb ik bij u een stofzuiger gekocht. Nu doet hij het niet meer. Er zit nog garantie op. Kunt u hem laten repareren? Met vriendelijke groet, Amira Haddad',
+            'Beste klantenservice, Ik wil een klacht indienen. Op 2 juli heb ik bij u een stofzuiger gekocht. Nu doet hij het niet meer. Er zit nog garantie op. Kunt u hem laten repareren? Met vriendelijke groet, Amira Haddad',
           explanation:
             'A complaint does its job in four parts: Ik wil een klacht indienen, when you bought it (gekocht), what is wrong (doet het niet meer) and what you want (laten repareren, a new one or your money back).',
           focusedOnly: true,

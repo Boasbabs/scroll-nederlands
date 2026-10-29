@@ -433,7 +433,7 @@ export const huren: Pack = {
           mustInclude: [['lekkage', 'lekt', 'lek'], ['wanneer'], ['monteur', 'iemand', 'loodgieter']],
           minWords: 15,
           modelAnswer:
-            'Beste meneer Visser, er is een lekkage in de badkamer. Het water komt door het plafond. Wanneer kan de monteur komen? Ik ben elke ochtend thuis. Met vriendelijke groet, Amira Haddad',
+            'Beste meneer Visser, Er is een lekkage in de badkamer. Het water komt door het plafond. Wanneer kan de monteur komen? Ik ben elke ochtend thuis. Met vriendelijke groet, Amira Haddad',
           explanation: 'Say what is wrong and where, then ask with wanneer. Saying when you are home helps them plan the visit.',
           focusedOnly: true,
         },
@@ -580,7 +580,7 @@ export const huren: Pack = {
           mustInclude: [['zeg', 'opzeggen', 'opgezegd'], ['borg'], ['wanneer']],
           minWords: 15,
           modelAnswer:
-            'Beste meneer Visser, ik zeg de huur op per 1 juli. Mijn laatste dag in de woning is 30 juni. Wanneer krijg ik mijn borg terug? Met vriendelijke groet, Amira Haddad',
+            'Beste meneer Visser, Ik zeg de huur op per 1 juli. Mijn laatste dag in de woning is 30 juni. Wanneer krijg ik mijn borg terug? Met vriendelijke groet, Amira Haddad',
           explanation: 'Ik zeg de huur op per + the date, then a question with wanneer. The landlord pays the deposit back after you leave, minus the cost of any damage.',
           focusedOnly: true,
         },

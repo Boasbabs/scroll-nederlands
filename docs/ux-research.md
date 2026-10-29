@@ -703,3 +703,31 @@ The de/het drill shows only the bare noun ("De or het? ___ cv"). Het cv is the C
 
 ### 20.3 Motion (Lasseter)
 - No new animation: the line arrives with the drill, as a scene does.
+
+## 21. Situations on the course path (fourteenth session, 2026-10-29)
+
+The owner asked whether a pack such as "Gemeente and paperwork" could appear on the Course tab where it fits. Each situation now ends the course module it is best after, as a row that opens the pack's page on the Topics tab. It is a signpost only: packs sit beside the path and never insert lessons into it (`docs/topics-and-scenario-packs-plan.md`, Ground rules).
+
+### 21.1 References (Mobbin)
+- [Duolingo – Order food and drink](https://mobbin.com/screens/56f6a8cb-cd70-4bec-aab7-96ccbd976fdc): a unit's path mixes kinds of activity, each with its own glyph (a video call, listening, a game, a two-bubble conversation), before the unit's trophy.
+- [Udemy – Lectures](https://mobbin.com/screens/987d1aea-1d31-4f63-ae58-5989ee6837c7): a section ends with a quiz, marked by its own glyph and "Quiz · 1 question". [Khan Academy – Unit](https://mobbin.com/screens/1121c763-f18e-4455-af01-7e3f225cd0ab): a quiz and the unit test follow the unit's skills, each with its own icon and button.
+- [Waking Up – Course](https://mobbin.com/screens/449767ad-8007-4b87-8444-782094ffbed1): a small kind label ("Theory", "Practice") above each item's title.
+- [Coursera – Syllabus](https://mobbin.com/screens/96fd5ba3-c8bd-4fbc-b875-9b58e616c622), [Udemy – Curriculum](https://mobbin.com/screens/045c215d-6e08-432c-9bb6-3ddd4495fc69) and [MasterClass – Curriculum](https://mobbin.com/screens/72dcf33e-58e8-486f-a178-583a2d411f67): closed sections show only a number, a title and a chevron. Coursera says what a module holds ("4 videos, 2 quizzes, and 2 readings") once it is open.
+- [Duolingo – Unit](https://mobbin.com/screens/673d73bb-bb22-4481-8f14-7cf966c9e7bd): the unit's band carries a guidebook glyph for its extra material. [Uxcel Go – Levels](https://mobbin.com/screens/96c930e2-480b-49a1-ba69-5132a1c5b2b2): a small "LOCKED" tag beside a level's label. [Acorns – Course](https://mobbin.com/screens/c50e439a-6caf-49f2-b34b-028fa4e87eac): "2 Lessons · 1 Quiz" at the top says the course holds another kind of item.
+
+### 21.2 Decisions
+- **Each situation ends the module it is best after:** the latest course module, in course order, that the pack builds on. This is the rule behind the pack page's "Best after" line, now one helper (`bestAfter` in `src/packs/assemble.ts`) for both tabs. Today it puts the 13 situations under 11 modules; where two share a module (Shopping and payment, Service situations), they keep the Topics tab's order. Sets build on no module, so False friends stays off the path.
+- **The module, not the stage's checkpoint.** "Gemeente and paperwork" is best after Service situations, module 5 of Stage 3. A2 checkpoints, Stage 3's last module, ends the whole course, so a situation placed there would only show once the course is done.
+- **A row under the stepper, not a node on it,** as Udemy and Khan Academy end a section with a different kind of item. The lessons keep their own list and the dashed connector stops at the last lesson; the situations follow in a list of their own, each under a hairline. The 32px pack tile takes the node column, so the title lines up with the lesson titles.
+- **The Topics tab's row:** the Dodger Blue chats tile, the title, the progress line from the same helper ("4 scenes · 29 phrases and words", then "Scene 2 of 4 · 5 of 29 met · 3 due", then "All 4 scenes done"), a thin scenes bar and a chevron.
+- **Labelled "Situation"** above the title, in the checkpoint node's small caps, as Waking Up labels each item's kind. The label is muted ink: Dodger Blue is 3.6:1 on white and carries no text (`docs/colour-system.md`). A screen reader hears "Gemeente and paperwork (situation)", as a checkpoint is "(checkpoint)".
+- **A signpost, never a lock.** The row opens the pack's page even while the module's lessons are locked. It changes nothing on the path: the unlock order, the current lesson, the module and stage counts and the "Current lesson" pill stay as they were.
+- **Opening it moves to Topics,** where the page's "All topics" leads to the list, as from any pack. The Course tab is one tap away.
+- **A closed module shows its situations on its head:** one 20px pack tile per situation at the end of the title line, and ", plus 1 situation" in the head's name. The syllabi above keep closed sections bare, but their sections are all alike; here 11 of 56 modules have a situation, so the mark tells the learner something, and they can find a situation without opening every module. A small mark on a header is not new (Duolingo's guidebook glyph, Uxcel Go's tag, Acorns' quiz count). A glyph without words keeps the head on one line at 360px, and it is the tile the learner already knows from the row and the Topics tab. Stage cards get no mark: the Topics tab lists every situation.
+
+### 21.3 Motion (Lasseter)
+- Overlapping action: when a module opens, its lessons appear at once and its situations settle in after them (`tn-settle-in`, two stagger steps late, then one apart), so a row reads as following the module rather than belonging to it.
+- Squash and stretch: the row presses like the Today and Topics rows (the same `tn-today-row`), its tile squashing more than the line (secondary action).
+- Staging: opening a situation reuses the tab bar's hop to Topics (`tn-tab-hop`), so the learner sees where the page opened.
+- The small tiles on a module's head do not move.
+- Reduced motion turns all of it into fades (`motion.css`).

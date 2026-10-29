@@ -1,3 +1,5 @@
+import { checkTyped } from '../../src/engine/answers';
+import { generateExercise, seededRandom } from '../../src/engine/exercises';
 import { exerciseSteps, introStepIds, planLesson, planWords } from '../../src/engine/plan';
 import { completeLesson, completeNewItems } from '../../src/engine/progress';
 import { DAY } from '../../src/engine/schedule';
@@ -231,6 +233,28 @@ describe('tier 2 (words 626–1,000)', () => {
     expect(getNewWordIds(tiered, almost, 10).every((id) => !id.startsWith('w-ideas/'))).toBe(true);
     const enough = meet(almost, [tierOne.find((item) => !almost.items[item.id])!.id]);
     expect(getNewWordIds(tiered, enough, 10)).toContain('w-ideas/probleem');
+  });
+
+  it('takes a noun’s other forms without their article in its gap', () => {
+    const keuze = makeCourse({}, [
+      ...testWordThemes,
+      {
+        id: 'ideas',
+        title: 'Everyday ideas',
+        tier: 2,
+        words: [
+          { key: 'keuze', dutch: 'de keuze', english: 'the choice', pos: 'noun', accept: ['de keus'], example: { dutch: 'Je hebt de keuze: thee of koffie.', english: 'You have the choice: tea or coffee.' } },
+          { key: 'reden', dutch: 'de reden', english: 'the reason', pos: 'noun', example: { dutch: 'Wat is de reden?', english: 'What is the reason?' } },
+          { key: 'trots', dutch: 'trots', english: 'proud', pos: 'adjective', example: { dutch: 'Ik ben trots op je.', english: 'I am proud of you.' } },
+          { key: 'kans', dutch: 'de kans', english: 'the chance', pos: 'noun', example: { dutch: 'Je hebt een goede kans.', english: 'You have a good chance.' } },
+        ],
+      },
+    ]);
+    const gap = generateExercise(keuze, keuze.item('w-ideas/keuze')!, 'independentRecall', 0, seededRandom('x'));
+    expect(gap).toMatchObject({ kind: 'cloze', sentence: 'Je hebt de ___: thee of koffie.' });
+    if (gap.kind !== 'cloze') throw new Error('no gap');
+    expect(checkTyped('keus', gap.answers).verdict).toBe('correct');
+    expect(checkTyped('keuze', gap.answers).verdict).toBe('correct');
   });
 
   it('teaches a tier-2 theme opened in Topics straight away', () => {

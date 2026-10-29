@@ -314,7 +314,9 @@ export function generateExercise(
     answer: item.dutch,
   });
   const answers = [item.dutch, ...(item.accept ?? [])];
-  const gapAnswers = gap ? [gap.answer, ...answers] : answers;
+  // A noun's gap keeps its article in view, so its other forms count without theirs ("keus" for de keuze).
+  const nounGap = gap !== undefined && articleOf(item.dutch) !== undefined && normalizeAnswer(gap.answer) === normalizeAnswer(withoutArticle(item.dutch));
+  const gapAnswers = gap ? [gap.answer, ...answers, ...(nounGap ? (item.accept ?? []).map(withoutArticle) : [])] : answers;
 
   switch (stage) {
     case 'recognition':

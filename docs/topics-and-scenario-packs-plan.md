@@ -789,6 +789,17 @@ Wyner's next step after the 625 basic words is the 1,000 most frequent words. Th
 - **Tests:** 1,000 words (625 in tier 1, 375 in tier 2), every tier-2 word new and found in its own sentence, and 488 word-track nouns in the de/het drills (heimwee takes de or het, so it has none); the course is unchanged at 272 lessons and 1,024 items.
 - **For the NT2 review:** glosses picked to keep near-synonyms apart (beslissen and besluiten, onthouden and herinneren, slagen and lukken, verbaasd and verrast, de rust "the peace and quiet" beside de rest), female job titles in notes and `accept`, and the sentences built on idioms ("liefde op het eerste gezicht", "Ik kan het echt haten als het regent").
 
+### Dutch review of the tier-2 words (2026-10-29)
+
+Four read-only reviews, written to the same editor's brief, covered all 375 words (actions and sport; ideas and jobs; qualities and feelings; linking). They found no wrong article or spelling. Their fixes, one concern per commit:
+
+- **Gaps with a second right answer:** at independent recall the learner sees only the Dutch sentence, and about 180 sentences also took a word they already know ("Wil je de ___ van mijn broodje?" took rest as well as helft). Each is rewritten around a clue or a fixed phrase only its word fits, or the other word is accepted where it is just as right (boos for kwaad, simpel for eenvoudig, de coach for de trainer).
+- **Engine:** a noun's gap keeps its article in view, so its accepted forms now count without their article ("keus", the female job titles), and words can list near-synonyms (`near`) that never appear as each other's wrong options (gevolg and resultaat, nogal and best).
+- **Glosses:** nogal, best, pas, verder, bekend, spannend, verbaasd, verschijnen, stellen, schreeuwen, noemen, lukken and regelen are sharper; beslissen and besluiten, and de club and de vereniging, accept each other.
+- **heimwee** takes de or het (Woordenlijst: m/v/o), so it is taught without an article and has no de/het drill.
+
+Left for the owner: the answer checker takes a one-letter slip as a typo even when it makes another word (slecht for slechts, trouwen for trouwens), and tier 1 has a noun the Woordenlijst lists with both articles, het aanrecht (m/o), whose de/het drill marks "de" wrong.
+
 ## Evidence behind the choices
 
 - **Situations, not categories.** Learning new words in semantic sets (colours, fruit, body parts) slows learning through interference. Thematic sets built around a situation do not have that problem (Tinkham 1993, 1997; Waring 1997; Erten & Tekin 2008; Nation 2000). Packs are therefore situations, the Today row keeps mixing themes, and "Learn new" in a single word theme is limited to one small batch a day.

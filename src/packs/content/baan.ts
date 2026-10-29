@@ -206,7 +206,7 @@ export const baan: Pack = {
         { dutch: 'Morgen ga ik solliciteren bij een hotel.', english: "Tomorrow I'm applying for a job at a hotel." },
         { dutch: 'De sollicitatie stuur je per e-mail.', english: 'You send the application by email.' },
         { dutch: 'In de sollicitatiebrief schrijf je waarom je de baan wilt.', english: 'In the cover letter you write why you want the job.' },
-        { dutch: "Het cv is kort: één of twee pagina's.", english: 'The CV is short: one or two pages.' },
+        { dutch: "Houd het cv kort: één of twee pagina's.", english: 'Keep the CV short: one or two pages.' },
       ],
       speakingPrompt: 'Read your email aloud before you send it: Beste mevrouw De Boer, Ik wil graag solliciteren op de vacature voor kok. In de bijlage vindt u mijn cv.',
       revisits: ['s2-write-formal', 's3-read-email'],
@@ -331,7 +331,7 @@ export const baan: Pack = {
           note: 'bij ons = at our company; have an answer ready',
         }),
         noun('de referentie', 'the reference', { note: 'someone who can tell an employer about your work' }),
-        noun('de proefdag', 'the trial day', { note: 'een proefdag doen; in restaurants also: draaien' }),
+        noun('de proefdag', 'the trial day', { note: 'een proefdag doen or lopen; in restaurants also proefdraaien' }),
         word('aangenomen worden', 'to get the job, to be hired', { note: 'Je bent aangenomen! = You got the job!' }),
       ],
       wordBreakdown: [
@@ -347,7 +347,7 @@ export const baan: Pack = {
       pronunciationTip: 'Sollicitatiegesprek: so-lee-see-TAA-tsee-khuh-sprek, with the stress on taa. Jezelf is stressed at the end: yuh-ZELF.',
       examples: [
         { dutch: 'Het sollicitatiegesprek is dinsdag om tien uur.', english: 'The job interview is on Tuesday at ten.' },
-        { dutch: 'Ze vraagt eerst: waarom wil je bij ons werken?', english: 'First she asks: why do you want to work for us?' },
+        { dutch: 'Ze vraagt eerst: "Waarom wil je bij ons werken?"', english: 'First she asks, "Why do you want to work for us?"' },
         { dutch: 'Volgende week doe je de proefdag in de keuken.', english: 'Next week you do the trial day in the kitchen.' },
         { dutch: 'Wil je aangenomen worden? Kom dan op tijd.', english: 'Do you want to get the job? Then be on time.' },
       ],
@@ -433,7 +433,7 @@ export const baan: Pack = {
           items: ['waarom-bij-ons-werken'],
           prompt: 'What do you reply?',
           context: [
-            { speaker: 'Mirjam', dutch: 'Goedemiddag, welkom! Zeg maar je, hoor.', english: 'Good afternoon, welcome! Just call me je.' },
+            { speaker: 'Mirjam', dutch: 'Goedemiddag, welkom! Zeg maar je, hoor.', english: 'Good afternoon, welcome! You can say je to me.' },
             { speaker: 'Jij', dutch: 'Dank je wel.', english: 'Thank you.' },
             { speaker: 'Mirjam', dutch: 'Waarom wil je bij ons werken?', english: 'Why do you want to work for us?' },
           ],
@@ -489,7 +489,7 @@ export const baan: Pack = {
         },
         { speaker: 'Medewerker', dutch: 'Wat vervelend. Wat voor werk zoek je?', english: "That's a shame. What kind of work are you looking for?" },
         { speaker: 'Jij', dutch: 'Werk in een keuken. Ik heb ervaring als kok.', english: 'Work in a kitchen. I have experience as a cook.' },
-        { speaker: 'Medewerker', dutch: 'Mooi. Heb je ook werkervaring in Nederland?', english: 'Good. Do you also have work experience in the Netherlands?' },
+        { speaker: 'Medewerker', dutch: 'Mooi. Heb je ook in een grote keuken gewerkt?', english: 'Good. Have you also worked in a big kitchen?' },
         { speaker: 'Jij', dutch: 'Ja, ik heb drie maanden stage gelopen in een hotel.', english: 'Yes, I did a three-month internship in a hotel.' },
         {
           speaker: 'Medewerker',

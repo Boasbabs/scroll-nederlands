@@ -1,6 +1,7 @@
 // Pack 7: getting around (docs/topics-and-scenario-packs-plan.md). Every line
-// is original. The amounts are 2026's: €20 on NS trains when you don't check
-// out, and €75 plus €9 CJIB costs for cycling without lights.
+// is original. The amounts are 2026's: €33,30 on NS trains when you don't check
+// out with a bank card (€20 instaptarief on an OV-chipkaart), and €75 plus €9
+// CJIB costs for cycling without lights.
 import { noun, pattern, phrase, word } from '../build';
 import type { Pack } from '../types';
 
@@ -24,7 +25,7 @@ export const onderweg: Pack = {
   buildsOn: ['s1-transport', 's2-travel'],
   mission: 'Set your journey-planner app to Dutch and plan a trip you really make: note the vertrektijd, the spoor and where you have to overstappen.',
   cultureNote:
-    'If you forget to check out, you pay a fixed fare (het instaptarief) instead of your real fare: €20 on NS trains, usually more than the trip. Check in and out with the same card or phone, or you may pay twice.',
+    'If you forget to check out, you pay a fixed fare (het correctietarief) instead of your real fare: €33,30 on NS trains with a bank card, usually more than the trip. Check in and out with the same card or phone, or you may pay twice.',
   scenes: [
     {
       id: 'sc-onderweg-inchecken',
@@ -42,7 +43,11 @@ export const onderweg: Pack = {
         word('inchecken', 'to check in (with your card)', { note: 'ik check in, ik heb ingecheckt' }),
         word('uitchecken', 'to check out (with your card)', { note: 'ik check uit, ik heb uitgecheckt' }),
         word('opladen', 'to top up; to charge (a phone)', { note: 'ik laad op, ik heb opgeladen' }),
-        noun('het instaptarief', 'the boarding fare', { note: 'the fixed amount you pay if you forget to check out' }),
+        noun('het correctietarief', 'the fixed fare for a missed check-out', {
+          key: 'instaptarief',
+          accept: ['het instaptarief', 'instaptarief'],
+          note: '€33,30 on NS trains with a bank card; an OV-chipkaart has het instaptarief, €20',
+        }),
         word('instappen', 'to get on (a train, bus)', { note: 'ik stap in, ik ben ingestapt' }),
         word('uitstappen', 'to get off (a train, bus)', { note: 'Waar stapt u uit?' }),
         noun('de conducteur', 'the conductor (on a train)'),
@@ -50,7 +55,7 @@ export const onderweg: Pack = {
       wordBreakdown: [
         { dutch: 'inchecken / uitchecken', english: 'to tap your card or phone at the start / at the end' },
         { dutch: 'uit te checken', english: 'to check out, after vergeten: te sits between the parts' },
-        { dutch: 'het instaptarief', english: 'the boarding fare: the fixed amount you pay if you forget to check out' },
+        { dutch: 'het correctietarief', english: 'the fixed fare you pay if you forget to check out' },
         { dutch: 'opladen', english: 'to top up a card; to charge a phone' },
         { dutch: 'instappen / uitstappen', english: 'to get on / to get off' },
         { dutch: 'de conducteur', english: 'the conductor, who checks tickets on the train' },
@@ -60,7 +65,7 @@ export const onderweg: Pack = {
       pronunciationTip: 'Checken keeps its English sound, and the stress falls on the first part: IN-chek-kuh, UIT-chek-kuh, with the ui of huis. Conducteur ends like French: kon-duk-TEUR.',
       examples: [
         { dutch: 'Je moet altijd inchecken en uitchecken.', english: 'You always have to check in and check out.' },
-        { dutch: 'Vergeet je het, dan betaal je het instaptarief.', english: 'If you forget, you pay the boarding fare.' },
+        { dutch: 'Het correctietarief is een vast bedrag voor een reis zonder uitcheck.', english: 'The correction fare is a fixed amount for a trip with no check-out.' },
         { dutch: 'Ik moet mijn telefoon nog opladen.', english: 'I still need to charge my phone.' },
         { dutch: 'In de trein controleert de conducteur je kaart.', english: 'On the train the conductor checks your card.' },
       ],
@@ -71,7 +76,7 @@ export const onderweg: Pack = {
         { speaker: 'Jij', dutch: 'In Gouda. Moet ik daar uitchecken?', english: 'In Gouda. Do I have to check out there?' },
         { speaker: 'Conducteur', dutch: 'Ja, bij een paaltje of bij de poortjes.', english: 'Yes, at a card reader or at the gates.' },
         { speaker: 'Jij', dutch: 'En als ik dat vergeet?', english: 'And if I forget?' },
-        { speaker: 'Conducteur', dutch: 'Dan betaalt u het instaptarief: twintig euro. Dus vergeet niet uit te checken!', english: "Then you pay the boarding fare: twenty euros. So don't forget to check out!" },
+        { speaker: 'Conducteur', dutch: 'Dan betaalt u het correctietarief: drieëndertig euro dertig. Dus vergeet niet uit te checken!', english: "Then you pay the correction fare: thirty-three euros thirty. So don't forget to check out!" },
         { speaker: 'Jij', dutch: 'Dank u wel. Dat zal ik niet vergeten.', english: "Thank you. I won't forget." },
       ],
       speakingPrompt: 'Say it to a friend who is borrowing your spare card: Hier is mijn kaart. Vergeet niet in en uit te checken!',
@@ -84,10 +89,10 @@ export const onderweg: Pack = {
           stage: 'recognition',
           kind: 'choice',
           items: ['instaptarief'],
-          prompt: 'You forgot to check out after a short train trip and paid €20. A friend says: "Dat is het instaptarief." What is that?',
+          prompt: 'You forgot to check out after a short train trip with your bank card and paid €33,30. A friend says: "Dat is het correctietarief." What is that?',
           options: ["A fixed fare you pay when you don't check out", 'A fine from the conductor', 'The price of a monthly pass'],
           answer: "A fixed fare you pay when you don't check out",
-          explanation: 'Het instaptarief is a fixed amount. If you check out, you pay only your real fare.',
+          explanation: 'Het correctietarief is a fixed amount. If you check out, you pay only your real fare.',
         },
         {
           id: 'listen',
@@ -176,7 +181,7 @@ export const onderweg: Pack = {
           stage: 'transfer',
           kind: 'type',
           items: ['uitchecken', 'w-verbs/vergeten'],
-          prompt: 'Yesterday you forgot to tap your card at the end of a train trip and paid €20. At the service desk, explain that you forgot to check out.',
+          prompt: 'Yesterday you forgot to tap your card at the end of a train trip and paid €33,30. At the service desk, explain that you forgot to check out.',
           answers: [
             'Ik ben vergeten uit te checken.',
             'Ik ben gisteren vergeten uit te checken.',

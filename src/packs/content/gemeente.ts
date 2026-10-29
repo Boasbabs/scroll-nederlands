@@ -200,7 +200,7 @@ export const gemeente: Pack = {
       ],
       patternExplanation:
         'Forms use their own words: gehuwd where people say getrouwd. Wilt u …? is the polite way to ask someone to do something: Wilt u hier ondertekenen? Wilt u dit invullen?',
-      pronunciationTip: 'Handtekening: HANT-tay-kuh-ning, the d sounds like a t. Gehuwd rhymes with "how-t" after a soft g: khuh-HOW-t.',
+      pronunciationTip: 'Handtekening: HANT-tay-kuh-ning, the d sounds like a t, as at the end of gehuwd: khuh-HUUWT, the uu of nu followed by a w.',
       examples: [
         { dutch: 'Vul uw voornaam en uw achternaam in.', english: 'Fill in your first name and your surname.' },
         { dutch: 'Wat is uw burgerlijke staat: gehuwd of ongehuwd?', english: 'What is your marital status: married or unmarried?' },
@@ -329,7 +329,7 @@ export const gemeente: Pack = {
       ],
       patternExplanation:
         'Inloggen and aanvragen are separable: Ik log in. Ik vraag zorgtoeslag aan. With a modal they stay together at the end: Ik wil zorgtoeslag aanvragen. Websites use the polite command: Log in met uw DigiD.',
-      pronunciationTip: 'DigiD is said the Dutch way: DIE-khie-day. Toeslag: TOO-slakh, with a rough g.',
+      pronunciationTip: 'DigiD is said the Dutch way, stressed at the end: die-khie-DAY. Toeslag: TOO-slakh, with a rough g.',
       examples: [
         { dutch: 'U kunt de toeslag online aanvragen.', english: 'You can apply for the allowance online.' },
         { dutch: 'Uw aanvraag is ontvangen.', english: 'Your application has been received.' },

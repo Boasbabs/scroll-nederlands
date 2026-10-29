@@ -87,7 +87,7 @@ The rest of Vol 2 is B1 and can wait: the imperfect for storytelling, subordinat
 | T3 | Packs, wave 1: Gemeente, Renting, Money, Doctor | Done |
 | T4 | Packs, wave 2: Work, Finding work, Getting around, Emergencies, Supermarket | Done |
 | T5 | Packs, wave 3: Eating out, Services, Neighbours, School, plus the false-friends set | Done |
-| T6 | Word track tier 2 (words 626–1,000) | Not started |
+| T6 | Word track tier 2 (words 626–1,000) | Done |
 
 The waves follow need: registration, housing, money and health come first in a new arrival's first weeks.
 
@@ -764,6 +764,18 @@ Wyner's next step after the 625 basic words is the 1,000 most frequent words. Th
   - linking and stance words: gewoon, zelfs, vooral, bijna, juist (eigenlijk, ongeveer, meestal, helaas, gelukkig and uiteindelijk are already course items);
   - verbs and adjectives that fill out the rest of the 375.
 - **Check before writing:** search the course, tier 1 and the packs for every word, and check each one against woordenlijst.org.
+
+### As built (2026-10-29)
+
+- **375 words in seven themes,** `tier: 2`, listed after the 21 tier-1 themes: actions (80 verbs), ideas (75 abstract nouns), qualities (60 adjectives), linking (55 linking and stance words), feelings (35), jobs (40) and sport (30). They were taken in frequency order from one list, so no two themes share a word, and the vocabulary checker cleared each against the course, tier 1 and all 14 packs. None was dropped or replaced.
+- **An example on every tier-2 word** (`NewWord.example`): 4–10 words of A1–A2 Dutch with a clue to the meaning. The word's card shows it under the word, its English comes with the meaning, and the recall drills blank the word out of it (`wordGap`; a noun's article stays in view). No tier-2 word has a bundled picture, since most are abstract, but a learner can add their own.
+- **"geboren" in place of "geboren worden":** the word is taught as `geboren` (born) with the note "geboren worden: to be born", because its sentence says "Ik ben in Lagos geboren."
+- **Accepted near-synonyms:** the gap without English (independent recall) must not mark a right answer wrong, so near-synonyms that fit a word's gap just as well are accepted: kwaad/boos, heerlijk/lekker, ongerust/bezorgd, bovendien/daarnaast, opeens/plotseling/ineens, voordat/voor, bijzonder/speciaal, sowieso (in ieder geval, toch, zeker) and in ieder geval (in elk geval, tenminste), besides the female job titles and variants such as de keus. A word one item accepts for another is never drawn as its wrong option.
+- **Engine:** `WordTheme.tier` and `NewWord.example`; tier 2 follows the whole of tier 1 in the mixed list and opens once 90% of tier 1 is met (`TIER_TWO_AFTER`), and a theme opened in Topics teaches at once. The audio script voices the examples; until the ElevenLabs quota resets on 1 November, the browser's nl-NL voice reads them.
+- **UI:** More words on Topics, the sentence on a word's card, and **Core words** for Basic words on Today, Progress, the end screen and Settings, with counts written "1,000", bars included (`docs/ux-research.md` §19).
+- **Spelling:** "Kerst" takes a capital as in the sociaal pack; the openbaar note writes "het ov" as the Woordenlijst does, while the card keeps its own name, OV-chipkaart.
+- **Tests:** 1,000 words (625 in tier 1, 375 in tier 2), every tier-2 word new and found in its own sentence, and 489 word-track nouns in the de/het drills; the course is unchanged at 272 lessons and 1,024 items.
+- **For the NT2 review:** glosses picked to keep near-synonyms apart (beslissen and besluiten, onthouden and herinneren, slagen and lukken, verbaasd and verrast, de rust "the peace and quiet" beside de rest), female job titles in notes and `accept`, and the sentences built on idioms ("liefde op het eerste gezicht", "Ik kan het echt haten als het regent").
 
 ## Evidence behind the choices
 

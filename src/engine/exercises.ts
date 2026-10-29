@@ -143,9 +143,15 @@ function sentenceGap(sentence: DutchEnglish, dutch: string): ExampleGap | undefi
   return exampleGap({ examples }, dutch) ?? (articleOf(dutch) ? exampleGap({ examples }, withoutArticle(dutch)) : undefined);
 }
 
-/** A word's own example with the word blanked out (tier-2 words: a sentence, not a picture, is how they are learned). */
+/**
+ * A word's own example with the word blanked out (tier-2 words: a sentence,
+ * not a picture, is how they are learned). A noun's article stays in view
+ * ("Wat is de ___?"): the de/het drill asks for it apart.
+ */
 export function wordGap(item: Pick<LearningItem, 'dutch' | 'example'>): ExampleGap | undefined {
-  return item.example ? sentenceGap(item.example, item.dutch) : undefined;
+  if (!item.example) return undefined;
+  const examples = [item.example];
+  return (articleOf(item.dutch) ? exampleGap({ examples }, withoutArticle(item.dutch)) : undefined) ?? exampleGap({ examples }, item.dutch);
 }
 
 /** What the learner has added that changes how drills look. */

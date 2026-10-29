@@ -219,7 +219,8 @@ describe('tier 2 (words 626–1,000)', () => {
     const recall = exerciseSteps(plan).filter((step) => step.exercise.stage === 'supportedRecall');
     expect(recall.map((step) => step.exercise)).toEqual([
       expect.objectContaining({ kind: 'cloze', sentence: 'Dat is geen groot ___.', answers: expect.arrayContaining(['probleem']) }),
-      expect.objectContaining({ kind: 'cloze', sentence: 'Wat is ___?', answers: expect.arrayContaining(['de reden']) }),
+      // The article stays in view: the de/het drill asks for it apart.
+      expect.objectContaining({ kind: 'cloze', sentence: 'Wat is de ___?', answers: expect.arrayContaining(['reden']) }),
     ]);
   });
 

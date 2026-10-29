@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { count as written } from '../format';
 
 /** How long a bar takes to fill: --t-fill in motion.css. */
 const FILL_MS = 400;
@@ -65,7 +66,7 @@ export function ProgressBar({
   }, [value]);
 
   const ticked = useTicker(value, count === true);
-  const text = count === true ? `${ticked} / ${max}` : count || null;
+  const text = count === true ? `${written(ticked)} / ${written(max)}` : count || null;
   const classes = ['tn-progress', thin && !text && 'tn-progress--thin', text && 'tn-progress--count'].filter(Boolean).join(' ');
   const Part = decorative ? 'span' : 'div';
   const semantics = decorative

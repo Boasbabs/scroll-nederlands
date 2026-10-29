@@ -682,7 +682,7 @@ Phase T6 of `docs/topics-and-scenario-packs-plan.md` adds a second tier of 375 w
 
 ### 19.2 Decisions
 - **More words, after Word themes,** with the lead "Words 626 to 1,000. Today adds them once most core words are met; open a theme to start it now." A headed group below the basics, as Speak lists its second unit, rather than Babbel's chips: the Topics list is short enough to show both, and a learner should see the next themes exist. Not locked: a tier-2 theme opened here teaches at once.
-- **Core words, not Basic words:** the Today row ("Core words · 120 of 1,000 met"), the Progress meter, the end-of-session bar and the Settings group all count the 1,000. "Basic" no longer fits words like *verantwoordelijkheid*.
+- **Core words, not Basic words:** the Today row ("Core words · 120 of 1,000 met"), the Progress meter, the end-of-session bar and the Settings group all count the 1,000. "Basic" no longer fits words like *verantwoordelijkheid*. The count inside a bar is written as its text is ("8 / 1,000", not "8 / 1000"), as Lifesum's goal bar labels match its copy (Mobbin, checked in the thirteenth session).
 - **A word's sentence on its card:** under the word, the sentence with the word in bold and a speaker, read like a lesson example; its English shows with the meaning. The recall drill then blanks the word out of the same sentence, so the word is learned in context, not from a gloss.
 
 ### 19.3 Motion (Lasseter)

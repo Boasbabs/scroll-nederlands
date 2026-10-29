@@ -786,7 +786,7 @@ Wyner's next step after the 625 basic words is the 1,000 most frequent words. Th
 - **Engine:** `WordTheme.tier` and `NewWord.example`; tier 2 follows the whole of tier 1 in the mixed list and opens once 90% of tier 1 is met (`TIER_TWO_AFTER`), and a theme opened in Topics teaches at once. The audio script voices the examples; until the ElevenLabs quota resets on 1 November, the browser's nl-NL voice reads them.
 - **UI:** More words on Topics, the sentence on a word's card, and **Core words** for Basic words on Today, Progress, the end screen and Settings, with counts written "1,000", bars included (`docs/ux-research.md` §19).
 - **Spelling:** "Kerst" takes a capital as in the sociaal pack; the openbaar note writes "het ov" as the Woordenlijst does, while the card keeps its own name, OV-chipkaart.
-- **Tests:** 1,000 words (625 in tier 1, 375 in tier 2), every tier-2 word new and found in its own sentence, and 489 word-track nouns in the de/het drills; the course is unchanged at 272 lessons and 1,024 items.
+- **Tests:** 1,000 words (625 in tier 1, 375 in tier 2), every tier-2 word new and found in its own sentence, and 488 word-track nouns in the de/het drills (heimwee takes de or het, so it has none); the course is unchanged at 272 lessons and 1,024 items.
 - **For the NT2 review:** glosses picked to keep near-synonyms apart (beslissen and besluiten, onthouden and herinneren, slagen and lukken, verbaasd and verrast, de rust "the peace and quiet" beside de rest), female job titles in notes and `accept`, and the sentences built on idioms ("liefde op het eerste gezicht", "Ik kan het echt haten als het regent").
 
 ## Evidence behind the choices

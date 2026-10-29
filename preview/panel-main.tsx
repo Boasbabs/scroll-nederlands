@@ -1,4 +1,4 @@
-// Side panel in a normal tab. ?state=fresh|today|caughtup|path picks a seeded learner;
+// Side panel in a normal tab. ?state=fresh|today|caughtup|path|packs picks a seeded learner;
 // &lesson=<id> puts that lesson next on the path.
 import { createRoot } from 'react-dom/client';
 import '../src/ui/theme.css';

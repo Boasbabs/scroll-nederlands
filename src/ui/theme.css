@@ -136,6 +136,8 @@
   --on-tile-articles: var(--white);
   --tile-checkpoint: var(--butterfly-bush);
   --on-tile-checkpoint: var(--white);
+  --tile-packs: var(--dodger-blue);
+  --on-tile-packs: var(--ink);
 
   /* Soft parts: the grey face of secondary buttons and the round ×, mixed from ink like the other greys
      (Finch's grey "Hint" and arrow buttons). Translucent, so on a ground they read as a deeper shade of it. */

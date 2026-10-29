@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { Speaker } from '../../audio/speech';
 import type { CurriculumIndex } from '../../curriculum/assemble';
 import type { SessionPlan } from '../../engine/plan';
+import { packOfScene } from '../../engine/selection';
 import type { PictureSource } from '../../images/pictures';
 import type { Learning, SessionOutcome, Snapshot } from '../../learning/actions';
 import type { ProgressBackup } from '../../storage/backup';
@@ -101,7 +102,15 @@ export function PanelApp({ deps }: { deps: PanelDeps }) {
   }
 
   function onAction(action: CompleteAction, outcome: SessionOutcome) {
-    if (action === 'next') void start(() => learning.startNext('focused'));
+    const lessonId = session?.plan.lessonId;
+    const pack = lessonId ? packOfScene(course, lessonId) : undefined;
+    const following = pack?.scenes[pack.scenes.findIndex((scene) => scene.id === lessonId) + 1];
+    if (action === 'scene' && following) void start(() => learning.startLesson(following.id, 'focused'));
+    else if (action === 'scene' || action === 'pack') {
+      // The pack's page, on the Topics tab, wherever the scene was started.
+      setOpenTopic(pack?.id);
+      closeSession('topics');
+    } else if (action === 'next') void start(() => learning.startNext('focused'));
     else if (action === 'again' || action === 'mistakes') void start(() => learning.startPractice('focused', outcome.missedItemIds));
     else closeSession(action === 'course' ? 'course' : screen === 'topics' ? 'topics' : 'today');
   }
@@ -134,7 +143,7 @@ export function PanelApp({ deps }: { deps: PanelDeps }) {
         <main className="tn-shell__main" key={screen}>
           {screen === 'today' ? <TodayScreen snap={snap} start={start} /> : null}
           {screen === 'course' ? <CourseScreen snap={snap} start={start} /> : null}
-          {screen === 'topics' ? <TopicsScreen snap={snap} start={start} openId={openTopic} onOpen={setOpenTopic} /> : null}
+          {screen === 'topics' ? <TopicsScreen snap={snap} start={start} openId={openTopic} onOpen={setOpenTopic} onChange={() => void refresh()} /> : null}
           {screen === 'review' ? <ReviewScreen snap={snap} start={start} onCourse={() => setScreen('course')} onChange={() => void refresh()} /> : null}
           {screen === 'progress' ? <ProgressScreen snap={snap} /> : null}
           {screen === 'settings' ? <SettingsScreen /> : null}

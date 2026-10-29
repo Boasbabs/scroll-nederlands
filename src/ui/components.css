@@ -346,6 +346,7 @@ span.tn-progress__fill {
 .tn-icon-tile--ear { --tile: var(--tile-ear); --on-tile: var(--on-tile-ear); }
 .tn-icon-tile--articles { --tile: var(--tile-articles); --on-tile: var(--on-tile-articles); }
 .tn-icon-tile--checkpoint { --tile: var(--tile-checkpoint); --on-tile: var(--on-tile-checkpoint); }
+.tn-icon-tile--packs { --tile: var(--tile-packs); --on-tile: var(--on-tile-packs); }
 /* Soft: the small tile on a Settings row, so the saturated colours stay with the activities. */
 .tn-icon-tile--soft { --tile-edge: transparent; }
 

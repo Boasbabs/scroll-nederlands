@@ -615,3 +615,35 @@ The owner wanted vocabulary practice by topic, as Dutched offers by chapter (`do
 - Squash and stretch: All topics squashes on press and springs back; its arrow nudges back on hover before the move.
 - Reduced motion turns all of it into fades (`motion.css`).
 
+
+## 17. Scenario packs on the Topics tab (eleventh session, 2026-10-29)
+
+Phase T2 of `docs/topics-and-scenario-packs-plan.md`: packs are real-life situations in 3–4 scene lessons beside the course, with a mission to do for real. They join the Topics tab under **Situations**, above the word themes.
+
+### 17.1 References (Mobbin)
+- [Acorns – Course](https://mobbin.com/screens/c50e439a-6caf-49f2-b34b-028fa4e87eac): a course's lessons as numbered circles joined by a line, a tick in the circle once done, a chevron on each row.
+- [Brilliant – Level](https://mobbin.com/screens/8ad69ea6-81ed-4197-863d-ccba9f524a8f): the level's steps listed with ticks, one Start button under them for the next one.
+- [Insight Timer – Course](https://mobbin.com/screens/4a38bd44-6c29-41d9-bd65-f4224383eccb): "Start Day 1" names the step the button starts.
+- [Speak – Course](https://mobbin.com/screens/54c58cdc-4f98-4999-92ca-a598df8fc335): lessons named after situations ("Order food and drinks", "Get it for here or to go").
+- [Uxcel Go – Level list](https://mobbin.com/screens/96c930e2-480b-49a1-ba69-5132a1c5b2b2): a later level marked locked but still listed.
+- [Noom – Your challenges](https://mobbin.com/screens/91a378f3-09df-41ee-8366-1311f02b72d3): a real-world challenge as a card with its own "Did it today" button; done ones say so. [Insight Timer – Activities](https://mobbin.com/screens/2a0e04e5-eca9-40de-9d32-619539174579): a tick button at the end of each activity.
+
+### 17.2 Decisions
+- **Situations above Word themes,** each pack in the same row as a theme: a Dodger Blue tile with Phosphor's chats-circle glyph, the title, and a line that says where the learner is: "4 scenes · 33 phrases and words" before the start, "Scene 2 of 4 · 8 of 33 met · 3 due" during, "All 4 scenes done" after. The thin bar counts scenes, the pack's real progress.
+- **A new tile colour for packs, Dodger Blue with an ink glyph,** the palette's sticker pair, so a pack never looks like a lesson (Warm Blue) or new words (Denim Blue). Tiles stay never green or red (`docs/colour-system.md`).
+- **A pack's page:** All topics back, then a card with "Best after: Stage 3 · Service situations" (the latest course module the pack builds on, advice only, never a lock), the title, the situation, a scenes bar and one primary button that names the step: **Start scene 1**, **Continue scene 2** once that scene was opened. **Practise this pack** (with "· 3 due" when it applies) is secondary until every scene is done, then primary. It appears once one of the pack's own items is met.
+- **Scenes as numbered steps joined by a line,** as on Acorns: a Warm Blue disc for the next one, a green disc with a tick once done ("Done · play again"), a grey disc with a lock until its turn ("After scene 1"). The line turns green below a done step. Locked steps are disabled but listed, so the learner sees the whole situation.
+- **Do it for real:** the mission as a white card with its own **Done it** button, as Noom puts a challenge on a card. The button holds a round box that fills green with a tick, and the card takes a light green tint. It is a toggle (`aria-pressed`), so a mistaken tick can be undone, and it is never scored.
+- **Good to know:** the culture note in a quiet card with the soft bulb tile, after the mission.
+- **Phrases and words:** the pack's own items in scene order, with audio, meaning and strength dot, the theme page's rows.
+- **Today:** "Continue: Gemeente and paperwork" with "Scene 2 of 4 · Forms and a letter about your move" and a scenes bar, under New words, for the pack the learner was in most recently. It starts that scene straight away, like the other rows.
+- **Progress:** a Situations meter after Basic words: "1 of 13 started · 40 of 300 phrases and words met".
+- **The end of a scene:** "Scene complete!", the pack's scenes bar, then **Next scene** (the next in order) and **Back to the pack**. After the last scene only **Back to the pack**, where the mission waits. Back to the pack opens the pack's page on Topics wherever the scene was started.
+- **Examples no longer highlight a bare article.** Every noun item is "de …" or "het …", so each example lit up its articles; only the item's own words are marked now.
+
+### 17.3 Motion (Lasseter)
+- Overlapping action: the scene steps settle in one stagger step apart after the head card, as the theme rows do.
+- Squash and stretch: a step presses into the card and springs back, its disc squashing more than its row (secondary action). The Done it button squashes like the other buttons.
+- Squash and stretch with exaggeration, then overlapping action: a mission ticked here pops its box (`tn-tick-pop`) and the tick draws in after it (`tn-tick-draw`). A tick that was already there just shows.
+- Slow in and slow out: the mission card's green tint fades in with `--ease-out`.
+- Reduced motion turns all of it into fades (`motion.css`).

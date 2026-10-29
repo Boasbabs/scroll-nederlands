@@ -83,7 +83,7 @@ The rest of Vol 2 is B1 and can wait: the imperfect for storytelling, subordinat
 | Phase | What | Status |
 |---|---|---|
 | T1 | Topics tab over the 21 existing word themes | Done |
-| T2 | Pack engine, pack screen, Today and Progress hooks | Not started |
+| T2 | Pack engine, pack screen, Today and Progress hooks | Done |
 | T3 | Packs, wave 1: Gemeente, Renting, Money, Doctor | Not started |
 | T4 | Packs, wave 2: Work, Finding work, Getting around, Emergencies, Supermarket | Not started |
 | T5 | Packs, wave 3: Eating out, Services, Neighbours, School, plus the false-friends set | Not started |
@@ -140,6 +140,19 @@ export type Pack = {
   - nouns carry de or het;
   - each pack has 3–4 scenes, at least 20 items in total, at least one `listenOnly` exercise, one `passage` exercise and one `write` exercise, and a mission;
   - each scene follows the core and practice lesson rules (one exercise per stage, in order).
+
+### As built (2026-10-29)
+
+- **Data:** `src/packs/types.ts` as specified; `src/packs/build.ts` has `noun`, `word`, `phrase` and `pattern` helpers. A noun's bare form is accepted when typed, as course nouns allow, since the de/het drill asks the article apart. Content lives in `src/packs/content/<id>.ts`, listed in `content/index.ts`.
+- **Index:** `indexCurriculum(…, packs)` places the scenes (`src/packs/assemble.ts`, `PACKS_STAGE`, module `sc-<pack>`, level a1-a2, `order` = the scene's place in its pack) as `CurriculumIndex.packs`. `lesson()` finds scenes; `lessons`, the path and the course counts stay course-only. Pack items join `items`, and singular nouns get de/het items; `LearningItemDraft` gained `plural` for nouns like "de servicekosten".
+- **Selection:** `isLessonUnlocked` sends scenes to `isSceneUnlocked` (in order within the pack). `packOfScene`, `getNextScene`, `packActivity`, `getPackInProgress` (the most recently active unfinished pack, for Today).
+- **One rule beyond the plan:** a scene may practise course or word-track items by full id before the learner has met them, since a pack never waits on the path. `completeLesson` leaves those for the course to introduce, so a pack never schedules a word the learner hasn't met in its own lesson. Items already met are graded like any revisit.
+- **Reviews** draw on the scenes' authored exercises as they do on lessons' (`authoredExercisesFor`).
+- **Actions:** `startLesson` plays a scene; `startNextScene(packId)`, `startPackPractice(packId)` (the pack's items, the course items of its `buildsOn` modules and their de/het items, due first) and `setMission(packId, done)`. The tick is `tn.missions`, part of a backup, merged like the other add-only records.
+- **Summaries:** `summarizePack` (scenes, next scene, started, items) and `ProgressSummary.packs` (started, total, items by strength).
+- **Validator:** `src/packs/validate.ts`, run by `tests/packs/packs.test.ts`, with the plan's checks plus: pack ids never equal a word theme's (the Topics tab opens either by id), `buildsOn` names real modules, the culture note has one or two sentences, a noun's English starts with "the" (and only a noun's), plurals take de, no prerequisites (scenes open in order), and an exercise may refer to its own scene, an earlier one, the course, the word track or another pack, never a later scene.
+- **UI:** Situations on the Topics tab, the pack page, Today's Continue row, the Progress meter and the scene end screen ("Next scene", "Back to the pack"); `docs/ux-research.md` §17. Preview: `/panel.html?state=packs` (the first pack's first scene done) and `/complete.html?kind=scene`.
+- **Audio:** `scripts/generate-audio.ts` loads the scenes after the course's lessons, so the Nov 1 run and `--plan` cover them.
 
 ## Pack format
 

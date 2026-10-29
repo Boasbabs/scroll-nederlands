@@ -36,6 +36,7 @@ export function createPreviewArea() {
  * Seeds a learner: `fresh` (onboarding), `today` (lessons done, reviews due),
  * `caughtup`, `streak` (as `today`, but studied yesterday, so a session today grows the streak),
  * `backup` (as `today`, with practice on two more days, so Today reminds the learner to back up),
+ * `packs` (as `today`, with the first pack's first scene done yesterday, so Today offers its next scene),
  * `path`, `recall`, `pictures`, `articles`, `notes` or `corrections`. With `lessonId`, every lesson before it is done, so
  * it is next on the path.
  */
@@ -53,6 +54,11 @@ export async function seed(area: StorageAreaLike, state: string, now: number, le
       correct: (i + j) % 5 !== 0,
     }));
     progress = completeLesson(progress, course, lesson.id, results, 'focused', at + i * 60_000);
+  }
+  const scene = state === 'packs' ? course.packs[0]?.scenes[0] : undefined;
+  if (scene) {
+    const results = exerciseSteps(planLesson(course, scene.id, 'focused')).map((planned) => ({ exerciseId: planned.exerciseId, stage: planned.exercise.stage, itemIds: planned.itemIds, correct: true }));
+    progress = completeLesson(progress, course, scene.id, results, 'focused', now - DAY);
   }
   // `recall`: every item is due for unaided recall (its next exercise stage), so reviews show recall cards.
   if (state === 'recall') {

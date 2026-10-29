@@ -3,9 +3,8 @@
 import { useEffect, useState, type CSSProperties, type ReactNode } from 'react';
 import type { SessionPlan } from '../../engine/plan';
 import { CHECKPOINT_PASS } from '../../engine/progress';
-import { stageCheckpointId } from '../../engine/selection';
-import type { ProgressSummary } from '../../engine/summary';
-import type { SessionOutcome } from '../../learning/actions';
+import { isLessonDone, packOfScene, stageCheckpointId } from '../../engine/selection';
+import type { SessionOutcome, Snapshot } from '../../learning/actions';
 import { contrastLabel } from '../../sounds/assemble';
 import { AudioButton } from '../components/AudioButton';
 import { Button } from '../components/Button';
@@ -15,8 +14,11 @@ import { ProgressBar } from '../components/ProgressBar';
 import { useEnv } from '../env';
 import { formatDuration, formatIn, plural } from '../format';
 
-/** What the learner chose on the end screen; the surface decides what it means. */
-export type CompleteAction = 'next' | 'course' | 'done' | 'again' | 'mistakes' | 'panel';
+/**
+ * What the learner chose on the end screen; the surface decides what it means.
+ * After a pack scene: `scene` plays the pack's next scene, `pack` opens the pack's page.
+ */
+export type CompleteAction = 'next' | 'course' | 'done' | 'again' | 'mistakes' | 'panel' | 'scene' | 'pack';
 
 export type SessionStats = {
   /** First-try answers, one per exercise. */
@@ -122,23 +124,25 @@ function Field({ cap, celebrate = true, eyebrow, title, subtitle, bar, pills }: 
 }
 
 /** Where this session moved the learner, for the bar on the field: read once the session is saved. */
-function useSummary() {
+function useSnapshot() {
   const { learning } = useEnv();
-  const [summary, setSummary] = useState<ProgressSummary>();
+  const [snap, setSnap] = useState<Snapshot>();
   useEffect(() => {
     let live = true;
-    void learning.snapshot('focused').then((snap) => live && setSummary(snap.summary));
+    void learning.snapshot('focused').then((next) => live && setSnap(next));
     return () => {
       live = false;
     };
   }, [learning]);
-  return summary;
+  return snap;
 }
 
 export function SessionComplete({ plan, outcome, stats, onAction }: SessionCompleteProps) {
   const { course, surface, now } = useEnv();
   const lesson = plan.lessonId ? course.lesson(plan.lessonId) : undefined;
-  const summary = useSummary();
+  const pack = lesson && packOfScene(course, lesson.id);
+  const snap = useSnapshot();
+  const summary = snap?.summary;
 
   // Each kind of session builds its field and its buttons; the panel shows them as they are.
   let field: FieldProps;
@@ -228,6 +232,12 @@ export function SessionComplete({ plan, outcome, stats, onAction }: SessionCompl
         const met = summary.sounds.total - summary.sounds.new;
         bar = { from: Math.max(0, met - newCount), to: met, max: summary.sounds.total, label: 'Sound pairs met' };
       }
+    } else if (pack && lesson) {
+      title = 'Scene complete!';
+      if (snap) {
+        const done = pack.scenes.filter((scene) => isLessonDone(snap.progress, scene.id)).length;
+        bar = { from: Math.max(0, done - (newCount > 0 ? 1 : 0)), to: done, max: pack.scenes.length, label: `${pack.title}: scenes done` };
+      }
     } else if (lesson && summary?.modules[lesson.moduleId]) {
       const count = summary.modules[lesson.moduleId]!;
       // New items mean a first completion; a replayed lesson leaves the count where it was.
@@ -244,7 +254,20 @@ export function SessionComplete({ plan, outcome, stats, onAction }: SessionCompl
         { label: 'Time', value: formatDuration(stats.ms) },
       ],
     };
-    actions = (
+    // A scene leads on to the pack's next scene, in order; the last one back to the pack and its mission.
+    const following = pack && lesson ? pack.scenes[pack.scenes.indexOf(lesson) + 1] : undefined;
+    actions = pack ? (
+      <>
+        {following ? (
+          <Button block onClick={() => onAction('scene')} data-primary>
+            Next scene
+          </Button>
+        ) : null}
+        <Button block variant={following ? 'secondary' : 'primary'} onClick={() => onAction('pack')} data-primary={following ? undefined : true}>
+          Back to the pack
+        </Button>
+      </>
+    ) : (
       <>
         <Button block onClick={() => onAction('next')} data-primary disabled={outcome.next.type === 'finished'}>
           Continue

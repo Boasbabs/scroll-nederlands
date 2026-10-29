@@ -50,6 +50,7 @@ const TILES: [TileKind, Parameters<typeof Icon>[0]['name'], string][] = [
   ['ear', 'ear', 'Ear'],
   ['articles', 'translate', 'de/het'],
   ['checkpoint', 'flag', 'Checkpoint'],
+  ['packs', 'chats', 'Situations'],
   ['soft', 'speaker', 'Settings'],
 ];
 

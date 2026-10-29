@@ -1,9 +1,11 @@
 import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { Exercise } from '../../src/curriculum/types';
+import { exerciseSteps } from '../../src/engine/plan';
 import { Highlighted } from '../../src/ui/player/parts';
+import { SessionComplete } from '../../src/ui/player/SessionComplete';
 import { SessionPlayer } from '../../src/ui/player/SessionPlayer';
-import { makeCourse, stageExercises } from '../fixtures/curriculum';
+import { makeCourse, stageExercises, testPacks } from '../fixtures/curriculum';
 import { makeEnv, renderUi, setupLearning } from './harness';
 
 async function startLesson(setup: ReturnType<typeof setupLearning>, lessonId = 'x0-a-hello') {
@@ -194,6 +196,35 @@ describe('lesson player', () => {
       'x0-a-hello/hoi': false,
       'x0-a-hello/dag': false,
     });
+  });
+});
+
+describe('the end of a pack scene', () => {
+  async function finishScene(setup: ReturnType<typeof setupLearning>, lessonId: string) {
+    const plan = await setup.learning.startLesson(lessonId, 'focused');
+    const results = exerciseSteps(plan).map((planned) => ({ exerciseId: planned.exerciseId, stage: planned.exercise.stage, itemIds: planned.itemIds, correct: true }));
+    return { plan, outcome: await setup.learning.finish(plan, results), stats: { correct: results.length, graded: results.length, ms: 60_000 } };
+  }
+
+  it('leads on to the next scene, or back to the pack', async () => {
+    const user = userEvent.setup();
+    const setup = setupLearning(makeCourse({}, [], [], testPacks));
+    const first = await finishScene(setup, 'sc-markt-kraam');
+    const onAction = vi.fn();
+    const { unmount } = renderUi(makeEnv(setup), <SessionComplete {...first} onAction={onAction} />);
+    expect(screen.getByText('Scene complete!')).toBeInTheDocument();
+    expect(await screen.findByRole('progressbar', { name: 'At the market: scenes done' })).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Next scene' }));
+    expect(onAction).toHaveBeenLastCalledWith('scene');
+    await user.click(screen.getByRole('button', { name: 'Back to the pack' }));
+    expect(onAction).toHaveBeenLastCalledWith('pack');
+    unmount();
+
+    await finishScene(setup, 'sc-markt-prijs');
+    const last = await finishScene(setup, 'sc-markt-tas');
+    renderUi(makeEnv(setup), <SessionComplete {...last} onAction={onAction} />);
+    expect(screen.queryByRole('button', { name: 'Next scene' })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Back to the pack' })).toBeInTheDocument();
   });
 });
 

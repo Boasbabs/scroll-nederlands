@@ -1,7 +1,7 @@
 // Today, Review and Progress tabs.
 import { useEffect, useId, useState, type ReactNode } from 'react';
 import { DAY } from '../../engine/schedule';
-import { REVIEW_BATCH, WORD_BATCH } from '../../engine/selection';
+import { getNextScene, getPackInProgress, isLessonDone, REVIEW_BATCH, WORD_BATCH } from '../../engine/selection';
 import { itemsByStrength } from '../../engine/summary';
 import type { Snapshot } from '../../learning/actions';
 import { contrastLabel } from '../../sounds/assemble';
@@ -112,6 +112,25 @@ function NewWordsRow({ snap, start }: ScreenProps) {
       meta={`Basic words · ${met} of ${words.total} met`}
       bar={{ value: met, max: words.total }}
       onClick={() => void start(() => learning.startWords('focused'))}
+    />
+  );
+}
+
+/** The pack the learner is in the middle of: its next scene starts from here. */
+function ContinuePackRow({ snap, start }: ScreenProps) {
+  const { learning, course } = useEnv();
+  const pack = getPackInProgress(course, snap.progress);
+  const next = pack && getNextScene(pack, snap.progress);
+  if (!pack || !next) return null;
+  const done = pack.scenes.filter((scene) => isLessonDone(snap.progress, scene.id)).length;
+  return (
+    <TodayRow
+      icon="chats"
+      kind="packs"
+      title={`Continue: ${pack.title}`}
+      meta={`Scene ${pack.scenes.indexOf(next) + 1} of ${pack.scenes.length} · ${next.title}`}
+      bar={{ value: done, max: pack.scenes.length }}
+      onClick={() => void start(() => learning.startNextScene(pack.id))}
     />
   );
 }
@@ -251,6 +270,7 @@ export function TodayScreen({ snap, start }: ScreenProps) {
             />
           ) : null}
           {snap.prefs.newWordsPerDay > 0 && summary.words.total > 0 ? <NewWordsRow snap={snap} start={start} /> : null}
+          <ContinuePackRow snap={snap} start={start} />
           {summary.sounds.total > 0 ? <EarTrainingRow snap={snap} start={start} /> : null}
           <TodayRow
             icon="bolt"
@@ -393,6 +413,21 @@ export function ProgressScreen({ snap }: { snap: Snapshot }) {
                 <strong className="tn-display">{summary.words.total - summary.words.new}</strong> of {summary.words.total} met · {summary.words.strong} strong
               </p>
               <ProgressBar value={summary.words.total - summary.words.new} max={summary.words.total} label="Basic words met" count />
+            </div>
+          </div>
+        </section>
+      ) : null}
+
+      {summary.packs.total > 0 ? (
+        <section className="tn-section">
+          <h2 className="tn-section__title">Situations</h2>
+          <div className="tn-panel-card tn-meter">
+            <IconTile icon="chats" kind="packs" />
+            <div className="tn-meter__text">
+              <p className="tn-progress-line">
+                <strong className="tn-display">{summary.packs.started}</strong> of {summary.packs.total} started · {summary.packs.items.total - summary.packs.items.new} of {summary.packs.items.total} phrases and words met
+              </p>
+              <ProgressBar value={summary.packs.items.total - summary.packs.items.new} max={summary.packs.items.total} label="Situation phrases and words met" count />
             </div>
           </div>
         </section>

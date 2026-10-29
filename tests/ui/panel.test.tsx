@@ -6,7 +6,7 @@ import { DAY, HOUR } from '../../src/engine/schedule';
 import { SITE_IDS, SITES, siteRecord, type SiteId } from '../../src/sites';
 import type { SitePermissions } from '../../src/ui/env';
 import { PanelApp } from '../../src/ui/panel/PanelApp';
-import { makeCourse, testContrasts, testWordThemes } from '../fixtures/curriculum';
+import { makeCourse, testContrasts, testPacks, testWordThemes } from '../fixtures/curriculum';
 import { setupLearning, silentSpeaker, T0 } from './harness';
 
 type Setup = ReturnType<typeof setupLearning>;
@@ -452,5 +452,114 @@ describe('Topics', () => {
     await user.click(screen.getByRole('button', { name: 'Animals' }));
     await user.click(screen.getByRole('button', { name: 'Topics' }));
     expect(screen.getByRole('heading', { name: 'Word themes' })).toBeInTheDocument();
+  });
+});
+
+describe('Situations', () => {
+  async function packLearner() {
+    const setup = setupLearning(makeCourse({}, testWordThemes, [], testPacks));
+    await setup.store.updatePreferences({ onboarded: true });
+    return setup;
+  }
+
+  async function finishScene(setup: Setup, lessonId: string) {
+    const plan = await setup.learning.startLesson(lessonId, 'focused');
+    const results = exerciseSteps(plan).map((planned) => ({ exerciseId: planned.exerciseId, stage: planned.exercise.stage, itemIds: planned.itemIds, correct: true }));
+    await setup.learning.finish(plan, results);
+  }
+
+  it('lists the packs above the word themes', async () => {
+    const user = userEvent.setup();
+    renderPanel(await packLearner());
+    await user.click(await screen.findByRole('button', { name: 'Topics' }));
+    const headings = screen.getAllByRole('heading', { level: 2 }).map((heading) => heading.textContent);
+    expect(headings.slice(-2)).toEqual(['Situations', 'Word themes']);
+    expect(screen.getByRole('button', { name: 'At the market' })).toHaveAccessibleDescription('3 scenes · 5 phrases and words');
+  });
+
+  it('opens a pack: best after, the scenes in order, the mission and the culture note', async () => {
+    const user = userEvent.setup();
+    renderPanel(await packLearner());
+    await user.click(await screen.findByRole('button', { name: 'Topics' }));
+    await user.click(screen.getByRole('button', { name: 'At the market' }));
+
+    expect(screen.getByRole('heading', { name: 'At the market' })).toBeInTheDocument();
+    expect(screen.getByText('Best after: Stage X1 · Module B')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Scene 1: At the stall' })).toHaveAccessibleDescription('Up next');
+    expect(screen.getByRole('button', { name: 'Scene 2: The price' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Scene 3: A bag' })).toHaveAccessibleDescription('After scene 2');
+    expect(screen.getByText('Buy something at a market in Dutch.')).toBeInTheDocument();
+    expect(screen.getByText('Markets often take cards now.')).toBeInTheDocument();
+    expect(screen.getByText('de kraam')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /^Practise this pack/ })).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Start scene 1' }));
+    expect(await screen.findByRole('heading', { name: /Twee kilo appels/ })).toBeInTheDocument();
+  });
+
+  it('ticks the mission off, and keeps the tick', async () => {
+    const user = userEvent.setup();
+    const setup = await packLearner();
+    renderPanel(setup);
+    await user.click(await screen.findByRole('button', { name: 'Topics' }));
+    await user.click(screen.getByRole('button', { name: 'At the market' }));
+    const tick = screen.getByRole('button', { name: 'Done it' });
+    expect(tick).toHaveAttribute('aria-pressed', 'false');
+    await user.click(tick);
+    expect(tick).toHaveAttribute('aria-pressed', 'true');
+    await waitFor(async () => expect(await setup.store.readMissions()).toEqual({ markt: setup.now() }));
+    await user.click(tick);
+    await waitFor(async () => expect(await setup.store.readMissions()).toEqual({}));
+  });
+
+  it('leads from a finished scene to the next one, or back to the pack’s page', async () => {
+    const user = userEvent.setup();
+    const setup = await packLearner();
+    // Each scene shortened to its first exercise, so the test can play it through.
+    const startLesson = setup.learning.startLesson;
+    setup.learning.startLesson = async (lessonId, mode) => {
+      const plan = await startLesson(lessonId, mode);
+      return { ...plan, steps: plan.steps.filter((step) => step.type === 'exercise').slice(0, 1) };
+    };
+    async function playChoice(answer: string) {
+      await user.click(await screen.findByRole('radio', { name: new RegExp(answer) }));
+      await user.click(screen.getByRole('button', { name: 'Check' }));
+      await user.click(screen.getByRole('button', { name: 'Continue' }));
+    }
+    renderPanel(setup);
+    await user.click(await screen.findByRole('button', { name: 'Topics' }));
+    await user.click(screen.getByRole('button', { name: 'At the market' }));
+    await user.click(screen.getByRole('button', { name: 'Start scene 1' }));
+    await playChoice('Two kilos of apples');
+    expect(await screen.findByText('Scene complete!')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Next scene' }));
+    await playChoice('What does that cost');
+    await user.click(await screen.findByRole('button', { name: 'Back to the pack' }));
+    expect(await screen.findByRole('heading', { name: 'At the market' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Scene 2: The price' })).toHaveAccessibleDescription('Done · play again');
+    expect(screen.getByRole('button', { name: 'Start scene 3' })).toBeInTheDocument();
+  });
+
+  it('continues a pack from Today, and counts the situations on Progress', async () => {
+    const user = userEvent.setup();
+    const setup = await packLearner();
+    await finishScene(setup, 'sc-markt-kraam');
+    renderPanel(setup);
+    const row = await screen.findByRole('button', { name: 'Continue: At the market' });
+    expect(row).toHaveAccessibleDescription('Scene 2 of 3 · The price');
+
+    await user.click(screen.getByRole('button', { name: 'Progress' }));
+    expect(screen.getByRole('heading', { name: 'Situations' })).toBeInTheDocument();
+    expect(screen.getByText(/of 1 started · 3 of 5 phrases and words met/)).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Topics' }));
+    await user.click(screen.getByRole('button', { name: 'At the market' }));
+    expect(screen.getByRole('button', { name: 'Scene 1: At the stall' })).toHaveAccessibleDescription('Done · play again');
+    expect(screen.getByRole('button', { name: 'Practise this pack' })).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Today' }));
+    await user.click(screen.getByRole('button', { name: 'Continue: At the market' }));
+    expect(await screen.findByRole('heading', { name: /Wat kost dat/ })).toBeInTheDocument();
   });
 });

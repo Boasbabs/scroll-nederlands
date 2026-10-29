@@ -1,5 +1,5 @@
 // The end screens with sample results, for visual checks without playing a session through.
-// ?kind=lesson|words|sounds|review|checkpoint-pass|checkpoint-fail|card
+// ?kind=lesson|scene|words|sounds|review|checkpoint-pass|checkpoint-fail|card
 import { createRoot } from 'react-dom/client';
 import '../src/ui/theme.css';
 import '../src/ui/motion.css';
@@ -23,7 +23,7 @@ const params = new URLSearchParams(location.search);
 const kind = params.get('kind') ?? 'lesson';
 // The learner from ?state=today, so the bars on the field show real counts.
 const { area } = createPreviewArea();
-await seed(area, 'today', Date.now());
+await seed(area, kind === 'scene' ? 'packs' : 'today', Date.now());
 const store = createStore(area);
 const learning = createLearning({ store, course, images: bundledImages });
 const env: UiEnv = {
@@ -37,11 +37,14 @@ const env: UiEnv = {
 };
 
 const lesson = course.lessons[8]!;
+const scene = course.packs[0]?.scenes[0];
 const checkpoint = course.lessons.find((entry) => entry.kind === 'checkpoint')!;
 const missed = lesson.items.slice(0, 2).map((item) => item.id);
 const base: SessionOutcome = { kind: 'lesson', correct: 7, total: 8, missedItemIds: missed, newItemIds: lesson.items.slice(0, 4).map((item) => item.id), next: { type: 'lesson', lessonId: course.lessons[2]!.id }, nextReviewAt: Date.now() + 86_400_000 };
 const SAMPLES: Record<string, [SessionPlan, SessionOutcome]> = {
   lesson: [{ kind: 'lesson', mode: 'focused', lessonId: lesson.id, steps: [] }, base],
+  // A pack's first scene: the bar counts the pack's scenes, and the buttons lead on to the next one.
+  scene: [{ kind: 'lesson', mode: 'focused', lessonId: scene?.id, steps: [] }, { ...base, newItemIds: scene?.items.map((item) => item.id) ?? [] }],
   words: [{ kind: 'words', mode: 'focused', steps: [] }, { ...base, kind: 'words', missedItemIds: [], newItemIds: course.words.slice(0, 5).map((item) => item.id) }],
   sounds: [{ kind: 'sounds', mode: 'focused', steps: [{ type: 'contrast', itemId: course.sounds[0]!.id }] }, { ...base, kind: 'sounds', missedItemIds: [], newItemIds: [course.sounds[0]!.id] }],
   review: [

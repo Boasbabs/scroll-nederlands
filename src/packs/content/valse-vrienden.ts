@@ -17,7 +17,7 @@ export const valseVrienden: Pack = {
   buildsOn: [],
   shared: ['w-adjectives/slim', 'w-people/kind', 'w-food/worst', 'sc-baan-solliciteren/solliciteren'],
   mission: 'Spot one of these words in Dutch this week, on a sign, a menu or a news site, and say what it means there.',
-  cultureNote: 'A few are only half false: het monster is also a monster, and the head cook in a restaurant is de chef-kok.',
+  cultureNote: 'A few are only half false: het monster is also a monster, in a restaurant de chef is the head cook, as in English (also de chef-kok), and controleren can mean to control, as in de bal controleren.',
   scenes: [
     {
       id: 'sc-valse-vrienden-mensen',
@@ -387,14 +387,14 @@ export const valseVrienden: Pack = {
         word('door', 'through; by', { note: 'not "door": that is de deur' }),
         word('proper', 'clean, neat', { note: 'not "proper": that is echt or fatsoenlijk' }),
         word('eng', 'scary, creepy', { note: 'not "English": that is Engels' }),
-        word('controleren', 'to check', { note: 'not "to control": that is beheersen' }),
+        word('controleren', 'to check', { note: 'mostly to check; to control yourself or a situation is beheersen' }),
       ],
       wordBreakdown: [
         { dutch: 'de brand', english: 'the fire (a brand is het merk)' },
         { dutch: 'door', english: 'through, by (a door is de deur)' },
         { dutch: 'proper', english: 'clean, neat (proper is echt or fatsoenlijk)' },
         { dutch: 'eng', english: 'scary, creepy (English is Engels)' },
-        { dutch: 'controleren', english: 'to check (to control is beheersen)' },
+        { dutch: 'controleren', english: 'to check (to control yourself or a situation: beheersen)' },
       ],
       patternExplanation:
         'Door is a small word you meet everywhere: door het park (through the park), gemaakt door de buren (made by the neighbours). Proper is heard more in Belgium; in the Netherlands people mostly say schoon.',
@@ -459,7 +459,7 @@ export const valseVrienden: Pack = {
           prompt: 'At the airport: "We gaan uw tas even controleren." What will they do?',
           options: ['Check your bag', 'Take your bag away', 'Weigh your bag'],
           answer: 'Check your bag',
-          explanation: 'Controleren: to check. To control is beheersen.',
+          explanation: 'Controleren: to check. To control yourself or a situation is beheersen.',
         },
         {
           id: 'cloze',
@@ -527,7 +527,7 @@ export const valseVrienden: Pack = {
           items: ['controleren'],
           prompt: `Type the Dutch for "to check". ${LOOKS_ENGLISH}`,
           answers: ['controleren', 'checken'],
-          explanation: 'Controleren: to check (checken is said too). To control is beheersen.',
+          explanation: 'Controleren: to check (checken is said too). To control yourself or a situation is beheersen.',
         },
         {
           id: 'shout',
@@ -564,7 +564,7 @@ export const valseVrienden: Pack = {
           note: 'eventueel first, then the verb: Eventueel kan ik …',
         }),
         word('eventueel', 'possibly, if needed', { note: 'not "eventually": that is uiteindelijk' }),
-        noun('de chef', 'the boss', { note: 'not a cook: that is de kok (a head chef is de chef-kok)' }),
+        noun('de chef', 'the boss', { note: 'a cook is de kok; in a restaurant de chef is also the head cook (de chef-kok)' }),
         noun('de wet', 'the law', { note: 'not "wet": that is nat' }),
         word('actueel', 'current, up to date', { note: 'not "actual": that is echt; actually is eigenlijk' }),
         noun('de fabriek', 'the factory', { note: 'not "fabric": that is de stof' }),
@@ -575,7 +575,7 @@ export const valseVrienden: Pack = {
         { dutch: 'de wet', english: 'the law (wet is nat)' },
         { dutch: 'actueel', english: 'current, in the news (actual is echt; actually is eigenlijk)' },
         { dutch: 'de fabriek', english: 'the factory (fabric is de stof)' },
-        { dutch: 'solliciteren', english: 'to apply for a job (never to solicit)' },
+        { dutch: 'solliciteren', english: 'to apply for a job (not to solicit)' },
       ],
       patternExplanation:
         'Eventueel says something may happen if it is needed, never that it happens in the end. When it starts the sentence, the verb comes next: Eventueel kan ik zaterdag werken.',
@@ -648,7 +648,7 @@ export const valseVrienden: Pack = {
           prompt: '"Ik heb gisteren gesolliciteerd bij een bank." What did the speaker do yesterday?',
           options: ['Applied for a job at a bank', 'Asked a bank for money', 'Opened a bank account'],
           answer: 'Applied for a job at a bank',
-          explanation: 'Solliciteren: to apply for a job (ik heb gesolliciteerd). It never means to solicit.',
+          explanation: 'Solliciteren: to apply for a job (ik heb gesolliciteerd), not to solicit.',
         },
         {
           id: 'cloze',

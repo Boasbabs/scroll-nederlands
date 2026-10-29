@@ -173,7 +173,7 @@ export const geld: Pack = {
       kind: 'core',
       title: 'Paying and getting paid back',
       objective: 'Split costs with a payment request, transfer money, pay people back and understand a failed payment.',
-      situation: 'You have lunch with your colleague Daan. He pays for you both, so you ask him to send you a payment request. Later, your banking app tells you a payment has failed.',
+      situation: 'You have lunch with your colleague Daan. He pays for you both, and you would like a payment request from him. Later, your banking app tells you a payment has failed.',
       targetPhrase: 'Kun je me een betaalverzoek sturen?',
       meaningEn: 'Can you send me a payment request?',
       items: [

@@ -212,13 +212,13 @@ export const valseVrienden: Pack = {
         noun('het monster', 'the sample', { note: 'also the monster; een monstertje is a free sample' }),
         noun('de room', 'the cream (dairy)', { note: 'not "room": that is de kamer. Face or hand cream is crème; whipped cream is slagroom' }),
         word('slap', 'weak, limp', { note: 'not "slap": that is een klap' }),
-        word('raar', 'strange, odd', { note: 'not "rare": that is zeldzaam' }),
+        word('raar', 'strange, odd', { note: 'not "rare": that is zeldzaam. Careful: rare is Dutch too, raar before a noun (een rare vraag: a strange question)' }),
       ],
       wordBreakdown: [
         { dutch: 'het monster', english: 'the sample (also the monster)' },
         { dutch: 'de room', english: 'the cream, for cooking (a room is de kamer; face cream is crème)' },
         { dutch: 'slap', english: 'weak, limp: slappe koffie (a slap is een klap)' },
-        { dutch: 'raar', english: 'strange, odd (rare is zeldzaam)' },
+        { dutch: 'raar', english: 'strange, odd (een rare vraag: a strange question; rare is zeldzaam)' },
         { dutch: 'de worst', english: 'the sausage (the worst is het slechtst)' },
       ],
       patternExplanation:
@@ -272,7 +272,7 @@ export const valseVrienden: Pack = {
           prompt: '"Deze melk ruikt raar." What is the matter with the milk?',
           options: ['It smells strange', 'It is rare', 'It smells nice'],
           answer: 'It smells strange',
-          explanation: 'Raar means strange or odd. Rare (not common) is zeldzaam.',
+          explanation: 'Raar means strange or odd. Rare (not common) is zeldzaam. Careful: Dutch rare is raar before a noun, as in een rare vraag.',
         },
         {
           id: 'rec-monster',
@@ -341,7 +341,7 @@ export const valseVrienden: Pack = {
           items: ['raar'],
           prompt: `Type the Dutch for "strange". ${LOOKS_ENGLISH}`,
           answers: ['raar'],
-          explanation: 'Raar: strange, odd. Rare is zeldzaam.',
+          explanation: 'Raar: strange, odd (een rare vraag: a strange question). Rare, as in not common, is zeldzaam.',
         },
         {
           id: 'type-monster',

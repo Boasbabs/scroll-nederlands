@@ -5,6 +5,7 @@
 //
 //   pnpm audio:generate                   generate what is missing, verify, write the manifest
 //   pnpm audio:generate --plan            count texts and characters per group; no API calls
+//   pnpm audio:generate --encode          only make clips from the kept masters; no API calls
 //   pnpm audio:generate --until answers   stop before a group (see GROUPS)
 //   pnpm audio:generate --max-chars 20000 stop before this run bills more characters
 //   pnpm audio:generate --verify all      speech-to-text check: all | short (default) | none
@@ -15,6 +16,12 @@
 //
 // Needs ELEVENLABS_API_KEY in .env.local (Text to Speech, plus Speech to Text for
 // --verify) and ffmpeg on the PATH. The key is only sent in the request header.
+//
+// Every take the API returns is kept as a master in audio-masters/ (or the folder
+// AUDIO_MASTERS_DIR names), outside public/ so it never ships, together with the
+// speech-to-text results in checks.json. A clip missing from public/ is made from
+// its master when there is one, so a new encoding costs nothing. Back the folder up:
+// it holds what the clips cost.
 import { execFile } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { existsSync } from 'node:fs';
@@ -39,9 +46,11 @@ export const MODEL: string = 'eleven_v4';
 export const SETTINGS: Record<string, number | boolean> = { stability: 0.5, similarity_boost: 0.75 };
 /** Spoken context for very short texts: steers the model to Dutch without being read aloud (and is not billed). */
 const SHORT_CONTEXT = 'Luister en herhaal:';
-/** Bump when post-processing changes, so every clip is rebuilt. */
+/** Bump when post-processing changes, so every clip is rebuilt (from its master, where there is one). */
 const POST_VERSION = 1;
 const SOURCE_FORMAT = 'mp3_44100_128';
+/** A master is the API's own file, in SOURCE_FORMAT, before any post-processing. */
+const MASTER_EXT = 'mp3';
 const CONCURRENCY = 3;
 
 /**
@@ -134,14 +143,37 @@ export type AudioManifest = ClipManifest & {
 };
 
 const isShort = (text: string) => text.split(' ').length <= 3;
-const seedFor = (clip: ClipText) => Number.parseInt(clipFile(clip).slice(6, 14), 16) % 4294967295;
+const hash = (value: unknown) => createHash('sha1').update(JSON.stringify(value)).digest('hex').slice(0, 16);
 
-function clipFile(clip: ClipText): string {
+/** What the API's audio depends on. Post-processing is left out, so a new encoding reuses the masters. */
+function synthesisInputs(clip: ClipText): Array<unknown> {
   const short = MODEL === 'eleven_multilingual_v2' && isShort(clip.text);
-  const hash = createHash('sha1')
-    .update(JSON.stringify([clip.text, VOICES[clip.voice].id, MODEL, SETTINGS, short ? SHORT_CONTEXT : null, POST_VERSION]))
-    .digest('hex');
-  return `audio/${hash.slice(0, 16)}.mp3`;
+  return [clip.text, VOICES[clip.voice].id, MODEL, SETTINGS, short ? SHORT_CONTEXT : null];
+}
+
+/** The take as the API returned it, in the masters folder. */
+export function masterName(clip: ClipText): string {
+  return `${hash(synthesisInputs(clip))}.${MASTER_EXT}`;
+}
+
+/** The post-processed clip the extension plays, under public/. */
+export function clipFile(clip: ClipText): string {
+  return `audio/${hash([...synthesisInputs(clip), POST_VERSION])}.mp3`;
+}
+
+// The seed and the check's sample follow the master, so neither changes with the encoding.
+const seedFor = (clip: ClipText) => Number.parseInt(masterName(clip).slice(0, 8), 16) % 4294967295;
+
+/**
+ * Where a clip comes from on this run, cheapest first: it is in public/ already,
+ * it can be made from its master, or (the only case that calls the API) it is synthesized.
+ */
+export type ClipPlan = { source: 'ready' | 'master' | 'synthesize'; file: string };
+
+export function planClip(clip: ClipText, has: { clip: (file: string) => boolean; master: (name: string) => boolean }): ClipPlan {
+  const file = clipFile(clip);
+  if (has.clip(file)) return { source: 'ready', file };
+  return { source: has.master(masterName(clip)) ? 'master' : 'synthesize', file };
 }
 
 // ---------------------------------------------------------------------------
@@ -151,7 +183,9 @@ function clipFile(clip: ClipText): string {
 let root = '';
 let manifestPath = '';
 let qaPath = '';
-const work = path.join(os.tmpdir(), 'taalnudge-audio');
+let mastersDir = '';
+/** Where the check results were kept before they moved in with the masters; read once, then left alone. */
+const oldChecks = path.join(os.tmpdir(), 'taalnudge-audio', 'checks.json');
 const run = promisify(execFile);
 
 class FatalApiError extends Error {}
@@ -367,34 +401,46 @@ async function main() {
   manifestPath = path.join(root, 'src/audio/clips.json');
   qaPath = path.join(root, 'docs/audio-qa.md');
   const planOnly = process.argv.includes('--plan');
+  const encodeOnly = process.argv.includes('--encode');
   const until = option('--until') as ClipGroup | undefined;
   const maxChars = Number(option('--max-chars') ?? Infinity);
-  const verify = option('--verify') ?? 'short';
+  // --encode never calls the API, so it checks nothing either.
+  const verify = encodeOnly ? 'none' : (option('--verify') ?? 'short');
   if (until && !GROUPS.includes(until)) throw new Error(`--until takes one of ${GROUPS.join(', ')}`);
+  mastersDir = path.resolve(root, process.env.AUDIO_MASTERS_DIR || 'audio-masters');
 
   const beside = await loadBeside();
   const all = collectClipTexts(await loadLessons(), beside);
   const pairWords = new Set(beside.pairs.map(clipKey));
   if (process.argv.includes('--recorded')) return processTakes(all, pairWords);
-  const exists = (clip: ClipText) => existsSync(path.join(root, 'public', clipFile(clip)));
+  const plan = (clip: ClipText) =>
+    planClip(clip, { clip: (file) => existsSync(path.join(root, 'public', file)), master: (name) => existsSync(path.join(mastersDir, name)) });
   const groups = until ? GROUPS.slice(0, GROUPS.indexOf(until)) : GROUPS;
   console.log(`${all.length} texts (${all.filter((c) => c.voice === 'b').length} for voice b), ${all.reduce((s, c) => s + c.text.length, 0)} characters in all.`);
   for (const group of GROUPS) {
     const clips = all.filter((clip) => clip.group === group);
-    const todo = clips.filter((clip) => !exists(clip));
-    console.log(`  ${group.padEnd(9)} ${String(clips.length).padStart(5)} texts ${String(clips.reduce((s, c) => s + c.text.length, 0)).padStart(7)} chars; to generate ${todo.length} (${todo.reduce((s, c) => s + c.text.length, 0)} chars)`);
+    const sources = clips.map((clip) => plan(clip).source);
+    const todo = clips.filter((_, i) => sources[i] === 'synthesize');
+    const fromMasters = sources.filter((source) => source === 'master').length;
+    console.log(
+      `  ${group.padEnd(9)} ${String(clips.length).padStart(5)} texts ${String(clips.reduce((s, c) => s + c.text.length, 0)).padStart(7)} chars; to generate ${todo.length} (${todo.reduce((s, c) => s + c.text.length, 0)} chars)${fromMasters ? `; to make from masters ${fromMasters}` : ''}`,
+    );
   }
+  const masters = existsSync(mastersDir) ? (await readdir(mastersDir)).filter((name) => name.endsWith(`.${MASTER_EXT}`)).length : 0;
+  console.log(`Masters kept in ${mastersDir.startsWith(root) ? path.relative(root, mastersDir) : mastersDir}: ${masters}.`);
   const recorded = (await readRecorded(root)).takes;
   console.log(`Human takes (played before clips): ${[...pairWords].filter((word) => recorded[word]?.length).length} of ${pairWords.size} pair words.`);
   if (planOnly) return;
   const reportOnly = process.argv.includes('--report');
 
   await mkdir(path.join(root, 'public/audio'), { recursive: true });
-  await mkdir(work, { recursive: true });
+  await mkdir(mastersDir, { recursive: true });
   const manifest: AudioManifest = { voices: VOICES, model: MODEL, settings: SETTINGS, clips: {}, clipsB: {} };
-  const register = (clip: ClipText) => {
-    (clip.voice === 'a' ? manifest.clips : manifest.clipsB)[clip.text] = clipFile(clip);
+  const register = (clip: ClipText, file: string) => {
+    (clip.voice === 'a' ? manifest.clips : manifest.clipsB)[clip.text] = file;
   };
+  const registered = (clip: ClipText): string | undefined => (clip.voice === 'a' ? manifest.clips : manifest.clipsB)[clip.text];
+  const at = (file: string) => path.join(root, 'public', file);
   // Saved after every clip (sorted keys keep diffs small), so a run stopped by quota or network errors resumes.
   let saving = Promise.resolve();
   const save = () => {
@@ -406,24 +452,38 @@ async function main() {
     });
     return saving;
   };
-  for (const clip of all) if (exists(clip)) register(clip);
+  // Until this run makes a text's own clip, the text keeps the one it has: a run that stops early, or
+  // --encode, must not silence it. That may be another text's clip that sounds the same ("hoelang").
+  const before: AudioManifest | undefined = existsSync(manifestPath) ? JSON.parse(await readFile(manifestPath, 'utf8')) : undefined;
+  for (const clip of all) {
+    const { source, file } = plan(clip);
+    const kept = (clip.voice === 'a' ? before?.clips : before?.clipsB)?.[clip.text];
+    if (source === 'ready') register(clip, file);
+    else if (kept && existsSync(at(kept))) register(clip, kept);
+  }
   await save();
 
   let billed = 0;
   let stopped: string | undefined;
   let checking = verify !== 'none';
-  const cachePath = path.join(work, 'checks.json');
-  const checks: Record<string, Check> = existsSync(cachePath) ? JSON.parse(await readFile(cachePath, 'utf8')) : {};
+  const cachePath = path.join(mastersDir, 'checks.json');
+  const checksFrom = [cachePath, oldChecks].find((file) => existsSync(file));
+  const checks: Record<string, Check> = checksFrom ? JSON.parse(await readFile(checksFrom, 'utf8')) : {};
+  // The temp folder is emptied by the system sooner or later; what the checks cost stays with the masters.
+  if (checksFrom === oldChecks) await writeFile(cachePath, JSON.stringify(checks));
   // Short items always; a fixed 10% sample of the rest unless --verify all.
-  const sampled = (clip: ClipText) => verify === 'all' || isShort(clip.text) || Number.parseInt(clipFile(clip).slice(6, 10), 16) % 10 === 0;
+  const sampled = (clip: ClipText) => verify === 'all' || isShort(clip.text) || Number.parseInt(masterName(clip).slice(0, 4), 16) % 10 === 0;
 
+  /** Makes the clip from its master: no API call. */
+  const encode = (clip: ClipText) => postProcess(path.join(mastersDir, masterName(clip)), at(clipFile(clip)));
+  /** Calls the API, keeps the take as the clip's master (a retake replaces it), then makes the clip from it. */
   const generate = async (clip: ClipText, seed: number) => {
     const { audio, cost } = await synthesize(clip, seed);
     billed += cost;
-    const raw = path.join(work, `${path.basename(clipFile(clip), '.mp3')}.raw.mp3`);
-    await writeFile(raw, audio);
-    await postProcess(raw, path.join(root, 'public', clipFile(clip)));
-    await rm(raw, { force: true });
+    const master = path.join(mastersDir, masterName(clip));
+    await writeFile(`${master}.tmp`, audio);
+    await rename(`${master}.tmp`, master);
+    await encode(clip);
   };
   const fail = (error: unknown, what: string) => {
     if (!(error instanceof FatalApiError)) return console.error(`Skipped ${what}: ${(error as Error).message}`);
@@ -433,21 +493,24 @@ async function main() {
     } else stopped = error.message;
   };
   const check = async (clip: ClipText) => {
-    const file = path.join(root, 'public', clipFile(clip));
+    let file = registered(clip) ?? clipFile(clip);
     try {
-      let result = await transcribe(file);
+      let result = await transcribe(at(file));
       let wer = wordErrorRate(clip.text, result.text);
       let retaken = false;
-      if (isFlagged(clip.text, wer, await duration(file))) {
+      if (isFlagged(clip.text, wer, await duration(at(file)))) {
         // One retake with another seed, then a human listens.
         await generate(clip, (seedFor(clip) + 1) % 4294967295);
-        result = await transcribe(file);
+        file = clipFile(clip);
+        register(clip, file);
+        await save();
+        result = await transcribe(at(file));
         wer = wordErrorRate(clip.text, result.text);
         retaken = true;
       }
-      const seconds = await duration(file);
+      const seconds = await duration(at(file));
       const flagged = isFlagged(clip.text, wer, seconds);
-      checks[clipFile(clip)] = { ...clip, file: clipFile(clip), transcript: result.text, language: result.language, probability: result.probability, wer, seconds, flagged, retaken };
+      checks[file] = { ...clip, file, transcript: result.text, language: result.language, probability: result.probability, wer, seconds, flagged, retaken };
       await writeFile(cachePath, JSON.stringify(checks));
     } catch (error) {
       fail(error, `the check of "${clip.text}"`);
@@ -456,37 +519,63 @@ async function main() {
 
   // Group by group, each checked right after it is generated, so a quota stop leaves finished, checked groups.
   let made = 0;
+  let encoded = 0;
   for (const group of reportOnly ? [] : groups) {
     const fresh: Array<ClipText> = [];
-    const todo = all.filter((clip) => clip.group === group && !exists(clip));
+    let fromMasters = 0;
+    const todo = all.filter((clip) => clip.group === group && plan(clip).source !== 'ready');
     await pool(todo, () => Boolean(stopped), async (clip) => {
-      if (billed + clip.text.length > maxChars) {
+      const { source, file } = plan(clip);
+      if (source === 'synthesize' && encodeOnly) return;
+      if (source === 'synthesize' && billed + clip.text.length > maxChars) {
         stopped = `--max-chars ${maxChars} reached`;
         return;
       }
       try {
-        await generate(clip, seedFor(clip));
-        register(clip);
-        fresh.push(clip);
+        if (source === 'master') {
+          await encode(clip);
+          fromMasters++;
+          encoded++;
+        } else {
+          await generate(clip, seedFor(clip));
+          fresh.push(clip);
+          if (++made % 100 === 0) console.log(`${made} clips, ${billed} characters billed`);
+        }
+        register(clip, file);
         await save();
-        if (++made % 100 === 0) console.log(`${made} clips, ${billed} characters billed`);
       } catch (error) {
         fail(error, `"${clip.text}"`);
       }
     });
-    const recheck = process.argv.includes('--recheck') ? all.filter((clip) => clip.group === group && exists(clip) && !checks[clipFile(clip)]) : [];
+    const recheck = process.argv.includes('--recheck')
+      ? all.filter((clip) => {
+          const file = registered(clip);
+          return clip.group === group && file !== undefined && !checks[file];
+        })
+      : [];
     const toCheck = [...new Set([...fresh, ...recheck])].filter(sampled);
     if (checking && toCheck.length) await pool(toCheck, () => !checking || Boolean(stopped && !stopped.startsWith('--max-chars')), check);
-    console.log(`${group}: ${fresh.length} generated, ${toCheck.length} to check; ${billed} characters billed so far`);
+    console.log(`${group}: ${fresh.length} generated, ${fromMasters} made from masters, ${toCheck.length} to check; ${billed} characters billed so far`);
     if (stopped) break;
   }
   await save();
   await saving;
-  console.log(`Generated ${made} clips, ${billed} characters billed. Manifest: ${Object.keys(manifest.clips).length} a, ${Object.keys(manifest.clipsB).length} b.`);
+  console.log(
+    `Generated ${made} clips, ${billed} characters billed; made ${encoded} from masters. Manifest: ${Object.keys(manifest.clips).length} a, ${Object.keys(manifest.clipsB).length} b.`,
+  );
+  if (encodeOnly) {
+    const waiting = all.filter((clip) => plan(clip).source === 'synthesize').length;
+    if (waiting) console.log(`${waiting} texts have no master yet: run without --encode to generate them.`);
+  }
   if (verify !== 'none') {
-    const current = all.filter((clip) => (clip.voice === 'a' ? manifest.clips : manifest.clipsB)[clip.text] === clipFile(clip));
     const coverage = `${Object.keys(manifest.clips).length} for voice a and ${Object.keys(manifest.clipsB).length} for voice b, of ${all.length} course texts`;
-    await writeQa(current.flatMap((clip) => checks[clipFile(clip)] ?? []), coverage);
+    await writeQa(
+      all.flatMap((clip) => {
+        const file = registered(clip);
+        return file && checks[file] ? [checks[file]] : [];
+      }),
+      coverage,
+    );
   }
   if (stopped) {
     console.error(`Stopped: ${stopped}. Clips made so far are saved; run the same command again to continue.`);

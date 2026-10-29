@@ -1,6 +1,6 @@
 import { existsSync } from 'node:fs';
 import path from 'node:path';
-import { besideTexts, collectClipTexts, GROUPS, unusedClips, type AudioManifest } from '../../scripts/generate-audio.ts';
+import { besideTexts, clipFile, collectClipTexts, GROUPS, masterName, planClip, unusedClips, type AudioManifest, type ClipText } from '../../scripts/generate-audio.ts';
 import { clipKey, type RecordedManifest } from '../../src/audio/speech';
 import { course } from '../../src/curriculum';
 import { clipManifest } from '../../src/extension/clips';
@@ -44,6 +44,30 @@ describe.skipIf(!manifest)('the generated audio manifest', () => {
     const voiceB = new Set(texts.filter((text) => text.voice === 'b').map((text) => text.text));
     expect(Object.keys(clips).filter((key) => !voiceA.has(key))).toEqual([]);
     expect(Object.keys(clipsB).filter((key) => !voiceB.has(key))).toEqual([]);
+  });
+});
+
+describe('naming clips and their masters', () => {
+  const avonds: ClipText = { text: "'s avonds", voice: 'a', group: 'items' };
+
+  it('names a clip as the first run did, so the clips made then are found again', () => {
+    expect(clipFile(avonds)).toBe('audio/db012cff92f77e47.mp3');
+    if (manifest) expect(manifest.clips["'s avonds"]).toBe(clipFile(avonds));
+  });
+
+  it('keys a master by what the API was asked for, so a new encoding finds it', () => {
+    expect(masterName(avonds)).toMatch(/^[0-9a-f]{16}\.mp3$/);
+    expect(masterName({ ...avonds, group: 'pairs' })).toBe(masterName(avonds));
+    expect(masterName({ ...avonds, voice: 'b' })).not.toBe(masterName(avonds));
+    // The clip's name also carries the post-processing; the master's does not.
+    expect(path.basename(clipFile(avonds), '.mp3')).not.toBe(path.basename(masterName(avonds), '.mp3'));
+  });
+
+  it('makes a clip from what is on disk, cheapest first, and calls the API only when nothing is', () => {
+    const plan = (clips: Array<string>, masters: Array<string>) => planClip(avonds, { clip: (file) => clips.includes(file), master: (name) => masters.includes(name) });
+    expect(plan([clipFile(avonds)], [masterName(avonds)])).toEqual({ source: 'ready', file: clipFile(avonds) });
+    expect(plan([], [masterName(avonds)])).toEqual({ source: 'master', file: clipFile(avonds) });
+    expect(plan([], [])).toEqual({ source: 'synthesize', file: clipFile(avonds) });
   });
 });
 

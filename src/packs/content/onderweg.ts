@@ -14,7 +14,7 @@ Op 28 oktober om 19.40 uur heeft u in de Stationsstraat in Dijkstad zonder licht
 Boete: € 75,00
 Administratiekosten: € 9,00
 Totaal: € 84,00
-Betaal het totaalbedrag uiterlijk 6 januari. Betaalt u te laat? Dan wordt het bedrag hoger.
+Betaal het totaalbedrag uiterlijk 6 januari. Betaalt u te laat? Dan krijgt u eerst een herinnering. Betaalt u dan nog niet, dan wordt het bedrag hoger.
 Met vriendelijke groet,
 Centraal Justitieel Incassobureau`;
 
@@ -61,7 +61,7 @@ export const onderweg: Pack = {
         { dutch: 'de conducteur', english: 'the conductor, who checks tickets on the train' },
       ],
       patternExplanation:
-        'After vergeten, the next verb takes te and goes to the end: Vergeet niet uit te checken. A separable verb takes te between its parts: in te checken, op te laden. Check in when you get on (instappen) and out when you get off (uitstappen), with the same card or phone.',
+        'After vergeten, the next verb takes te and goes to the end: Vergeet niet uit te checken. A separable verb takes te between its parts: in te checken, op te laden. Check in at the station before you board a train, or as you get on a bus or tram (instappen), and check out when you get off (uitstappen), with the same card or phone.',
       pronunciationTip: 'Checken keeps its English sound, and the stress falls on the first part: IN-chek-kuh, UIT-chek-kuh, with the ui of huis. Conducteur ends like French: kon-duk-TEUR.',
       examples: [
         { dutch: 'Je moet altijd inchecken en uitchecken.', english: 'You always have to check in and check out.' },
@@ -143,7 +143,7 @@ export const onderweg: Pack = {
             'Ik check met mijn bankpas in.',
             'Ik check met mijn betaalpas in.',
           ],
-          explanation: 'Inchecken splits in a plain sentence: Ik check in met mijn pinpas. A contactless bank card or your phone works too.',
+          explanation: 'Inchecken splits in a plain sentence: Ik check in met mijn pinpas. Your phone, a credit card or an OV-pas works too.',
         },
         {
           id: 'getoff',
@@ -227,7 +227,7 @@ export const onderweg: Pack = {
       ],
       patternExplanation:
         'Uitvallen is separable and takes zijn: De trein valt uit. Mijn trein is uitgevallen. Announcements give the track number (spoor 4); het perron is the platform where you wait, often with a track on each side.',
-      pronunciationTip: 'Perron is stressed at the end: peh-RON. Uitvallen puts the stress on uit, like every separable verb: UIT-vah-luh.',
+      pronunciationTip: 'Perron is stressed at the end: peh-RON. Uitvallen puts the stress on uit, like every separable verb: UIT-fah-luh, as after uit the v sounds like an f.',
       examples: [
         { dutch: 'Door de storm kunnen er vandaag treinen uitvallen.', english: 'Because of the storm, trains may be cancelled today.' },
         { dutch: 'De trein naar Gouda staat al aan het perron.', english: 'The train to Gouda is already at the platform.' },
@@ -381,7 +381,7 @@ export const onderweg: Pack = {
         { dutch: 'Mijn band is lek, dus mijn fiets staat bij de fietsenmaker.', english: 'My tyre is flat, so my bike is at the repair shop.' },
         { dutch: 'De boete voor fietsen zonder licht krijg je per post.', english: 'You get the fine for cycling without lights by post.' },
       ],
-      speakingPrompt: 'Ask a passer-by: Pardon, waar kan ik mijn fiets neerzetten? Is hier een fietsenstalling?',
+      speakingPrompt: 'Ask a passer-by: Pardon, waar kan ik mijn fiets neerzetten? Is hier ergens een fietsenstalling?',
       revisits: ['s3-convo-roleplay'],
       skills: ['reading', 'speaking'],
       covers: [],
@@ -475,7 +475,7 @@ export const onderweg: Pack = {
           passage: FINE_LETTER,
           options: ['Pay €84 by 6 January', 'Pay €75 by 28 October', 'Pay €9 at the police station', 'Nothing: it is only a warning'],
           answer: 'Pay €84 by 6 January',
-          explanation: 'Totaal € 84,00 is the fine plus € 9 costs, and uiterlijk 6 januari means no later than 6 January. Pay late and the amount goes up.',
+          explanation: 'Totaal € 84,00 is the fine plus € 9 costs, and uiterlijk 6 januari means no later than 6 January. Pay late and you first get a reminder; if you still do not pay, the amount goes up.',
           focusedOnly: true,
         },
       ],

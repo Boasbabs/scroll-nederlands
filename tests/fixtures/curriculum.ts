@@ -187,6 +187,34 @@ export const testPacks: Array<Pack> = [
 ];
 
 /**
+ * A set beside the pack: three short parts with no text, listening, writing or
+ * mission, sharing the basic word "de vork" (w-kitchen/vork, in testWordThemes)
+ * in its second part.
+ */
+export const testSet: Pack = {
+  id: 'lijkt',
+  kind: 'set',
+  title: 'Look-alikes',
+  situation: 'Dutch words that look English.',
+  buildsOn: [],
+  shared: ['w-kitchen/vork'],
+  scenes: [
+    coreLesson('sc-lijkt-raar', 'Wat raar', 'How strange', {
+      title: 'Odd ones',
+      items: [
+        { key: 'wat-raar', dutch: 'Wat raar', english: 'How strange', kind: 'phrase' },
+        { key: 'raar', dutch: 'raar', english: 'strange', kind: 'word', note: 'not "rare": that is zeldzaam' },
+      ],
+    }),
+    coreLesson('sc-lijkt-vork', 'Een vork graag', 'A fork please', {
+      title: 'At the table',
+      exercises: stageExercises('Een vork graag', 'A fork please').map((exercise) => (exercise.id === 'rec' ? { ...exercise, items: ['een-vork-graag', 'w-kitchen/vork'] } : exercise)),
+    }),
+    coreLesson('sc-lijkt-eng', 'Wat eng', 'How scary', { title: 'Scary ones' }),
+  ],
+};
+
+/**
  * Two small basic-word themes. "Dank je wel" refers to a course item, so it
  * counts as a basic word without becoming a second item.
  */

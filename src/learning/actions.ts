@@ -121,15 +121,16 @@ export function createLearning({ store, course: base, images = {}, now = Date.no
   }
 
   /**
-   * A pack's practice pool: its own items, the course items of the modules it
-   * builds on, and the de/het item of each noun among them.
+   * A pack's practice pool: its members (a set's shared words among them), the
+   * course items of the modules it builds on, and the de/het item of each noun
+   * among them.
    */
   function packPool(packId: string): Set<string> | undefined {
     const pack = course.packs.find((entry) => entry.id === packId);
     if (!pack) return undefined;
     const modules = new Set(pack.buildsOn);
     const courseItems = course.lessons.filter((lesson) => modules.has(lesson.moduleId)).flatMap((lesson) => lesson.items);
-    const ids = [...pack.items, ...courseItems].map((item) => item.id);
+    const ids = [...pack.members, ...courseItems].map((item) => item.id);
     return new Set([...ids, ...ids.map(articleItemId)]);
   }
 

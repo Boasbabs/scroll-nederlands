@@ -7,7 +7,7 @@ import { getNextLesson, getNextScene, getPackInProgress, isLessonUnlocked, isSce
 import { summarizePack, summarizeProgress } from '../../src/engine/summary';
 import { emptyProgress, type ExerciseResult, type LearnerProgress } from '../../src/engine/types';
 import { PACKS_STAGE } from '../../src/packs/assemble';
-import { makeCourse, testPacks } from '../fixtures/curriculum';
+import { makeCourse, testPacks, testSet, testWordThemes } from '../fixtures/curriculum';
 import { setupLearning } from '../ui/harness';
 
 const T0 = new Date(2026, 9, 29, 9).getTime();
@@ -165,5 +165,56 @@ describe('pack sessions', () => {
     expect(await setup.store.readProgress()).toEqual(emptyProgress());
     await setup.learning.setMission('markt', false);
     expect((await setup.learning.snapshot('focused')).missions).toEqual({});
+  });
+});
+
+describe('sets', () => {
+  const withSet = makeCourse({}, testWordThemes, [], [...testPacks, testSet]);
+  const set = withSet.packs.find((entry) => entry.id === 'lijkt')!;
+
+  function finishPart(progress: LearnerProgress, sceneId: string, at: number): LearnerProgress {
+    return completeLesson(progress, withSet, sceneId, answers(planLesson(withSet, sceneId, 'focused')), 'focused', at);
+  }
+
+  it('lists a set’s shared words with its own, after the part that practises them first', () => {
+    expect(set.items.map((item) => item.id)).not.toContain('w-kitchen/vork');
+    expect(set.members.map((item) => item.id)).toEqual([
+      'sc-lijkt-raar/wat-raar',
+      'sc-lijkt-raar/raar',
+      'sc-lijkt-vork/een-vork-graag',
+      'w-kitchen/vork',
+      'sc-lijkt-eng/wat-eng',
+    ]);
+    // A situation's members are its own items.
+    expect(withSet.packs[0]!.members).toEqual(withSet.packs[0]!.items);
+  });
+
+  it('introduces the shared words a part practises, as its own', () => {
+    let progress = finishPart(emptyProgress(), 'sc-lijkt-raar', T0);
+    expect(progress.items['w-kitchen/vork']).toBeUndefined();
+    progress = finishPart(progress, 'sc-lijkt-vork', T0 + 1000);
+    expect(progress.items['w-kitchen/vork']).toBeDefined();
+    // A situation still leaves the course's words to the course.
+    expect(finishScene(emptyProgress(), 'sc-markt-kraam', T0).items['x1-a-pay/ik-wil-betalen']).toBeUndefined();
+  });
+
+  it('counts its parts and members, and stays out of the situations on Progress', () => {
+    const progress = finishPart(emptyProgress(), 'sc-lijkt-raar', T0);
+    expect(summarizePack(set, progress, T0)).toMatchObject({ scenes: { completed: 1, total: 3 }, items: { total: 5, new: 3 } });
+    expect(summarizeProgress(withSet, progress, T0).packs).toEqual({ started: 0, total: 1, items: { new: 5, learning: 0, strong: 0, total: 5 } });
+  });
+
+  it('practises its members, shared words included, and no course module', async () => {
+    const setup = setupLearning(withSet);
+    for (const sceneId of ['sc-lijkt-raar', 'sc-lijkt-vork']) {
+      const plan = await setup.learning.startLesson(sceneId, 'focused');
+      await setup.learning.finish(plan, answers(plan));
+    }
+    setup.advance(30 * DAY);
+    const practice = await setup.learning.startPackPractice('lijkt');
+    const practised = new Set(exerciseSteps(practice!).flatMap((step) => step.itemIds));
+    expect(practised.has('w-kitchen/vork')).toBe(true);
+    expect(practised.has('sc-lijkt-raar/raar')).toBe(true);
+    expect([...practised].some((id) => id.startsWith('x'))).toBe(false);
   });
 });

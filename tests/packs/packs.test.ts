@@ -6,7 +6,7 @@ import { PACKS_STAGE } from '../../src/packs/assemble';
 import { packs } from '../../src/packs/content';
 import type { Pack } from '../../src/packs/types';
 import { validatePacks } from '../../src/packs/validate';
-import { coreLesson, makeCourse, stageExercises, testWordThemes } from '../fixtures/curriculum';
+import { coreLesson, makeCourse, stageExercises, testSet, testWordThemes } from '../fixtures/curriculum';
 
 describe('the bundled packs', () => {
   it('pass validation', () => {
@@ -154,5 +154,35 @@ describe('validatePacks', () => {
     expect(issuesFor(pack)).toContain(
       'sc-kamer-kijken/listen: item sc-kamer-huur/wat-is-de-huur is not taught by this scene, an earlier one, the course or the word track',
     );
+  });
+});
+
+describe('validatePacks: sets', () => {
+  function issuesForSet(set: Pack): Array<string> {
+    return validatePacks(makeCourse({}, testWordThemes, [], [set]));
+  }
+
+  it('accepts a set without the situation’s parts: no text, listening, writing or mission, and few items', () => {
+    expect(issuesForSet(testSet)).toEqual([]);
+  });
+
+  it('still holds a set’s scenes to the lesson rules', () => {
+    const [first, ...rest] = testSet.scenes;
+    expect(issuesForSet({ ...testSet, scenes: [{ ...first!, exercises: first!.exercises.filter((exercise) => exercise.stage !== 'transfer') }, ...rest] })).toEqual(['sc-lijkt-raar: no transfer exercise']);
+  });
+
+  it('reports shared words that are unknown, its own, practised nowhere or listed twice', () => {
+    expect(issuesForSet({ ...testSet, shared: ['w-kitchen/vork', 'w-kitchen/vork', 'w-kitchen/lepel', 'w-kitchen/nowhere', 'sc-lijkt-raar/raar'] })).toEqual([
+      'lijkt: no scene practises the shared word w-kitchen/lepel',
+      'lijkt: shared word w-kitchen/nowhere is not taught by the course, the word track or another pack',
+      'lijkt: shared word sc-lijkt-raar/raar is not taught by the course, the word track or another pack',
+      'lijkt: a shared word is listed twice',
+    ]);
+  });
+
+  it('reports an empty mission on a set, a missing one on a situation, and shared words on a situation', () => {
+    expect(issuesForSet({ ...testSet, mission: ' ' })).toEqual(['lijkt: empty mission']);
+    const situation = validPack({ mission: undefined, shared: ['w-kitchen/vork'] });
+    expect(issuesFor(situation)).toEqual(expect.arrayContaining(['kamer: empty mission', 'kamer: only a set lists shared words']));
   });
 });

@@ -1,6 +1,6 @@
 import { isLessonNoun, placeArticles } from '../articles/assemble';
 import type { Correction } from '../corrections/types';
-import { placePacks, type PlacedPack } from '../packs/assemble';
+import { placePacks, withMembers, type PlacedPack } from '../packs/assemble';
 import type { Pack } from '../packs/types';
 import { contrastItemId, placeContrasts } from '../sounds/assemble';
 import type { SoundContrast } from '../sounds/types';
@@ -103,12 +103,14 @@ export function indexCurriculum(
   const courseItems = lessons.flatMap((lesson) => lesson.items);
   const placed = placeWords(wordThemes, courseItems);
   const sounds = placeContrasts(contrasts);
-  const packs = placePacks(packList);
-  const packItems = packs.flatMap((pack) => pack.items);
+  const placedPacks = placePacks(packList);
+  const packItems = placedPacks.flatMap((pack) => pack.items);
   const articles = placeArticles([...courseItems.filter(isLessonNoun), ...placed.nouns, ...packItems.filter(isLessonNoun)]);
   const items = [...courseItems, ...placed.items, ...packItems, ...sounds, ...articles];
-  const lessonById = new Map([...lessons, ...packs.flatMap((pack) => pack.scenes)].map((lesson) => [lesson.id, lesson]));
   const itemById = new Map(items.map((item) => [item.id, item]));
+  // A set's shared words live in the course, the word track or another pack, so they are found once all are placed.
+  const packs = withMembers(placedPacks, (id) => itemById.get(id));
+  const lessonById = new Map([...lessons, ...packs.flatMap((pack) => pack.scenes)].map((lesson) => [lesson.id, lesson]));
   const contrastById = new Map(contrasts.map((contrast) => [contrastItemId(contrast), contrast]));
   return {
     curriculum: source,

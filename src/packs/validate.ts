@@ -7,7 +7,7 @@ import { EXERCISE_STAGES } from '../curriculum/types';
 import { exerciseIssues } from '../curriculum/validate';
 import { normalizeAnswer } from '../engine/answers';
 import { bareWord, WORDS_STAGE } from '../words/assemble';
-import { packModuleId } from './assemble';
+import { isSet, packModuleId } from './assemble';
 
 const KEBAB = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
@@ -43,24 +43,38 @@ export function validatePacks(index: CurriculumIndex): Array<string> {
     // The Topics tab opens a pack or a word theme by id.
     if (themes.has(pack.id)) issues.push(`${at}: pack id is also a word theme`);
     packIds.add(pack.id);
-    for (const field of ['title', 'situation', 'mission'] as const) {
+    const set = isSet(pack);
+    for (const field of ['title', 'situation'] as const) {
       if (blank(pack[field])) issues.push(`${at}: empty ${field}`);
     }
+    // A set may go without a mission, but not with an empty one.
+    if (set ? pack.mission !== undefined && blank(pack.mission) : blank(pack.mission)) issues.push(`${at}: empty mission`);
     if (pack.cultureNote !== undefined && (blank(pack.cultureNote) || pack.cultureNote.split(/(?<=[.!?])\s+/).length > 2)) {
       issues.push(`${at}: the culture note needs one or two sentences`);
     }
-    if (pack.buildsOn.length === 0) issues.push(`${at}: builds on no course module`);
+    if (!set && pack.buildsOn.length === 0) issues.push(`${at}: builds on no course module`);
     for (const module of pack.buildsOn) {
       if (!modules.has(module)) issues.push(`${at}: builds on unknown module ${module}`);
     }
     if (pack.scenes.length < PACK_SCENES.min || pack.scenes.length > PACK_SCENES.max) {
       issues.push(`${at}: needs ${PACK_SCENES.min} to ${PACK_SCENES.max} scenes`);
     }
-    if (pack.items.length < PACK_MIN_ITEMS) issues.push(`${at}: needs at least ${PACK_MIN_ITEMS} items (has ${pack.items.length})`);
     const exercises = pack.scenes.flatMap((scene) => scene.exercises);
-    if (!exercises.some((exercise) => exercise.listenOnly)) issues.push(`${at}: needs a listening exercise (listenOnly)`);
-    if (!exercises.some((exercise) => exercise.passage)) issues.push(`${at}: needs a real-life text (passage)`);
-    if (!exercises.some((exercise) => exercise.kind === 'write')) issues.push(`${at}: needs a writing exercise`);
+    // The situation's parts. A set is a short list of words around one trap, in scenes that keep the lesson rules.
+    if (!set) {
+      if (pack.items.length < PACK_MIN_ITEMS) issues.push(`${at}: needs at least ${PACK_MIN_ITEMS} items (has ${pack.items.length})`);
+      if (!exercises.some((exercise) => exercise.listenOnly)) issues.push(`${at}: needs a listening exercise (listenOnly)`);
+      if (!exercises.some((exercise) => exercise.passage)) issues.push(`${at}: needs a real-life text (passage)`);
+      if (!exercises.some((exercise) => exercise.kind === 'write')) issues.push(`${at}: needs a writing exercise`);
+      if (pack.shared?.length) issues.push(`${at}: only a set lists shared words`);
+    }
+    const practised = new Set(exercises.flatMap((exercise) => exercise.items ?? []));
+    for (const id of new Set(pack.shared)) {
+      const item = index.item(id);
+      if (!item || item.moduleId === packModuleId(pack.id)) issues.push(`${at}: shared word ${id} is not taught by the course, the word track or another pack`);
+      else if (!practised.has(id)) issues.push(`${at}: no scene practises the shared word ${id}`);
+    }
+    if (pack.shared && new Set(pack.shared).size !== pack.shared.length) issues.push(`${at}: a shared word is listed twice`);
 
     const earlierScenes = new Set<string>();
     for (const scene of pack.scenes) {

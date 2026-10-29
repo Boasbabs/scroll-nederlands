@@ -330,7 +330,7 @@ export const school: Pack = {
         word('afmelden', 'to report absent', { note: 'uw kind afmelden: tell the school your child is not coming' }),
         noun('het tienminutengesprek', 'the parent–teacher meeting', { note: 'ten minutes with the teacher about your child' }),
         noun('het rapport', 'the school report', { note: 'een goed rapport = a good report' }),
-        noun('de ouderavond', "the parents' evening", { note: 'an evening at school for parents' }),
+        noun('de ouderavond', 'the information evening for parents', { note: 'an evening at school for all the parents of a class or year' }),
       ],
       wordBreakdown: [
         { dutch: 'afmelden', english: 'to report your child absent: ik meld hem af' },
@@ -338,7 +338,7 @@ export const school: Pack = {
         { dutch: 'met haar / met hem', english: 'with her / with him' },
         { dutch: 'het tienminutengesprek', english: 'a ten-minute talk with the teacher' },
         { dutch: 'het rapport', english: 'the school report' },
-        { dutch: 'de ouderavond', english: "the parents' evening" },
+        { dutch: 'de ouderavond', english: 'the information evening for parents' },
       ],
       patternExplanation:
         'After a word like met, use the object pronouns: met haar, met hem. Hoe gaat het met haar? asks how she is doing. When a sentence starts with thuis or vandaag, the verb comes next and then the subject: Thuis spreken we Engels.',
@@ -346,7 +346,7 @@ export const school: Pack = {
       examples: [
         { dutch: 'Het tienminutengesprek is op donderdag om half vier.', english: 'The parent–teacher meeting is on Thursday at half past three.' },
         { dutch: 'Vrijdag krijgen de kinderen het rapport.', english: 'On Friday the children get their reports.' },
-        { dutch: 'Op de ouderavond vertelt de juf over het nieuwe schooljaar.', english: "At the parents' evening the teacher talks about the new school year." },
+        { dutch: 'Op de ouderavond vertelt de juf over het nieuwe schooljaar.', english: 'At the information evening for parents, the teacher talks about the new school year.' },
         { dutch: 'U kunt uw kind afmelden via de app.', english: 'You can report your child absent through the app.' },
       ],
       speakingPrompt: 'Say it at the start of the tienminutengesprek about Lina: Goedemiddag, juf Sanne. Hoe gaat het met haar in de klas?',
@@ -372,11 +372,11 @@ export const school: Pack = {
           prompt: 'Match the Dutch with the English.',
           pairs: [
             { dutch: 'het tienminutengesprek', english: 'the parent–teacher meeting' },
-            { dutch: 'de ouderavond', english: "the parents' evening" },
+            { dutch: 'de ouderavond', english: 'the information evening for parents' },
             { dutch: 'het rapport', english: 'the school report' },
             { dutch: 'afmelden', english: 'to report absent' },
           ],
-          explanation: 'Het tienminutengesprek is about your own child; de ouderavond is an evening at school for parents. Het rapport is the school report.',
+          explanation: 'Het tienminutengesprek is about your own child; de ouderavond is an information evening for all the parents. Het rapport is the school report.',
         },
         {
           id: 'cloze',

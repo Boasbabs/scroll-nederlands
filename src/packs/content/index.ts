@@ -4,5 +4,6 @@ import type { Pack } from '../types';
 import { geld } from './geld';
 import { gemeente } from './gemeente';
 import { huren } from './huren';
+import { zorg } from './zorg';
 
-export const packs: Array<Pack> = [gemeente, huren, geld];
+export const packs: Array<Pack> = [gemeente, huren, geld, zorg];

@@ -1,6 +1,6 @@
 // What to practise next. Due reviews come before new material.
 import type { CurriculumIndex } from '../curriculum/assemble';
-import type { Lesson } from '../curriculum/types';
+import type { LearningItem, Lesson } from '../curriculum/types';
 import { PACKS_STAGE, type PlacedPack } from '../packs/assemble';
 import { WORDS_STAGE } from '../words/assemble';
 import { ITEM_STAGES, type LearnerProgress, type PracticeMode } from './types';
@@ -122,10 +122,23 @@ export function wordsLeftToday(index: CurriculumIndex, progress: LearnerProgress
   return Math.max(0, perDay - wordsIntroducedToday(index, progress, now));
 }
 
-/** Basic words not met yet, in the list's order, or in one theme's own order. */
+/** Share of the tier-1 words met before the mixed list moves on to tier 2 (words 626–1,000). */
+export const TIER_TWO_AFTER = 0.9;
+
+/** The mixed list's words open now: tier 1, and tier 2 once TIER_TWO_AFTER of tier 1 is met. */
+function openWords(index: CurriculumIndex, progress: LearnerProgress): ReadonlyArray<LearningItem> {
+  const tierOne = new Set(index.themes.filter((theme) => theme.tier === 1).flatMap((theme) => theme.items.map((item) => item.id)));
+  const met = [...tierOne].filter((id) => progress.items[id]).length;
+  return met >= TIER_TWO_AFTER * tierOne.size ? index.words : index.words.filter((item) => tierOne.has(item.id));
+}
+
+/**
+ * Basic words not met yet, in the list's order, or in one theme's own order.
+ * A theme opened in Topics teaches straight away, tier 2 included.
+ */
 export function getNewWordIds(index: CurriculumIndex, progress: LearnerProgress, count: number, themeId?: string): Array<string> {
   if (count <= 0) return [];
-  const list = themeId === undefined ? index.words : (index.themes.find((theme) => theme.id === themeId)?.items ?? []);
+  const list = themeId === undefined ? openWords(index, progress) : (index.themes.find((theme) => theme.id === themeId)?.items ?? []);
   return list
     .filter((item) => !progress.items[item.id])
     .slice(0, count)

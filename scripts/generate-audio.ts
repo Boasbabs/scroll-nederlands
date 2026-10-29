@@ -58,13 +58,14 @@ export type ClipText = { text: string; voice: ClipVoice; group: ClipGroup };
 
 type LessonLike = Pick<LessonDraft, 'targetPhrase' | 'items' | 'examples' | 'dialogue' | 'exercises'>;
 
-/** Texts played outside the lessons: the word track's new words ("de vork") and every word of the minimal pairs. */
+/** Texts played outside the lessons: the word track's new words ("de vork") and their sentences, and every word of the minimal pairs. */
 export type BesideTexts = { words: ReadonlyArray<string>; pairs: ReadonlyArray<string> };
 
 /** The word track's own words (course words it refers to are lesson items already) and the pairs' words. */
 export function besideTexts(themes: ReadonlyArray<WordTheme>, contrasts: ReadonlyArray<SoundContrast>): BesideTexts {
   return {
-    words: themes.flatMap((theme) => theme.words.flatMap((entry) => ('ref' in entry ? [] : [entry.dutch]))),
+    // A tier-2 word's sentence is played on its card and in its gapped drill's answer.
+    words: themes.flatMap((theme) => theme.words.flatMap((entry) => ('ref' in entry ? [] : [entry.dutch, ...(entry.example ? [entry.example.dutch] : [])]))),
     pairs: contrasts.flatMap((contrast) => contrast.pairs.flatMap((pair) => pair.map((word) => word.dutch))),
   };
 }

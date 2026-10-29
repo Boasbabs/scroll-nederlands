@@ -4,7 +4,7 @@ import { ARTICLES_STAGE, articleOf, isArticleItemId, nounIdOf, withoutArticle } 
 import { CORRECTIONS_STAGE } from '../corrections/assemble';
 import type { Correction } from '../corrections/types';
 import { exerciseItemIds, type CurriculumIndex } from '../curriculum/assemble';
-import type { Exercise, ExerciseStage, LearningItem, Lesson } from '../curriculum/types';
+import type { DutchEnglish, Exercise, ExerciseStage, LearningItem, Lesson } from '../curriculum/types';
 import { SOUNDS_STAGE } from '../sounds/assemble';
 import type { SoundContrast } from '../sounds/types';
 import { normalizeAnswer } from './answers';
@@ -134,8 +134,18 @@ export function exampleGap(lesson: Pick<Lesson, 'examples'>, dutch: string): Exa
  * ("Mijn vork is van zilver." → "Mijn ___ is van zilver.").
  */
 export function personalGap(note: string, dutch: string): ExampleGap | undefined {
-  const examples = [{ dutch: note, english: '' }];
+  return sentenceGap({ dutch: note, english: '' }, dutch);
+}
+
+/** One sentence with the item blanked out: the whole Dutch, else a noun without its article. */
+function sentenceGap(sentence: DutchEnglish, dutch: string): ExampleGap | undefined {
+  const examples = [sentence];
   return exampleGap({ examples }, dutch) ?? (articleOf(dutch) ? exampleGap({ examples }, withoutArticle(dutch)) : undefined);
+}
+
+/** A word's own example with the word blanked out (tier-2 words: a sentence, not a picture, is how they are learned). */
+export function wordGap(item: Pick<LearningItem, 'dutch' | 'example'>): ExampleGap | undefined {
+  return item.example ? sentenceGap(item.example, item.dutch) : undefined;
 }
 
 /** What the learner has added that changes how drills look. */
@@ -256,7 +266,8 @@ export function generateExercise(
   const pictured = !item.recognitionOnly && hasPicture(item.id);
   const lesson = index.lesson(item.lessonId);
   const situation = !pictured && item.primary ? lesson?.situation : undefined;
-  const gap = !pictured && !item.primary && lesson ? exampleGap(lesson, item.dutch) : undefined;
+  // A lesson example with the item, else the word's own sentence.
+  const gap = pictured ? undefined : ((!item.primary && lesson ? exampleGap(lesson, item.dutch) : undefined) ?? wordGap(item));
   const cue = pictured ? { picture: item.id } : situation ? { situation } : {};
   const asked = pictured ? 'What is this in Dutch?' : situation ? 'What do you say?' : undefined;
   // Up to four pictures in a 2×2 grid (three at least), so each is big enough to read.

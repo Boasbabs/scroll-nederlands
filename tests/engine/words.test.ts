@@ -1,7 +1,7 @@
 import { exerciseSteps, introStepIds, planLesson, planWords } from '../../src/engine/plan';
 import { completeLesson, completeNewItems } from '../../src/engine/progress';
 import { DAY } from '../../src/engine/schedule';
-import { getNextActivity, wordsIntroducedToday, wordsLeftToday } from '../../src/engine/selection';
+import { getNewWordIds, getNextActivity, wordsIntroducedToday, wordsLeftToday } from '../../src/engine/selection';
 import { summarizeProgress } from '../../src/engine/summary';
 import { emptyProgress, type ExerciseResult, type LearnerProgress } from '../../src/engine/types';
 import { bareWord, placeWords } from '../../src/words/assemble';
@@ -172,5 +172,58 @@ describe('starting and saving a word session', () => {
     await setup.store.updatePreferences({ newWordsPerDay: 0 });
     expect(await setup.learning.startWords('focused')).toBeUndefined();
     expect((await setup.learning.snapshot('micro')).wordsLeftToday).toBe(0);
+  });
+});
+
+describe('tier 2 (words 626–1,000)', () => {
+  /** Two tier-1 themes (seven words, one a course word) and a tier-2 theme of abstract words with sentences. */
+  const tiered = makeCourse({}, [
+    ...testWordThemes,
+    {
+      id: 'ideas',
+      title: 'Everyday ideas',
+      tier: 2,
+      words: [
+        { key: 'probleem', dutch: 'het probleem', english: 'the problem', pos: 'noun', example: { dutch: 'Dat is geen groot probleem.', english: 'That is not a big problem.' } },
+        { key: 'reden', dutch: 'de reden', english: 'the reason', pos: 'noun', example: { dutch: 'Wat is de reden?', english: 'What is the reason?' } },
+        { key: 'trots', dutch: 'trots', english: 'proud', pos: 'adjective', example: { dutch: 'Ik ben trots op je.', english: 'I am proud of you.' } },
+        { key: 'kans', dutch: 'de kans', english: 'the chance', pos: 'noun', example: { dutch: 'Je hebt een goede kans.', english: 'You have a good chance.' } },
+      ],
+    },
+  ]);
+  const tierOne = tiered.themes.filter((theme) => theme.tier === 1).flatMap((theme) => theme.items);
+
+  function meet(progress: LearnerProgress, itemIds: ReadonlyArray<string>): LearnerProgress {
+    const plan = planWords(tiered, itemIds, 'focused', 'tiers');
+    return completeNewItems(progress, introStepIds(plan), answers(plan), 'focused', T0);
+  }
+
+  it('places tier 2 after the whole of tier 1, its themes mixed among themselves', () => {
+    expect(tiered.words.slice(0, tierOne.length).every((item) => tierOne.includes(item))).toBe(true);
+    expect(tiered.words.slice(tierOne.length).map((item) => item.id)).toEqual(['w-ideas/probleem', 'w-ideas/reden', 'w-ideas/trots', 'w-ideas/kans']);
+  });
+
+  it('keeps tier 2 out of the mixed list until 90% of tier 1 is met', () => {
+    const almost = meet(emptyProgress(), tierOne.slice(0, Math.ceil(0.9 * tierOne.length) - 1).map((item) => item.id));
+    expect(getNewWordIds(tiered, almost, 10).every((id) => !id.startsWith('w-ideas/'))).toBe(true);
+    const enough = meet(almost, [tierOne.find((item) => !almost.items[item.id])!.id]);
+    expect(getNewWordIds(tiered, enough, 10)).toContain('w-ideas/probleem');
+  });
+
+  it('teaches a tier-2 theme opened in Topics straight away', () => {
+    expect(getNewWordIds(tiered, emptyProgress(), 2, 'ideas')).toEqual(['w-ideas/probleem', 'w-ideas/reden']);
+  });
+
+  it('recalls a word from its own sentence with the word blanked out', () => {
+    const plan = planWords(tiered, ['w-ideas/probleem', 'w-ideas/reden'], 'focused', 'gap');
+    const recall = exerciseSteps(plan).filter((step) => step.exercise.stage === 'supportedRecall');
+    expect(recall.map((step) => step.exercise)).toEqual([
+      expect.objectContaining({ kind: 'cloze', sentence: 'Dat is geen groot ___.', answers: expect.arrayContaining(['probleem']) }),
+      expect.objectContaining({ kind: 'cloze', sentence: 'Wat is ___?', answers: expect.arrayContaining(['de reden']) }),
+    ]);
+  });
+
+  it('counts both tiers as core words', () => {
+    expect(summarizeProgress(tiered, emptyProgress(), T0).words.total).toBe(tiered.words.length);
   });
 });

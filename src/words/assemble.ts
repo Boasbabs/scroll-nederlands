@@ -20,6 +20,8 @@ export function bareWord(dutch: string): string {
 export type PlacedTheme = {
   id: string;
   title: string;
+  /** 1 for the basic words, 2 for words 626–1,000. */
+  tier: 1 | 2;
   /** New items and the course items referenced. */
   items: Array<LearningItem>;
 };
@@ -27,7 +29,7 @@ export type PlacedTheme = {
 export type PlacedWords = {
   /** New word items, added to the course's items. */
   items: Array<LearningItem>;
-  /** The whole list in introduction order: new items and the course items referenced. */
+  /** The whole list in introduction order, tier 1 before tier 2: new items and the course items referenced. */
   words: Array<LearningItem>;
   themes: Array<PlacedTheme>;
   /** New items that are singular nouns (each gets a de/het article item, src/articles). */
@@ -66,6 +68,7 @@ export function placeWords(themes: ReadonlyArray<WordTheme>, courseItems: Readon
         kind: 'word',
         ...(entry.accept ? { accept: entry.accept } : {}),
         ...(entry.note ? { note: entry.note } : {}),
+        ...(entry.example ? { example: entry.example } : {}),
         id: `${moduleId}/${entry.key}`,
         lessonId: moduleId,
         moduleId,
@@ -77,10 +80,13 @@ export function placeWords(themes: ReadonlyArray<WordTheme>, courseItems: Readon
       return [item];
     }),
   );
+  const tiers = themes.map((theme) => theme.tier ?? 1);
+  const ofTier = (tier: 1 | 2) => perTheme.filter((_, i) => tiers[i] === tier);
   return {
     items,
-    words: interleave(perTheme),
-    themes: themes.map((theme, i) => ({ id: theme.id, title: theme.title, items: perTheme[i]! })),
+    // Each tier mixes its own themes; tier 2 follows the whole of tier 1.
+    words: [...interleave(ofTier(1)), ...interleave(ofTier(2))],
+    themes: themes.map((theme, i) => ({ id: theme.id, title: theme.title, tier: tiers[i]!, items: perTheme[i]! })),
     nouns,
     unresolved,
   };

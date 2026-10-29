@@ -57,6 +57,8 @@ export type LearningItemDraft = {
   recognitionOnly?: boolean;
   /** A noun in the plural ("de servicekosten"): plurals always take de, so it gets no de/het item. The course lists its own in COURSE_PLURALS. */
   plural?: boolean;
+  /** A sentence using it word for word, for a gapped drill where no lesson example has it (tier-2 basic words). */
+  example?: DutchEnglish;
 };
 
 /** A learning item placed in the curriculum. */

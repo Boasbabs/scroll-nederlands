@@ -116,6 +116,26 @@ On the 20 texts that both have, at pace 1 (14 short texts, 6 sentences):
 - **Not measured.** Speech-to-Text also heard nothing in a few spoken single words ("man" from every voice), a known weakness of recognisers on isolated words, so those count against a voice without proving it wrong. Accent and naturalness need a Dutch listener on `voice-test/index.html`.
 - **Cost.** 2,580 characters and 170 Speech-to-Text calls, inside the free allowance.
 
+### Screen of the male voices (29 October)
+
+Charon and Iapetus went silent most, so every nl-NL male voice went through a one-off screen of the word track's riskiest form: the 13 short words above, written bare, three takes each, checked for silence and then by Speech-to-Text. Erinome, Charon and Iapetus went through it too, to compare.
+
+| Voice | Silent takes | Heard exactly, of the spoken takes |
+|---|---|---|
+| Algenib (male) | 0 of 39 | 34 of 39 |
+| Algieba (male) | 0 of 39 | 34 of 39 |
+| Achird (male) | 1 of 39 | 35 of 38 |
+| Erinome (female) | 1 of 39 | 35 of 38 |
+| Iapetus (male) | 4 of 39 | 32 of 35 |
+| Charon (male) | 5 of 39 | 29 of 34 |
+| Orus, Alnilam (male) | 6 of 39 each | 31 of 33, 29 of 33 |
+
+The other ten male voices fell between 1 and 5 silent takes. Across all 17 voices most misheard takes were "maan" (30) and "man" (26): Speech-to-Text hears an isolated minimal pair badly, so those count against every voice alike. Algenib and Algieba missed nothing else. Once Algenib's "man" came back as "maan", which a listener should check for vowel length.
+
+The three best male voices then took the full test at pace 1. On the 20 texts both have, Algenib and Algieba matched ElevenLabs and Erinome (13 of 14 short texts, 6 of 6 sentences, no silent take), Achird scored 12 of 14 with one silent "wel", and Algieba's pace (11.6 letters a second) is closest to Serge de Beer's (11.5). Each of Algenib and Algieba went 64 takes without a silent one, which puts their silent rate low but not at zero: a Google run still needs a silence check and retries. Every Google voice still read "S-M-I-T-H." as "Smith".
+
+If the course moves to Google, the candidates are Algieba for the main voice and Erinome for the dialogues. The screen cost about 2,400 characters and 610 Speech-to-Text calls, the full test of the three 1,137 characters.
+
 ## Limitations
 
 - **STT measures intelligibility, not accent.** It cannot tell nl-NL from nl-BE, and it mishears isolated sounds and one-syllable words, so the QA list is a listening list. The Netherlands accent rests on library metadata (all 6 voices are labelled nl-NL, standard), not on a native listener. A Dutch speaker should spot-check about 20 clips per voice: the hard g/sch, ui/eu/ij, w, v/z devoicing and r.
